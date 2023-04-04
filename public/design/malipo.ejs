@@ -94,26 +94,22 @@
                                             <table class="table align-middle table-nowrap" id="customerTable">
                                                 <thead class="table-light">
                                                     <tr>
-                                                        <th scope="col" style="width: 50px;">
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="checkbox" id="checkAll" value="option">
-                                                            </div>
+                                                        <th width="5%">
+                                                           Na.
                                                         </th>
                                                         <th class="sort" data-sort="customer_name">#</th>
                                                         <!-- <th class="sort" data-sort="email">Jina</th> -->
                                                         <th class="sort" data-sort="email">Aina ya Malipo</th>
                                                         <th class="sort" data-sort="email">Kiasi</th>
-                                                        <th class="sort" data-sort="action">Action</th>
+                                                        <th class="sort text-center" width="15%" data-sort="action">Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="list form-check-all">
                                                     <% for(var i = 0; i < data.length; i++){ %>
                                                     <tr>
-                                                        <th scope="row">
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="checkbox" name="chk_child" value="option1">
-                                                            </div>
-                                                        </th>
+                                                        <td scope="row">
+                                                            <%=(i+1)%>
+                                                        </td>
                                                         <td class="id"><a href="javascript:void(0);" class="fw-medium link-primary">#<%= data[i].feeCode %></a></td>
                                                         <td class="phone"><%= data[i].Fee %></td>
                                                         <td class="phone"><%= data[i].Kiasi %></td>
@@ -121,15 +117,15 @@
                                                         <td>
                                                             <div class="d-flex gap-2">
                                                                 <!-- <div class="edit"> -->
-                                                                    <button class="btn btn-sm btn-success edit-item-btn1"
+                                                                    <button class="btn btn-sm btn-link btn-sm text-primary"
                                                                     onclick="AddZone1(this); return false;" data-fee_id="<%= data[i].fee_id %>" 
                                                                     data-id="<%= data[i].feeCode %>" data-name="<%= data[i].Fee %>" 
-                                                                    data-amount="<%= data[i].Kiasi %>" >Badili</button>
+                                                                    data-amount="<%= data[i].Kiasi %>" ><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></button>
                                                                 <!-- </div> -->
-                                                                <button type="button" class="btn btn-danger add-btn" 
+                                                                <button type="button" class="btn btn-link btn-sm text-danger" 
                                                                 data-bs-toggle="modal" data-id="<%= data[i].fee_id %>" 
                                                                 id="create-btn" 
-                                                                onclick="deleteMalipo(this); return false;">Futa</button>
+                                                                onclick="deleteMalipo(this); return false;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -258,7 +254,7 @@
                                     <div class="modal-footer">
                                         <div class="hstack gap-2 justify-content-end">
                                             <button type="button" class="btn btn-light" onclick="funga()" data-bs-dismiss="modal">Funga</button>
-                                            <button type="button" class="btn btn-success" onclick="editHati()" id="add-btn">Badili</button>
+                                            <button type="button" class="btn btn-success" onclick="editHati()" id="add-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></button>
                                         </div>
                                     </div>
                                 </form>

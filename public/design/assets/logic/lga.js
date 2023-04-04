@@ -64,11 +64,7 @@ function nata(){
            // console.log(response)
             $("#customerTable").find('tbody').empty();
             for (var i=0; i < response.length; i++) {
-                var row = '<tr> <th scope="row">'+
-                                '<div class="form-check">'+
-                                    '<input class="form-check-input" type="checkbox" name="chk_child" value="option1">'+
-                                '</div>'+
-                            '</th>'; 
+                var row = '<tr> <td scope="row">'+(i + 1)+'</td>'; 
                 row = row + '<td class="date">' + response[i].LgaName + '</td>';
                 // row = row + '<td class="id" style="display:none;"><a href="javascript:void(0);" class="fw-medium link-primary"> ' + response[i].zoneName + ' </a></td>';
                 row = row + '<td class="date">' + response[i].LgaCode + '</td>';
@@ -77,7 +73,7 @@ function nata(){
                 // row = row + '<td>'+
                 //             '<div class="d-flex gap-2">'+
                 //                 '<div class="edit">'+
-                //                     '<button class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal" data-bs-target="#showModal">Edit</button>'+
+                //                     '<button class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal" data-bs-target="#showModal"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></button>'+
                 //                 '</div>'+
                 //                 '<div class="remove">'+
                 //                     '<button class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal" data-bs-target="#deleteRecordModal">Remove</button>'+

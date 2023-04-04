@@ -7,7 +7,7 @@
             <li class="menu-title"><span data-key="t-menu">Menu</span></li>
             <% if(useLev != 10){ %>
             <li class="nav-item">
-                <a class="nav-link menu-link" href="/Dashboard">
+                <a class="nav-link menu-link <%= routeIs('Dashboard' , getCurrentUrl(req)) ? 'active' : '' %>" href="/Dashboard">
                     <i class="ri-dashboard-2-line"></i> <span data-key="t-widgets">Dashibodi</span>
                 </a>
             </li>
@@ -16,7 +16,9 @@
                 <a class="nav-link menu-link" href="#sidebarDashboards" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboards">
                     <i class="ri-honour-line"></i> <span data-key="t-dashboards">Maombi</span>
                 </a>
-                <div class="collapse menu-dropdown" id="sidebarDashboards">
+                <div class="collapse menu-dropdown
+                <%= routeIs('MaombiKuanzishaShule|MaombiMmilikiShule|MaombiKusajiliShule|MaombiKusajiliShuleSerikali|KuongezaMikondo|BadiliJina|KuongezaTahasusi|KuongezaDahalia|KuongezaBweni|BadiliUsajili|Hamisha|BadiliMmiliki|BadiliMeneja|FutaShule' , getCurrentUrl(req)) ? 'show' : '' %>
+                " id="sidebarDashboards">
                     <ul class="nav nav-sm flex-column">
                         <li class="nav-item">
                             <a href="/MaombiKuanzishaShule" class="nav-link" data-key="t-analytics"> Kuanzisha Shule
@@ -152,47 +154,51 @@
                 <% if(useLev == 11){ %>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarUI" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarUI">
-                        <i class="ri-pencil-ruler-2-line"></i> <span data-key="t-base-ui">Mipangilio</span>
+                        <i class="ri-pencil-ruler-2-line"></i> <span data-key="t-base-ui">
+                            Mipangilio
+                        </span>
                     </a>
-                    <div class="collapse menu-dropdown mega-dropdown-menu" id="sidebarUI">
+                    <div class="collapse menu-dropdown mega-dropdown-menu 
+                    <%= routeIs('Vyeo|Watumiaji|Waombaji|Zoni|Mikoa|Halmashauri|Kata|Viambatisho|Malipo|Tahasusi|Michepuo|Roles' , getCurrentUrl(req)) ? 'show' : '' %>" 
+                    id="sidebarUI">
                         <div class="row">
                             <div class="col-lg-4">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
-                                        <a href="/Vyeo" class="nav-link" data-key="t-dropdowns">Vyeo</a>
+                                        <a href="/Vyeo" class="nav-link <%= routeIs('Vyeo' , getCurrentUrl(req)) ? 'active' : '' %> " data-key="t-dropdowns">Vyeo</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="/Watumiaji" class="nav-link" data-key="t-cards">Watumiaji</a>
+                                        <a href="/Watumiaji" class="nav-link <%= routeIs('Watumiaji' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-cards">Watumiaji</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="/Waombaji" class="nav-link" data-key="t-cards">Waombaji</a>
+                                        <a href="/Waombaji" class="nav-link <%= routeIs('Waombaji' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-cards">Waombaji</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="/Zoni" class="nav-link" data-key="t-alerts">Kanda/Zoni</a>
+                                        <a href="/Zoni" class="nav-link <%= routeIs('Zoni' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-alerts">Kanda/Zoni</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="/Mikoa" class="nav-link" data-key="t-badges">Mikoa</a>
+                                        <a href="/Mikoa" class="nav-link <%= routeIs('Mikoa' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-badges">Mikoa</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="/Halmashauri" class="nav-link" data-key="t-buttons">Halmashauri</a>
+                                        <a href="/Halmashauri" class="nav-link <%= routeIs('Halmashauri' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-buttons">Halmashauri</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="/Kata" class="nav-link" data-key="t-colors">Kata</a>
+                                        <a href="/Kata" class="nav-link <%= routeIs('Kata' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-colors">Kata</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="/Viambatisho" class="nav-link" data-key="t-dropdowns">Viambatisho</a>
+                                        <a href="/Viambatisho" class="nav-link <%= routeIs('Viambatisho' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-dropdowns">Viambatisho</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="/Malipo" class="nav-link" data-key="t-dropdowns">Ada za Malipo</a>
+                                        <a href="/Malipo" class="nav-link <%= routeIs('Malipo' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-dropdowns">Ada za Malipo</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="/Tahasusi" class="nav-link" data-key="t-carousel">Tahasusi</a>
+                                        <a href="/Tahasusi" class="nav-link <%= routeIs('Tahasusi' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-carousel">Tahasusi</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="/Michepuo" class="nav-link" data-key="t-carousel">Michepuo</a>
+                                        <a href="/Michepuo" class="nav-link <%= routeIs('Michepuo' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-carousel">Michepuo</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="/Roles" class="nav-link" data-key="t-carousel">Roles & Permissions</a>
+                                        <a href="/Roles" class="nav-link <%= routeIs('Roles' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-carousel">Roles & Permissions</a>
                                     </li>
                                     <!-- <li class="nav-item">
                                         <a href="/RolesPermissions" class="nav-link" data-key="t-carousel">Roles & Permissions</a>
@@ -203,7 +209,7 @@
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="/AuditTrail">
+                    <a class="nav-link menu-link <%= routeIs('AuditTrail' , getCurrentUrl(req)) ? 'active' : '' %>" href="/AuditTrail">
                         <i class="ri-honour-line"></i> <span data-key="t-widgets">Audit Trail</span>
                     </a>
                 </li>
