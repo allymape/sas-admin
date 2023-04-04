@@ -74,16 +74,29 @@ app.locals.getCurrentUrl = function (req) {
 };
 global.routeIs = function (url_segments, currentUrl) {
   var urls = url_segments.split("|");
-  console.log(currentUrl)
+
   if (Array.isArray(urls) && urls.length > 0) {
+  
     for(var i=0; i< urls.length; i++){
-      if(currentUrl.includes(urls[i])){
-        return true;
+      console.log(modifyUrl(currentUrl) , urls[i]);
+      if(modifyUrl(currentUrl) === urls[i]){
+          return true;
       }
     }
   }
   return false;
 };
+
+var modifyUrl = function(url){
+     var url = url.split("/");
+     if(url.length == 2){
+        return url[1];
+     }
+     if(url.length == 3){
+        return url[1]+"/*";
+     }
+     return url[i];
+} 
 
 var VERURL = "http://41.59.228.17:9010/";
 var BASEURL = "http://127.0.0.1:8088/api/";

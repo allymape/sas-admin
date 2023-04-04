@@ -17,53 +17,53 @@
                     <i class="ri-honour-line"></i> <span data-key="t-dashboards">Maombi</span>
                 </a>
                 <div class="collapse menu-dropdown
-                <%= routeIs('MaombiKuanzishaShule|MaombiMmilikiShule|MaombiKusajiliShule|MaombiKusajiliShuleSerikali|KuongezaMikondo|BadiliJina|KuongezaTahasusi|KuongezaDahalia|KuongezaBweni|BadiliUsajili|Hamisha|BadiliMmiliki|BadiliMeneja|FutaShule' , getCurrentUrl(req)) ? 'show' : '' %>
+                <%= routeIs('MaombiKuanzishaShule|MaombiMmilikiShule|MaombiKusajiliShule|MaombiKusajiliShuleSerikali|KuongezaMikondo|BadiliJina|KuongezaTahasusi|KuongezaDahalia|KuongezaBweni|BadiliUsajili|Hamisha|BadiliMmiliki|BadiliMeneja|FutaShule|SajiliOmbi/*|TaarifaOmbi/*|SajiliOmbiSerikali/*|BadiliMkondo/*|BadiliTahasusi/*|BadiliBweni/*|BadiliDahalia/*|HamishaShuleDetails/*|ViewOmbiMmiliki/*|ViewOmbiMeneja/*|FutaShuleTaarifa/*' , getCurrentUrl(req)) ? 'show' : '' %>
                 " id="sidebarDashboards">
                     <ul class="nav nav-sm flex-column">
                         <li class="nav-item">
-                            <a href="/MaombiKuanzishaShule" class="nav-link" data-key="t-analytics"> Kuanzisha Shule
+                            <a href="/MaombiKuanzishaShule" class="nav-link <%= routeIs('MaombiKuanzishaShule' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-analytics"> Kuanzisha Shule
                                 <!-- <input type="text" id="kuanzacounti"/> -->
                                 <span class="badge badge-pill bg-danger" id="kuanzacounti" data-key="t-new"></span> </a>
                         </li>
 
                         <li class="nav-item">
-                            <a href="/MaombiMmilikiShule" class="nav-link" data-key="t-crm"> Mmiliki/Meneja wa Shule </a>
+                            <a href="/MaombiMmilikiShule" class="nav-link <%= routeIs('MaombiMmilikiShule' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crm"> Mmiliki/Meneja wa Shule </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/MaombiKusajiliShule" class="nav-link" data-key="t-ecommerce"> Kusajili Shule(Binafsi) </a>
+                            <a href="/MaombiKusajiliShule" class="nav-link <%= routeIs('MaombiKusajiliShule' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-ecommerce"> Kusajili Shule(Binafsi) </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/MaombiKusajiliShuleSerikali" class="nav-link" data-key="t-ecommerce"> Kusajili Shule(Serikali) </a>
+                            <a href="/MaombiKusajiliShuleSerikali" class="nav-link <%= routeIs('MaombiKusajiliShuleSerikali' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-ecommerce"> Kusajili Shule(Serikali) </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/KuongezaMikondo" class="nav-link" data-key="t-crypto"> Kuongeza Mikondo </a>
+                            <a href="/KuongezaMikondo" class="nav-link <%= routeIs('KuongezaMikondo|BadiliMkondo/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kuongeza Mikondo </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/BadiliJina" class="nav-link" data-key="t-crypto"> Kubadili Jina la Shule </a>
+                            <a href="/BadiliJina" class="nav-link <%= routeIs('BadiliJina' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kubadili Jina la Shule </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/KuongezaTahasusi" class="nav-link" data-key="t-crypto"> Kuongeza Tahasusi </a>
+                            <a href="/KuongezaTahasusi" class="nav-link <%= routeIs('KuongezaTahasusi|BadiliTahasusi/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kuongeza Tahasusi </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/KuongezaBweni" class="nav-link" data-key="t-crypto"> Kuongeza Bweni </a>
+                            <a href="/KuongezaBweni" class="nav-link <%= routeIs('KuongezaBweni|BadiliBweni/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kuongeza Bweni </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/KuongezaDahalia" class="nav-link" data-key="t-crypto"> Kuongeza Dahalia </a>
+                            <a href="/KuongezaDahalia" class="nav-link <%= routeIs('KuongezaDahalia|BadiliDahalia/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kuongeza Dahalia </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/BadiliUsajili" class="nav-link" data-key="t-crypto"> Kubadili Aina ya Usajili </a>
+                            <a href="/BadiliUsajili" class="nav-link <%= routeIs('BadiliUsajili' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kubadili Aina ya Usajili </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/Hamisha" class="nav-link" data-key="t-crypto"> Kuhamisha Shule </a>
+                            <a href="/Hamisha" class="nav-link <%= routeIs('Hamisha|HamishaShuleDetails/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kuhamisha Shule </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/BadiliMmiliki" class="nav-link" data-key="t-crypto"> Kubadili Mmiliki wa Shule </a>
+                            <a href="/BadiliMmiliki" class="nav-link <%= routeIs('BadiliMmiliki|ViewOmbiMmiliki/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kubadili Mmiliki wa Shule </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/BadiliMeneja" class="nav-link" data-key="t-crypto"> Kubadili Meneja wa Shule </a>
+                            <a href="/BadiliMeneja" class="nav-link <%= routeIs('BadiliMeneja|ViewOmbiMeneja/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kubadili Meneja wa Shule </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/FutaShule" class="nav-link" data-key="t-crypto"> Kufuta Usajili wa Shule(Hiari) </a>
+                            <a href="/FutaShule" class="nav-link <%= routeIs('FutaShule|FutaShuleTaarifa/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kufuta Usajili wa Shule(Hiari) </a>
                         </li>
                         <!-- <li class="nav-item">
                             <a href="/RipotiZilizosajiliwa" class="nav-link" data-key="t-crypto"> Kufuta Usajili wa Shule(Tuhuma) </a>
@@ -97,55 +97,55 @@
                 <a class="nav-link menu-link" href="#sidebarRipoti" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarApps">
                     <i class="ri-apps-2-line"></i> <span data-key="t-apps">Ripoti</span>
                 </a>
-                <div class="collapse menu-dropdown" id="sidebarRipoti">
+                <div class="collapse menu-dropdown <%=routeIs('RipotiZilizosajiliwa|TaarifaSajili/*|TaarifaBilaMajengo/*|TaarifaMajengoKat/*|SajiliwaZilizokataliwa|RipotiAnzishaBilaMajengo|RipotiAnzishaBilaMajengoKataliwa|RipotiUthibitisho|RipotiKubadiliJina|RipotiKuongezaBweni|RipotiDahalia|RipotiBadiliMmiliki|ViewBadilimeneja|RipotiZilizofutiwa|RipotiKuongezaMikondo|RipotiTahasusi|ViewRipotiDahalia/*|' , getCurrentUrl(req)) ? 'show' : '' %>" id="sidebarRipoti">
                     <ul class="nav nav-sm flex-column">
                         <li class="nav-item">
-                            <a href="/RipotiZilizosajiliwa" class="nav-link" data-key="t-calendar"> Shule Zilizosajiliwa </a>
+                            <a href="/RipotiZilizosajiliwa" class="nav-link <%= routeIs('RipotiZilizosajiliwa|TaarifaSajili/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Shule Zilizosajiliwa </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/SajiliwaZilizokataliwa" class="nav-link" data-key="t-calendar"> Sajiliwa Zilizokataliwa </a>
+                            <a href="/SajiliwaZilizokataliwa" class="nav-link <%= routeIs('SajiliwaZilizokataliwa|TaarifaMajengoKat/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Sajiliwa Zilizokataliwa </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/RipotiAnzishaBilaMajengo" class="nav-link" data-key="t-calendar"> Kibali cha Kuanzisha Shule Bila Majengo </a>
+                            <a href="/RipotiAnzishaBilaMajengo" class="nav-link <%= routeIs('RipotiAnzishaBilaMajengo|TaarifaBilaMajengo/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Kuanzisha Shule Bila Majengo </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/RipotiAnzishaBilaMajengoKataliwa" class="nav-link" data-key="t-calendar"> Kibali cha Kuanzisha Shule Bila Majengo - Kataliwa </a>
+                            <a href="/RipotiAnzishaBilaMajengoKataliwa" class="nav-link <%= routeIs('RipotiAnzishaBilaMajengoKataliwa' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Kuanzisha Shule Bila Majengo - Kataliwa </a>
                         </li>
                         <li class="nav-item">
-                            <a href="RipotiAnzishaMajengo" class="nav-link" data-key="t-calendar"> Kibali cha Kuanzisha Shule kwa Majengo </a>
+                            <a href="RipotiAnzishaMajengo" class="nav-link <%= routeIs('RipotiAnzishaMajengo' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Kuanzisha Shule kwa Majengo </a>
                         </li>
                         <li class="nav-item">
-                            <a href="RipotiAnzishaMajengoKataliwa" class="nav-link" data-key="t-calendar"> Kibali cha Kuanzisha Shule kwa Majengo - Kataliwa </a>
+                            <a href="RipotiAnzishaMajengoKataliwa" class="nav-link <%= routeIs('RipotiAnzishaMajengoKataliwa' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Kuanzisha Shule kwa Majengo - Kataliwa </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/RipotiUthibitisho" class="nav-link" data-key="t-calendar"> Uthibitisho wa Umiliki na Umeneja </a>
+                            <a href="/RipotiUthibitisho" class="nav-link <%= routeIs('RipotiUthibitisho' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Uthibitisho wa Umiliki na Umeneja </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/RipotiKubadiliJina" class="nav-link" data-key="t-calendar"> Kubadili Jina la Shule</a>
+                            <a href="/RipotiKubadiliJina" class="nav-link <%= routeIs('RipotiKubadiliJina' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kubadili Jina la Shule</a>
                         </li>
                         <li class="nav-item">
-                            <a href="RipotiKuongezaBweni" class="nav-link" data-key="t-calendar"> Kibali cha Bweni </a>
+                            <a href="RipotiKuongezaBweni" class="nav-link <%= routeIs('RipotiKuongezaBweni' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Bweni </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/RipotiDahalia" class="nav-link" data-key="t-calendar"> Kibali cha Dahalia </a>
+                            <a href="/RipotiDahalia" class="nav-link <%= routeIs('RipotiDahalia|ViewRipotiDahalia/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Dahalia </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/RipotiBadiliMmiliki" class="nav-link" data-key="t-calendar"> Kubadili Umiliki </a>
+                            <a href="/RipotiBadiliMmiliki" class="nav-link <%= routeIs('RipotiBadiliMmiliki' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kubadili Umiliki </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/ViewBadilimeneja" class="nav-link" data-key="t-calendar"> Kubadili Umeneja </a>
+                            <a href="/ViewBadilimeneja" class="nav-link <%= routeIs('ViewBadilimeneja' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kubadili Umeneja </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/RipotiZilizofutiwa" class="nav-link" data-key="t-calendar"> Kufuta Usajili </a>
+                            <a href="/RipotiZilizofutiwa" class="nav-link <%= routeIs('RipotiZilizofutiwa' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kufuta Usajili </a>
                         </li>
                         <!-- <li class="nav-item">
                             <a href="#" class="nav-link" data-key="t-calendar"> Kubadili Lugha ya Kufundishia </a>
                         </li> -->
                         <li class="nav-item">
-                            <a href="/RipotiKuongezaMikondo" class="nav-link" data-key="t-calendar"> Kibali cha Kuongeza Mikondo </a>
+                            <a href="/RipotiKuongezaMikondo" class="nav-link <%= routeIs('RipotiKuongezaMikondo' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Kuongeza Mikondo </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/RipotiTahasusi" class="nav-link" data-key="t-calendar"> Kibali cha Kuongeza Tahasusi </a>
+                            <a href="/RipotiTahasusi" class="nav-link <%= routeIs('RipotiTahasusi' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Kuongeza Tahasusi </a>
                         </li>
                     </ul>
                 </div>
