@@ -78,9 +78,17 @@
                                                                 <label class="form-check-label" for="formCheck1">
                                                                    Jina la Role
                                                                 </label>
-                                                                <input type="text" class="form-control" id="roleName"
-                                                                placeholder="Mfano: Admin">
+                                                                <input type="text" class="form-control" value="<%= role_name %>" id="roleName"
+                                                                placeholder="Mfano: Admin" disabled>
                                                             </div> 
+                                                            <% for(var i = 0; i < allData.length; i++){ %>
+                                                            <div class="form-check mb-2">
+                                                                <label class="form-check-label" for="formCheck1">
+                                                                    <%= allData[i].permission_name %>
+                                                                </label>
+                                                                <input class="form-check-input" value="<%= allData[i].perm_id %>" type="checkbox" name="formCheck1" id="formCheck1" checked>
+                                                            </div> 
+                                                            <% } %>
                                                         <% for(var i = 0; i < data.length; i++){ %>
                                                         <div class="form-check mb-2">
                                                             <label class="form-check-label" for="formCheck1">
@@ -90,7 +98,7 @@
                                                         </div> 
                                                         <% } %>
                                                         <div class="alert alert-success shadow" role="alert" id="alertsuccess1" style="display: none;">
-                                                            <strong> Hongera! Role & ! </strong> Permissions <b>zimesajiliwa</b> kikamilifu!
+                                                            <strong> Hongera! Role & </strong> Permissions <b>zimesajiliwa</b> kikamilifu!
                                                         </div>
                                                         <div class="alert alert-danger shadow mb-xl-0" role="alert" id="alertexist1" style="display: none;">
                                                             <strong> Imeshindwa Kusajili! </strong> Role <b>ilishasajiliwa.</b> tafadhali jaribu jina lingine!
@@ -489,7 +497,8 @@
                                                             <input class="form-check-input" type="checkbox" id="formCheck1">
                                                         </div>  -->
                                                         <div class="form-check mb-2" id="sajilbtn">
-                                                            <button type="button" class="btn btn-success bg-gradient waves-effect waves-light" onclick="tengenezaRole()">Tengeneza</button>
+                                                            <button type="button" class="btn btn-success bg-gradient waves-effect waves-light" 
+                                                            onclick="tengenezaRole()">Sasisha</button>
                                                         </div> 
                                                         <div id="pakiabtn" style="display: none;">
                                                             <button type="button" class="btn btn-success btn-load">
@@ -527,7 +536,7 @@
             $("#sajilbtn").hide();
             $("#pakiabtn").show();
             $.ajax({
-                    url: "/tengenezaRoles",
+                    url: "/sasishaRoles",
                     type: 'POST',
                     data: JSON.stringify({"role_name": role_name, "permissions": result}),
                     contentType: 'application/json',

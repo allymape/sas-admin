@@ -118,6 +118,7 @@ var kandaListAPI = BASEURL + "zonilist";
 var mikoaListAPI = BASEURL + "regions";
 var sajiliZoniAPI = BASEURL + "addZoni";
 var tengenezaRoleAPI = BASEURL + "addRole";
+var sasishaRoleAPI = BASEURL + "editRole";
 var updateZoniAPI = BASEURL + "editZoni";
 var deleteZoniAPI = BASEURL + "deleteZoni";
 var lgaListAPI = BASEURL + "allDistricts";
@@ -1027,13 +1028,15 @@ app.get("/EditRolesPermissions/:id", function (req, res) {
           );
           res.send("failed");
         }
-
+        console.log(body)
         if (body !== undefined) {
           // var jsonData = JSON.parse(body)
           var jsonData = body;
           var message = jsonData.message;
           var statusCode = jsonData.statusCode;
           var data = jsonData.data;
+          var allData = jsonData.allData;
+          var role_name = jsonData.role_name;
 
           if (statusCode == 300) {
             console.log(data);
@@ -1046,6 +1049,8 @@ app.get("/EditRolesPermissions/:id", function (req, res) {
               userName: req.session.userName,
               cheoName: req.session.cheoName,
               data: data,
+              allData: allData,
+              role_name: role_name
             });
           }
           if (statusCode == 209) {
@@ -1858,6 +1863,44 @@ app.post("/tengenezaRoles", function (req, res) {
     request(
       {
         url: tengenezaRoleAPI,
+        method: "POST",
+        headers: {
+          Authorization: "Bearer" + " " + req.session.Token,
+          "Content-Type": "application/json",
+        },
+        json: {
+          roleName: req.body.role_name,
+          permissions: req.body.permissions,
+        },
+      },
+      function (error, response, body) {
+        if (error) {
+          console.log(new Date() + ": fail to login " + error);
+          res.send("failed");
+        }
+        //  console.log(body)
+        if (body !== undefined) {
+          console.log(body);
+          res.send({ statusCode: body.statusCode, message: body.message });
+        }
+      }
+    );
+  } else {
+    res.redirect("/");
+  }
+});
+
+app.post("/sasishaRoles", function (req, res) {
+  // for(var i = 0; i < req.body.permissions.length; i++){
+  //   console.log(req.body.permissions[i])
+  // }
+  if (
+    typeof req.session.userName !== "undefined" ||
+    req.session.userName === true
+  ) {
+    request(
+      {
+        url: sasishaRoleAPI,
         method: "POST",
         headers: {
           Authorization: "Bearer" + " " + req.session.Token,
