@@ -91,7 +91,7 @@
                                                             <% } %>
                                                         <% for(var i = 0; i < data.length; i++){ %>
                                                         <div class="form-check mb-2">
-                                                            <label class="form-check-label" for="formCheck1">
+                                                            <label class="form-check-label" for="formCheck1<%=i%>">
                                                                 <%= data[i].permission_name %>
                                                             </label>
                                                             <input class="form-check-input" value="<%= data[i].perm_id %>" type="checkbox" name="formCheck1" id="formCheck1">
@@ -521,15 +521,27 @@
     var checkboxes = 
                 document.getElementsByName('formCheck1');
         var role_name = document.getElementById('roleName').value;
+
+        var checkboxes = document.querySelectorAll('input[name="formCheck1"]');
+var values = [];
+// looping through all checkboxes
+// if checked property is true then push
+for (var i = 0; i < checkboxes.length; i++) {
+  if (checkboxes[i].checked == true) {
+    values.push(checkboxes[i].value);
+  }
+}
+// alert(values);
   
-            var result = [];
+            // var result = [];
   
-            for (var i = 0; i < checkboxes.length; i++) {
-                if (checkboxes[i].checked) {
-                    result += checkboxes[i].value;
+            // for (var i = 0; i < checkboxes.length; i++) {
+            //     if (checkboxes[i].checked) {
+            //         result += checkboxes[i].value;
                 
-                }
-            }
+            //     }
+            // }
+            // alert(result)
             if(role_name.length <= 0){
                 alert("Jina la Role haliwezi kuwa null")
             }else{
@@ -538,7 +550,7 @@
             $.ajax({
                     url: "/sasishaRoles",
                     type: 'POST',
-                    data: JSON.stringify({"role_name": role_name, "permissions": result}),
+                    data: JSON.stringify({"role_name": role_name, "permissions": values}),
                     contentType: 'application/json',
                     success: function(response) {
                         if(response.statusCode == 300){
@@ -558,7 +570,8 @@
                     }
                 });
             }
-        }
+       
+       }
 </script>
                                     </div>
                                 </div>
