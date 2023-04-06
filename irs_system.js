@@ -1043,7 +1043,7 @@ app.get("/EditRolesPermissions/:id", function (req, res) {
             console.log(
               new Date() + " " + req.session.userName + ": /KuongezaMikondo"
             );
-            res.render(path.join(__dirname + "/public/design/edit_role"), {
+            res.render(path.join(__dirname + "/public/design/edit_roles"), {
               req: req,
               useLev: req.session.UserLevel,
               userName: req.session.userName,

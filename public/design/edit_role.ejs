@@ -83,7 +83,7 @@
                                                             </div> 
                                                             <% for(var i = 0; i < allData.length; i++){ %>
                                                             <div class="form-check mb-2">
-                                                                <label class="form-check-label" for="formCheck1">
+                                                                <label class="form-check-label" for="formCheck<%=i%>">
                                                                     <%= allData[i].permission_name %>
                                                                 </label>
                                                                 <input class="form-check-input" value="<%= allData[i].perm_id %>" type="checkbox" name="formCheck1" id="formCheck1" checked>
