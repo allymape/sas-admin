@@ -25,8 +25,12 @@ const doc = new PDFDocument();
 const doc1 = new PDFDocument();
 const logger = require("./logger");
 const requestIp = require("request-ip");
+// const cookieParser = require('cookie-parser')
+const helmet = require('helmet')
 
 var app = express();
+app.use(helmet.frameguard())
+// app.use(cookieParser())
 // Create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
@@ -39,19 +43,28 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false });
 //   logStdout.write(util.format.apply(null, arguments) + '\n');
 // }
 // console.error = console.log;
+// app.use(function (req, res, next) {
+//   res.setHeader(
+//     'Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; frame-src 'self'"
+//   );
+  
+//   next();
+// });
 
-var app = express();
 app.use(
   session({
     secret: "secret",
     resave: true,
     saveUninitialized: true,
-    //   cookie: {
+    httpOnly: true,  // dont let browser javascript access cookie ever
+    secure: true, // only use cookie over https
+    ephemeral: true,
+      cookie: {
 
-    //     // Session expires after 1 min of inactivity.
-    //     // expires: 900000
-    //     maxAge: 600 * 1000
-    // }
+        // Session expires after 1 min of inactivity.
+        // expires: 900000
+        maxAge: 20 * 60 * 1000
+    }
   })
 );
 
@@ -238,6 +251,7 @@ var updateHatiAPI = BASEURL + "edit-attachment";
 var mkoaKandaAPI = BASEURL + "assign-region-zone";
 var pandishaHatiAPI = BASEURL + "upload-attachment";
 var verify = BASEURL + "verify";
+var changepassAPI = BASEURL + "changepass";
 
 // app.get('/',function(req,res){
 // /**
@@ -375,6 +389,7 @@ app.post("/auth", function (req, res) {
   var password = req.body.password;
   var ip_address = requestIp.getClientIp(req);
   var browser_used = req.headers["user-agent"];
+  req.session.loginAttempt = 0;
   request(
     {
       url: loginAPI,
@@ -402,9 +417,18 @@ app.post("/auth", function (req, res) {
       }
       if (body !== undefined) {
         // console.log(body)
+        if(body == 'Too many requests, please try again later.'){
+          res.render(path.join(__dirname + "/public/design/login"), {
+            req: req,
+            message: "Too many requests, please try again after 10 minutes.",
+          });
+        }else{
         var message = body.message;
         var statusCode = body.statusCode;
         if (statusCode == 302) {
+          req.session.loginAttempt = req.session.loginAttempt+1
+          console.log("req.session.loginAttempt")
+          console.log(req.session.loginAttempt)
           res.render(path.join(__dirname + "/public/design/login"), {
             req: req,
             message: message,
@@ -431,12 +455,12 @@ app.post("/auth", function (req, res) {
           req.session.email = email;
           req.session.ip_address = ip_address;
           req.session.browser_used = browser_used;
+          req.session.RoleManage = RoleManage;
           // for(var i = 0; i < RoleManage.length; i++){
           //   var permmission_id = RoleManage[i].permission_id;
           //   objPerm.push({"permmission_id": permmission_id})
           // }
-          // console.log("RoleManage");
-          console.log(RoleManage);
+
           console.info(
             new Date() +
               ": " +
@@ -455,14 +479,17 @@ app.post("/auth", function (req, res) {
             res.redirect("/TwoFA");
           }
         }
+      }
       } else {
         res.render(path.join(__dirname + "/public/design/login"), {
           req: req,
           message: message,
         });
       }
+      
     }
   );
+
 });
 
 app.get("/TwoFA", function (req, res) {
@@ -481,7 +508,9 @@ app.get("/TwoFA", function (req, res) {
     res.render(path.join(__dirname + "/public/design/twofa"), {
       req: req,
       useLev: req.session.UserLevel,
-      userName: req.session.userName,
+                        userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
       cheoName: req.session.cheoName,
       baruapepe: req.session.email,
     });
@@ -529,6 +558,8 @@ app.get("/Logs", function (req, res) {
       req: req,
       useLev: req.session.UserLevel,
       userName: req.session.userName,
+      RoleManage: req.session.RoleManage,
+      userID: req.session.userID,
       cheoName: req.session.cheoName,
       baruapepe: req.session.email,
       logs: obj,
@@ -606,7 +637,7 @@ app.post("/WekaNywira", function (req, res) {
             email: email,
           });
         }
-        if (statusCode == 209) {
+        else {
           res.redirect("/");
         }
       }
@@ -663,7 +694,7 @@ app.post("/TumaEmail", function (req, res) {
 
           res.send({ msg: msg });
         }
-        if (statusCode == 209) {
+        else {
           res.redirect("/");
         }
       }
@@ -726,9 +757,50 @@ app.post("/BadiliNywira", function (req, res) {
             message: message,
           });
         }
-        if (statusCode == 209) {
+        else {
           res.redirect("/");
         }
+      }
+    }
+  );
+});
+
+app.post("/BadiliPass", function (req, res) {
+  console.log(req.body);
+  var userid = req.body.userid;
+  var oldpassword = req.body.oldpassword;
+  var password = req.body.password;
+  request(
+    {
+      url: changepassAPI,
+      method: "POST",
+      headers: {
+        Authorization: "Bearer" + " " + req.session.Token,
+        "Content-Type": "application/json",
+      },
+      json: {
+        browser_used: req.session.browser_used,
+        ip_address: req.session.ip_address,
+        userid: userid,
+        password: password,
+        oldpassword: oldpassword,
+      },
+    },
+    function (error, response, body) {
+      if (error) {
+        console.error(
+          new Date() +
+            ": " +
+            " with IP: " +
+            requestIp.getClientIp(req) +
+            " fail to access  /BadiliPass Endpoint" +
+            error
+        );
+        res.send("failed");
+      }
+      if (body !== undefined) {
+        console.log(body)
+res.send(body)
       }
     }
   );
@@ -766,7 +838,7 @@ app.post("/Wezesha2FA", function (req, res) {
           );
           res.send({ message: message });
         }
-        if (statusCode == 209) {
+        else {
           res.redirect("/");
         }
       }
@@ -805,7 +877,7 @@ app.post("/Thibitisha2FA", function (req, res) {
           console.info(new Date() + ": Successful /Thibitisha2FA");
           res.send({ message: message, statusCode: statusCode });
         }
-        if (statusCode == 209) {
+        else {
           res.redirect("/");
         }
       }
@@ -850,7 +922,7 @@ app.post("/ScanTrackNo", function (req, res) {
           );
           res.send({ message: finalText });
         }
-        if (statusCode == 209) {
+        else {
           res.redirect("/");
         }
       }
@@ -981,7 +1053,9 @@ app.get("/RolesPermissions", function (req, res) {
               {
                 req: req,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 data: data,
               }
@@ -1046,7 +1120,9 @@ app.get("/EditRolesPermissions/:id", function (req, res) {
             res.render(path.join(__dirname + "/public/design/edit_roles"), {
               req: req,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
               data: data,
               allData: allData,
@@ -1219,9 +1295,11 @@ app.get("/Dashboard", function (req, res) {
           );
           res.send("failed");
         }
-        console.log(body);
+        console.log("RoleManage");
+        console.log(req.session.RoleManage);
+        // console.log(body);
         if (body !== undefined) {
-          console.log(body);
+          // console.log(body);
           var jsonData = JSON.parse(body);
           var message = jsonData.message;
           var statusCode = jsonData.statusCode;
@@ -1258,7 +1336,9 @@ app.get("/Dashboard", function (req, res) {
               name: data,
               count: count,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                            userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+              userID: req.session.userID,
               cheoName: req.session.cheoName,
               kauntibilamajengo: kauntibilamajengo,
               kauntimajengo: kauntimajengo,
@@ -1387,7 +1467,9 @@ app.get("/BadiliTahasusi/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -1530,7 +1612,9 @@ app.get("/RipotiBadiliTahasusi/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -1673,7 +1757,9 @@ app.get("/ActiveMenu", function (req, res) {
               name: data,
               count: count,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
               kauntikuanza: kauntikuanza,
               TwoFA: req.session.twofa,
@@ -1698,7 +1784,9 @@ app.get("/Zoni", function (req, res) {
     res.render(path.join(__dirname + "/public/design/kanda"), {
       req: req,
       useLev: req.session.UserLevel,
-      userName: req.session.userName,
+                        userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
       cheoName: req.session.cheoName,
     });
   } else {
@@ -1856,6 +1944,7 @@ app.post("/tengenezaRoles", function (req, res) {
   // for(var i = 0; i < req.body.permissions.length; i++){
   //   console.log(req.body.permissions[i])
   // }
+  console.log(req.body)
   if (
     typeof req.session.userName !== "undefined" ||
     req.session.userName === true
@@ -2088,7 +2177,9 @@ app.get("/TaarifaMtumiaji/:id", function (req, res) {
     res.render(path.join(__dirname + "/public/design/user_profile"), {
       req: req,
       useLev: req.session.UserLevel,
-      userName: req.session.userName,
+                        userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
       cheoName: req.session.cheoName,
     });
   } else {
@@ -2129,7 +2220,9 @@ app.get("/Mikoa", function (req, res) {
               req: req,
               zones: zones,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -2273,7 +2366,9 @@ app.get("/Halmashauri", function (req, res) {
     res.render(path.join(__dirname + "/public/design/halmashauri"), {
       req: req,
       useLev: req.session.UserLevel,
-      userName: req.session.userName,
+                        userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
       cheoName: req.session.cheoName,
     });
   } else {
@@ -2358,7 +2453,9 @@ app.get("/Kata", function (req, res) {
     res.render(path.join(__dirname + "/public/design/wards"), {
       req: req,
       useLev: req.session.UserLevel,
-      userName: req.session.userName,
+                        userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
       cheoName: req.session.cheoName,
     });
   } else {
@@ -2532,7 +2629,9 @@ app.get("/MaombiMmilikiShule", function (req, res) {
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                        userName: req.session.userName,
+                                          userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -2646,7 +2745,9 @@ app.get("/RipotiUthibitisho", function (req, res) {
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                        userName: req.session.userName,
+                                          userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -2763,7 +2864,9 @@ app.get("/BadiliMmiliki", function (req, res) {
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                        userName: req.session.userName,
+                                          userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -2880,7 +2983,9 @@ app.get("/BadiliMeneja", function (req, res) {
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                        userName: req.session.userName,
+                                          userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -2999,7 +3104,9 @@ app.get("/ViewBadilimeneja", function (req, res) {
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                        userName: req.session.userName,
+                                          userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -3118,7 +3225,9 @@ app.get("/RipotiBadiliMmiliki", function (req, res) {
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                        userName: req.session.userName,
+                                          userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -3232,7 +3341,9 @@ app.get("/MaombiKusajiliShule", function (req, res) {
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                        userName: req.session.userName,
+                                          userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -3346,7 +3457,9 @@ app.get("/MaombiKusajiliShuleSerikali", function (req, res) {
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                        userName: req.session.userName,
+                                          userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -3463,7 +3576,9 @@ app.get("/KuongezaMikondo", function (req, res) {
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                        userName: req.session.userName,
+                                          userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -3580,7 +3695,9 @@ app.get("/RipotiKuongezaMikondo", function (req, res) {
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                        userName: req.session.userName,
+                                          userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -3697,7 +3814,9 @@ app.get("/KuongezaDahalia", function (req, res) {
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                        userName: req.session.userName,
+                                          userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -3814,7 +3933,9 @@ app.get("/RipotiDahalia", function (req, res) {
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                        userName: req.session.userName,
+                                          userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -3927,7 +4048,9 @@ app.get("/KuongezaTahasusi", function (req, res) {
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                        userName: req.session.userName,
+                                          userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -4040,7 +4163,9 @@ app.get("/RipotiTahasusi", function (req, res) {
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                        userName: req.session.userName,
+                                          userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -4151,7 +4276,9 @@ app.get("/KuongezaBweni", function (req, res) {
                       total_month: data1,
                       maombi: obj,
                       useLev: req.session.UserLevel,
-                      userName: req.session.userName,
+                                        userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                       cheoName: req.session.cheoName,
                     });
                   }
@@ -4263,7 +4390,9 @@ app.get("/RipotiKuongezaBweni", function (req, res) {
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                        userName: req.session.userName,
+                                          userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -4377,7 +4506,9 @@ app.get("/BadiliJina", function (req, res) {
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                        userName: req.session.userName,
+                                          userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -4491,7 +4622,9 @@ app.get("/Hamisha", function (req, res) {
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                        userName: req.session.userName,
+                                          userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -4607,7 +4740,9 @@ app.get("/FutaShule", function (req, res) {
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                        userName: req.session.userName,
+                                          userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -4721,7 +4856,9 @@ app.get("/RipotiKubadiliJina", function (req, res) {
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                        userName: req.session.userName,
+                                          userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -4838,7 +4975,9 @@ app.get("/BadiliUsajili", function (req, res) {
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                        userName: req.session.userName,
+                                          userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -4902,7 +5041,9 @@ app.get("/MaombiKuanzishaShule", function (req, res) {
               req: req,
               total_month: data,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -4960,7 +5101,9 @@ app.get("/MaombiKuanzishaSerikali", function (req, res) {
                 req: req,
                 total_month: data,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
               }
             );
@@ -5241,7 +5384,9 @@ app.get("/TaarifaOmbi/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -5367,7 +5512,9 @@ app.get("/FutaShuleTaarifa/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -5497,7 +5644,9 @@ app.get("/RipotiFutaShuleTaarifa/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -5626,7 +5775,9 @@ app.get("/BadiliMkondo/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -5975,7 +6126,9 @@ app.get("/ViewBadiliMkondo/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -6104,7 +6257,9 @@ app.get("/BadiliDahalia/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -6233,7 +6388,9 @@ app.get("/ViewRipotiDahalia/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -6362,7 +6519,9 @@ app.get("/BadiliBweni/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -6498,7 +6657,9 @@ app.get("/HamishaShuleDetails/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -6634,7 +6795,9 @@ app.get("/BadiliShule/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -7014,7 +7177,9 @@ app.get("/RipotiBadiliShule/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -7149,7 +7314,9 @@ app.get("/BadiliAinaUsajili/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -7340,7 +7507,9 @@ app.get("/AnzishoTaarifa/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -7483,7 +7652,9 @@ app.get("/ViewOmbi/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -8092,7 +8263,9 @@ app.get("/RipotiThibitisho/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -8258,7 +8431,9 @@ app.get("/ViewOmbiMmiliki/:id", function (req, res) {
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
                 phone_number_old: phone_number_old,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 owner_email_old: owner_email_old,
                 authorized_person_old: authorized_person_old,
@@ -8427,7 +8602,9 @@ app.get("/ViewOmbiMeneja/:id", function (req, res) {
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
                 phone_number_old: phone_number_old,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 owner_email_old: owner_email_old,
                 authorized_person_old: authorized_person_old,
@@ -8818,7 +8995,9 @@ app.get("/ViewRipotiMeneja/:id", function (req, res) {
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
                 phone_number_old: phone_number_old,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 owner_email_old: owner_email_old,
                 authorized_person_old: authorized_person_old,
@@ -9753,7 +9932,9 @@ app.get("/WamilikiSajiliwa/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -9908,7 +10089,9 @@ app.get("/SajiliOmbi/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -10075,7 +10258,9 @@ app.get("/SajiliOmbiSerikali/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 specialization: specialization,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
@@ -11081,7 +11266,9 @@ app.get("/MaombiKuanzishaShuleList", function (req, res) {
               obj.push({
                 tracking_number: tracking_number,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 user_id: user_id,
                 school_name: school_name,
@@ -11563,7 +11750,9 @@ app.get("/TaarifaSajili/:id", function (req, res) {
                 muda_ombi: remain_days,
                 schoolId: schoolId,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -11987,7 +12176,9 @@ app.get("/TaarifaBilaMajengo/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -12153,7 +12344,9 @@ app.get("/TaarifaBilaMajengoKat/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -12575,7 +12768,9 @@ app.get("/TaarifaMajengo/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -12741,7 +12936,9 @@ app.get("/TaarifaMajengoKat/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -12862,7 +13059,9 @@ app.get("/MaombiKuanzishaShuleSerList", function (req, res) {
               obj.push({
                 tracking_number: tracking_number,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 user_id: user_id,
                 school_name: school_name,
@@ -12940,7 +13139,9 @@ app.get("/maoanzishaShuleSerListAPI", function (req, res) {
               obj.push({
                 tracking_number: tracking_number,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 user_id: user_id,
                 school_name: school_name,
@@ -13089,7 +13290,9 @@ app.get("/ShuleZilizoanzishwa", function (req, res) {
                 objtotal: objtotal,
                 list: objlist,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
               }
             );
@@ -13177,7 +13380,9 @@ app.get("/MmilikiMeneja", function (req, res) {
               objtotal: objtotal,
               list: objlist,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -13272,7 +13477,9 @@ app.get("/ShuleZilizosajiliwa", function (req, res) {
                 objtotal: objtotal,
                 list: objlist,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
               }
             );
@@ -13395,7 +13602,9 @@ app.get("/RipotiZilizosajiliwa", function (req, res) {
                 objtotal: objtotal,
                 list: objlist,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
               }
             );
@@ -13513,7 +13722,9 @@ app.get("/SajiliwaZilizokataliwa", function (req, res) {
                 objtotal: objtotal,
                 list: objlist,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
               }
             );
@@ -13637,7 +13848,9 @@ app.post("/ShuleMikoa", function (req, res) {
                 objtotal: objtotal,
                 list: objlist,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
               }
             );
@@ -13746,7 +13959,9 @@ app.get("/RipotiZilizofutiwa", function (req, res) {
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                        userName: req.session.userName,
+                                          userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -13831,7 +14046,9 @@ app.get("/RipotiAnzishaBilaMajengo", function (req, res) {
                 useLev: req.session.UserLevel,
                 schoolCategory: schoolCategory,
                 subcategory: subcategory,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 po_box: po_box,
                 user_id: user_id,
@@ -13860,7 +14077,9 @@ app.get("/RipotiAnzishaBilaMajengo", function (req, res) {
                 total_month: data,
                 list: obj,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
               }
             );
@@ -13938,7 +14157,9 @@ app.get("/RipotiAnzishaBilaMajengoKataliwa", function (req, res) {
                 useLev: req.session.UserLevel,
                 schoolCategory: schoolCategory,
                 subcategory: subcategory,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 po_box: po_box,
                 user_id: user_id,
@@ -13969,7 +14190,9 @@ app.get("/RipotiAnzishaBilaMajengoKataliwa", function (req, res) {
                 total_month: data,
                 list: obj,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
               }
             );
@@ -14047,7 +14270,9 @@ app.get("/RipotiAnzishaMajengo", function (req, res) {
                 useLev: req.session.UserLevel,
                 schoolCategory: schoolCategory,
                 subcategory: subcategory,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 po_box: po_box,
                 user_id: user_id,
@@ -14076,7 +14301,9 @@ app.get("/RipotiAnzishaMajengo", function (req, res) {
                 total_month: data,
                 list: obj,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
               }
             );
@@ -14154,7 +14381,9 @@ app.get("/RipotiAnzishaMajengoKataliwa", function (req, res) {
                 useLev: req.session.UserLevel,
                 schoolCategory: schoolCategory,
                 subcategory: subcategory,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 po_box: po_box,
                 user_id: user_id,
@@ -14183,7 +14412,9 @@ app.get("/RipotiAnzishaMajengoKataliwa", function (req, res) {
                 total_month: data,
                 list: obj,
                 useLev: req.session.UserLevel,
-                userName: req.session.userName,
+                                  userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
                 cheoName: req.session.cheoName,
               }
             );
@@ -14252,7 +14483,9 @@ app.get("/Viambatisho", function (req, res) {
               req: req,
               data: data,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
               listWaombaji: listWaombaji,
               objAttachment: objAttachment,
@@ -14304,7 +14537,9 @@ app.get("/Malipo", function (req, res) {
               req: req,
               data: data,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -14369,7 +14604,9 @@ app.get("/Watumiaji", function (req, res) {
               lgas: lgas,
               zones: zones,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
               RoleManagement: RoleManagement,
             });
@@ -14428,7 +14665,9 @@ app.get("/Roles", function (req, res) {
               req: req,
               data: data,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -14487,7 +14726,9 @@ app.get("/Waombaji", function (req, res) {
               req: req,
               data: data,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -14562,7 +14803,9 @@ app.post("/SajiliWatumiaji", function (req, res) {
             message: message,
             statusCode: statusCode,
             useLev: req.session.UserLevel,
-            userName: req.session.userName,
+                              userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
             cheoName: req.session.cheoName,
           });
           // }if(statusCode == 209){
@@ -14637,7 +14880,9 @@ app.post("/UpdateWatumiaji", function (req, res) {
               message: message,
               statusCode: statusCode,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -14701,7 +14946,9 @@ app.post("/UpdateWaombaji", function (req, res) {
               message: message,
               statusCode: statusCode,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -14755,7 +15002,9 @@ app.post("/FutaWatumiaji", function (req, res) {
               message: message,
               statusCode: statusCode,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -14809,7 +15058,9 @@ app.post("/FutaRole", function (req, res) {
               message: message,
               statusCode: statusCode,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -14863,7 +15114,9 @@ app.post("/FutaTahasusi", function (req, res) {
               message: message,
               statusCode: statusCode,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -14917,7 +15170,9 @@ app.post("/FutaMalipo", function (req, res) {
               message: message,
               statusCode: statusCode,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -14971,7 +15226,9 @@ app.post("/FutaKiambatisho", function (req, res) {
               message: message,
               statusCode: statusCode,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -15025,7 +15282,9 @@ app.get("/Vyeo", function (req, res) {
               data: data,
               vyeo: vyeo,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -15079,7 +15338,9 @@ app.get("/AuditTrail", function (req, res) {
               data: data,
               vyeo: vyeo,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -15133,7 +15394,9 @@ app.get("/Tahasusi", function (req, res) {
               data: data,
               michepuo: michepuo,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -15187,7 +15450,9 @@ app.get("/Michepuo", function (req, res) {
               data: data,
               michepuo: michepuo,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -15244,7 +15509,9 @@ app.post("/SajiliCheo", function (req, res) {
             message: message,
             statusCode: statusCode,
             useLev: req.session.UserLevel,
-            userName: req.session.userName,
+                              userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
             cheoName: req.session.cheoName,
           });
           // }if(statusCode == 209){
@@ -15302,7 +15569,9 @@ app.post("/BadiliCheo", function (req, res) {
               message: message,
               statusCode: statusCode,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
               ip_address: req.session.ip_address,
             });
@@ -15358,7 +15627,9 @@ app.post("/FutaCheo", function (req, res) {
               message: message,
               statusCode: statusCode,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -15414,7 +15685,9 @@ app.post("/SajiliTahasusi", function (req, res) {
               message: message,
               statusCode: statusCode,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -15473,7 +15746,9 @@ app.post("/updateTahasusi", function (req, res) {
               message: message,
               statusCode: statusCode,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -15529,7 +15804,9 @@ app.post("/SajiliMchepuo", function (req, res) {
               message: message,
               statusCode: statusCode,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -15585,7 +15862,9 @@ app.post("/updateMchepuo", function (req, res) {
               message: message,
               statusCode: statusCode,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -15639,7 +15918,9 @@ app.post("/deleteMchepuo", function (req, res) {
               message: message,
               statusCode: statusCode,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -15695,7 +15976,9 @@ app.post("/SajiliAda", function (req, res) {
             message: message,
             statusCode: statusCode,
             useLev: req.session.UserLevel,
-            userName: req.session.userName,
+                              userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
             cheoName: req.session.cheoName,
           });
           // }if(statusCode == 209){
@@ -15748,7 +16031,9 @@ app.post("/RecKumbNa", function (req, res) {
             message: message,
             statusCode: statusCode,
             useLev: req.session.UserLevel,
-            userName: req.session.userName,
+                              userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
             cheoName: req.session.cheoName,
           });
           // }if(statusCode == 209){
@@ -15805,7 +16090,9 @@ app.post("/EditAda", function (req, res) {
               message: message,
               statusCode: statusCode,
               useLev: req.session.UserLevel,
-              userName: req.session.userName,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
