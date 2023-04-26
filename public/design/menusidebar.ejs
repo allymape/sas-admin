@@ -159,7 +159,7 @@
                         </span>
                     </a>
                     <div class="collapse menu-dropdown mega-dropdown-menu 
-                    <%= routeIs('Vyeo|Watumiaji|Waombaji|Zoni|Mikoa|Halmashauri|Kata|Viambatisho|Malipo|Tahasusi|Michepuo|Roles' , getCurrentUrl(req)) ? 'show' : '' %>" 
+                    <%= routeIs('Vyeo|Watumiaji|Waombaji|Zoni|Mikoa|Halmashauri|Kata|Viambatisho|Malipo|Tahasusi|Michepuo|Roles|RolesPermissions|EditRolesPermissions/*' , getCurrentUrl(req)) ? 'show' : '' %>" 
                     id="sidebarUI">
                         <div class="row">
                             <div class="col-lg-4">
@@ -198,7 +198,7 @@
                                         <a href="/Michepuo" class="nav-link <%= routeIs('Michepuo' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-carousel">Michepuo</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="/Roles" class="nav-link <%= routeIs('Roles' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-carousel">Roles & Permissions</a>
+                                        <a href="/Roles" class="nav-link <%= routeIs('Roles|RolesPermissions|EditRolesPermissions/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-carousel">Roles & Permissions</a>
                                     </li>
                                     <!-- <li class="nav-item">
                                         <a href="/RolesPermissions" class="nav-link" data-key="t-carousel">Roles & Permissions</a>
