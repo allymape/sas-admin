@@ -1108,25 +1108,26 @@ app.get("/EditRolesPermissions/:id", function (req, res) {
           var jsonData = body;
           var message = jsonData.message;
           var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-          var allData = jsonData.allData;
+          var permissions = jsonData.permissions;
+          var assigned_permissions = jsonData.assigned_permissions;
           var role_name = jsonData.role_name;
 
           if (statusCode == 300) {
-            console.log(data);
+            // console.log(data);
             console.log(
               new Date() + " " + req.session.userName + ": /KuongezaMikondo"
             );
             res.render(path.join(__dirname + "/public/design/edit_roles"), {
               req: req,
               useLev: req.session.UserLevel,
-                                userName: req.session.userName,
+              userName: req.session.userName,
               RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
+              userID: req.session.userID,
               cheoName: req.session.cheoName,
-              data: data,
-              allData: allData,
-              role_name: role_name
+              permissions: permissions,
+              assigned_permissions: assigned_permissions,
+              role_name: role_name,
+              role_id : role_id
             });
           }
           if (statusCode == 209) {
@@ -1996,6 +1997,7 @@ app.post("/sasishaRoles", function (req, res) {
           "Content-Type": "application/json",
         },
         json: {
+          roleId: req.body.role_id,
           roleName: req.body.role_name,
           permissions: req.body.permissions,
         },
@@ -2007,7 +2009,7 @@ app.post("/sasishaRoles", function (req, res) {
         }
         //  console.log(body)
         if (body !== undefined) {
-          console.log(body);
+          console.log("permissions zilizochaguliwa: " , req.body.permissions);
           res.send({ statusCode: body.statusCode, message: body.message });
         }
       }
