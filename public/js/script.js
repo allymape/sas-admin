@@ -4,14 +4,12 @@ function autoCalcSetup() {
     $('form[name=cart]').jAutoCalc({decimalPlaces: 2});
 }
 autoCalcSetup();
-
 $('button[name=remove]').click(function(e) {
     e.preventDefault();
     var form = $(this).parents('form')
     $(this).parents('tr').remove();
     autoCalcSetup();
 });
-
 $('button[name=add]').click(function(e) {
     e.preventDefault();
     var $table = $(this).parents('table');
