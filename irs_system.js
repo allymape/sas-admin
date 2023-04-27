@@ -25,12 +25,12 @@ const doc = new PDFDocument();
 const doc1 = new PDFDocument();
 const logger = require("./logger");
 const requestIp = require("request-ip");
-// const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser')
 const helmet = require('helmet')
 
 var app = express();
 app.use(helmet.frameguard())
-// app.use(cookieParser())
+app.use(cookieParser())
 // Create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
@@ -1108,25 +1108,26 @@ app.get("/EditRolesPermissions/:id", function (req, res) {
           var jsonData = body;
           var message = jsonData.message;
           var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-          var allData = jsonData.allData;
+          var permissions = jsonData.permissions;
+          var assigned_permissions = jsonData.assigned_permissions;
           var role_name = jsonData.role_name;
 
           if (statusCode == 300) {
-            console.log(data);
+            // console.log(data);
             console.log(
               new Date() + " " + req.session.userName + ": /KuongezaMikondo"
             );
             res.render(path.join(__dirname + "/public/design/edit_roles"), {
               req: req,
               useLev: req.session.UserLevel,
-                                userName: req.session.userName,
+              userName: req.session.userName,
               RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
+              userID: req.session.userID,
               cheoName: req.session.cheoName,
-              data: data,
-              allData: allData,
-              role_name: role_name
+              permissions: permissions,
+              assigned_permissions: assigned_permissions,
+              role_name: role_name,
+              role_id : role_id
             });
           }
           if (statusCode == 209) {
@@ -1781,6 +1782,10 @@ app.get("/Zoni", function (req, res) {
     typeof req.session.userName !== "undefined" ||
     req.session.userName === true
   ) {
+    var hasMatch =false;
+    for (var index = 0; index < req.session.RoleManage.length; ++index) {
+        var animal = req.session.RoleManage[index]; 
+    if(animal.permission_id == 39){ 
     res.render(path.join(__dirname + "/public/design/kanda"), {
       req: req,
       useLev: req.session.UserLevel,
@@ -1789,6 +1794,8 @@ app.get("/Zoni", function (req, res) {
     userID: req.session.userID,
       cheoName: req.session.cheoName,
     });
+  }
+}
   } else {
     res.redirect("/");
   }
@@ -1996,6 +2003,7 @@ app.post("/sasishaRoles", function (req, res) {
           "Content-Type": "application/json",
         },
         json: {
+          roleId: req.body.role_id,
           roleName: req.body.role_name,
           permissions: req.body.permissions,
         },
@@ -2007,7 +2015,7 @@ app.post("/sasishaRoles", function (req, res) {
         }
         //  console.log(body)
         if (body !== undefined) {
-          console.log(body);
+          console.log("permissions zilizochaguliwa: " , req.body.permissions);
           res.send({ statusCode: body.statusCode, message: body.message });
         }
       }
@@ -2193,6 +2201,10 @@ app.get("/Mikoa", function (req, res) {
     typeof req.session.userName !== "undefined" ||
     req.session.userName === true
   ) {
+    var hasMatch =false;
+    for (var index = 0; index < req.session.RoleManage.length; ++index) {
+        var animal = req.session.RoleManage[index]; 
+    if(animal.permission_id == 43){ 
     request(
       {
         url: kandaListAPI,
@@ -2232,6 +2244,8 @@ app.get("/Mikoa", function (req, res) {
         }
       }
     );
+    }
+  }
   } else {
     res.redirect("/");
   }
@@ -2363,6 +2377,10 @@ app.get("/Halmashauri", function (req, res) {
     typeof req.session.userName !== "undefined" ||
     req.session.userName === true
   ) {
+    var hasMatch =false;
+    for (var index = 0; index < req.session.RoleManage.length; ++index) {
+        var animal = req.session.RoleManage[index]; 
+    if(animal.permission_id == 45){ 
     res.render(path.join(__dirname + "/public/design/halmashauri"), {
       req: req,
       useLev: req.session.UserLevel,
@@ -2371,6 +2389,8 @@ app.get("/Halmashauri", function (req, res) {
     userID: req.session.userID,
       cheoName: req.session.cheoName,
     });
+  }
+}
   } else {
     res.redirect("/");
   }
@@ -2450,6 +2470,10 @@ app.get("/Kata", function (req, res) {
     typeof req.session.userName !== "undefined" ||
     req.session.userName === true
   ) {
+    var hasMatch =false;
+    for (var index = 0; index < req.session.RoleManage.length; ++index) {
+        var animal = req.session.RoleManage[index]; 
+    if(animal.permission_id == 53){ 
     res.render(path.join(__dirname + "/public/design/wards"), {
       req: req,
       useLev: req.session.UserLevel,
@@ -2458,6 +2482,8 @@ app.get("/Kata", function (req, res) {
     userID: req.session.userID,
       cheoName: req.session.cheoName,
     });
+  }
+}
   } else {
     res.redirect("/");
   }
@@ -5006,6 +5032,10 @@ app.get("/MaombiKuanzishaShule", function (req, res) {
     typeof req.session.userName !== "undefined" ||
     req.session.userName === true
   ) {
+    var hasMatch =false;
+    for (var index = 0; index < req.session.RoleManage.length; ++index) {
+        var animal = req.session.RoleManage[index]; 
+    if(animal.permission_id == 2){ 
     request(
       {
         url: maoanzishaShuleJumlaAPI,
@@ -5053,6 +5083,13 @@ app.get("/MaombiKuanzishaShule", function (req, res) {
         }
       }
     );
+    }else{
+      // hasMatch == true
+      console.log("no access")
+      // res.redirect("/");
+    }
+  }
+
   } else {
     res.redirect("/");
   }
@@ -5064,6 +5101,10 @@ app.get("/MaombiKuanzishaSerikali", function (req, res) {
     typeof req.session.userName !== "undefined" ||
     req.session.userName === true
   ) {
+    // var hasMatch =false;
+    // for (var index = 0; index < req.session.RoleManage.length; ++index) {
+    //     var animal = req.session.RoleManage[index]; 
+    // if(animal.permission_id == 2){ 
     request(
       {
         url: maoanzishaShuleJumlaAPI,
@@ -14450,6 +14491,10 @@ app.get("/Viambatisho", function (req, res) {
     typeof req.session.userName !== "undefined" ||
     req.session.userName === true
   ) {
+    var hasMatch =false;
+    for (var index = 0; index < req.session.RoleManage.length; ++index) {
+        var animal = req.session.RoleManage[index]; 
+    if(animal.permission_id == 51){ 
     request(
       {
         url: ainaMaombiAPI,
@@ -14497,6 +14542,8 @@ app.get("/Viambatisho", function (req, res) {
         }
       }
     );
+    }
+  }
   } else {
     res.redirect("/");
   }
@@ -14560,6 +14607,10 @@ app.get("/Watumiaji", function (req, res) {
     typeof req.session.userName !== "undefined" ||
     req.session.userName === true
   ) {
+    var hasMatch =false;
+    for (var index = 0; index < req.session.RoleManage.length; ++index) {
+        var animal = req.session.RoleManage[index]; 
+    if(animal.permission_id == 34){ 
     request(
       {
         url: watumiajiAPI,
@@ -14617,6 +14668,8 @@ app.get("/Watumiaji", function (req, res) {
         }
       }
     );
+    }
+  }
   } else {
     res.redirect("/");
   }
@@ -14628,6 +14681,10 @@ app.get("/Roles", function (req, res) {
     typeof req.session.userName !== "undefined" ||
     req.session.userName === true
   ) {
+    var hasMatch =false;
+    for (var index = 0; index < req.session.RoleManage.length; ++index) {
+        var animal = req.session.RoleManage[index]; 
+    if(animal.permission_id == 64){ 
     request(
       {
         url: rolesAPI,
@@ -14677,6 +14734,8 @@ app.get("/Roles", function (req, res) {
         }
       }
     );
+    }
+  }
   } else {
     res.redirect("/");
   }
@@ -14688,6 +14747,10 @@ app.get("/Waombaji", function (req, res) {
     typeof req.session.userName !== "undefined" ||
     req.session.userName === true
   ) {
+    var hasMatch =false;
+    for (var index = 0; index < req.session.RoleManage.length; ++index) {
+        var animal = req.session.RoleManage[index]; 
+    if(animal.permission_id == 38){ 
     request(
       {
         url: waombajiAPI,
@@ -14738,6 +14801,8 @@ app.get("/Waombaji", function (req, res) {
         }
       }
     );
+    }
+  }
   } else {
     res.redirect("/");
   }
@@ -15249,6 +15314,10 @@ app.get("/Vyeo", function (req, res) {
     typeof req.session.userName !== "undefined" ||
     req.session.userName === true
   ) {
+    var hasMatch =false;
+    for (var index = 0; index < req.session.RoleManage.length; ++index) {
+        var animal = req.session.RoleManage[index]; 
+    if(animal.permission_id == 30){ 
     request(
       {
         url: vyeoAPI,
@@ -15294,6 +15363,8 @@ app.get("/Vyeo", function (req, res) {
         }
       }
     );
+    }
+  }
   } else {
     res.redirect("/");
   }
@@ -15305,6 +15376,10 @@ app.get("/AuditTrail", function (req, res) {
     typeof req.session.userName !== "undefined" ||
     req.session.userName === true
   ) {
+    var hasMatch =false;
+    for (var index = 0; index < req.session.RoleManage.length; ++index) {
+        var animal = req.session.RoleManage[index]; 
+    if(animal.permission_id == 64){ 
     request(
       {
         url: auditTrailAPI,
@@ -15350,6 +15425,8 @@ app.get("/AuditTrail", function (req, res) {
         }
       }
     );
+    }
+  }
   } else {
     res.redirect("/");
   }
@@ -15361,6 +15438,10 @@ app.get("/Tahasusi", function (req, res) {
     typeof req.session.userName !== "undefined" ||
     req.session.userName === true
   ) {
+    var hasMatch =false;
+    for (var index = 0; index < req.session.RoleManage.length; ++index) {
+        var animal = req.session.RoleManage[index]; 
+    if(animal.permission_id == 61){ 
     request(
       {
         url: tahasusiAPI,
@@ -15406,6 +15487,8 @@ app.get("/Tahasusi", function (req, res) {
         }
       }
     );
+    }
+  }
   } else {
     res.redirect("/");
   }
@@ -15417,6 +15500,10 @@ app.get("/Michepuo", function (req, res) {
     typeof req.session.userName !== "undefined" ||
     req.session.userName === true
   ) {
+    var hasMatch =false;
+    for (var index = 0; index < req.session.RoleManage.length; ++index) {
+        var animal = req.session.RoleManage[index]; 
+    if(animal.permission_id == 57){ 
     request(
       {
         url: michepuoAPI,
@@ -15462,6 +15549,8 @@ app.get("/Michepuo", function (req, res) {
         }
       }
     );
+    }
+  }
   } else {
     res.redirect("/");
   }

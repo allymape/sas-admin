@@ -3,9 +3,10 @@
 
         <div id="two-column-menu">
         </div>
+
         <ul class="navbar-nav" id="navbar-nav">
             <li class="menu-title"><span data-key="t-menu">Menu</span></li>
-            <% if(useLev != 10){ %>
+
             <li class="nav-item">
                 <a class="nav-link menu-link <%= routeIs('Dashboard' , getCurrentUrl(req)) ? 'active' : '' %>" href="/Dashboard">
                     <i class="ri-dashboard-2-line"></i> <span data-key="t-widgets">Dashibodi</span>
@@ -20,78 +21,123 @@
                 <%= routeIs('MaombiKuanzishaShule|MaombiMmilikiShule|MaombiKusajiliShule|MaombiKusajiliShuleSerikali|KuongezaMikondo|BadiliJina|KuongezaTahasusi|KuongezaDahalia|KuongezaBweni|BadiliUsajili|Hamisha|BadiliMmiliki|BadiliMeneja|FutaShule|SajiliOmbi/*|TaarifaOmbi/*|SajiliOmbiSerikali/*|BadiliMkondo/*|BadiliTahasusi/*|BadiliBweni/*|BadiliDahalia/*|HamishaShuleDetails/*|ViewOmbiMmiliki/*|ViewOmbiMeneja/*|FutaShuleTaarifa/*' , getCurrentUrl(req)) ? 'show' : '' %>
                 " id="sidebarDashboards">
                     <ul class="nav nav-sm flex-column">
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 2){ %>
                         <li class="nav-item">
                             <a href="/MaombiKuanzishaShule" class="nav-link <%= routeIs('MaombiKuanzishaShule' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-analytics"> Kuanzisha Shule
-                                <!-- <input type="text" id="kuanzacounti"/> -->
                                 <span class="badge badge-pill bg-danger" id="kuanzacounti" data-key="t-new"></span> </a>
                         </li>
-
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 3){ %>
                         <li class="nav-item">
                             <a href="/MaombiMmilikiShule" class="nav-link <%= routeIs('MaombiMmilikiShule' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crm"> Mmiliki/Meneja wa Shule </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 4){ %>
                         <li class="nav-item">
                             <a href="/MaombiKusajiliShule" class="nav-link <%= routeIs('MaombiKusajiliShule' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-ecommerce"> Kusajili Shule(Binafsi) </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 5){ %>
                         <li class="nav-item">
                             <a href="/MaombiKusajiliShuleSerikali" class="nav-link <%= routeIs('MaombiKusajiliShuleSerikali' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-ecommerce"> Kusajili Shule(Serikali) </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 6){ %>
                         <li class="nav-item">
                             <a href="/KuongezaMikondo" class="nav-link <%= routeIs('KuongezaMikondo|BadiliMkondo/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kuongeza Mikondo </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 7){ %>
                         <li class="nav-item">
                             <a href="/BadiliJina" class="nav-link <%= routeIs('BadiliJina' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kubadili Jina la Shule </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 8){ %>
                         <li class="nav-item">
                             <a href="/KuongezaTahasusi" class="nav-link <%= routeIs('KuongezaTahasusi|BadiliTahasusi/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kuongeza Tahasusi </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 9){ %>
                         <li class="nav-item">
                             <a href="/KuongezaBweni" class="nav-link <%= routeIs('KuongezaBweni|BadiliBweni/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kuongeza Bweni </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 10){ %>
                         <li class="nav-item">
                             <a href="/KuongezaDahalia" class="nav-link <%= routeIs('KuongezaDahalia|BadiliDahalia/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kuongeza Dahalia </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 11){ %>
                         <li class="nav-item">
                             <a href="/BadiliUsajili" class="nav-link <%= routeIs('BadiliUsajili' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kubadili Aina ya Usajili </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 12){ %>
                         <li class="nav-item">
                             <a href="/Hamisha" class="nav-link <%= routeIs('Hamisha|HamishaShuleDetails/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kuhamisha Shule </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 13){ %>
                         <li class="nav-item">
                             <a href="/BadiliMmiliki" class="nav-link <%= routeIs('BadiliMmiliki|ViewOmbiMmiliki/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kubadili Mmiliki wa Shule </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 13){ %>
                         <li class="nav-item">
                             <a href="/BadiliMeneja" class="nav-link <%= routeIs('BadiliMeneja|ViewOmbiMeneja/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kubadili Meneja wa Shule </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 14){ %>
                         <li class="nav-item">
                             <a href="/FutaShule" class="nav-link <%= routeIs('FutaShule|FutaShuleTaarifa/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kufuta Usajili wa Shule(Hiari) </a>
                         </li>
-                        <!-- <li class="nav-item">
-                            <a href="/RipotiZilizosajiliwa" class="nav-link" data-key="t-crypto"> Kufuta Usajili wa Shule(Tuhuma) </a>
-                        </li> -->
+                        <% } } %>
 
                     </ul>
                 </div>
             </li> 
-            <% } %>
-            <!-- end Dashboard Menu -->
-            <!-- <li class="nav-item">
-                <a class="nav-link menu-link" href="#sidebarApps" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarApps">
-                    <i class="ri-apps-2-line"></i> <span data-key="t-apps">Shule</span>
-                </a>
-                <div class="collapse menu-dropdown" id="sidebarApps">
-                    <ul class="nav nav-sm flex-column">
-                        <li class="nav-item">
-                            <a href="/ShuleZilizoanzishwa" class="nav-link" data-key="t-calendar"> Zilizoanzishwa </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/MmilikiMeneja" class="nav-link" data-key="t-calendar"> Mmiliki/Meneja </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/ShuleZilizosajiliwa" class="nav-link" data-key="t-calendar"> Zilizosajiliwa </a>
-                        </li>
-                    </ul>
-                </div>
-            </li> -->
 
             <li class="nav-item">
                 <a class="nav-link menu-link" href="#sidebarRipoti" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarApps">
@@ -99,59 +145,131 @@
                 </a>
                 <div class="collapse menu-dropdown <%=routeIs('RipotiZilizosajiliwa|TaarifaSajili/*|TaarifaBilaMajengo/*|TaarifaMajengoKat/*|SajiliwaZilizokataliwa|RipotiAnzishaBilaMajengo|RipotiAnzishaBilaMajengoKataliwa|RipotiUthibitisho|RipotiKubadiliJina|RipotiKuongezaBweni|RipotiDahalia|RipotiBadiliMmiliki|ViewBadilimeneja|RipotiZilizofutiwa|RipotiKuongezaMikondo|RipotiTahasusi|ViewRipotiDahalia/*|' , getCurrentUrl(req)) ? 'show' : '' %>" id="sidebarRipoti">
                     <ul class="nav nav-sm flex-column">
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 15){ %>
                         <li class="nav-item">
                             <a href="/RipotiZilizosajiliwa" class="nav-link <%= routeIs('RipotiZilizosajiliwa|TaarifaSajili/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Shule Zilizosajiliwa </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 16){ %>
                         <li class="nav-item">
                             <a href="/SajiliwaZilizokataliwa" class="nav-link <%= routeIs('SajiliwaZilizokataliwa|TaarifaMajengoKat/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Sajiliwa Zilizokataliwa </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 17){ %>
                         <li class="nav-item">
                             <a href="/RipotiAnzishaBilaMajengo" class="nav-link <%= routeIs('RipotiAnzishaBilaMajengo|TaarifaBilaMajengo/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Kuanzisha Shule Bila Majengo </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 18){ %>
                         <li class="nav-item">
                             <a href="/RipotiAnzishaBilaMajengoKataliwa" class="nav-link <%= routeIs('RipotiAnzishaBilaMajengoKataliwa' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Kuanzisha Shule Bila Majengo - Kataliwa </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 19){ %>
                         <li class="nav-item">
                             <a href="RipotiAnzishaMajengo" class="nav-link <%= routeIs('RipotiAnzishaMajengo' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Kuanzisha Shule kwa Majengo </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 20){ %>
                         <li class="nav-item">
                             <a href="RipotiAnzishaMajengoKataliwa" class="nav-link <%= routeIs('RipotiAnzishaMajengoKataliwa' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Kuanzisha Shule kwa Majengo - Kataliwa </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 21){ %>
                         <li class="nav-item">
                             <a href="/RipotiUthibitisho" class="nav-link <%= routeIs('RipotiUthibitisho' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Uthibitisho wa Umiliki na Umeneja </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 22){ %>
                         <li class="nav-item">
                             <a href="/RipotiKubadiliJina" class="nav-link <%= routeIs('RipotiKubadiliJina' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kubadili Jina la Shule</a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 23){ %>
                         <li class="nav-item">
                             <a href="RipotiKuongezaBweni" class="nav-link <%= routeIs('RipotiKuongezaBweni' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Bweni </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 24){ %>
                         <li class="nav-item">
                             <a href="/RipotiDahalia" class="nav-link <%= routeIs('RipotiDahalia|ViewRipotiDahalia/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Dahalia </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 25){ %>
                         <li class="nav-item">
                             <a href="/RipotiBadiliMmiliki" class="nav-link <%= routeIs('RipotiBadiliMmiliki' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kubadili Umiliki </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 26){ %>
                         <li class="nav-item">
                             <a href="/ViewBadilimeneja" class="nav-link <%= routeIs('ViewBadilimeneja' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kubadili Umeneja </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 27){ %>
                         <li class="nav-item">
                             <a href="/RipotiZilizofutiwa" class="nav-link <%= routeIs('RipotiZilizofutiwa' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kufuta Usajili </a>
                         </li>
-                        <!-- <li class="nav-item">
-                            <a href="#" class="nav-link" data-key="t-calendar"> Kubadili Lugha ya Kufundishia </a>
-                        </li> -->
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 28){ %>
                         <li class="nav-item">
                             <a href="/RipotiKuongezaMikondo" class="nav-link <%= routeIs('RipotiKuongezaMikondo' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Kuongeza Mikondo </a>
                         </li>
+                        <% } } %>
+                        <% var hasMatch =false; %>
+                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                            <% var animal = RoleManage[index]; %>
+                        <% if(animal.permission_id == 29){ %>
                         <li class="nav-item">
                             <a href="/RipotiTahasusi" class="nav-link <%= routeIs('RipotiTahasusi' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Kuongeza Tahasusi </a>
                         </li>
+                        <% } } %>
                     </ul>
                 </div>
             </li>
                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-components">Uthibitisho</span></li>
-                <% if(useLev == 11){ %>
+ 
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarUI" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarUI">
                         <i class="ri-pencil-ruler-2-line"></i> <span data-key="t-base-ui">
@@ -164,74 +282,118 @@
                         <div class="row">
                             <div class="col-lg-4">
                                 <ul class="nav nav-sm flex-column">
+                                    <% var hasMatch =false; %>
+                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                                        <% var animal = RoleManage[index]; %>
+                                    <% if(animal.permission_id == 30){ %>
                                     <li class="nav-item">
                                         <a href="/Vyeo" class="nav-link <%= routeIs('Vyeo' , getCurrentUrl(req)) ? 'active' : '' %> " data-key="t-dropdowns">Vyeo</a>
                                     </li>
+                                    <% } } %>
+                                    <% var hasMatch =false; %>
+                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                                        <% var animal = RoleManage[index]; %>
+                                    <% if(animal.permission_id == 34){ %>
                                     <li class="nav-item">
                                         <a href="/Watumiaji" class="nav-link <%= routeIs('Watumiaji' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-cards">Watumiaji</a>
                                     </li>
+                                    <% } } %>
+                                    <% var hasMatch =false; %>
+                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                                        <% var animal = RoleManage[index]; %>
+                                    <% if(animal.permission_id == 38){ %>
                                     <li class="nav-item">
                                         <a href="/Waombaji" class="nav-link <%= routeIs('Waombaji' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-cards">Waombaji</a>
                                     </li>
+                                    <% } } %>
+                                    <% var hasMatch =false; %>
+                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                                        <% var animal = RoleManage[index]; %>
+                                    <% if(animal.permission_id == 39){ %>
                                     <li class="nav-item">
                                         <a href="/Zoni" class="nav-link <%= routeIs('Zoni' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-alerts">Kanda/Zoni</a>
                                     </li>
+                                    <% } } %>
+                                    <% var hasMatch =false; %>
+                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                                        <% var animal = RoleManage[index]; %>
+                                    <% if(animal.permission_id == 43){ %>
                                     <li class="nav-item">
                                         <a href="/Mikoa" class="nav-link <%= routeIs('Mikoa' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-badges">Mikoa</a>
                                     </li>
+                                    <% } } %>
+                                    <% var hasMatch =false; %>
+                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                                        <% var animal = RoleManage[index]; %>
+                                    <% if(animal.permission_id == 45){ %>
                                     <li class="nav-item">
                                         <a href="/Halmashauri" class="nav-link <%= routeIs('Halmashauri' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-buttons">Halmashauri</a>
                                     </li>
+                                    <% } } %>
+                                    <% var hasMatch =false; %>
+                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                                        <% var animal = RoleManage[index]; %>
+                                    <% if(animal.permission_id == 53){ %>
                                     <li class="nav-item">
                                         <a href="/Kata" class="nav-link <%= routeIs('Kata' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-colors">Kata</a>
                                     </li>
+                                    <% } } %>
+                                    <% var hasMatch =false; %>
+                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                                        <% var animal = RoleManage[index]; %>
+                                    <% if(animal.permission_id == 51){ %>
                                     <li class="nav-item">
                                         <a href="/Viambatisho" class="nav-link <%= routeIs('Viambatisho' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-dropdowns">Viambatisho</a>
                                     </li>
+                                    <% } } %>
+                                    <% var hasMatch =false; %>
+                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                                        <% var animal = RoleManage[index]; %>
+                                    <% if(animal.permission_id == 47){ %>
                                     <li class="nav-item">
                                         <a href="/Malipo" class="nav-link <%= routeIs('Malipo' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-dropdowns">Ada za Malipo</a>
                                     </li>
+                                    <% } } %>
+                                    <% var hasMatch =false; %>
+                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                                        <% var animal = RoleManage[index]; %>
+                                    <% if(animal.permission_id == 61){ %>
                                     <li class="nav-item">
                                         <a href="/Tahasusi" class="nav-link <%= routeIs('Tahasusi' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-carousel">Tahasusi</a>
                                     </li>
+                                    <% } } %>
+                                    <% var hasMatch =false; %>
+                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                                        <% var animal = RoleManage[index]; %>
+                                    <% if(animal.permission_id == 57){ %>
                                     <li class="nav-item">
                                         <a href="/Michepuo" class="nav-link <%= routeIs('Michepuo' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-carousel">Michepuo</a>
                                     </li>
+                                    <% } } %>
+                                    <% var hasMatch =false; %>
+                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                                        <% var animal = RoleManage[index]; %>
+                                    <% if(animal.permission_id == 64){ %>
                                     <li class="nav-item">
                                         <a href="/Roles" class="nav-link <%= routeIs('Roles' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-carousel">Roles & Permissions</a>
                                     </li>
-                                    <!-- <li class="nav-item">
-                                        <a href="/RolesPermissions" class="nav-link" data-key="t-carousel">Roles & Permissions</a>
-                                    </li> -->
+                                    <% } } %>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </li>
+
+                <% var hasMatch =false; %>
+                <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                    <% var animal = RoleManage[index]; %>
+                <% if(animal.permission_id == 64){ %>
                 <li class="nav-item">
                     <a class="nav-link menu-link <%= routeIs('AuditTrail' , getCurrentUrl(req)) ? 'active' : '' %>" href="/AuditTrail">
                         <i class="ri-honour-line"></i> <span data-key="t-widgets">Audit Trail</span>
                     </a>
                 </li>
-                <% } %>
-                <% if(useLev == 1 || useLev == 2){ %>
-                    <li class="nav-item">
-                        <a class="nav-link menu-link" href="#sidebarUI" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarUI">
-                            <i class="ri-pencil-ruler-2-line"></i> <span data-key="t-base-ui">Mipangilio</span>
-                        </a>
-                        <div class="collapse menu-dropdown mega-dropdown-menu" id="sidebarUI">
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <ul class="nav nav-sm flex-column">
-                                        <li class="nav-item">
-                                            <a href="/Watumiaji" class="nav-link" data-key="t-cards">Watumiaji</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                <% } %>
+                <% } } %>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="/">
                         <i class="ri-honour-line"></i> <span data-key="t-widgets">Ondoka</span>
@@ -240,6 +402,7 @@
 
 
         </ul>
+        
     </div>
     <!-- Sidebar -->
 </div>

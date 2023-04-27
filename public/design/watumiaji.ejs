@@ -276,9 +276,34 @@
 
                                         <div class="mb-3">
                                             <label for="customername-field" class="form-label">Jina Kamili(<span style="color: red;">*</span>)</label>
-                                            <input type="text" id="customername-field" class="form-control" placeholder="Mfano: Olivia Samwel" required />
+                                            <input type="text" id="customername-field" class="form-control" placeholder="Mfano: Olivia Samwel" onkeyup="checkOnlyNo()" required />
+                                            <span style="color: red;display: none;" id="jazanamba">Tafadhali jina haliwezi kuwa namba pekee</span>
+                                            <span style="color: red;display: none;" id="jazanalama">Tafadhali jina haliwezi kuwa na alama</span>
                                             <span style="color: red;display: none;" id="jazaname">Tafadhali jaza Jina Kamili</span>
                                         </div>
+                                        <script>
+                                            function checkOnlyNo(){
+                                                var email = document.getElementById("customername-field").value;
+                                                let isnum = /^\d+$/.test(email);
+                                                if(isnum){
+                                                    // $("#sajilbtn").hide();
+                                                    $("#jazanamba").show();
+                                                    $('#add-btnmwox').prop('disabled', true);
+                                                }
+                                                if(!isnum){
+                                                    $("#jazanamba").hide();
+                                                    $('#add-btnmwox').prop('disabled', false);
+                                                    const specialChars = /[`!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?~]/;
+                                                    if (specialChars.test(email)) {
+                                                        $("#jazanalama").show();
+                                                        $('#add-btnmwox').prop('disabled', true);
+                                                    } else {
+                                                        $("#jazanalama").hide();
+                                                        $('#add-btnmwox').prop('disabled', false);
+                                                    }
+                                                }
+                                            }
+                                        </script>
 
                                         <div class="mb-3">
                                             <label for="email-field" class="form-label">Barua Pepe(<span style="color: red;">*</span>)</label>
@@ -289,10 +314,21 @@
 
                                         <div class="mb-3">
                                             <label for="email-field" class="form-label">Namba ya Simu(<span style="color: red;">*</span>)</label>
-                                            <input type="phone" id="phone-field" class="form-control" placeholder="Mfano: 0768556633" required />
+                                            <input type="phone" id="phone-field" class="form-control" onkeypress="return onlyNumberKey(event)" 
+                                            maxlength="20"  placeholder="Mfano: 0768556633" required />
                                             <input type="hidden" id="strengthhidden" class="form-control" />
                                             <span style="color: red;display: none;" id="jazasimu">Tafadhali jaza Namba ya Simu</span>
                                         </div>
+                                        <script>
+                                                    function onlyNumberKey(evt) {
+              
+                                                        // Only ASCII character in that range allowed
+                                                        var ASCIICode = (evt.which) ? evt.which : evt.keyCode
+                                                        if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
+                                                            return false;
+                                                        return true;
+                                                    }
+                                        </script>
                                         <div class="mb-3">
                                             <label for="email-field" class="form-label">Nenosiri</label>
                                             <input type="password" name="password-field" id="password-field" 
@@ -303,9 +339,10 @@
                                             <label for="email-field" class="form-label">Thibithisha Nenosiri</label>
                                             <input type="password" id="repassword-field" class="form-control" placeholder="Mfano: 2" required />
                                         </div>
+                                        <% if(useLev == 11){ %>
                                         <div>
                                             <label for="status-field" class="form-label">User Role(<span style="color: red;">*</span>)</label>
-                                            <select class="form-control" data-trigger name="roleRM-field" id="roleRM-field" 
+                                            <select class="form-control" data-trigger name="roleRM-field1" id="roleRM-field1" 
                                             >
                                                 <option value="#"> Chagua </option>
                                                 <% for(var i = 0; i < RoleManagement.length; i++){ %>
@@ -314,6 +351,7 @@
                                             </select>
                                             <span style="color: red;display: none;" id="jazacheo">Tafadhali Chagua Role</span>
                                         </div>
+                                        <% } %>
                                         <div>
                                             <label for="status-field" class="form-label">User Level(<span style="color: red;">*</span>)</label>
                                             <select class="form-control" data-trigger name="status-field" id="status-field" 
@@ -345,14 +383,14 @@
                                         </div>
                                         <div class="mb-3">
                                             <label for="email-field" class="form-label">Saini</label>
-                                            <input type="file" id="sign-field" class="form-control" />
+                                            <input type="file" id="sign-field" class="form-control"  accept="image/*"/>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
                                         <div class="hstack gap-2 justify-content-end">
                                             <button type="button" class="btn btn-light" onclick="funga()" data-bs-dismiss="modal">Funga</button>
                                             <div id="sajilbtn">
-                                            <button type="button" class="btn btn-success" onclick="sajiliHati()" id="add-btn">Sajili</button>
+                                            <button type="button" class="btn btn-success" onclick="sajiliHati()" id="add-btnmwox">Sajili</button>
                                             </div>
                                             <div id="pakiabtn" style="display: none;">
                                                 <button type="button" class="btn btn-success btn-load">
@@ -409,7 +447,8 @@
                                         </div>
                                         <div class="mb-3">
                                             <label for="email-field" class="form-label">Namba ya Simu</label>
-                                            <input type="phone" id="phone1-field" class="form-control" placeholder="Mfano: 0768556633" required />
+                                            <input type="phone" id="phone1-field" class="form-control" onkeypress="return onlyNumberKey(event)" 
+                                            maxlength="20" placeholder="Mfano: 0768556633" required />
                                             <input type="hidden" id="strengthhidden1" class="form-control" />
                                         </div>
                                         <!-- <div class="mb-3">
@@ -467,13 +506,13 @@
                                         </div>
                                         <div class="mb-3">
                                             <label for="email-field" class="form-label">Saini</label>
-                                            <input type="file" id="sign1-field" class="form-control" />
+                                            <input type="file" id="sign1-field" class="form-control" accept="image/*"/>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
                                         <div class="hstack gap-2 justify-content-end">
                                             <button type="button" class="btn btn-light" onclick="funga()" data-bs-dismiss="modal">Funga</button>
-                                            <button type="button" class="btn btn-success" onclick="EditUser()" id="add-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></button>
+                                            <button type="button" class="btn btn-success" onclick="EditUser()" id="add-btn1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></button>
                                         </div>
                                     </div>
                                 </form>
@@ -1210,22 +1249,32 @@
         function sajiliHati(){
 
             var name = document.getElementById('customername-field').value;
-            var jazaname = document.getElementById('jazaname');
+            
+            // var jazaname = document.getElementById('jazaname');
+           
             var username = document.getElementById('username-field').value;
+            
             var phone = document.getElementById('phone-field').value;
+            
             var email = document.getElementById('username-field').value;
+            
             var status = document.getElementById('status-field').value;
+            // alert(status)
             var selectedFile = document.getElementById('sign-field').files;
-            var roleRMe = document.getElementById('roleRMe-field').value;
+            var roleRMe = document.getElementById('roleRM-field1').value;
+            // alert(roleRMe)
             var cheo = status.split("-");
             var password = document.getElementById('password-field').value;
             var repassword = document.getElementById('repassword-field').value;
             var strength = document.getElementById('strength').value;
+            // alert(strength)
             var strengthhidden = document.getElementById('strengthhidden').value;
             var lgas = document.getElementById('lga-field').value;
             var kanda = document.getElementById('kanda-field').value;
             var rankLevel = document.getElementById('status-field').value;
             var cheo = rankLevel.split("-");
+            // let isnum = /^\d+$/.test(name);
+            // const specialChars = /[`!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?~]/;
         if(lblError.innerHTML == "Invalid email address."){
             alert('Tafadhali hakiki barua pepe')
         }else{
@@ -1241,14 +1290,14 @@
                 if(phone.length <= 0){
                     $("#jazasimu").show();
                 }
-                // if(cheo[0] = '#'){
-                //     $("#jazacheo").show();
-                // }
                 if(name.length > 0 && username.length > 0 && phone.length > 0){
                     $("#sajilbtn").hide();
                     $("#pakiabtn").show();
                     if(strengthhidden == 'Strong!'){
-                    
+                        // alert(isnum)
+                        // alert(specialChars.test(name))
+                    // if(!isnum){
+                    //     if (specialChars.test(name)) {
                     if (selectedFile.length > 0) {
                     // Select the very first file from list
                     var fileToLoad = selectedFile[0];
@@ -1317,9 +1366,17 @@
                         }
                     });
                 }
+            // }else{
+            //     alert('Tafadhali rekebisha jina kamili haliwezi kuwa na special character')
+            // }
+            // }else{
+            //     alert('Tafadhali rekebisha jina kamili haliwezi kuwa namba pekee')
+            // }
                     }else{
                         alert("Nenosiri sio Salama")
                     }
+                }else{
+                    alert("Imeshindwa kusajili, Tafadhali Angalia taarifa na utume tena") 
                 }
             }else{
                 alert("Nenosiri hazifanani")
