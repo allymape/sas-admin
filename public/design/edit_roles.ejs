@@ -132,24 +132,7 @@
                                         </div>
                                         <script>
 
-                                            // Checkbox all (Chagua Zote) make this code reusable ###########
-                                            var checkboxes = $(".checkbox")
-                                            var check_all = $("#check-all")
-                                            check_all.on('change' , function(){
-                                                var checked = $(this).prop("checked")
-                                                    checkboxes.prop("checked", checked)
-                                            })
-
-                                            checkboxes.on('change' , function(){
-                                               makeAllSelected()
-                                            })
-
-                                            function makeAllSelected(){
-                                                 var selected_checkboxes = $(".checkbox:checked");
-                                                    check_all.prop('checked' , checkboxes.length === selected_checkboxes.length)
-                                            }
-                                            makeAllSelected()
-                                            // End of Checkbox all ############
+                                           
                                             function tengenezaRole(){
                                                 var checkboxes = document.getElementsByName('formCheck1');
                                                 var role_id = document.getElementById('roleID').value;
@@ -243,10 +226,9 @@
         <script src="../design/assets/libs/feather-icons/feather.min.js"></script>
         <script src="../design/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
         <script src="../design/assets/js/plugins.js"></script>
-
+        <script src="../js/checkboxes.js"></script>
         <!-- prismjs plugin -->
         <script src="../design/assets/libs/prismjs/prism.js"></script>
-
         <script src="../design/assets/js/app.js"></script>
 
     </body>
