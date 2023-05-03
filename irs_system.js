@@ -381,10 +381,17 @@ app.get("/", function (req, res) {
   var clientIp = requestIp.getClientIp(req);
   logger.info(new Date() + ": " + clientIp + ": Access /");
   res.render(path.join(__dirname + "/public/design/login"), {
-    req: req,
-    message: "Ingia Kuendelea",
+    req: req
   });
 });
+
+// app.get("/auth", function (req, res) {
+//   var clientIp = requestIp.getClientIp(req);
+//   logger.info(new Date() + ": " + clientIp + ": Access /auth");
+//   res.render(path.join(__dirname + "/public/design/login"), {
+//     req: req
+//   });
+// });
 
 app.post("/auth", function (req, res) {
   console.log("url " + req.url);
