@@ -50,12 +50,10 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false });
   
 //   next();
 // });
-app.set('trust proxy', 1)
+
 app.use(
   session({
-     // trust first proxy
-
-    secret: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNjgyOTQxNzk5LCJleHAiOjE2ODI5NDIzOTl9.ws1y7-rJp7BCevTreIna6YxD3n6JnLPHisnFghkNVdQ",
+    secret: "secret",
     resave: true,
     saveUninitialized: true,
     httpOnly: true,  // dont let browser javascript access cookie ever
@@ -65,7 +63,6 @@ app.use(
 
         // Session expires after 1 min of inactivity.
         // expires: 900000
-        secure: true, 
         maxAge: 20 * 60 * 1000
     }
   })
@@ -381,17 +378,10 @@ app.get("/", function (req, res) {
   var clientIp = requestIp.getClientIp(req);
   logger.info(new Date() + ": " + clientIp + ": Access /");
   res.render(path.join(__dirname + "/public/design/login"), {
-    req: req
+    req: req,
+    message: "Ingia Kuendelea",
   });
 });
-
-// app.get("/auth", function (req, res) {
-//   var clientIp = requestIp.getClientIp(req);
-//   logger.info(new Date() + ": " + clientIp + ": Access /auth");
-//   res.render(path.join(__dirname + "/public/design/login"), {
-//     req: req
-//   });
-// });
 
 app.post("/auth", function (req, res) {
   console.log("url " + req.url);
