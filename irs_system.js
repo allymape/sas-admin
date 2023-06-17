@@ -416,7 +416,8 @@ app.post("/auth", function (req, res) {
         res.send("failed");
       }
       if (body !== undefined) {
-        // console.log(body)
+        console.log('body')
+        console.log(body)
         if(body == 'Too many requests, please try again later.'){
           res.render(path.join(__dirname + "/public/design/login"), {
             req: req,
@@ -5071,9 +5072,9 @@ app.get("/MaombiKuanzishaShule", function (req, res) {
               req: req,
               total_month: data,
               useLev: req.session.UserLevel,
-                                userName: req.session.userName,
+              userName: req.session.userName,
               RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
+              userID: req.session.userID,
               cheoName: req.session.cheoName,
             });
           }
@@ -5968,7 +5969,7 @@ app.get("/ViewBadiliMkondo/:id", function (req, res) {
 
               // Adding an image in the pdf.
 
-              doc.image("arm.png", 280, 50, 50, 50);
+              //doc.image("arm.png", 280, 50, 50, 50);
 
               doc
                 .fontSize(10)
@@ -6084,7 +6085,7 @@ app.get("/ViewBadiliMkondo/:id", function (req, res) {
 
               // doc.image('arm.png',280, 430, 50, 50);
 
-              doc.text("ke", 280, 520, 50, 50);
+              doc.text("KAMISHNA WA ELIMU", 280, 520, 50, 50);
 
               doc
                 .font("Times-Bold")
@@ -6116,7 +6117,7 @@ app.get("/ViewBadiliMkondo/:id", function (req, res) {
                 .text("Mthibiti Mkuu Ubora wa Shule,", 100, 50, 50, 50);
 
               // doc
-              // .text('Kanda ya Ziwa,',100, 60, 50, 50);
+              // .text('Kanda ya Mashariki,',100, 60, 50, 50);
 
               doc.text("S.L.P.2419,", 100, 70, 50, 50);
 
@@ -6987,7 +6988,7 @@ app.get("/RipotiBadiliShule/:id", function (req, res) {
 
               // Adding an image in the pdf.
 
-              doc.image("arm.png", 280, 50, 50, 50);
+              //doc.image("arm.png", 280, 50, 50, 50);
 
               doc
                 .fontSize(10)
@@ -7140,11 +7141,11 @@ app.get("/RipotiBadiliShule/:id", function (req, res) {
 
               //   doc.image('arm.png',180, 200, 50, 50);
 
-              doc.text("Venance N. Manori", 280, 380, 50, 50);
+              // doc.text("Venance N. Manori", 280, 380, 50, 50);
 
               doc
                 .font("Times-Bold")
-                .text("KAIMU KAMISHNA WA ELIMU", 250, 510, 50, 50);
+                .text("KAMISHNA WA ELIMU", 250, 510, 50, 50);
 
               doc.addPage().text("Nakala:", 100, 30, 50, 50);
 
@@ -7171,7 +7172,7 @@ app.get("/RipotiBadiliShule/:id", function (req, res) {
                 .text("Mthibiti Mkuu Ubora wa Shule,", 100, 50, 50, 50);
 
               // doc
-              // .text('Kanda ya Ziwa,',100, 60, 50, 50);
+              // .text('Kanda ya Mashariki,',100, 60, 50, 50);
 
               doc.text("S.L.P.2419,", 100, 70, 50, 50);
 
@@ -7874,7 +7875,7 @@ app.get("/RipotiThibitisho/:id", function (req, res) {
 
               // Adding an image in the pdf.
 
-              doc.image("arm.png", 280, 50, 50, 50);
+              //doc.image("arm.png", 280, 50, 50, 50);
 
               doc
                 .fontSize(10)
@@ -8000,7 +8001,7 @@ app.get("/RipotiThibitisho/:id", function (req, res) {
 
               // doc.image('arm.png',280, 430, 50, 50);
 
-              doc.text("ke", 280, 520, 50, 50);
+              doc.text("KAMISHNA WA ELIMU", 280, 520, 50, 50);
 
               doc
                 .font("Times-Bold")
@@ -8031,7 +8032,7 @@ app.get("/RipotiThibitisho/:id", function (req, res) {
                 .font("Times-Roman")
                 .text("Mthibiti Mkuu Ubora wa Shule,", 100, 50, 50, 50);
 
-              doc.text("Kanda ya Ziwa,", 100, 60, 50, 50);
+              doc.text("Kanda ya Mashariki,", 100, 60, 50, 50);
 
               doc.text("S.L.P.2419,", 100, 70, 50, 50);
 
@@ -8097,7 +8098,7 @@ app.get("/RipotiThibitisho/:id", function (req, res) {
 
               // Adding an image in the pdf.
 
-              doc1.image("arm.png", 280, 50, 50, 50);
+              // doc1.image("arm.png", 280, 50, 50, 50);
 
               doc1
                 .fontSize(10)
@@ -8221,7 +8222,7 @@ app.get("/RipotiThibitisho/:id", function (req, res) {
 
               doc1.text("Nakutakia utekelezaji mwema.", 100, 400, 50, 50);
 
-              doc1.image("arm.png", 280, 430, 50, 50);
+              // doc1.image("arm.png", 280, 430, 50, 50);
 
               doc1.text("ke", 280, 520, 50, 50);
 
@@ -8254,7 +8255,7 @@ app.get("/RipotiThibitisho/:id", function (req, res) {
                 .font("Times-Roman")
                 .text("Mthibiti Mkuu Ubora wa Shule,", 100, 50, 50, 50);
 
-              doc1.text("Kanda ya Ziwa,", 100, 60, 50, 50);
+              doc1.text("Kanda ya Mashariki,", 100, 60, 50, 50);
 
               doc1.text("S.L.P.2419,", 100, 70, 50, 50);
 
@@ -8824,7 +8825,7 @@ app.get("/ViewRipotiMeneja/:id", function (req, res) {
 
               // Adding an image in the pdf.
 
-              doc1.image("arm.png", 280, 50, 50, 50);
+              // doc1.image("arm.png", 280, 50, 50, 50);
 
               doc1
                 .fontSize(10)
@@ -8948,7 +8949,7 @@ app.get("/ViewRipotiMeneja/:id", function (req, res) {
 
               doc1.text("Nakutakia utekelezaji mwema.", 100, 400, 50, 50);
 
-              doc1.image("arm.png", 280, 430, 50, 50);
+              // doc1.image("arm.png", 280, 430, 50, 50);
 
               doc1.text("ke", 280, 520, 50, 50);
 
@@ -8981,7 +8982,7 @@ app.get("/ViewRipotiMeneja/:id", function (req, res) {
                 .font("Times-Roman")
                 .text("Mthibiti Mkuu Ubora wa Shule,", 100, 50, 50, 50);
 
-              doc1.text("Kanda ya Ziwa,", 100, 60, 50, 50);
+              doc1.text("Kanda ya Mashariki,", 100, 60, 50, 50);
 
               doc1.text("S.L.P.2419,", 100, 70, 50, 50);
 
@@ -9345,7 +9346,7 @@ app.get("/ViewRipotiMmiliki/:id", function (req, res) {
             //   .text('Mthibiti Mkuu Ubora wa Shule,',100, 50, 50, 50);
 
             //   // doc
-            //   // .text('Kanda ya Ziwa,',100, 60, 50, 50);
+            //   // .text('Kanda ya Mashariki,',100, 60, 50, 50);
 
             //   doc
             //   .text('S.L.P.2419,',100, 70, 50, 50);
@@ -9431,7 +9432,7 @@ app.get("/ViewRipotiMmiliki/:id", function (req, res) {
 
             // Adding an image in the pdf.
 
-            doc.image("arm.png", 280, 50, 50, 50);
+            //doc.image("arm.png", 280, 50, 50, 50);
 
             doc
               .fontSize(10)
@@ -9557,7 +9558,7 @@ app.get("/ViewRipotiMmiliki/:id", function (req, res) {
 
             // doc.image('arm.png',280, 430, 50, 50);
 
-            doc.text("ke", 280, 520, 50, 50);
+            doc.text("KAMISHNA WA ELIMU", 280, 520, 50, 50);
 
             doc.font("Times-Bold").text("KAMISHNA WA ELIMU", 250, 540, 50, 50);
 
@@ -9584,7 +9585,7 @@ app.get("/ViewRipotiMmiliki/:id", function (req, res) {
               .font("Times-Roman")
               .text("Mthibiti Mkuu Ubora wa Shule,", 100, 50, 50, 50);
 
-            doc.text("Kanda ya Ziwa,", 100, 60, 50, 50);
+            doc.text("Kanda ya Mashariki,", 100, 60, 50, 50);
 
             doc.text("S.L.P.2419,", 100, 70, 50, 50);
 
@@ -9781,7 +9782,7 @@ app.get("/ViewRipotiMmiliki/:id", function (req, res) {
           //   .text('Mthibiti Mkuu Ubora wa Shule,',100, 50, 50, 50);
 
           //   doc1
-          //   .text('Kanda ya Ziwa,',100, 60, 50, 50);
+          //   .text('Kanda ya Mashariki,',100, 60, 50, 50);
 
           //   doc1
           //   .text('S.L.P.2419,',100, 70, 50, 50);
@@ -11738,7 +11739,7 @@ app.get("/TaarifaSajili/:id", function (req, res) {
                 .font("Times-Roman")
                 .text("Mthibiti Mkuu Ubora wa Shule,", 100, 50, 50, 50);
 
-              doc2.text("Kanda ya Ziwa,", 100, 60, 50, 50);
+              doc2.text("Kanda ya Mashariki,", 100, 60, 50, 50);
 
               doc2.text("S.L.P.2419,", 100, 70, 50, 50);
 
@@ -12013,11 +12014,14 @@ app.get("/TaarifaBilaMajengo/:id", function (req, res) {
                 .font("Times-Bold")
                 .text("Kumb. Na. " + finalFileNumber, 100, 150, 50, 50);
 
-              doc
-                .font("Times-Roman")
-                .text("Ester Ladislaus Kiwona,", 100, 170, 170, 50);
+              // doc
+              //   .font("Times-Roman")
+              //   .text("Ester Ladislaus Kiwona,", 100, 170, 170, 50);
 
-              doc.text("S.L.P. 05,", 100, 180, 50, 50);
+              // doc.text("S.L.P. 05,", 100, 180, 50, 50);
+              doc.font("Times-Roman").text(fullname + ",", 100, 170, 170, 50);
+
+              doc.text(mwombajiAddress + ",", 100, 180, 50, 50);
 
               doc
                 .font("Times-Bold")
@@ -12114,11 +12118,11 @@ app.get("/TaarifaBilaMajengo/:id", function (req, res) {
 
               // doc.image('arm.png',280, 430, 50, 50);
 
-              doc.text("Venance N. Manori", 280, 520, 50, 50);
+              // doc.text("Venance N. Manori", 280, 520, 50, 50);
 
               doc
                 .font("Times-Bold")
-                .text("KAIMU KAMISHNA WA ELIMU", 250, 540, 50, 50);
+                .text("KAMISHNA WA ELIMU", 250, 540, 50, 50);
 
               doc.addPage().text("Nakala:", 100, 580, 50, 50);
 
@@ -12154,7 +12158,7 @@ app.get("/TaarifaBilaMajengo/:id", function (req, res) {
                 .font("Times-Roman")
                 .text("Mthibiti Mkuu Ubora wa Shule,", 100, 50, 50, 50);
 
-              doc.text("Kanda ya Ziwa,", 100, 60, 50, 50);
+              doc.text("Kanda ya Mashariki,", 100, 60, 50, 50);
 
               doc.text("S.L.P.2419,", 100, 70, 50, 50);
 
@@ -12566,7 +12570,7 @@ app.get("/TaarifaMajengo/:id", function (req, res) {
 
               // Adding an image in the pdf.
 
-              doc.image("arm.png", 280, 50, 50, 50);
+              //doc.image("arm.png", 280, 50, 50, 50);
 
               doc
                 .fontSize(10)
@@ -12718,11 +12722,11 @@ app.get("/TaarifaMajengo/:id", function (req, res) {
 
               // doc.image('arm.png',280, 470, 50, 50);
 
-              doc.text("Venance N. Manori", 280, 560, 50, 50);
+              // doc.text("Venance N. Manori", 280, 560, 50, 50);
 
               doc
                 .font("Times-Bold")
-                .text("KAIMU KAMISHNA WA ELIMU", 250, 570, 50, 50);
+                .text("KAMISHNA WA ELIMU", 250, 570, 50, 50);
 
               doc.addPage().text("Nakala:", 100, 30, 50, 50);
 
@@ -12758,7 +12762,7 @@ app.get("/TaarifaMajengo/:id", function (req, res) {
                 .font("Times-Roman")
                 .text("Mthibiti Mkuu Ubora wa Shule,", 100, 50, 50, 50);
 
-              doc.text("Kanda ya Ziwa,", 100, 60, 50, 50);
+              doc.text("Kanda ya Mashariki,", 100, 60, 50, 50);
 
               doc.text("S.L.P.2419,", 100, 70, 50, 50);
 
@@ -14655,9 +14659,9 @@ app.get("/Watumiaji", function (req, res) {
               lgas: lgas,
               zones: zones,
               useLev: req.session.UserLevel,
-                                userName: req.session.userName,
+              userName: req.session.userName,
               RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
+              userID: req.session.userID,
               cheoName: req.session.cheoName,
               RoleManagement: RoleManagement,
             });
@@ -16227,7 +16231,7 @@ app.post("/EditAda", function (req, res) {
 // }else{
 //   res.redirect('/');
 // }
-// });
+// })
 
 // DELETE /api/auth/logout
 app.delete("/logout", (req, res) => {
