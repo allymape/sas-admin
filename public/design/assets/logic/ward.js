@@ -54,22 +54,31 @@ function PullRegions(){
 
 //list of zones
 function nata(){
+     var url = window.location.href;
+     var parameters = url.split("?")[1] || "";
     $.ajax({
-        url: "/WarddList",
+        url: "/WarddList"+(parameters ? '?'+parameters : ''),
         type: 'GET',
         contentType: 'application/json',
         success: function(response) {
-            if(typeof(response) === "string"){response = JSON.parse(response)}
+            // if(typeof(response) === "string"){response = JSON.parse(response)}
            // console.log(response)
+            var wards = response.wards;
+            var pages = response.pagination.pages;
+            var per_page = response.pagination.per_page;
+            var current = response.pagination.current;
+            var total = response.pagination.total;
+            var first_item = per_page * (current - 1) + 1;
             $("#customerTable").find('tbody').empty();
-            for (var i=0; i < response.length; i++) {
-                var row = '<tr> <td scope="row">'+(i+1)+'</td>'; 
-                row = row + '<td class="date">' + response[i].WardName + '</td>';
+            $(".caption").html(`<span>Idadi ya Mikoa iliyopatikana ${total}.</span> <span class='justify-content-end'>Ukurasa ${current}  kati ya ${pages}     [${first_item} hadi ${first_item - 1 + wards.length}] </span>`);
+            for (var i=0; i < wards.length; i++) {
+                var row = '<tr> <td scope="row">' + (first_item + i) + "</td>"; 
+                row = row + '<td class="date">' + wards[i].WardName + "</td>";
                 // row = row + '<td class="id" style="display:none;"><a href="javascript:void(0);" class="fw-medium link-primary"> ' + response[i].zoneName + ' </a></td>';
-                row = row + '<td class="date">' + response[i].WardCode + '</td>';
+                row = row + '<td class="date">' + wards[i].WardCode + "</td>";
   
-                row = row + '<td class="date">' + response[i].LgaName + '</td>';
-                row = row + '<td class="status"><span class="badge badge-soft-success text-uppercase"> ' + response[i].regionName + ' </span></td>';
+                row = row + '<td class="date">' + wards[i].LgaName + "</td>";
+                row = row + '<td class="status"><span class="badge badge-soft-success text-uppercase"> ' + wards[i].regionName + ' </span></td>';
                 // row = row + '<td>'+
                 //             '<div class="d-flex gap-2">'+
                 //                 '<div class="edit">'+
@@ -82,6 +91,7 @@ function nata(){
                 //         '</td></tr>';
                 $('#customerTable').append(row);
             }
+             paginate("Kata", pages, current, per_page);
         }
     });
 }
