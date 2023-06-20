@@ -30,7 +30,7 @@ function saveKanda(){
 //     });
 // }
 
-function Pullcouncils(){
+function PullCouncils(){
     // alert('Inapakia kutoka kwenye orodha ya mikoa, Tafadhali subiri')
     $("#firstbtn").hide();
     $("#pakiabtn").show();

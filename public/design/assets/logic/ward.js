@@ -57,7 +57,7 @@ function nata(){
      var url = window.location.href;
      var parameters = url.split("?")[1] || "";
     $.ajax({
-        url: "/WarddList"+(parameters ? '?'+parameters : ''),
+        url: "/WardList"+(parameters ? '?'+parameters : ''),
         type: 'GET',
         contentType: 'application/json',
         success: function(response) {
@@ -70,7 +70,7 @@ function nata(){
             var total = response.pagination.total;
             var first_item = per_page * (current - 1) + 1;
             $("#customerTable").find('tbody').empty();
-            $(".caption").html(`<span>Idadi ya Mikoa iliyopatikana ${total}.</span> <span class='justify-content-end'>Ukurasa ${current}  kati ya ${pages}     [${first_item} hadi ${first_item - 1 + wards.length}] </span>`);
+            $(".caption").html(`<span>Idadi ya Kata zilizopatikana ${total}.</span> <span class='justify-content-end'>Ukurasa ${current}  kati ya ${pages}     [${first_item} hadi ${first_item - 1 + wards.length}] </span>`);
             for (var i=0; i < wards.length; i++) {
                 var row = '<tr> <td scope="row">' + (first_item + i) + "</td>"; 
                 row = row + '<td class="date">' + wards[i].WardName + "</td>";
@@ -78,7 +78,7 @@ function nata(){
                 row = row + '<td class="date">' + wards[i].WardCode + "</td>";
   
                 row = row + '<td class="date">' + wards[i].LgaName + "</td>";
-                row = row + '<td class="status"><span class="badge badge-soft-success text-uppercase"> ' + wards[i].regionName + ' </span></td>';
+                row = row + '<td class="status"><span class="text-uppercase"> ' + wards[i].regionName + ' </span></td>';
                 // row = row + '<td>'+
                 //             '<div class="d-flex gap-2">'+
                 //                 '<div class="edit">'+

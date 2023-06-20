@@ -277,7 +277,7 @@
                         </span>
                     </a>
                     <div class="collapse menu-dropdown mega-dropdown-menu 
-                    <%= routeIs('Vyeo|Watumiaji|Waombaji|Zoni|Mikoa|Halmashauri|Kata|Viambatisho|Malipo|Tahasusi|Michepuo|Roles' , getCurrentUrl(req)) ? 'show' : '' %>" 
+                    <%= routeIs('Vyeo|Watumiaji|Waombaji|Zoni|Mikoa|Mikoa?*|Halmashauri|Kata|Mitaa|Viambatisho|Malipo|Tahasusi|Michepuo|Roles' , getCurrentUrl(req)) ? 'show' : '' %>" 
                     id="sidebarUI">
                         <div class="row">
                             <div class="col-lg-4">
@@ -338,6 +338,16 @@
                                         <a href="/Kata" class="nav-link <%= routeIs('Kata' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-colors">Kata</a>
                                     </li>
                                     <% } } %>
+
+                                    <% var hasMatch =false; %>
+                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
+                                        <% var animal = RoleManage[index]; %>
+                                    <% if(animal.permission_id == 53){ %>
+                                    <li class="nav-item">
+                                        <a href="/Mitaa" class="nav-link <%= routeIs('Mitaa' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-colors">Mitaa</a>
+                                    </li>
+                                    <% } } %>
+
                                     <% var hasMatch =false; %>
                                     <% for (var index = 0; index < RoleManage.length; ++index) { %>
                                         <% var animal = RoleManage[index]; %>

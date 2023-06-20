@@ -125,6 +125,7 @@ var sajiliGrahpAPI = BASEURL + "usajiligraph";
 var VutaMikoaListAPI = BASEURL + "usajiliMikoa";
 var VutaWilayaListAPI = BASEURL + "usajiliWilaya";
 var VutaKataListAPI = BASEURL + "usajiliKata";
+var VutaMitaaListAPI = BASEURL + "usajiliMitaa";
 var activeUserAPI = BASEURL + "active-user";
 var activeMenuAPI = BASEURL + "active-menu";
 var kandaListAPI = BASEURL + "zonilist";
@@ -136,6 +137,7 @@ var updateZoniAPI = BASEURL + "editZoni";
 var deleteZoniAPI = BASEURL + "deleteZoni";
 var lgaListAPI = BASEURL + "allDistricts";
 var wardListAPI = BASEURL + "allWards";
+var streetListAPI = BASEURL + "allStreets";
 var permissionsAPI = BASEURL + "permissions";
 var editRoleAPI = BASEURL + "editRoles";
 var ongezaReply = BASEURL + "tuma-ongeza-majibu";
@@ -1259,6 +1261,44 @@ app.get("/VutaKata", function (req, res) {
   );
 });
 
+app.get("/VutaMitaa", function (req, res) {
+  request(
+    {
+      url: VutaMitaaListAPI,
+      method: "GET",
+      headers: {
+        Authorization: "Bearer" + " " + req.session.Token,
+        "Content-Type": "application/json",
+      },
+    },
+    function (error, response, body) {
+      if (error) {
+        console.error(
+          new Date() +
+            ": " +
+            req.session.userName +
+            " fail to pull mitaa via /VutaMitaa Endpoint " +
+            error
+        );
+        res.send("failed");
+      }
+      console.log(body);
+      if (body !== undefined) {
+        var jsonData = JSON.parse(body);
+        var message = jsonData.message;
+        var statusCode = jsonData.statusCode;
+        console.info(
+          new Date() +
+            ": " +
+            req.session.userName +
+            " Successful to pull VutaMitaa EndPoint"
+        );
+        res.send({ statusCode: statusCode, message: message });
+      }
+    }
+  );
+});
+
 app.get("/Dashboard", function (req, res) {
   // if(req.session.userName){
   if (
@@ -2296,11 +2336,11 @@ app.get("/MikoaList", function (req, res) {
                 console.log(data);
                 var regionCode = data[i].regionCode;
                 var regionName = data[i].regionName;
-                var zoneCode = data[i].zoneCode;
+                var zoneName = data[i].zoneName;
                 obj.push({
                   regionCode: regionCode,
                   regionName: regionName,
-                  zoneCode: zoneCode,
+                  zoneName: zoneName,
                 });
               }
             }
@@ -2498,7 +2538,7 @@ app.get("/Kata", function (req, res) {
   }
 });
 
-app.get("/WarddList", function (req, res) {
+app.get("/WardList", function (req, res) {
   var obj = [];
   var per_page =  Number(req.query.per_page || 10);
   var page = Number(req.query.page || 1);
@@ -2560,6 +2600,117 @@ app.get("/WarddList", function (req, res) {
             // console.log(obj)
             // console.log(new Date() + ": Successful KandaList");
               res.send({wards : obj , pagination : {total : numRows , current : page , per_page : per_page , pages : Math.ceil( numRows / per_page)}});
+            //
+          }
+          if (statusCode == 209) {
+            res.redirect("/");
+          }
+        }
+      }
+    );
+  } else {
+    res.redirect("/");
+  }
+});
+
+app.get("/Mitaa", function (req, res) {
+  if (
+    typeof req.session.userName !== "undefined" ||
+    req.session.userName === true
+  ) {
+    var hasMatch = false;
+    for (var index = 0; index < req.session.RoleManage.length; ++index) {
+      var animal = req.session.RoleManage[index];
+      if (animal.permission_id == 53) {
+        res.render(path.join(__dirname + "/public/design/streets"), {
+          req: req,
+          useLev: req.session.UserLevel,
+          userName: req.session.userName,
+          RoleManage: req.session.RoleManage,
+          userID: req.session.userID,
+          cheoName: req.session.cheoName,
+        });
+      }
+    }
+  } else {
+    res.redirect("/");
+  }
+});
+
+app.get("/MitaaList", function (req, res) {
+  var obj = [];
+  var per_page = Number(req.query.per_page || 10);
+  var page = Number(req.query.page || 1);
+  if (
+    typeof req.session.userName !== "undefined" ||
+    req.session.userName === true
+  ) {
+    request(
+      {
+        url: streetListAPI + "?page=" + page + "&per_page=" + per_page,
+        method: "GET",
+        headers: {
+          Authorization: "Bearer" + " " + req.session.Token,
+          "Content-Type": "application/json",
+        },
+      },
+      function (error, response, body) {
+        if (error) {
+          console.log(new Date() + ": fail to KandaList " + error);
+          res.send("failed");
+        }
+        // console.log(body)
+        if (body !== undefined) {
+          // console.log(body)
+          var jsonData = JSON.parse(body);
+          var message = jsonData.message;
+          var statusCode = jsonData.statusCode;
+          var data = jsonData.data;
+          var numRows = jsonData.numRows;
+          if (statusCode == 300) {
+            //
+
+            if (data.length <= 0) {
+              var StreetCode = "";
+              var StreetName = "";
+              var WardName = "";
+              var LgaName = "";
+              var RegionName = "";
+              obj.push({
+                StreetCode : StreetCode,
+                WardName   : WardName,
+                StreetName : StreetName,
+                LgaName    : LgaName,
+                RegionName : RegionName,
+              });
+            } else {
+              for (var i = 0; i < data.length; i++) {
+                // console.log(data);
+                var StreetCode = data[i].StreetCode;
+                var StreetName = data[i].StreetName;
+                var WardName   = data[i].WardName;
+                var LgaName    = data[i].LgaName;
+                var RegionName = data[i].RegionName;
+                obj.push({
+                    StreetCode : StreetCode,
+                    WardName   : WardName,
+                    StreetName : StreetName,
+                    LgaName    : LgaName,
+                    RegionName : RegionName,
+                });
+              }
+            }
+            // console.log(obj)
+            // console.log(new Date() + ": Successful KandaList");
+            res.send({
+              streets: obj,
+              pagination: {
+                total: numRows,
+                current: page,
+                per_page: per_page,
+                pages: Math.ceil(numRows / per_page),
+              },
+            });
             //
           }
           if (statusCode == 209) {

@@ -6,7 +6,7 @@
 <head>
 
     <meta charset="utf-8" />
-    <title>Halmashauri | IRS - Institution Registration System</title>
+    <title>Mitaa | IRS - Institution Registration System</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="Themesbrand" name="author" />
@@ -50,12 +50,12 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                                <h4 class="mb-sm-0">Orodha ya Halmashauri</h4>
+                                <h4 class="mb-sm-0">Orodha ya Mitaa</h4>
 
                                 <div class="page-title-right">
                                     <ol class="breadcrumb m-0">
                                         <li class="breadcrumb-item"><a href="javascript: void(0);">Mipangilio</a></li>
-                                        <li class="breadcrumb-item active">Halmashauri</li>
+                                        <li class="breadcrumb-item active">Mitaa</li>
                                     </ol>
                                 </div>
 
@@ -68,7 +68,7 @@
                         <div class="col-lg-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title mb-0">Halmashauri zilizopo</h4>
+                                    <h4 class="card-title mb-0">Kata zilizopo</h4>
                                 </div><!-- end card header -->
 
                                 <div class="card-body">
@@ -76,15 +76,15 @@
                                         <div class="row g-4 mb-3">
                                             <div class="col-sm-auto">
                                                 <div>
-                                                    <!-- <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn" onclick="PullRegions()"><i class="ri-add-line align-bottom me-1"></i> Vuta Halmashauri</button> -->
+                                                    <!-- <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn" onclick="PullRegions()"><i class="ri-add-line align-bottom me-1"></i> Vuta Kata</button> -->
                                                     <div class="alert alert-danger shadow mb-xl-0" id="alertmeshindwa" role="alert" style="display: none;">
-                                                        <strong> Imeshindiwa kupakia! </strong> Hakuna<b>Halmashauri</b> mipya ya kupakia. Ahsante!
+                                                        <strong> Imeshindiwa kupakia! </strong> Kata <b> Kata </b> mpya ya kupakia. Ahsante!
                                                      </div>
                                                      <div class="alert alert-success shadow" id="alertmefanikiwa" role="alert" style="display: none;">
-                                                        <strong> Hongera! Imefanikiwa! </strong> Halmashauri mpya <b>zimepakiwa</b> kikamilifu!
+                                                        <strong> Hongera! Imefanikiwa! </strong> Kata mpya <b>zimepakiwa</b> kikamilifu!
                                                     </div>
                                                     <div id="firstbtn">
-                                                        <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn" onclick="PullCouncils()"><i class="ri-add-line align-bottom me-1"></i> Vuta Halmashauri</button>
+                                                        <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn" onclick="PullStreets()"><i class="ri-add-line align-bottom me-1"></i> Vuta Mitaa</button>
                                                     </div>
                                                     <div id="pakiabtn" style="display: none;">
                                                         <button type="button" class="btn btn-success btn-load">
@@ -115,9 +115,15 @@
                                             <table class="table align-middle table-nowrap" id="customerTable">
                                                 <thead class="table-light">
                                                     <tr>
-                                                        <th class="" width="5%" data-sort="customer_name">Na.</th>
-                                                        <th class="sort" data-sort="customer_name">Jina la Halmashauri</th>
-                                                        <th class="sort" data-sort="email">Kodi ya Halmashauri</th>
+                                                        <th scope="col" style="width: 50px;">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="checkAll" value="option">
+                                                            </div>
+                                                        </th>
+                                                        <th class="sort" data-sort="customer_name">Jina la Mtaa</th>
+                                                        <th class="sort" data-sort="email">Kodi ya Mtaa</th>
+                                                        <th class="sort" data-sort="email">Kata</th>
+                                                        <th class="sort" data-sort="email">Halmashauri</th>
                                                         <th class="sort" data-sort="email">Mkoa</th>
                                                         <!-- <th class="sort" data-sort="action">Action</th> -->
                                                     </tr>
@@ -156,12 +162,12 @@
                                     <div class="modal-body">
 
                                         <div class="mb-3" id="modal-id">
-                                            <label for="id-field" class="form-label">Kodi ya Halmashauri</label>
+                                            <label for="id-field" class="form-label">Kodi ya Mtaa</label>
                                             <input type="text" id="id-field" class="form-control" placeholder="ID" />
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="customername-field" class="form-label">Jina la Halmashauri</label>
+                                            <label for="customername-field" class="form-label">Jina la Mtaa</label>
                                             <input type="text" id="customername-field" class="form-control" placeholder="Enter Name" required />
                                         </div>
 
@@ -875,12 +881,12 @@
     <!--select2 cdn-->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    <!-- <script src="design/assets/js/pages/select2.init.js"></script> -->
+    <script src="design/assets/js/pages/select2.init.js"></script>
 
     <!-- prismjs plugin -->
     <script src="design/assets/libs/prismjs/prism.js"></script>
-    <script src="design/assets/js/pagination.js"></script>
-    <script src="design/assets/logic/lga.js"></script>
+     <script src="design/assets/js/pagination.js"></script>
+    <script src="design/assets/logic/streets.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </body>
 
