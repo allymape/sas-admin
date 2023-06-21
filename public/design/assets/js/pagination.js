@@ -1,5 +1,6 @@
 
 function paginate(url , pages , current , per_page){
+    $(".pagination").empty();
     if(pages > 1){
                 var page = current > 5 ? current - 4 : 1; 
                 $(".pagination").html();

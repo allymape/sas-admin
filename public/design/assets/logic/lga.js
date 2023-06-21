@@ -16,39 +16,37 @@ function saveKanda(){
         });
 }
 
-// function Pullcouncils(){
-//     alert('Inapakia kutoka kwenye orodha ya Halmashauri, Tafadhali subiri')
-//     $.ajax({
-//         url: "/VutaWilaya",
-//         type: 'GET',
-//         contentType: 'application/json',
-//         success: function(response) {
-//         alert("response")
-//         window.location.href = "/Halmashauri"
-//        // window.location.href = "/Mikoa"
-//         }
-//     });
-// }
+$("#create-btn").on("click", function () {
+  confirmAction(
+    PullCouncils,
+    "Pakia Taarifa",
+    "warning",
+    "Hautaweza kurudisha nyuma kitendo hiki.",
+    "Una uhakika?"
+  );
+});
 
 function PullCouncils(){
-    // alert('Inapakia kutoka kwenye orodha ya mikoa, Tafadhali subiri')
-    $("#firstbtn").hide();
-    $("#pakiabtn").show();
+  
     $.ajax({
         url: "/VutaWilaya",
         type: 'GET',
         contentType: 'application/json',
         success: function(response) {
-            if(response.statusCode == 306){
-                $("#firstbtn").show();
-                $("#pakiabtn").hide();
-                $("#alertmeshindwa").show();
-            }
-            if(response.statusCode == 300){
-                $("#firstbtn").show();
-                $("#pakiabtn").hide();
-                $("#alertmefanikiwa").show();
-            }
+           if (response.statusCode == 306) {
+             alertMessage(
+               `Imeshindikana`,
+               `Imeshindikana kupakia taarifa za Halmashauri mpya, Tafadhali wasiliana na Admin wa Mfumo!`,
+               `warning`
+             );
+           }
+           if (response.statusCode == 300) {
+             alertMessage(
+               `Hongera`,
+               `Umefanikiwa kupakuwa taarifa za Halmashauri kikamilifu!`
+             );
+             nata();
+           }
         }
     });
 }
@@ -78,17 +76,9 @@ function nata(){
                 // row = row + '<td class="id" style="display:none;"><a href="javascript:void(0);" class="fw-medium link-primary"> ' + response[i].zoneName + ' </a></td>';
                 row = row + '<td class="date">' + councils[i].LgaCode + "</td>";
                 row = row + '<td class="status"><span class="text-uppercase"> ' + councils[i].regionName + ' </span></td>';
-                // row = row + '<td>'+
-                //             '<div class="d-flex gap-2">'+
-                //                 '<div class="edit">'+
-                //                     '<button class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal" data-bs-target="#showModal"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></button>'+
-                //                 '</div>'+
-                //                 '<div class="remove">'+
-                //                     '<button class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal" data-bs-target="#deleteRecordModal">Remove</button>'+
-                //                 '</div>'+
-                //             '</div>'+
-                //             '</td>'+
-                '</tr>';
+                row = row + '<td class="status"><span> ' + formatDate(councils[i].createdAt) + ' </span></td>';
+                row = row + '<td class="status"><span> ' + formatDate(councils[i].updatedAt)+ ' </span></td>';
+                row = row +'</tr>';
                 $('#customerTable').append(row);
             }
             paginate("Halmashauri", pages, current, per_page);

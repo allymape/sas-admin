@@ -2337,10 +2337,14 @@ app.get("/MikoaList", function (req, res) {
                 var regionCode = data[i].regionCode;
                 var regionName = data[i].regionName;
                 var zoneName = data[i].zoneName;
+                var createdAt = data[i].createdAt;
+                var updatedAt = data[i].updatedAt;
                 obj.push({
                   regionCode: regionCode,
                   regionName: regionName,
                   zoneName: zoneName,
+                  createdAt: createdAt,
+                  updatedAt: updatedAt,
                 });
               }
             }
@@ -2492,10 +2496,14 @@ app.get("/HalmashauriList", function (req, res) {
                 var LgaCode = data[i].LgaCode;
                 var LgaName = data[i].LgaName;
                 var regionName = data[i].regionName;
+                var createdAt = data[i].createdAt;
+                var updatedAt = data[i].updatedAt;
                 obj.push({
                   LgaCode: LgaCode,
                   LgaName: LgaName,
                   regionName: regionName,
+                  createdAt: createdAt,
+                  updatedAt: updatedAt,
                 });
               }
                // console.log(obj)
@@ -2588,12 +2596,16 @@ app.get("/WardList", function (req, res) {
                 var WardCode = data[i].WardCode;
                 var WardName = data[i].wardName;
                 var LgaName = data[i].LgaName;
-                var regionName = data[i].RegionName;
+                var RegionName = data[i].RegionName;
+                var CreatedAt = data[i].CreatedAt;
+                var UpdatedAt = data[i].UpdatedAt;
                 obj.push({
                   WardCode: WardCode,
                   WardName: WardName,
                   LgaName: LgaName,
-                  regionName: regionName,
+                  RegionName: RegionName,
+                  CreatedAt: CreatedAt,
+                  UpdatedAt: UpdatedAt,
                 });
               }
             }
@@ -2691,12 +2703,16 @@ app.get("/MitaaList", function (req, res) {
                 var WardName   = data[i].WardName;
                 var LgaName    = data[i].LgaName;
                 var RegionName = data[i].RegionName;
+                var CreatedAt = data[i].CreatedAt;
+                var UpdatedAt = data[i].UpdatedAt;
                 obj.push({
                     StreetCode : StreetCode,
                     WardName   : WardName,
                     StreetName : StreetName,
                     LgaName    : LgaName,
                     RegionName : RegionName,
+                    CreatedAt  : CreatedAt,
+                    UpdatedAt  : UpdatedAt,
                 });
               }
             }

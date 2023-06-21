@@ -1,24 +1,33 @@
 
 
-
+$("#create-btn").on("click", function () {
+  confirmAction(
+    PullStreets,
+    "Pakia Taarifa",
+    "warning",
+    "Hautaweza kurudisha nyuma kitendo hiki.",
+    "Una uhakika?"
+  );
+});
 function PullStreets(){
-    // alert('Inapakia kutoka kwenye orodha ya mikoa, Tafadhali subiri')
-    $("#firstbtn").hide();
-    $("#pakiabtn").show();
     $.ajax({
         url: "/VutaMitaa",
         type: 'GET',
         contentType: 'application/json',
         success: function(response) {
-            if(response.statusCode == 306){
-                $("#firstbtn").show();
-                $("#pakiabtn").hide();
-                $("#alertmeshindwa").show();
+            if (response.statusCode == 306) {
+              alertMessage(
+                `Imeshindikana`,
+                `Imeshindikana kupakia taarifa za Mitaa mipya, Tafadhali wasiliana na Admin wa Mfumo!`,
+                `warning`
+              );
             }
-            if(response.statusCode == 300){
-                $("#firstbtn").show();
-                $("#pakiabtn").hide();
-                $("#alertmefanikiwa").show();
+            if (response.statusCode == 300) {
+              alertMessage(
+                `Hongera`,
+                `Umefanikiwa kupakuwa taarifa za Mitaa kikamilifu!`
+              );
+              nata();
             }
         }
     });
@@ -52,6 +61,8 @@ function nata(){
                 row = row + '<td class="date">' + streets[i].WardName + "</td>";
                 row = row + '<td class="date">' + streets[i].LgaName + "</td>";
                 row = row + '<td class="status"><span class="text-uppercase"> ' + streets[i].RegionName + ' </span></td>';
+                row = row + '<td class="status"><span> ' + formatDate(streets[i].CreatedAt) + ' </span></td>';
+                row = row + '<td class="status"><span> ' + formatDate(streets[i].UpdatedAt)+ ' </span></td>';
                 row = row +'</tr>';
                 $('#customerTable').append(row);
             }

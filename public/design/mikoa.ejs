@@ -74,14 +74,9 @@
                                         <div class="row g-4 mb-3">
                                             <div class="col-sm-auto">
                                                 <div>
-                                                    <div class="alert alert-danger shadow mb-xl-0" id="alertmeshindwa" role="alert" style="display: none;">
-                                                        <strong> Imeshindiwa kupakia! </strong> Hakuna<b>Mikoa</b> mipya ya kupakia. Ahsante!
-                                                     </div>
-                                                     <div class="alert alert-success shadow" id="alertmefanikiwa" role="alert" style="display: none;">
-                                                        <strong> Hongera! Imefanikiwa! </strong> Mikoa mipya <b>imepakiwa</b> kikamilifu!
-                                                    </div>
+                                                    
                                                     <div id="firstbtn">
-                                                        <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn" onclick="PullRegions()"><i class="ri-add-line align-bottom me-1"></i> Vuta Mikoa</button>
+                                                        <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"><i class="ri-add-line align-bottom me-1"></i> Vuta Mikoa</button>
                                                     </div>
                                                     <div id="pakiabtn" style="display: none;">
                                                         <button type="button" class="btn btn-success btn-load">
@@ -110,6 +105,12 @@
 
                                         <div class="table-responsive table-card mt-3 mb-1">
                                              <div class="caption alert alert-primary d-flex align-items-center justify-content-between"></div>
+                                             <!-- <div class="alert alert-danger shadow mb-xl-0" id="alertmeshindwa" role="alert" style="display: none;">
+                                                <strong> Imeshindiwa kupakia! </strong> Hakuna<b>Mikoa</b> mipya ya kupakia. Ahsante!
+                                              </div>
+                                            <div class="alert alert-success shadow" id="alertmefanikiwa" role="alert" style="display: none;">
+                                                <strong> Hongera! Imefanikiwa! </strong> Mikoa mipya <b>imepakiwa</b> kikamilifu!
+                                            </div> -->
                                             <table class="table align-middle table-nowrap" id="customerTable">
                                                 <thead class="table-light">
                                                     <tr>
@@ -117,6 +118,8 @@
                                                         <th class="sort" data-sort="customer_name">Jina la Mkoa</th>
                                                         <th class="sort" data-sort="email">Kodi ya Mkoa</th>
                                                         <th class="sort" data-sort="email">Kanda</th>
+                                                        <th class="sort" data-sort="email">Imeingizwa</th>
+                                                        <th class="sort" data-sort="email">Imesasishwa</th>
                                                         <th class="sort text-center" width="5%" data-sort="action">Action</th>
                                                     </tr>
                                                 </thead>
@@ -154,30 +157,9 @@
                         <!-- end col -->
                     </div>
                     <!-- end row -->
-                    <script>
-                        function PullRegions(){
-                            // alert('Inapakia kutoka kwenye orodha ya mikoa, Tafadhali subiri')
-                            $("#firstbtn").hide();
-                            $("#pakiabtn").show();
-                            $.ajax({
-                                url: "/VutaMikoa",
-                                type: 'GET',
-                                contentType: 'application/json',
-                                success: function(response) {
-                                    if(response.statusCode == 306){
-                                        $("#firstbtn").show();
-                                        $("#pakiabtn").hide();
-                                        $("#alertmeshindwa").show();
-                                    }
-                                    if(response.statusCode == 300){
-                                        $("#firstbtn").show();
-                                        $("#pakiabtn").hide();
-                                        $("#alertmefanikiwa").show();
-                                    }
-                                }
-                            });
-                        }
-                    </script>
+                    <!-- <script>
+                       
+                    </script> -->
                     <div class="modal fade" id="showModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
@@ -920,53 +902,14 @@
 
     <!-- App js -->
     <script src="design/assets/js/app.js"></script>
-    <script src="design/assets/logic/mikoa.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="design/assets/js/pages/notifications.init.js"></script>
     <script src="design/assets/js/pagination.js"></script>
-    <script type="text/javascript">
-    function nata(){
-    var url = window.location.href;
-    var parameters = url.split("?")[1] || '';
-    $.ajax({
-        url: "/MikoaList"+(parameters ? '?'+parameters : ''),
-        type: 'GET',
-        contentType: 'application/json',
-        success: function(response) {
-         
-            var regions = response.regions
-            var pages = response.pagination.pages;
-            var per_page = response.pagination.per_page;
-            var current = response.pagination.current
-            var total = response.pagination.total
-            var first_item = per_page * ( current - 1) + 1
-
-            $("#customerTable").find('tbody').empty();
-            $(".caption").html(`<span>Idadi ya Mikoa iliyopatikana ${total}.</span> <span class='justify-content-end'>Ukurasa ${current}  kati ya ${pages}     [${first_item} hadi ${first_item - 1 + regions.length}] </span>`);
-            for (var i=0; i < regions.length; i++) {
-                var row = '<tr> <td scope="row">'+( first_item + i)+'</td>'; 
-                // row = row + '<td class="id" style="display:none;"><a href="javascript:void(0);" class="fw-medium link-primary"> ' + response[i].zoneName + ' </a></td>';
-                row = row + '<td class="date">' + regions[i].regionName + '</td>';
-                row = row + '<td class="status"><span text-uppercase"> ' + regions[i].regionCode + ' </span></td>';
-                row = row + '<td class="status"><span text-uppercase"> ' + regions[i].zoneName + ' </span></td>';
-                row = row + '<td>'+
-                            '<div class="d-flex gap-2">'+
-                                '<div class="edit">'+
-                                    '<button class="btn btn-sm btn-link text-primary edit-item-btn1" onclick="AddZone(this); return false;" data-id="' + regions[i].regionCode + '" data-bs-toggle="modal"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></button>'+
-                                '</div>'+
-                                // '<div class="remove">'+
-                                //     '<button class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal" data-bs-target="#deleteRecordModal">Remove</button>'+
-                                // '</div>'+
-                            '</div>'+
-                        '</td></tr>';
-                $('#customerTable').append(row);
-            }
-           paginate("Mikoa" , pages , current , per_page)
-        }
-    }); 
-}
-window.onload = nata;
-</script>
+    <script src="design/assets/js/alert/confirm.js"></script>
+    <script src="design/assets/js/custom.js"></script>
+    <script src="design/assets/logic/mikoa.js"></script>
+  
+   
 
 <script>
     function AddZone(e){
