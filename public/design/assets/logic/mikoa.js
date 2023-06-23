@@ -2,11 +2,13 @@ $("#create-btn").on("click" , function(){
     confirmAction(PullRegions ,'Pakia Taarifa' , 'warning' , 'Hautaweza kurudisha nyuma kitendo hiki.' ,'Una uhakika?' );
 })
 function PullRegions() {
+    showLoadingSpinner()
   $.ajax({
     url: "/VutaMikoa",
     type: "GET",
     contentType: "application/json",
     success: function (response) {
+        hideLoadingSpinner()
       if (response.statusCode == 306) {
         alertMessage(`Imeshindikana` , `Imeshindikana kupakia taarifa za Mikoa mipya, Tafadhali wasiliana na Admin wa Mfumo!` , `warning`);
       }
@@ -15,6 +17,10 @@ function PullRegions() {
         nata()
       }
     },
+    error : function(request , status , error){
+        console.log(request , status, error)
+        hideLoadingSpinner()
+    }
   });
 }
 //register zones
@@ -38,11 +44,13 @@ function saveKanda() {
 function nata() {
   var url = window.location.href;
   var parameters = url.split("?")[1] || "";
+  showLoadingSpinner()
   $.ajax({
     url: "/MikoaList" + (parameters ? "?" + parameters : ""),
     type: "GET",
     contentType: "application/json",
     success: function (response) {
+      hideLoadingSpinner();
       var regions = response.regions;
       var pages = response.pagination.pages;
       var per_page = response.pagination.per_page;
@@ -70,16 +78,16 @@ function nata() {
           '<td class="status"><span text-uppercase"> ' +
           regions[i].zoneName +
           " </span></td>";
-         row =
-           row +
-           '<td class="status"><span text-uppercase"> ' +
-           formatDate(regions[i].createdAt) +
-           " </span></td>";
-         row =
-           row +
-           '<td class="status"><span text-uppercase"> ' +
-           formatDate(regions[i].updatedAt) +
-           " </span></td>";
+        row =
+          row +
+          '<td class="status"><span text-uppercase"> ' +
+          formatDate(regions[i].createdAt) +
+          " </span></td>";
+        row =
+          row +
+          '<td class="status"><span text-uppercase"> ' +
+          formatDate(regions[i].updatedAt) +
+          " </span></td>";
         row =
           row +
           "<td>" +
@@ -97,6 +105,10 @@ function nata() {
         $("#customerTable").append(row);
       }
       paginate("Mikoa", pages, current, per_page);
+    },
+    error: function (request, status, error) {
+          console.log(request, status, error);
+          hideLoadingSpinner();
     },
   });
 }
