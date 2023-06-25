@@ -102,7 +102,7 @@
                                 <div class="card-body border border-dashed border-end-0 border-start-0">
                                     <form>
                                         <div class="row g-3">
-                                            <div class="col-xxl-5 col-sm-12">
+                                            <div class="col-xxl-4 col-sm-12">
                                                 <div class="search-box">
                                                     <input type="text" class="form-control search bg-light border-light" placeholder="Tafuta ombi kuendelea nalo...">
                                                     <i class="ri-search-line search-icon"></i>
@@ -127,8 +127,13 @@
                                             </div>
                                             <!--end col-->
                                             <div class="col-xxl-1 col-sm-4">
-                                                <button title="Angalia kwa tarehe na Hali ulizochagua" type="button" class="btn btn-primary w-100" onclick="DownloadRpt();"> <i class="ri-equalizer-fill me-1 align-bottom"></i>
+                                                <button title="Angalia kwa tarehe na Hali ulizochagua" type="button" class="btn btn-primary w-100" onclick="DownloadRpt();">
                                                     Pakua
+                                                </button>
+                                            </div>
+                                            <div class="col-xxl-1 col-sm-2">
+                                                <button  type="button" class="btn btn-danger" id="migration-btn"> 
+                                                    Migrate
                                                 </button>
                                             </div>
                                             <script>
@@ -361,22 +366,20 @@
 
 
 
-    <!-- JAVASCRIPT -->
+     <!-- JAVASCRIPT -->
     <script src="design/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="design/assets/libs/simplebar/simplebar.min.js"></script>
     <script src="design/assets/libs/node-waves/waves.min.js"></script>
     <script src="design/assets/libs/feather-icons/feather.min.js"></script>
     <script src="design/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
     <script src="design/assets/js/plugins.js"></script>
-
-    <!-- list.js min js -->
+    <!-- prismjs plugin -->
+    <script src="design/assets/libs/prismjs/prism.js"></script>
     <script src="design/assets/libs/list.js/list.min.js"></script>
-
-    <!--list pagination js-->
     <script src="design/assets/libs/list.pagination.js/list.pagination.min.js"></script>
 
-    <!-- titcket init js -->
-    <script src="design/assets/js/pages/tasks-list.init.js"></script>
+    <!-- listjs init -->
+    <script src="design/assets/js/pages/listjs.init.js"></script>
 
     <!-- Sweet Alerts js -->
     <script src="design/assets/libs/sweetalert2/sweetalert2.min.js"></script>
@@ -384,8 +387,23 @@
     <!-- App js -->
     <script src="design/assets/js/app.js"></script>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!--jquery cdn-->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <!--select2 cdn-->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+    <!-- <script src="design/assets/js/pages/select2.init.js"></script> -->
+
+    <!-- prismjs plugin -->
+    <script src="design/assets/libs/prismjs/prism.js"></script>
+    <script src="design/assets/js/pagination.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Migration,Alert -->
+    <script src="design/assets/js/alert/confirm.js"></script>
+    <script src="design/assets/js/spin/spin.min.js"></script>
+    <!-- <script src="design/assets/js/custom.js"></script> -->
+    <script src="design/assets/logic/existing_schools.js"></script>
+     
 
     <script>
         $('a').click(function(){

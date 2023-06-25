@@ -52,6 +52,11 @@ function PullCouncils(){
       error: function (request, status, error) {
         console.log(request, status, error);
         hideLoadingSpinner();
+        alertMessage(
+          `Tatizo`,
+          `Haikuweza kuvuta taarifa za Halmashauri, kuna itilafu wasiliana na Admin!`,
+          `error`
+        );
       },
     });
 }
@@ -109,6 +114,7 @@ function nata(){
       error: function (request, status, error) {
         console.log(request, status, error);
         hideLoadingSpinner();
+        
       },
     });
 }

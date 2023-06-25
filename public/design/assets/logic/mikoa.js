@@ -20,6 +20,11 @@ function PullRegions() {
     error : function(request , status , error){
         console.log(request , status, error)
         hideLoadingSpinner()
+         alertMessage(
+           `Tatizo`,
+           `Haikuweza kuvuta taarifa za Mikoa, kuna itilafu wasiliana na Admin!`,
+           `error`
+         );
     }
   });
 }

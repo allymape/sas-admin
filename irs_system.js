@@ -126,6 +126,7 @@ var VutaMikoaListAPI = BASEURL + "usajiliMikoa";
 var VutaWilayaListAPI = BASEURL + "usajiliWilaya";
 var VutaKataListAPI = BASEURL + "usajiliKata";
 var VutaMitaaListAPI = BASEURL + "usajiliMitaa";
+var VutaShuleListAPI = BASEURL + "existingSchools";
 var activeUserAPI = BASEURL + "active-user";
 var activeMenuAPI = BASEURL + "active-menu";
 var kandaListAPI = BASEURL + "zonilist";
@@ -1292,6 +1293,44 @@ app.get("/VutaMitaa", function (req, res) {
             ": " +
             req.session.userName +
             " Successful to pull VutaMitaa EndPoint"
+        );
+        res.send({ statusCode: statusCode, message: message });
+      }
+    }
+  );
+});
+
+app.get("/VutaShule", function (req, res) {
+  request(
+    {
+      url: VutaShuleListAPI,
+      method: "GET",
+      headers: {
+        Authorization: "Bearer" + " " + req.session.Token,
+        "Content-Type": "application/json",
+      },
+    },
+    function (error, response, body) {
+      if (error) {
+        console.error(
+          new Date() +
+            ": " +
+            req.session.userName +
+            " fail to pull shule via /VutaShule Endpoint " +
+            error
+        );
+        res.send("failed");
+      }
+      console.log(body);
+      if (body !== undefined) {
+        var jsonData = JSON.parse(body);
+        var message = jsonData.message;
+        var statusCode = jsonData.statusCode;
+        console.info(
+          new Date() +
+            ": " +
+            req.session.userName +
+            " Successful to pull VutaShule EndPoint"
         );
         res.send({ statusCode: statusCode, message: message });
       }
@@ -13743,6 +13782,7 @@ app.get("/RipotiZilizosajiliwa", function (req, res) {
         },
       },
       function (error, response, body) {
+        
         if (error) {
           console.log(new Date() + ": fail to RipotiZilizosajiliwa " + error);
           res.send("failed");

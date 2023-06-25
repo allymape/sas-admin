@@ -49,13 +49,18 @@ function PullWards(){
           alertMessage(
             `Hongera`,
             `Umefanikiwa kupakuwa taarifa za Kata kikamilifu!`
-          );
+          ); 
           nata();
         }
       },
       error: function (request, status, error) {
         console.log(request, status, error);
         hideLoadingSpinner();
+        alertMessage(
+          `Tatizo`,
+          `Haikuweza kuvuta taarifa za Kata, kuna itilafu wasiliana na Admin!`,
+          `error`
+        );
       },
     });
 }
