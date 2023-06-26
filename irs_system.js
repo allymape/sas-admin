@@ -126,7 +126,7 @@ var VutaMikoaListAPI = BASEURL + "usajiliMikoa";
 var VutaWilayaListAPI = BASEURL + "usajiliWilaya";
 var VutaKataListAPI = BASEURL + "usajiliKata";
 var VutaMitaaListAPI = BASEURL + "usajiliMitaa";
-var VutaShuleListAPI = BASEURL + "existingSchools";
+var VutaShuleListAPI = BASEURL + "existingSchools"; 
 var activeUserAPI = BASEURL + "active-user";
 var activeMenuAPI = BASEURL + "active-menu";
 var kandaListAPI = BASEURL + "zonilist";
@@ -150,8 +150,7 @@ var anzishaShuleMajKatAPI = BASEURL + "kataa-majengo-shule";
 var viewBilaMajDetails = BASEURL + "view-bila-majengo-details";
 var viewBilaMajKatDetails = BASEURL + "kat-view-bila-majengo-details";
 var ongezatahasusiDetails = BASEURL + "view-ongeza-tahasusi-details";
-var ripotiongezatahasusiDetails =
-  BASEURL + "view-ripoti-ongeza-tahasusi-details";
+var ripotiongezatahasusiDetails = BASEURL + "view-ripoti-ongeza-tahasusi-details";
 var viewMajDetails = BASEURL + "view-majengo-details";
 var viewMajKatDetails = BASEURL + "kat-view-majengo-details";
 var maoanzishaShuleSerListAPI = BASEURL + "maombi-kuanzisha-shule-serikali";
@@ -13760,6 +13759,8 @@ app.get("/RipotiZilizosajiliwa", function (req, res) {
   var obj = [];
   var objlist = [];
   var objtotal = [];
+  var per_page =  Number(req.query.per_page || 10);
+  var page = Number(req.query.page || 1);
   var today = new Date();
   // today = dateFormat.format(today, "dd/mm/yyyy")
   if (
@@ -13768,7 +13769,7 @@ app.get("/RipotiZilizosajiliwa", function (req, res) {
   ) {
     request(
       {
-        url: sajiliShuleJumlaAPI,
+        url: sajiliShuleJumlaAPI+`?page=${page}&per_page=${per_page}`,
         method: "POST",
         headers: {
           Authorization: "Bearer" + " " + req.session.Token,
@@ -13794,6 +13795,8 @@ app.get("/RipotiZilizosajiliwa", function (req, res) {
           var message = jsonData.message;
           var statusCode = jsonData.statusCode;
           var data = jsonData.data;
+          var numRows = jsonData.numRows;
+
           for (var i = 0; i < data.length; i++) {
             var kaunti = data[i].kaunti;
             var category = data[i].category;
@@ -13864,10 +13867,17 @@ app.get("/RipotiZilizosajiliwa", function (req, res) {
                 objtotal: objtotal,
                 list: objlist,
                 useLev: req.session.UserLevel,
-                                  userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
+                userName: req.session.userName,
+                RoleManage: req.session.RoleManage,
+                userID: req.session.userID,
                 cheoName: req.session.cheoName,
+                pagination : {
+                              total : numRows , 
+                              current : page , 
+                              per_page : per_page , 
+                              url : 'RipotiZilizosajiliwa',
+                              pages : Math.ceil( numRows / per_page)
+                }
               }
             );
           }

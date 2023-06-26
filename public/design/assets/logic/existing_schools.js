@@ -8,13 +8,13 @@ $("#migration-btn").on("click", function () {
   );
 });
 function PullSchools(){
-    // showLoadingSpinner()
+    showLoadingSpinner()
     $.ajax({
       url: "/VutaShule",
       type: "GET",
       contentType: "application/json",
       success: function (response) {
-        // hideLoadingSpinner();
+        hideLoadingSpinner();
         if (response.statusCode == 306) {
           alertMessage(
             `Imeshindikana`,
@@ -31,7 +31,7 @@ function PullSchools(){
       },
       error: function (request, status, error) {
         console.log(request, status, error);
-        // hideLoadingSpinner();
+        hideLoadingSpinner();
         alertMessage(
           `Tatizo`,
           `Haikuweza kuvuta taarifa za Shule, kuna itilafu wasiliana na Admin!`,

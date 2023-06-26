@@ -1,28 +1,26 @@
-<% if (pages > 0) { %>
-    <ul class="pagination text-center">
-        <% if (current == 1) { %>
-            <li class="disabled"><a>First</a></li>
-        <% } else { %>
-            <li><a href="/view-all-password/1">First</a></li>
+<div class="d-flex justify-content-end pagination">
+  <div class="pagination-wrap hstack gap-2">
+        <% if (Number(pagination.pages) > 0) { %>
+            <% var i = (Number(pagination.current) > 5 ? Number(pagination.current) - 4 : 1) %>
+           
+            <a class="page-item pagination-prev <%= Number(pagination.current) == 1 ? 'disabled' : '' %>" href="<%= Number(pagination.current)==1 ? '#' : pagination.url %>">First</a>
+            <a class="page-item pagination-prev <%= Number(pagination.current) == 1 ? 'disabled' : ''%>"  id="previous" href="<%= Number(pagination.current) > 1 ?`${pagination.url}?page=${Number(pagination.current) - 1}` : '#' %>">Previous</a>
+            <ul class="pagination listjs-pagination mb-0">
+                 <%if ( i !== 1) { %>
+                    <li class="disabled"><a class="page">...</a></li>
+                <% } %>
+
+                <% for (; i <= (Number(pagination.current) + 4) && i <= pagination.pages; i++) { %>
+                    <li class="<%= i==pagination.current ? 'active' : ''%>">
+                        <a href="/<%= pagination.url %>?page=<%= i %>" data-i="<%= i %>" class="page" data-page="<%= pagination.per_page %>"><%= i %></a>
+                    </li>
+                    <% if ( i == (pagination.current + 4) && i < pagination.pages) { %>
+                            <li class="disabled"><a class="page">...</a></li>
+                    <% } %>
+                <% } %>
+            </ul>
+             <a class="page-item pagination-next <%= pagination.current == pagination.pages  ? 'disabled' : ''%>"  id="previous" href="<%=pagination.current < pagination.pages ? `${pagination.url}?page=${Number(pagination.current) + 1}` : '#'%>">Next</a>
+             <a class="page-item pagination-next <%= pagination.current == pagination.pages  ? 'disabled' : '' %>" href="<%= pagination.current==pagination.pages ? '#' : pagination.url+"?page="+pagination.pages %>">Last</a>
         <% } %>
-        <% var i = (Number(current) > 5 ? Number(current) - 4 : 1) %>
-        <% if (i !== 1) { %>
-            <li class="disabled"><a>...</a></li>
-        <% } %>
-        <% for (; i <= (Number(current) + 4) && i <= pages; i++) { %>
-            <% if (i == current) { %>
-                <li class="active"><a><%= i %></a></li>
-            <% } else { %>
-                <li><a href="/view-all-password/<%= i %>"><%= i %></a></li>
-            <% } %>
-            <% if (i == Number(current) + 4 && i < pages) { %>
-                <li class="disabled"><a>...</a></li>
-            <% } %>
-        <% } %>
-        <% if (current == pages) { %>
-            <li class="disabled"><a>Last</a></li>
-        <% } else { %>
-            <li><a href="/view-all-password/<%= pages %>">Last</a></li>
-        <% } %>
-    </ul>
-<% } %>
+    </div>
+</div>

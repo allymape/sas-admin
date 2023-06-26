@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="Themesbrand" name="author" />
-    <!-- App favicon -->
+      <!-- App favicon -->
     <link rel="shortcut icon" href="design/assets/images/favicon.ico">
 
     <!-- Sweet Alert css-->
@@ -26,6 +26,8 @@
     <link href="design/assets/css/app.min.css" rel="stylesheet" type="text/css" />
     <!-- custom Css-->
     <link href="design/assets/css/custom.min.css" rel="stylesheet" type="text/css" />
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 </head>
 
@@ -242,17 +244,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="d-flex justify-content-end mt-2">
-                                        <div class="pagination-wrap hstack gap-2">
-                                            <a class="page-item pagination-prev disabled" href="#">
-                                                Previous
-                                            </a>
-                                            <ul class="pagination listjs-pagination mb-0"></ul>
-                                            <a class="page-item pagination-next" href="#">
-                                                Next
-                                            </a>
-                                        </div>
-                                    </div>
+                                   
+                                    <%- include('paginations/paginate.ejs'); %>
+                                    
                                 </div>
 
                                 <!--end card-body-->
@@ -401,7 +395,7 @@
     <!-- Migration,Alert -->
     <script src="design/assets/js/alert/confirm.js"></script>
     <script src="design/assets/js/spin/spin.min.js"></script>
-    <!-- <script src="design/assets/js/custom.js"></script> -->
+    <script src="design/assets/js/custom.js"></script>
     <script src="design/assets/logic/existing_schools.js"></script>
      
 
