@@ -27,10 +27,14 @@ const logger = require("./logger");
 const requestIp = require("request-ip");
 const cookieParser = require('cookie-parser')
 const helmet = require('helmet')
+const flash = require('connect-flash');
+const permissionController = require("./public/controllers/permissionController");
+
 
 var app = express();
 app.use(helmet.frameguard())
 app.use(cookieParser())
+app.use(flash());
 // Create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
@@ -100,15 +104,15 @@ global.routeIs = function (url_segments, currentUrl) {
   return false;
 };
 
-var modifyUrl = function(url){
-     var url = url.split("/");
+var modifyUrl = function(currentUrl){
+    var url = currentUrl.split("?").length == 2 ? currentUrl.split("?")[0].split("/") : currentUrl.split("/");
      if(url.length == 2){
         return url[1];
      }
      if(url.length == 3){
         return url[1]+"/*";
      }
-     return url[i];
+     return currentUrl;
 } 
 
 var VERURL = "http://41.59.228.17:9010/";
@@ -133,7 +137,9 @@ var kandaListAPI = BASEURL + "zonilist";
 var mikoaListAPI = BASEURL + "regions";
 var sajiliZoniAPI = BASEURL + "addZoni";
 var tengenezaRoleAPI = BASEURL + "addRole";
-var sasishaRoleAPI = BASEURL + "editRole";
+var tengenezaPermissionAPI = BASEURL + "addPermission";
+
+var sasishaRoleAPI = BASEURL + "editRole"; 
 var updateZoniAPI = BASEURL + "editZoni";
 var deleteZoniAPI = BASEURL + "deleteZoni";
 var lgaListAPI = BASEURL + "allDistricts";
@@ -14972,6 +14978,8 @@ app.get("/Roles", function (req, res) {
   }
 });
 
+// 
+
 app.get("/Waombaji", function (req, res) {
   var obj = [];
   if (
@@ -15013,9 +15021,7 @@ app.get("/Waombaji", function (req, res) {
           var data = jsonData.data;
           // var objAttachment = jsonData.objAttachment;
           if (statusCode == 300) {
-            console.log(
-              new Date() + " " + req.session.userName + ": /Watumiaji"
-            );
+          
             res.render(path.join(__dirname + "/public/design/waombaji"), {
               req: req,
               data: data,
@@ -16493,6 +16499,6 @@ app.delete("/logout", (req, res) => {
 // function checkCount(){
 //   console.log("yesssssssssssss")
 // }
-
+app.use("/", permissionController)
 var server = app.listen(8087);
 console.log("Hello IRS");

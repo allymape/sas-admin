@@ -6,38 +6,38 @@
 <head>
 
     <meta charset="utf-8" />
-    <title>Halmashauri | IRS - Institution Registration System</title>
+    <title>Permissions | IRS - Institution Registration System</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="Themesbrand" name="author" />
     <!-- App favicon -->
-    <link rel="shortcut icon" href="design/assets/images/favicon.ico">
+    <link rel="shortcut icon" href="/design/assets/images/favicon.ico">
 
     <!-- Sweet Alert css-->
-    <link href="design/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+    <link href="/design/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
 
     <!-- Layout config Js -->
-    <script src="design/assets/js/layout.js"></script>
+    <script src="/design/assets/js/layout.js"></script>
     <!-- Bootstrap Css -->
-    <link href="design/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="/design/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <!-- Icons Css -->
-    <link href="design/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="/design/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
     <!-- App Css-->
-    <link href="design/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+    <link href="/design/assets/css/app.min.css" rel="stylesheet" type="text/css" />
     <!-- custom Css-->
-    <link href="design/assets/css/custom.min.css" rel="stylesheet" type="text/css" />
+    <link href="/design/assets/css/custom.min.css" rel="stylesheet" type="text/css" />
 
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> -->
 
 </head>
 
 <body>
 
     <!-- Begin page -->
-    
     <div id="layout-wrapper">
-         <%- include('includes/spinner.ejs') %>
-         <%- include('sidebar.ejs') %>
+
+        <%- include('sidebar.ejs') %>
+
         <!-- ============================================================== -->
         <!-- Start right Content here -->
         <!-- ============================================================== -->
@@ -50,12 +50,12 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                                <h4 class="mb-sm-0">Orodha ya Halmashauri</h4>
+                                <h4 class="mb-sm-0">Permissions</h4>
 
                                 <div class="page-title-right">
                                     <ol class="breadcrumb m-0">
-                                        <li class="breadcrumb-item"><a href="javascript: void(0);">Mipangilio</a></li>
-                                        <li class="breadcrumb-item active">Halmashauri</li>
+                                        <li class="breadcrumb-item"><a href="/javascript: void(0);">Mipangilio</a></li>
+                                        <li class="breadcrumb-item active">Permissions</li>
                                     </ol>
                                 </div>
 
@@ -68,39 +68,40 @@
                         <div class="col-lg-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title mb-0">Halmashauri zilizopo</h4>
+                                    <h4 class="card-title mb-0">Orodha ya Permissions</h4>
                                 </div><!-- end card header -->
 
                                 <div class="card-body">
                                     <div id="customerList">
                                         <div class="row g-4 mb-3">
-                                            <div class="col-sm-auto">
-                                                <div>
-                                                    <!-- <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn" onclick="PullRegions()"><i class="ri-add-line align-bottom me-1"></i> Vuta Halmashauri</button> -->
-                                                    <div class="alert alert-danger shadow mb-xl-0" id="alertmeshindwa" role="alert" style="display: none;">
-                                                        <strong> Imeshindiwa kupakia! </strong> Hakuna<b>Halmashauri</b> mipya ya kupakia. Ahsante!
-                                                     </div>
-                                                     <div class="alert alert-success shadow" id="alertmefanikiwa" role="alert" style="display: none;">
-                                                        <strong> Hongera! Imefanikiwa! </strong> Halmashauri mpya <b>zimepakiwa</b> kikamilifu!
-                                                    </div>
-                                                    <div id="firstbtn">
-                                                        <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"><i class="ri-add-line align-bottom me-1"></i> Vuta Halmashauri</button>
-                                                    </div>
-                                                    <div id="pakiabtn" style="display: none;">
-                                                        <button type="button" class="btn btn-success btn-load">
-                                                            <span class="d-flex align-items-center">
-                                                                <span class="spinner-border flex-shrink-0" role="status">
-                                                                    <span class="visually-hidden">Inapakia...</span>
-                                                                </span>
-                                                                <span class="flex-grow-1 ms-2">
-                                                                    Inapakia...
-                                                                </span>
-                                                            </span>
-                                                        </button>
-                                                    </div>
-                                                </div>
+                                            <div class="col-sm-10">
+                                                <form action="<%= edit ? '/badiliPermission/'+ePermission[0].id : '/tengenezaPermission'%>" method="POST" class="d-flex">
+                                                            <div class="col-xxl-3 px-2">
+                                                                <% var name = edit ? ePermission[0].permission_name : '' %>
+                                                                <input required name="permission_name" value="<%= name ? name.replace(/-/g , ' ') : '' %>" class="form-control" placeholder="Jina mfano futa-akaunti" />
+                                                            </div>
+                                                            <div class="col-xxl-3 px-2">
+                                                                
+                                                                <input required name="display_name" value="<%=edit ? ePermission[0].display_name : ''%>" class="form-control" placeholder="Jina la kusomeka mfano Futa Akaunti" />
+                                                            </div>
+                                                            <% if(edit){ %>
+                                                                 <div class="col-xxl-3 px-4 mt-2  form-check form-check-success">
+                                                                  <label class="form-check-label">
+                                                                    <input  type="checkbox" name="status" <%=edit && ePermission[0].status_id == 1 ? 'checked' : ''%> class="form-check-input"  /> 
+                                                                    <span class="ml-2">Status</span></label>
+                                                                 </div>
+                                                            <% }%>
+                                                            <div class="col-xxl-3 px-2">
+                                                                <button type="submit" class="btn px-4 <%=edit ? 'btn-primary' : 'btn-success'%>"> 
+                                                                <%=edit ? 'Badili' : 'Sajili'%>
+                                                                </button>
+                                                                <%if (edit) { %>
+                                                                    <a href="/Permissions" class="btn btn-danger"><i class=""></i>Ghairi</a>
+                                                                <% } %>
+                                                            </div>
+                                                </form>
                                             </div>
-                                            <div class="col-sm">
+                                            <div class="col-sm-2">
                                                 <div class="d-flex justify-content-sm-end">
                                                     <div class="search-box ms-2">
                                                         <input type="text" class="form-control search" placeholder="Tafuta...">
@@ -111,21 +112,75 @@
                                         </div>
 
                                         <div class="table-responsive table-card mt-3 mb-1">
-                                            <div class="caption alert alert-primary d-flex align-items-center justify-content-between"></div>
+                                            <div class="alert alert-info">
+                                                <h6 class="text-primary text-uppercase">Jumla ya permissions <%= pagination.total %> zimepatikana</h6>
+                                            </div>
+                                                <% var success = req.flash('success') %>
+                                                <% var error  = req.flash('error') %>
+                                                <% if(success != ''){%>
+                                                        <div class="alert alert-success">
+                                                            <%= success %>
+                                                        </div>
+                                                <% } %>
+                                                <% if(error != ''){%>
+                                                        <div class="alert alert-danger">
+                                                            <%= error %>
+                                                        </div>
+                                                <% } %>
                                             <table class="table align-middle table-nowrap" id="customerTable">
                                                 <thead class="table-light">
                                                     <tr>
-                                                        <th class="" width="5%" data-sort="customer_name">Na.</th>
-                                                        <th class="sort" data-sort="customer_name">Jina la Halmashauri</th>
-                                                        <th class="sort" data-sort="email">Kodi ya Halmashauri</th>
-                                                        <th class="sort" data-sort="email">Mkoa</th>
-                                                        <th class="sort" data-sort="email">Imeingizwa</th>
-                                                        <th class="sort" data-sort="email">Imesasishwa</th>
-                                                        <!-- <th class="sort" data-sort="action">Action</th> -->
+                                                        <!-- <th scope="col" style="width: 50px;">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="checkAll" value="option">
+                                                            </div>
+                                                        </th> -->
+                                                        <th class="sort" width="5%" data-sort="customer_name">Na.</th>
+                                                        <th class="sort" data-sort="email">Jina</th>
+                                                        <th class="sort" data-sort="email">Jina la kusomeka</th>
+                                                        <th class="sort" data-sort="email">Hali</th>
+                                                        <th class="text-center" width="15%" data-sort="email">Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="list form-check-all">
-
+                                                    <% for(var i = 0; i < data.length; i++){ %>
+                                                    <tr>
+                                                        <td class="id">
+                                                            <a href="/javascript:void(0);" class="fw-medium link-primary">
+                                                                <%=((Number(pagination.current) - 1) * Number(pagination.per_page)) + i + 1 %>
+                                                            </a>
+                                                        </td>
+                                                        <td class=""><%= data[i].permission_name %></td>
+                                                        <td class=""><%= data[i].display_name %></td>
+                                                         <td>
+                                                            <span class="badge <%=data[i].status_id == 1 ? 'badge-outline-success' : 'badge-outline-danger' %>"><%-data[i].status_id == 1 ? 'Active' : 'In Active'%></span>
+                                                        </td>
+                                                        <td class="text-left"> 
+                                                            <form action="/futaPermission/<%=data[i].id%>" method="POST">
+                                                            <% if(edit && ePermission[0].id == data[i].id){%>
+                                                            <%}else{%>
+                                                                <a href="/Permissions/<%= data[i].id %>" class="btn btn-link text-primary">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" 
+                                                                    width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+                                                                    class="feather feather-edit-3"><path d="M12 20h9"></path>
+                                                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                                                </svg>
+                                                                </a>
+                                                            <%}%>
+                                                            <button type="button" class="btn btn-link text-danger btn-delete" >
+                                                                <svg xmlns="http://www.w3.org/2000/svg" 
+                                                                    width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+                                                                    class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline>
+                                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                                <line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line>
+                                                                </svg>
+                                                            </button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                    <% } %>
                                                 </tbody>
                                             </table>
                                             <div class="noresult" style="display: none">
@@ -135,11 +190,10 @@
                                                     <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
                                                 </div>
                                             </div>
-                                        </div>
-                                      <!-- Pagination and page length -->
-                                        <div class="d-flex justify-content-between">
+                                        <!-- Pagination and page length -->
+                                            <div class="d-flex justify-content-between">
                                                 <div>
-                                                   <form action="" method="GET">
+                                                    <form action="" method="GET">
                                                             <select class="form-control" name="per_page" style="width: 80px;" id="page-size">
                                                                 <option value="5"   <%-req.query.per_page ==  5  ? 'selected' : '' %> >5</option>
                                                                 <option value="10"  <%-req.query.per_page == 10 || !req.query.per_page   ? 'selected' : '' %> >10</option>
@@ -148,11 +202,11 @@
                                                                 <option value="100" <%-req.query.per_page == 100 ? 'selected' : '' %> >100</option>
                                                             </select>
                                                     </form>
-                                                 </div>
-                                                <div class="d-flex justify-content-end pagination">
                                                 </div>
-                                        </div>
+                                                <%- include('paginations/paginate.ejs'); %>
+                                            </div>
                                         <!-- End pagination and page length -->
+                                        </div>
                                     </div>
                                 </div><!-- end card -->
                             </div>
@@ -161,80 +215,11 @@
                         <!-- end col -->
                     </div>
                     <!-- end row -->
-
-                    <div class="modal fade" id="showModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header bg-light p-3">
-                                    <h5 class="modal-title" id="exampleModalLabel"></h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
-                                </div>
-                                <form>
-                                    <div class="modal-body">
-
-                                        <div class="mb-3" id="modal-id">
-                                            <label for="id-field" class="form-label">Kodi ya Halmashauri</label>
-                                            <input type="text" id="id-field" class="form-control" placeholder="ID" />
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="customername-field" class="form-label">Jina la Halmashauri</label>
-                                            <input type="text" id="customername-field" class="form-control" placeholder="Enter Name" required />
-                                        </div>
-
-                                        <div class="mb-3">
-                                        <label for="customername-field" class="form-label">Mkoa</label>
-                                        <select class="js-example-basic-single form-control bg-light border-light" name="state">
-                                            <option value="AL">Chagua hali ya ombi</option>
-                                            <option value="MA">ENDELEA</option>
-                                            <option value="TO">KATAA</option>
-                                            <option value="LO">MALIZA</option>
-                                            <option value="WY">RUDISHA</option>
-                                        </select>
-                                        </div>
-
-                                    </div>
-                                    <div class="modal-footer">
-                                        <div class="hstack gap-2 justify-content-end">
-                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-success" id="add-btn">Sajili</button>
-                                            <button type="button" class="btn btn-success" id="edit-btn">Update</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Modal -->
-                    <div class="modal fade zoomIn" id="deleteRecordModal" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btn-close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="mt-2 text-center">
-                                        <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
-                                        <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
-                                            <h4>Are you Sure ?</h4>
-                                            <p class="text-muted mx-4 mb-0">Are you Sure You want to Remove this Record ?</p>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-                                        <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
-                                        <button type="button" class="btn w-sm btn-danger " id="delete-record">Yes, Delete It!</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!--end modal -->
-
+                    <script>
+                   
+                    </script>
                 </div>
-                <!-- container-fluid -->
             </div>
-            <!-- End Page-content -->
 
             <footer class="footer">
                 <div class="container-fluid">
@@ -243,9 +228,6 @@
                             <script>document.write(new Date().getFullYear())</script> © IRS
                         </div>
                         <div class="col-sm-6">
-                            <!-- <div class="text-sm-end d-none d-sm-block">
-                                Design & Develop by Themesbrand
-                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -255,6 +237,8 @@
 
     </div>
     <!-- END layout-wrapper -->
+
+
 
     <!--start back-to-top-->
     <button onclick="topFunction()" class="btn btn-danger btn-icon" id="back-to-top">
@@ -825,26 +809,26 @@
                             <div class="form-check sidebar-setting card-radio">
                                 <input class="form-check-input" type="radio" name="data-sidebar-image" id="sidebarimg-01" value="img-1">
                                 <label class="form-check-label p-0 avatar-sm h-auto" for="sidebarimg-01">
-                                    <img src="design/assets/images/sidebar/img-1.jpg" alt="" class="avatar-md w-auto object-cover">
+                                    <img src="/design/assets/images/sidebar/img-1.jpg" alt="" class="avatar-md w-auto object-cover">
                                 </label>
                             </div>	
 
                             <div class="form-check sidebar-setting card-radio">
                                 <input class="form-check-input" type="radio" name="data-sidebar-image" id="sidebarimg-02" value="img-2">
                                 <label class="form-check-label p-0 avatar-sm h-auto" for="sidebarimg-02">
-                                    <img src="design/assets/images/sidebar/img-2.jpg" alt="" class="avatar-md w-auto object-cover">
+                                    <img src="/design/assets/images/sidebar/img-2.jpg" alt="" class="avatar-md w-auto object-cover">
                                 </label>
                             </div>
                             <div class="form-check sidebar-setting card-radio">
                                 <input class="form-check-input" type="radio" name="data-sidebar-image" id="sidebarimg-03" value="img-3">
                                 <label class="form-check-label p-0 avatar-sm h-auto" for="sidebarimg-03">
-                                    <img src="design/assets/images/sidebar/img-3.jpg" alt="" class="avatar-md w-auto object-cover">
+                                    <img src="/design/assets/images/sidebar/img-3.jpg" alt="" class="avatar-md w-auto object-cover">
                                 </label>
                             </div>
                             <div class="form-check sidebar-setting card-radio">
                                 <input class="form-check-input" type="radio" name="data-sidebar-image" id="sidebarimg-04" value="img-4">
                                 <label class="form-check-label p-0 avatar-sm h-auto" for="sidebarimg-04">
-                                    <img src="design/assets/images/sidebar/img-4.jpg" alt="" class="avatar-md w-auto object-cover">
+                                    <img src="/design/assets/images/sidebar/img-4.jpg" alt="" class="avatar-md w-auto object-cover">
                                 </label>
                             </div>
                         </div>
@@ -867,41 +851,38 @@
     </div>
 
     <!-- JAVASCRIPT -->
-    <script src="design/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="design/assets/libs/simplebar/simplebar.min.js"></script>
-    <script src="design/assets/libs/node-waves/waves.min.js"></script>
-    <script src="design/assets/libs/feather-icons/feather.min.js"></script>
-    <script src="design/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
-    <script src="design/assets/js/plugins.js"></script>
+    <script src="/design/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/design/assets/libs/simplebar/simplebar.min.js"></script>
+    <script src="/design/assets/libs/node-waves/waves.min.js"></script>
+    <script src="/design/assets/libs/feather-icons/feather.min.js"></script>
+    <script src="/design/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
+    <script src="/design/assets/js/plugins.js"></script>
     <!-- prismjs plugin -->
-    <script src="design/assets/libs/prismjs/prism.js"></script>
-    <script src="design/assets/libs/list.js/list.min.js"></script>
-    <script src="design/assets/libs/list.pagination.js/list.pagination.min.js"></script>
+    <script src="/design/assets/libs/prismjs/prism.js"></script>
+    <script src="/design/assets/libs/list.js/list.min.js"></script>
+    <!-- <script src="/design/assets/libs/list.pagination.js/list.pagination.min.js"></script> -->
 
     <!-- listjs init -->
-    <script src="design/assets/js/pages/listjs.init.js"></script>
+    <script src="/design/assets/js/pages/listjs.init.js"></script>
 
     <!-- Sweet Alerts js -->
-    <script src="design/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+    <script src="/design/assets/libs/sweetalert2/sweetalert2.min.js"></script>
 
     <!-- App js -->
-    <script src="design/assets/js/app.js"></script>
+    <script src="/design/assets/js/app.js"></script>
 
     <!--jquery cdn-->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <!--select2 cdn-->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    <!-- <script src="design/assets/js/pages/select2.init.js"></script> -->
+    <script src="/design/assets/js/pages/select2.init.js"></script>
 
     <!-- prismjs plugin -->
-    <script src="design/assets/libs/prismjs/prism.js"></script>
-    <script src="design/assets/js/pagination.js"></script>
-    <script src="design/assets/js/alert/confirm.js"></script>
-    <script src="design/assets/js/spin/spin.min.js"></script>
-    <script src="design/assets/js/custom.js"></script>
-    <script src="design/assets/logic/lga.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/design/assets/libs/prismjs/prism.js"></script>
+    <script src="/design/assets/js/alert/confirm.js"></script>
+    <script src="/design/assets/js/spin/spin.min.js"></script>
+    <script src="/design/assets/js/custom.js"></script>
 </body>
 
 </html>

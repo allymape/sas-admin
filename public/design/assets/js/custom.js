@@ -28,3 +28,16 @@ function hideLoadingSpinner(){
     $("#loading").fadeOut();
 }
 
+$("#page-size").on("change" , function(){
+  $(this).closest('form').submit();
+});
+
+ $(function(){
+      $(".btn-delete").on("click" , function(e){
+          e.preventDefault()
+          confirmAction(() => {
+              $(this).closest('form').submit()
+          } , 'Futa' , 'warning' , `Hautaweza kurudisha kitendo hiki kikifanikiwa!` , 'Je, unataka kuendelea?')
+      })
+  })
+

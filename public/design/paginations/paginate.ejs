@@ -1,26 +1,27 @@
-<div class="d-flex justify-content-end pagination">
+<div class="d-flex justify-content-end">
   <div class="pagination-wrap hstack gap-2">
+    
         <% if (Number(pagination.pages) > 0) { %>
+            <% var per_page_url = pagination.per_page && Number(pagination.per_page) != 10 ? '&per_page='+ Number(pagination.per_page) : ''; %>
             <% var i = (Number(pagination.current) > 5 ? Number(pagination.current) - 4 : 1) %>
            
-            <a class="page-item pagination-prev <%= Number(pagination.current) == 1 ? 'disabled' : '' %>" href="<%= Number(pagination.current)==1 ? '#' : pagination.url %>">First</a>
-            <a class="page-item pagination-prev <%= Number(pagination.current) == 1 ? 'disabled' : ''%>"  id="previous" href="<%= Number(pagination.current) > 1 ?`${pagination.url}?page=${Number(pagination.current) - 1}` : '#' %>">Previous</a>
+            <a class="page-item pagination-prev <%= Number(pagination.current) == 1 ? 'disabled' : '' %>" href="<%= Number(pagination.current)==1 ? '#' : pagination.url +'?page=1'+per_page_url %>">First</a>
+            <a class="page-item pagination-prev <%= Number(pagination.current) == 1 ? 'disabled' : ''%>"  id="previous" href="<%= Number(pagination.current) > 1 ?`${pagination.url}?page=${Number(pagination.current) - 1}${per_page_url}` : '#' %>">Previous</a>
             <ul class="pagination listjs-pagination mb-0">
                  <%if ( i !== 1) { %>
                     <li class="disabled"><a class="page">...</a></li>
                 <% } %>
-
-                <% for (; i <= (Number(pagination.current) + 4) && i <= pagination.pages; i++) { %>
+                <% for (; i <= (Number(pagination.current) + 4) && i <= Number(pagination.pages); i++) { %>
                     <li class="<%= i==pagination.current ? 'active' : ''%>">
-                        <a href="/<%= pagination.url %>?page=<%= i %>" data-i="<%= i %>" class="page" data-page="<%= pagination.per_page %>"><%= i %></a>
+                        <a href="/<%= pagination.url %>?page=<%= i %><%=per_page_url%>" data-i="<%= i %>" class="page" data-page="<%= pagination.per_page %>"><%= i %></a>
                     </li>
                     <% if ( i == (pagination.current + 4) && i < pagination.pages) { %>
                             <li class="disabled"><a class="page">...</a></li>
                     <% } %>
                 <% } %>
             </ul>
-             <a class="page-item pagination-next <%= pagination.current == pagination.pages  ? 'disabled' : ''%>"  id="previous" href="<%=pagination.current < pagination.pages ? `${pagination.url}?page=${Number(pagination.current) + 1}` : '#'%>">Next</a>
-             <a class="page-item pagination-next <%= pagination.current == pagination.pages  ? 'disabled' : '' %>" href="<%= pagination.current==pagination.pages ? '#' : pagination.url+"?page="+pagination.pages %>">Last</a>
+             <a class="page-item pagination-next <%= pagination.current == pagination.pages  ? 'disabled' : ''%>"  id="previous" href="<%=pagination.current < pagination.pages ? `${pagination.url}?page=${Number(pagination.current) + 1}${per_page_url}` : '#'%>">Next</a>
+             <a class="page-item pagination-next <%= pagination.current == pagination.pages  ? 'disabled' : '' %>" href="<%= pagination.current==pagination.pages ? '#' : pagination.url+"?page="+pagination.pages %><%=per_page_url%>">Last</a>
         <% } %>
     </div>
 </div>

@@ -277,7 +277,7 @@
                         </span>
                     </a>
                     <div class="collapse menu-dropdown mega-dropdown-menu 
-                    <%= routeIs('Vyeo|Watumiaji|Waombaji|Zoni|Mikoa|Mikoa?*|Halmashauri|Kata|Mitaa|Viambatisho|Malipo|Tahasusi|Michepuo|Roles' , getCurrentUrl(req)) ? 'show' : '' %>" 
+                    <%= routeIs('Vyeo|Watumiaji|Waombaji|Zoni|Mikoa|Mikoa?*|Halmashauri|Kata|Mitaa|Viambatisho|Malipo|Tahasusi|Michepuo|Roles|Permissions|Permissions/*' , getCurrentUrl(req)) ? 'show' : '' %>" 
                     id="sidebarUI">
                         <div class="row">
                             <div class="col-lg-4">
@@ -386,6 +386,12 @@
                                     <% if(animal.permission_id == 64){ %>
                                     <li class="nav-item">
                                         <a href="/Roles" class="nav-link <%= routeIs('Roles' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-carousel">Roles & Permissions</a>
+                                    </li>
+                                    <% }  %>
+                                    <% var hasMatch =false; %>
+                                    <% if(animal.permission_id == 64){ %>
+                                    <li class="nav-item">
+                                        <a href="/Permissions" class="nav-link <%= routeIs('Permissions|Permissions/*' , getCurrentUrl(req))  ? 'active' : '' %>" data-key="t-carousel">Permissions</a>
                                     </li>
                                     <% } } %>
                                 </ul>
