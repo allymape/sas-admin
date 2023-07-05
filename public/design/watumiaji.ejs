@@ -1,7 +1,8 @@
+<% var card_title = 'Watumiaji waliopo' %> 
 <%- include('layouts/partials/header.ejs' , {
     title : 'Watumiaji',
     page_title : 'Orodha ya Watumiaji',
-    card_title : 'Watumiaji iliyopo'
+    card_title : card_title
 }) %>
 <div class="card-body">
     <div id="customerList">
@@ -60,7 +61,7 @@
     </div>
 </div><!-- end card -->
 
-<%- include('layouts/partials/footer.ejs') %>
+<%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
  <div class="modal  top fade" id="showModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -274,6 +275,7 @@
         </div>
     </div>
 </div>
+<%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
 <script type="text/javascript" src="design/layouts/scripts/watumiaji_scripts.js"></script>
 </body>
 </html>

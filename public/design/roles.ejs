@@ -1,7 +1,9 @@
+<% var card_title = '' %> 
 <%- include('layouts/partials/header.ejs' , {
     title : 'Roles',
     page_title : 'Orodha ya Roles',
-    card_title : 'Roles zilizopo'
+    card_title : 'Roles zilizopo',
+    breadcrumb_main : 'Mipangilio' 
 }) %>
 <div class="card-body">
     <div class="ribbon-three ribbon-three-info">
@@ -12,13 +14,10 @@
         <div class="col-sm-auto">
             <div>
                 <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn" onclick="sajiliRole()"><i class="ri-add-line align-bottom me-1"></i> Sajili</button>
-                <!-- <button class="btn btn-soft-danger" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button> -->
+                <button class="btn  btn-outline-danger" id="sync-all">
+                    Tengeneza Roles na Permission (System Defaults)
+                </button>
             </div>
-            <script>
-                function sajiliRole(){
-                    window.location.href = "/CreateRole"
-                }
-            </script>
         </div>
         <div class="col-sm">
             <div class="d-flex justify-content-sm-end">
@@ -103,7 +102,7 @@
 </div>
 
 </div><!-- end card -->
-<%- include('layouts/partials/footer.ejs') %>
+<%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
 <script type="text/javascript" src="design/layouts/scripts/roles_scripts.js"></script>
 </body>
 </html>

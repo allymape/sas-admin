@@ -1,7 +1,9 @@
+<% var card_title = '' %> 
 <%- include('layouts/partials/header.ejs' , {
     title : 'Permissions',
     page_title : 'Orodha ya Permissions',
-    card_title : 'Permissions zilizopo'
+    card_title : 'Permissions zilizopo',
+    breadcrumb_main : 'Mipangilio' 
 }) %>
 <div class="card-body">
     <div class="ribbon-three ribbon-three-info">
@@ -150,7 +152,7 @@
     </div>
 </div>
 </div><!-- end card -->
-<%- include('layouts/partials/footer.ejs') %>
+<%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
 <!-- <script type="text/javascript" src="design/layouts/scripts/permissions_scripts.js"></script> -->
 </body>
 </html>

@@ -1,3 +1,4 @@
+<% var card_title = '' %> 
 <%- include('layouts/partials/header.ejs' , {
     title : 'Aina za Viambatisho',
     page_title : 'Orodha ya AIna za Vimabatisho',
@@ -57,7 +58,7 @@
            <!-- Pagination End -->
         </div>
     </div><!-- end card -->
-<%- include('layouts/partials/footer.ejs') %>
+<%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
  <!-- Modal -->
                     <div class="modal fade zoomIn" id="deleteRecordModal" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">

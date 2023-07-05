@@ -1,7 +1,9 @@
+<% var card_title = '' %> 
 <%- include('layouts/partials/header.ejs' , {
     title : 'Halmashauri',
     page_title : 'Orodha ya Halmashauri',
-    card_title : 'Halmashauri zilizopo iliyopo'
+    card_title : 'Halmashauri zilizopo iliyopo',
+    breadcrumb_main : 'Mipangilio' 
 }) %>
  <div class="card-body">
     <div id="customerList">
@@ -70,7 +72,7 @@
         <%- include('paginations/ajax_pagination.ejs')%>
     </div>
 </div><!-- end card -->
-<%- include('layouts/partials/footer.ejs') %>
+<%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
 <script type="text/javascript" src="design/layouts/scripts/halmashauri_scripts.js"></script>
 </body>
 </html>

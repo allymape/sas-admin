@@ -6,8 +6,8 @@ function confirmAction(callback , confirmBtnText = 'delete it' , icon='warning' 
       showCancelButton: !0,
       confirmButtonClass: "btn btn-primary w-xs me-2 mt-2",
       cancelButtonClass: "btn btn-danger w-xs mt-2",
-      confirmButtonText: `Ndio, ${confirmBtnText}!`,
-      cancelButtonText: 'Ghairi',
+      confirmButtonText: `${confirmBtnText ? confirmBtnText : "Ndio!"}`,
+      cancelButtonText: "Ghairi",
       buttonsStyling: !1,
       showCloseButton: !0,
     }).then(function (t) {

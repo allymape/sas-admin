@@ -46,7 +46,9 @@
                     <!-- end page title -->
                     <div class="row">
                         <div class="col-lg-12">
+                            <% if(typeof card_title && card_title){ %>
                             <div class="card ribbon-box right">
                                 <div class="card-header">
-                                    <h4 class="card-title mb-0"><%=`${typeof card_title != 'undefined' ? card_title : ''}`%></h4>
+                                    <h4 class="card-title mb-0"><%=`${typeof card_title != 'undefined' ? card_title :  card_title}`%></h4>
                                 </div><!-- end card header -->
+                                <% } %>

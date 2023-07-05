@@ -4,11 +4,12 @@ const menuItems = [
 // dashibodi
     {
         label : "Dashboard",
-        url  : "/Dashboard",
-        menuTitle : '',
+        url  : "Dashboard",
+        menuTitle : 'Menu',
         icon : "ri-dashboard-2-line",
         menuId : "",
-        pattern : "",
+        pattern : "Dashboard",
+        hasPermissionTo : permission(req , 'view-dashboard'),
    },
 //    MAOMBI
     {
@@ -17,14 +18,17 @@ const menuItems = [
         menuTitle : '',
         icon : "ri-git-pull-request-line",
         menuId : "sidebarDashboards",
-        pattern : "Dashboard",
+        pattern : "",
+        hasPermissionTo : permission(req , 'view-initiate-schools|view-school-owners'),
         // subMenuOpenPattern : 'MaombiKuanzishaShule|MaombiMmilikiShule|MaombiKusajiliShule|MaombiKusajiliShuleSerikali|KuongezaMikondo|BadiliJina|KuongezaTahasusi|KuongezaDahalia|KuongezaBweni|BadiliUsajili|Hamisha|BadiliMmiliki|BadiliMeneja|FutaShule|SajiliOmbi/*|TaarifaOmbi/*|SajiliOmbiSerikali/*|BadiliMkondo/*|BadiliTahasusi/*|BadiliBweni/*|BadiliDahalia/*|HamishaShuleDetails/*|ViewOmbiMmiliki/*|ViewOmbiMeneja/*|FutaShuleTaarifa/*',
         subMenus : [
             {
                 label : "Kuanzisha Shule",
                 url  : "MaombiKuanzishaShule",
                 icon : "",
-                counterId : "kuanzacounti"
+                counterId : "kuanzacounti",
+                pattern : "",
+                hasPermissionTo : permission(req , 'view-initiate-schools'),
             },
             {
                 label : "Mmiliki/Meneja wa Shule",
@@ -32,6 +36,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-school-owners'),
             },
             {
                 label : "Kusajili Shule (Binafsi)",
@@ -39,13 +44,15 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
             {
                 label : "Kusajili Shule (Serikali)",
-                url  : "/MaombiKusajiliShuleSerikali",
+                url  : "MaombiKusajiliShuleSerikali",
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
             {
                 label : "Kuongeza Mikondo",
@@ -53,6 +60,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
             {
                 label : "Kubadili Jina la Shule",
@@ -60,6 +68,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
             {
                 label : "Kuongeza Tahasusi",
@@ -67,6 +76,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
             {
                 label : "Kuongeza Bweni",
@@ -74,6 +84,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
             {
                 label : "Kuongeza Dahalia",
@@ -81,6 +92,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
             {
                 label : "Kubadili Aina ya Usajili",
@@ -88,6 +100,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
             {
                 label : "Kuhamisha Shule",
@@ -95,6 +108,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
             {
                 label : "Kubadili Mmiliki wa Shule",
@@ -102,6 +116,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
             {
                 label : "Kubadili Meneja wa Shule",
@@ -109,6 +124,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
             {
                 label : "Kufuta Usajili wa Shule(Hiari)",
@@ -116,6 +132,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
         ]
    },
@@ -127,6 +144,7 @@ const menuItems = [
         icon : "ri-bubble-chart-line",
         menuId : "sidebarRipoti",
         pattern : "",
+        hasPermissionTo : permission(req , 'view-'),
         // subMenuOpenPattern : 'RipotiZilizosajiliwa|TaarifaSajili/*|TaarifaBilaMajengo/*|TaarifaMajengoKat/*|SajiliwaZilizokataliwa|RipotiAnzishaBilaMajengo|RipotiAnzishaBilaMajengoKataliwa|RipotiUthibitisho|RipotiKubadiliJina|RipotiKuongezaBweni|RipotiDahalia|RipotiBadiliMmiliki|ViewBadilimeneja|RipotiZilizofutiwa|RipotiKuongezaMikondo|RipotiTahasusi|ViewRipotiDahalia/*',
         subMenus : [
             {
@@ -135,6 +153,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
             {
                 label : "Sajiliwa Zilizokataliwa",
@@ -142,6 +161,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
             {
                 label : "Kibali cha Kuanzisha Shule Bila Majengo",
@@ -149,6 +169,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
             {
                 label : "Kibali cha Kuanzisha Shule Bila Majengo - Kataliwa",
@@ -156,6 +177,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
             {
                 label : "Kibali cha Kuanzisha Shule kwa Majengo",
@@ -163,6 +185,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
             {
                 label : "Kibali cha Kuanzisha Shule kwa Majengo - Kataliwa",
@@ -170,6 +193,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
             {
                 label : "Uthibitisho wa Umiliki na Umeneja",
@@ -177,6 +201,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
             {
                 label : "Kubadili Jina la Shule",
@@ -184,6 +209,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
              {
                 label : "Kibali cha Bweni",
@@ -191,6 +217,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
              {
                 label : "Kibali cha Dahalia",
@@ -198,6 +225,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
              {
                 label : "Kubadili Umiliki",
@@ -205,6 +233,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
              {
                 label : "Kubadili Umeneja",
@@ -212,6 +241,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
              {
                 label : "Kufuta Usajili",
@@ -219,6 +249,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
              {
                 label : "Kibali cha Kuongeza Mikondo",
@@ -226,6 +257,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
              {
                 label : "Kibali cha Kuongeza Tahasusi",
@@ -233,17 +265,19 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-'),
             },
         ]
    },
    //MPANGLIO
    {
-        label : "Mpangilio",
+        label : "Mipangilio",
         url  : "#sidebarUI",
         menuTitle : 'UTHIBITISHO',
         icon : "ri-list-settings-line",
         menuId : "sidebarUI",
         pattern : "",
+        hasPermissionTo : permission(req , 'view-designations'),
         subMenus : [
             {
                 label : "Vyeo",
@@ -251,6 +285,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "Vyeo",
+                hasPermissionTo : permission(req , 'view-designations'),
             },
             {
                 label : "Watumiaji",
@@ -258,6 +293,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "Watumiaji",
+                hasPermissionTo : permission(req , 'view-users'),
             },
             {
                 label : "Waombaji",
@@ -265,6 +301,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "Waombaji",
+                hasPermissionTo : permission(req , 'view-applicants'),
             },
             {
                 label : "Kanda (Zones)",
@@ -272,6 +309,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
+                hasPermissionTo : permission(req , 'view-zones'),
             },
             {
                 label : "Mikoa",
@@ -279,6 +317,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "Mikoa",
+                hasPermissionTo : permission(req , 'view-regions'),
             },
             {
                 label : "Halmashauri",
@@ -286,6 +325,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "Halmashauri",
+                hasPermissionTo : permission(req , 'view-districts'),
             },
             {
                 label : "Kata",
@@ -293,6 +333,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "Kata",
+                hasPermissionTo : permission(req , 'view-wards'),
             },
              {
                 label : "Mitaa",
@@ -300,6 +341,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "Mitaa",
+                hasPermissionTo : permission(req , 'view-streets'),
             },
              {
                 label : "Viambatisho",
@@ -307,6 +349,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "Viambatisho",
+                hasPermissionTo : permission(req , 'view-attachments'),
             },
              {
                 label : "Ada za Malipo",
@@ -314,6 +357,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "Malipo",
+                hasPermissionTo : permission(req , 'view-fees'),
             },
              {
                 label : "Tahasusi",
@@ -321,6 +365,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "Tahasusi",
+                hasPermissionTo : permission(req , 'view-bias'),
             },
              {
                 label : "Michepuo",
@@ -328,6 +373,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "Michepuo",
+                hasPermissionTo : permission(req , 'view-combinations'),
             },
              {
                 label : "Roles & Permissions",
@@ -335,6 +381,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "Roles|EditRole/*|CreateRole",
+                hasPermissionTo : permission(req , 'view-roles'),
             },
              {
                 label : "Permissions",
@@ -342,6 +389,7 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "Permissions|Permissions/*",
+                hasPermissionTo : permission(req , 'view-permissions'),
             },
         ]
    },
@@ -353,6 +401,7 @@ const menuItems = [
         icon : "ri-user-search-line",
         menuId : "",
         pattern : "AuditTrail",
+        hasPermissionTo : permission(req , 'view-audit'),
    },
    // LOGOUT
     {
@@ -362,6 +411,7 @@ const menuItems = [
         icon : "ri-logout-circle-r-line",
         menuId : "",
         pattern : "",
+        hasPermissionTo : true,
    },
 ];
 %>
@@ -370,60 +420,76 @@ const menuItems = [
         <div id="two-column-menu">
         </div>
         <ul class="navbar-nav" id="navbar-nav">
-            <li class="menu-title"><span data-key="t-menu">Menu</span></li>
+            <!-- <li class="menu-title"><span data-key="t-menu">Menu</span></li> -->
 
             <% menuItems.forEach( function(item) { 
-                if(item.menuTitle){
-                    %>
-                     <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-components"><%= item.menuTitle %></span></li>
-                    <%
-                }
+               
                 if(typeof item.subMenus !== 'undefined' && item.subMenus.length > 0 )
                 {
-                    %>
-                    <li class="nav-item">
-                        <a class="nav-link menu-link" 
-                            href="<%= item.menuId ? item.url : '/'+item.url %>" 
-                            data-bs-toggle="collapse" 
-                            role="button" aria-expanded="false" 
-                            aria-controls="<%= item.menuId %>"
-                        >
-                            <i class="<%= item.icon %>"></i> 
-                            <span data-key="t-dashboards"><%= item.label %></span>
-                        </a>
-                         <div class="collapse menu-dropdown
-                            <%= routeIs(pluck(item.subMenus , 'pattern').join("|") , getCurrentUrl(req)) ? 'show' : '' %>
-                            " 
-                            id="<%= item.menuId %>"
-                          >
-                                <ul class="nav nav-sm flex-column">
-                                     <% item.subMenus.forEach( function(subItem) { %>
-                                         <li class="nav-item">
-                                            <a href="/<%= subItem.url %>" 
-                                                class="nav-link <%= routeIs(subItem.pattern , getCurrentUrl(req)) ? 'active' : '' %>" 
-                                                data-key="t-analytics">
-                                                  <%= subItem.label %>
-                                                  <% if(subItem.counterId ){%>
-                                                        <span class="badge badge-pill bg-danger" id="<%=subItem.counterId%>" data-key="t-new"></span> 
-                                                    <% } %>
-                                                </a>
-                                         </li>
-                                     <% }) %>
-                                </ul>
-                         </div>
-                    </li>
-                    <%
+                    // Check Permissions for all submenus items
+                        if(item.hasPermissionTo){
+                            if(item.menuTitle){
+                                %>
+                                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-components"><%= item.menuTitle %></span></li>
+                                <%
+                            }
+                            %>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" 
+                                    href="<%= item.menuId ? item.url : '/'+item.url %>" 
+                                    data-bs-toggle="collapse" 
+                                    role="button" aria-expanded="false" 
+                                    aria-controls="<%= item.menuId %>"
+                                >
+                                    <i class="<%= item.icon %>"></i> 
+                                    <span data-key="t-dashboards"><%= item.label %></span>
+                                </a>
+                                <div class="collapse menu-dropdown
+                                    <%= routeIs(pluck(item.subMenus , 'pattern').join("|") , getCurrentUrl(req)) ? 'show' : '' %>
+                                    " 
+                                    id="<%= item.menuId %>"
+                                >
+                                        <ul class="nav nav-sm flex-column">
+                                            <% item.subMenus.forEach( function(subItem) { 
+                                                // Check Permissions
+                                                if(subItem.hasPermissionTo){
+                                            %>
+                                                <li class="nav-item">
+                                                    <a href="/<%= subItem.url %>" 
+                                                        class="nav-link <%= routeIs(subItem.pattern , getCurrentUrl(req)) ? 'active' : '' %>" 
+                                                        data-key="t-analytics">
+                                                        <%= subItem.label %>
+                                                        <% if(subItem.counterId ){%>
+                                                                <span class="badge badge-pill bg-danger" id="<%=subItem.counterId%>" data-key="t-new"></span> 
+                                                            <% } %>
+                                                        </a>
+                                                </li>
+                                            <% 
+                                            }
+                                        }) %>
+                                        </ul>
+                                </div>
+                            </li>
+                            <%
+                        }
                 }else{
+                    // Check Permissions
+                    if(item.hasPermissionTo){
+                        if(item.menuTitle){
+                        %>
+                        <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-components"><%= item.menuTitle %></span></li>
+                        <%
+                    }
                     %>
-                    <li class="nav-item">
-                        <a href="<%= item.url %>" 
-                            class="nav-link menu-link <%= routeIs( item.patten , getCurrentUrl(req)) ? 'active' : '' %>"
-                         >
-                            <i class="ri <%=item.icon%>"></i> 
-                            <span data-key="t-widgets"><%=item.label%></span>
-                        </a>
-                    </li>
-                    <% 
+                            <li class="nav-item">
+                                <a href="<%= item.url %>" 
+                                    class="nav-link menu-link <%= routeIs(item.patten , getCurrentUrl(req)) ? 'active' : '' %>"
+                                >
+                                    <i class="ri <%=item.icon%>"></i> 
+                                    <span data-key="t-widgets"><%=item.label%></span>
+                                </a>
+                            </li>
+                        <% }
                 }
             }) 
            %>           

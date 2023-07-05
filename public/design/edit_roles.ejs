@@ -1,7 +1,9 @@
+<% var card_title = '' %> 
 <%- include('layouts/partials/header.ejs' , {
 title : 'Edit Role '+role[0].role_name,
 page_title : 'Edit Role',
-card_title : 'Edit Role na Permissons'
+card_title : 'Edit Role na Permissons',
+breadcrumb_main : 'Mipangilio' 
 }) %>
 <div class="ribbon-three ribbon-three-info">
 <span class="badge">EDIT</span>
@@ -34,10 +36,9 @@ card_title : 'Edit Role na Permissons'
                                 <label class="form-check-label" for="formCheck<%=i%>"> 
                                 <input class="form-check-input checkbox" value="<%= permissions[i].id %>" 
                                 <%=permissions[i].is_default ? 'disabled checked' : ''%>
-                                <%=assigned_permissions.includes(permissions[i].id) ? 'checked' : '' 
-                                %>
+                                <%=assigned_permissions.includes(permissions[i].id) ? 'checked' : '' %>
                                 type="checkbox" name="formCheck1" id="formCheck<%=i%>">
-                                    <span class="ml-4"><%= permissions[i].permission_name %>  </span>  
+                                    <span class="ml-4"><%= permissions[i].display_name %>  </span>  
                                 </label>
                             </div>
                             <% } %>
@@ -73,7 +74,7 @@ card_title : 'Edit Role na Permissons'
         </div><!--end row-->
 </div>
 <!-- end card -->
-<%- include('layouts/partials/footer.ejs') %>
+<%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
 <script type="text/javascript" src="/design/layouts/scripts/roles_scripts.js"></script>
 </body>
 </html>

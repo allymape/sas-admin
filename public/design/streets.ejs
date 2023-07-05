@@ -1,3 +1,4 @@
+<% var card_title = '' %> 
 <%- include('layouts/partials/header.ejs' , {
     title : 'Mitaa',
     page_title : 'Orodha ya Mitaa',
@@ -74,7 +75,7 @@
         <!-- End pagination and page length -->
     </div>
 </div><!-- end card -->
-<%- include('layouts/partials/footer.ejs') %>
+<%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
 <script type="text/javascript" src="design/layouts/scripts/mitaa_scripts.js"></script>
 </body>
 </html>

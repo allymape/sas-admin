@@ -99,10 +99,29 @@ global.routeIs =  (url_segments, currentUrl) => {
   return false;
 };
 
-global.permission = () => {
-  const pluck = (arr , key) => arr.map(i => i[key].toLowerCase());
-  const permissions = session().RoleManage;
-       console.log(pluck(permissions , 'permission_name'));
+global.permission = (req , permission_name) => {
+       if(req && permission_name){
+        const pluck = (arr , key) => arr.map(i => i[key].toLowerCase());
+        const permissions = req.session.RoleManage;
+            if(permissions.length > 0){
+              const user_permissions = pluck(permissions , 'permission_name');
+              // Check permission name has separated by | and loop through to 
+              // check if user has at least one permission,
+              // | is conjuction or
+              if(permission_name.includes("|")){
+                 var found = false;
+                  permission_name.split('|').forEach( function(p){
+                        if(user_permissions.includes(p.toLowerCase())){
+                            found = true;
+                            return true;
+                        }
+                  });
+                  return found;
+              }
+              return user_permissions.includes(permission_name.toLowerCase());
+            }
+       }
+       return false;
 }
 
 var modifyUrl = function(currentUrl){
@@ -1116,16 +1135,7 @@ app.get("/Dashboard", function (req, res) {
           var zisizosajiliwa = totalApplications - successApplications;
           var wastani = (successApplications / totalApplications) * 100;
           if (statusCode == 300) {
-            // console.info(new Date() + ": " + req.session.userName + " access Dashboard Data via /Dashboard EndPoint")
-            // console.info(
-            //   new Date() +
-            //     ": " +
-            //     req.session.userName +
-            //     " with IP: " +
-            //     requestIp.getClientIp(req) +
-            //     " access Dashboard Data via /Dashboard EndPoint "
-            // );
-            res.render(path.join(__dirname + "/public/design/dashboard"), {
+            res.render(path.join(__dirname + "/public/design/dashboard/dashboard"), {
               req: req,
               salamu: majira,
               name: data,
@@ -13903,9 +13913,9 @@ app.get("/Roles", function (req, res) {
     req.session.userName === true
   ) {
     var hasMatch =false;
-    for (var index = 0; index < req.session.RoleManage.length; ++index) {
-        var animal = req.session.RoleManage[index]; 
-    if(animal.permission_id == 64){ 
+    // for (var index = 0; index < req.session.RoleManage.length; ++index) {
+        // var animal = req.session.RoleManage[index]; 
+    // if(animal.permission_id == 64){ 
     request(
       {
         url: rolesAPI+`?page=${page}&per_page=${per_page}`,
@@ -13959,8 +13969,8 @@ app.get("/Roles", function (req, res) {
         }
       }
     );
-    }
-  }
+    // }
+  // }
   } else {
     res.redirect("/");
   }

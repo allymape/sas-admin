@@ -1,0 +1,527 @@
+
+<%- include('../layouts/partials/header.ejs' , {
+title : 'Dashibodi',
+page_title : 'Dashibodi',
+card_title :  '',
+breadcrumb_main : 'Dashboard' 
+}) %>
+<div class="row">
+    <div class="col">
+        <div class="h-100">
+            <div class="row mb-3 pb-1">
+                <div class="col-12">
+                    <div class="d-flex align-items-lg-center flex-lg-row flex-column">
+                        <div class="flex-grow-1">
+                            <h4 class="fs-16 mb-1"><%= salamu %>, <%= name %> !</h4>
+                            <p class="text-muted mb-0">Taarifa Fupi ya Uanzishaji na Usajili wa Shule.</p>
+                        </div>
+                        <div class="mt-3 mt-lg-0">
+                            <form action="javascript:void(0);">
+                                <% if(useLev == 11){ %>
+                                <div class="row g-3 mb-0 align-items-center">
+                                    <div class="col-sm-auto">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control border-0 dash-filter-picker shadow" 
+                                            placeholder="Weka Namba ya Ombi" id="scantrackno">
+                                            <div class="input-group-text bg-primary border-primary text-white">
+                                                <i class="ri-calendar-2-line"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <button type="button" onclick="sajiliHati()" class="btn btn-soft-success">
+                                            <i class="ri-add-circle-line align-middle me-1"></i> Tafuta</button>
+                                    </div>
+                                    <div class="col-auto">
+                                        <button type="button" onclick="lipia()" class="btn btn-soft-success">
+                                            <i class="ri-add-circle-line align-middle me-1"></i> Lipia</button>
+                                    </div>
+                                    <script>
+                                        function sajiliHati(){
+                                            var scantrackno = document.getElementById('scantrackno').value;
+                                            
+                                            $.ajax({
+                                                url: "/ScanTrackNo",
+                                                type: 'POST',
+                                                data: JSON.stringify({"trackno": scantrackno}),
+                                                contentType: 'application/json',
+                                                success: function(response) {
+                                                // alert("imefanikiwa")
+                                                $('#showModal').modal('show');
+                                                var level = document.getElementById('cheo-field');
+                                                level.value = response.message;
+                                                }
+                                            });
+                                        }
+                                        function lipia(){
+                                            var scantrackno = document.getElementById('scantrackno').value;
+                                            
+                                            $.ajax({
+                                                url: "/SimulatePayment",
+                                                type: 'POST',
+                                                data: JSON.stringify({"trackno": scantrackno}),
+                                                contentType: 'application/json',
+                                                success: function(response) {
+                                                // alert("imefanikiwa")
+                                                $('#showModal').modal('show');
+                                                var level = document.getElementById('cheo-field');
+                                                level.value = response.message;
+                                                }
+                                            });
+                                        }
+                                    </script>
+                                </div>
+                                <% } %>
+                                <!--end row-->
+                            </form>
+                        </div>
+                    </div><!-- end card header -->
+                </div>
+                <!--end col-->
+            </div>
+            <!--end row-->
+
+            <div class="row">
+                <div class="col-xl-3 col-md-6">
+                    <!-- card -->
+                    <div class="card card-animate">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Shule Zilizosajiliwa</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <!-- <h5 class="text-success fs-14 mb-0">
+                                        <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +16.24 %
+                                    </h5> -->
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between mt-4">
+                                <div>
+                                    <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="<%= count %>"></span></h4>
+                                    <a href="/RipotiZilizosajiliwa" class="text-decoration-underline">Angalia zaidi</a>
+                                </div>
+                                <div class="avatar-sm flex-shrink-0">
+                                    <span class="avatar-title bg-soft-success rounded fs-3">
+                                        <i class="bx bxs-school text-success"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div><!-- end card body -->
+                    </div><!-- end card -->
+                </div><!-- end col -->
+
+                <div class="col-xl-3 col-md-6">
+                    <!-- card -->
+                    <div class="card card-animate">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Kibali cha Kuanzisha Shule Bila Majengo</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <!-- <h5 class="text-success fs-14 mb-0">
+                                        <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +29.08 %
+                                    </h5> -->
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between mt-4">
+                                <div>
+                                    <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="<%= kauntibilamajengo %>"></span> </h4>
+                                    <a href="/RipotiAnzishaBilaMajengo" class="text-decoration-underline">Angalia zaidi</a>
+                                </div>
+                                <div class="avatar-sm flex-shrink-0">
+                                    <span class="avatar-title bg-soft-warning rounded fs-3">
+                                        <i class="bx bx-user-circle text-warning"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div><!-- end card body -->
+                    </div><!-- end card -->
+                </div><!-- end col -->
+
+                <div class="col-xl-3 col-md-6">
+                    <!-- card -->
+                    <div class="card card-animate">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-0"> Kibali cha Kuanzisha Shule kwa Majengo</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <!-- <h5 class="text-danger fs-14 mb-0">
+                                        <i class="ri-arrow-right-down-line fs-13 align-middle"></i> -3.57 %
+                                    </h5> -->
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between mt-4">
+                                <div>
+                                    <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="<%= kauntimajengo %>"></span></h4>
+                                    <a href="/RipotiAnzishaMajengo" class="text-decoration-underline">Angalia zaidi</a>
+                                </div>
+                                <div class="avatar-sm flex-shrink-0">
+                                    <span class="avatar-title bg-soft-info rounded fs-3">
+                                        <i class="bx bx-book-reader text-info"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div><!-- end card body -->
+                    </div><!-- end card -->
+                </div><!-- end col -->
+
+                <div class="col-xl-3 col-md-6">
+                    <!-- card -->
+                    <div class="card card-animate">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-0"> Uthibitisho wa Umiliki na Umeneja</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <!-- <h5 class="text-muted fs-14 mb-0">
+                                        +0.00 %
+                                    </h5> -->
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between mt-4">
+                                <div>
+                                    <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="<%= kauntimmiliki %>"></span> </h4>
+                                    <a href="/RipotiUthibitisho" class="text-decoration-underline">Angalia zaidi</a>
+                                </div>
+                                <div class="avatar-sm flex-shrink-0">
+                                    <span class="avatar-title bg-soft-primary rounded fs-3">
+                                        <i class="bx bx-wallet text-primary"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div><!-- end card body -->
+                    </div><!-- end card -->
+                </div><!-- end col -->
+            </div> <!-- end row-->
+
+            <div class="row">
+                <div class="col-xl-3 col-md-6">
+                    <!-- card -->
+                    <div class="card card-animate">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Kubadili Jina</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <!-- <h5 class="text-success fs-14 mb-0">
+                                        <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +16.24 %
+                                    </h5> -->
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between mt-4">
+                                <div>
+                                    <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="<%= kauntibadilijina %>"></span></h4>
+                                    <a href="/RipotiKubadiliJina" class="text-decoration-underline">Angalia zaidi</a>
+                                </div>
+                                <div class="avatar-sm flex-shrink-0">
+                                    <span class="avatar-title bg-soft-success rounded fs-3">
+                                        <i class="bx bxs-school text-success"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div><!-- end card body -->
+                    </div><!-- end card -->
+                </div><!-- end col -->
+
+                <div class="col-xl-3 col-md-6">
+                    <!-- card -->
+                    <div class="card card-animate">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Kibali cha Bweni</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <!-- <h5 class="text-success fs-14 mb-0">
+                                        <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +29.08 %
+                                    </h5> -->
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between mt-4">
+                                <div>
+                                    <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="<%= kauntibweni %>"></span> </h4>
+                                    <a href="/RipotiBweni" class="text-decoration-underline">Angalia zaidi</a>
+                                </div>
+                                <div class="avatar-sm flex-shrink-0">
+                                    <span class="avatar-title bg-soft-warning rounded fs-3">
+                                        <i class="bx bx-user-circle text-warning"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div><!-- end card body -->
+                    </div><!-- end card -->
+                </div><!-- end col -->
+
+                <div class="col-xl-3 col-md-6">
+                    <!-- card -->
+                    <div class="card card-animate">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-0"> Kibali cha Dahalia</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <!-- <h5 class="text-danger fs-14 mb-0">
+                                        <i class="ri-arrow-right-down-line fs-13 align-middle"></i> -3.57 %
+                                    </h5> -->
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between mt-4">
+                                <div>
+                                    <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="<%= kauntidahalia %>"></span></h4>
+                                    <a href="#" class="text-decoration-underline">Angalia zaidi</a>
+                                </div>
+                                <div class="avatar-sm flex-shrink-0">
+                                    <span class="avatar-title bg-soft-info rounded fs-3">
+                                        <i class="bx bx-book-reader text-info"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div><!-- end card body -->
+                    </div><!-- end card -->
+                </div><!-- end col -->
+
+                <div class="col-xl-3 col-md-6">
+                    <!-- card -->
+                    <div class="card card-animate">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-0"> Kubadili Umiliki</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <!-- <h5 class="text-muted fs-14 mb-0">
+                                        +0.00 %
+                                    </h5> -->
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between mt-4">
+                                <div>
+                                    <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="0"></span> </h4>
+                                    <a href="/RipotiBadiliMmiliki" class="text-decoration-underline">Angalia zaidi</a>
+                                </div>
+                                <div class="avatar-sm flex-shrink-0">
+                                    <span class="avatar-title bg-soft-primary rounded fs-3">
+                                        <i class="bx bx-wallet text-primary"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div><!-- end card body -->
+                    </div><!-- end card -->
+                </div><!-- end col -->
+            </div> <!-- end row-->
+            <div class="row">
+                <div class="col-xl-3 col-md-6">
+                    <!-- card -->
+                    <div class="card card-animate">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Kufuta Usajili</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <!-- <h5 class="text-success fs-14 mb-0">
+                                        <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +16.24 %
+                                    </h5> -->
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between mt-4">
+                                <div>
+                                    <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="0"></span></h4>
+                                    <a href="/RipotiZilizofutiwa" class="text-decoration-underline">Angalia zaidi</a>
+                                </div>
+                                <div class="avatar-sm flex-shrink-0">
+                                    <span class="avatar-title bg-soft-success rounded fs-3">
+                                        <i class="bx bxs-school text-success"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div><!-- end card body -->
+                    </div><!-- end card -->
+                </div><!-- end col -->
+
+                <div class="col-xl-3 col-md-6">
+                    <!-- card -->
+                    <div class="card card-animate">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Kibali cha Kuongeza Mikondo</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <!-- <h5 class="text-success fs-14 mb-0">
+                                        <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +29.08 %
+                                    </h5> -->
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between mt-4">
+                                <div>
+                                    <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="0"></span> </h4>
+                                    <a href="#" class="text-decoration-underline">Angalia zaidi</a>
+                                </div>
+                                <div class="avatar-sm flex-shrink-0">
+                                    <span class="avatar-title bg-soft-warning rounded fs-3">
+                                        <i class="bx bx-user-circle text-warning"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div><!-- end card body -->
+                    </div><!-- end card -->
+                </div><!-- end col -->
+
+                <div class="col-xl-3 col-md-6">
+                    <!-- card -->
+                    <div class="card card-animate">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-0"> Kibali cha Kuongeza Tahasusi</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <!-- <h5 class="text-danger fs-14 mb-0">
+                                        <i class="ri-arrow-right-down-line fs-13 align-middle"></i> -3.57 %
+                                    </h5> -->
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between mt-4">
+                                <div>
+                                    <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="<%= tahasusiCount %>"></span></h4>
+                                    <a href="#" class="text-decoration-underline">Angalia zaidi</a>
+                                </div>
+                                <div class="avatar-sm flex-shrink-0">
+                                    <span class="avatar-title bg-soft-info rounded fs-3">
+                                        <i class="bx bx-book-reader text-info"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div><!-- end card body -->
+                    </div><!-- end card -->
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <!-- card -->
+                    <div class="card card-animate">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-0"> Kubadili Aina ya Usajili</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <!-- <h5 class="text-danger fs-14 mb-0">
+                                        <i class="ri-arrow-right-down-line fs-13 align-middle"></i> -3.57 %
+                                    </h5> -->
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between mt-4">
+                                <div>
+                                    <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="<%= kauntiainausajili %>"></span></h4>
+                                    <a href="#" class="text-decoration-underline">Angalia zaidi</a>
+                                </div>
+                                <div class="avatar-sm flex-shrink-0">
+                                    <span class="avatar-title bg-soft-info rounded fs-3">
+                                        <i class="bx bx-book-reader text-info"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div><!-- end card body -->
+                    </div><!-- end card -->
+                </div>
+                <!-- end col -->
+            </div> <!-- end row-->
+        </div> 
+
+    </div> 
+
+    <div class="col-auto layout-rightside-col">
+        <div class="overlay"></div>
+        <div class="layout-rightside">
+            <div class="card h-100 rounded-0">
+                <div class="p-3">
+                    <h6 class="text-muted mb-3 text-uppercase fw-semibold">Shule Zilizosajiliwa</h6>
+                    <div class="swiper vertical-swiper" style="height: 250px;">
+                        <div class="swiper-wrapper">
+                            <% for(var i = 0; i < ngazi.length; i++){ %>
+                            <div class="swiper-slide">
+                                <div class="card border border-dashed shadow-none">
+
+                                    <div class="card-body">
+                                        <div class="d-flex">
+                                            <div class="flex-shrink-0 avatar-sm">
+                                                <div class="avatar-title bg-light rounded">
+                                                    <img src="design/assets/images/companies/img-1.png" alt="" height="30">
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1 ms-3">
+                                                <div>
+                                                    <p class="text-muted mb-1 fst-italic text-truncate-two-lines"> " Shule za <%= ngazi[i].category %>. "</p>
+                                                    <div
+                                                        class="fs-11 align-middle text-warning">
+                                                        <i class="ri-star-fill"></i>
+                                                        <i class="ri-star-fill"></i>
+                                                        <i class="ri-star-fill"></i>
+                                                        <i class="ri-star-fill"></i>
+                                                        <i class="ri-star-fill"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="text-end mb-0 text-muted">
+                                                    - zipo <cite title="Source Title"><%= ngazi[i].idadi %></cite>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="p-3 mt-2">
+                        <h6 class="text-muted mb-3 text-uppercase fw-semibold">Idadi ya Shule kwa Mikoa
+                        </h6>
+
+                        <ol class="ps-3 text-muted">
+                            <% for(var i = 0; i < mikoa.length; i++){ %>
+                            <li class="py-1">
+                                <a href="#" class="text-muted"> <%= mikoa[i].RegionName %> <span class="float-end">(<%= mikoa[i].idadi %>)</span></a>
+                            </li>
+                            <% } %>
+                        </ol>
+                    </div>
+                    <div class="p-3">
+                        <h6 class="text-muted mb-0 text-uppercase fw-semibold">Ngazi za Shule</h6>
+                    </div>
+                    <div data-simplebar style="max-height: 410px;" class="p-3 pt-0">
+                        <div class="acitivity-timeline acitivity-main">
+                            <% for(var i = 0; i < sajiliwa.length; i++){ %>
+                            <div class="acitivity-item d-flex">
+                                <div class="flex-shrink-0 avatar-xs acitivity-avatar">
+                                    <div class="avatar-title bg-soft-success text-success rounded-circle">
+                                        <i class="ri-shopping-cart-2-line"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1 lh-base">Shule za <%= sajiliwa[i].registry %></h6>
+                                    <p class="text-muted mb-1"><%= sajiliwa[i].category %> </p>
+                                    <small class="mb-0 text-muted">zipo <%= sajiliwa[i].idadi %> </small>
+                                </div>
+                            </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div> 
+
+    </div> 
+</div>
+<%- include('../layouts/partials/footer.ejs' , {card_title :  ''}) %>
+<!-- <script type="text/javascript" src="design/layouts/scripts/kata_scripts.js"></script> -->
+</body>
+</html>

@@ -1,3 +1,4 @@
+<% var card_title = '' %> 
 <%- include('layouts/partials/header.ejs' , {
     title : 'Kata',
     page_title : 'Orodha ya Kata',
@@ -68,7 +69,7 @@
             <%- include('paginations/ajax_pagination.ejs')%>
         </div>
     </div><!-- end card -->
-<%- include('layouts/partials/footer.ejs') %>
+<%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
 <script type="text/javascript" src="design/layouts/scripts/kata_scripts.js"></script>
 </body>
 </html>

@@ -1,7 +1,9 @@
+<% var card_title = '' %> 
 <%- include('layouts/partials/header.ejs' , {
     title : 'Mikoa',
     page_title : 'Orodha ya Mikoa',
-    card_title : 'Mikoa iliyopo'
+    card_title : 'Mikoa iliyopo',
+    breadcrumb_main : 'Mipangilio' 
 }) %>
 <div class="card-body">
     <div id="customerList">
@@ -152,7 +154,7 @@
     </div>
 </div>
 <!--end modal -->
-<%- include('layouts/partials/footer.ejs') %>
+<%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
 <script type="text/javascript" src="design/layouts/scripts/mikoa_scripts.js"></script>
 </body>
 </html>

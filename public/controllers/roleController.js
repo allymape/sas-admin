@@ -11,6 +11,7 @@ var tengenezaRoleAPI = API_BASE_URL + "addRole";
 var editRoleAPI   = API_BASE_URL + "editRole";
 var updateRoleAPI = API_BASE_URL + "updateRole";
 var deleteRoleAPI = API_BASE_URL + "deleteRole";
+var syncRolesAndPermissions = API_BASE_URL + "generate_roles_permissions";
 
 
 // Get all roles
@@ -81,7 +82,15 @@ roleController.post("/futaRole/:id", function (req, res) {
         res.redirect("/Roles");
   });
 });
-
+// sync roles and permissions 
+roleController.post("/sync_roles_and_permissions" , function(req, res){
+     sendRequest(req, res, syncRolesAndPermissions , "POST" , {} , (data) => {
+         res.send({
+           statusCode: data.statusCode,
+           message: data.message,
+         });
+     });
+});
 function getAllRoles(req, res, edit = false, editedData = null) {
   var obj = [];
   var per_page = Number(req.query.per_page || 10);
