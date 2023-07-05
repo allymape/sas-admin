@@ -1,0 +1,432 @@
+<% 
+const pluck = (arr , key) => arr.map(i => i[key]);
+const menuItems = [
+// dashibodi
+    {
+        label : "Dashboard",
+        url  : "/Dashboard",
+        menuTitle : '',
+        icon : "ri-dashboard-2-line",
+        menuId : "",
+        pattern : "",
+   },
+//    MAOMBI
+    {
+        label : "Maombi",
+        url  : "#sidebarDashboards",
+        menuTitle : '',
+        icon : "ri-git-pull-request-line",
+        menuId : "sidebarDashboards",
+        pattern : "Dashboard",
+        // subMenuOpenPattern : 'MaombiKuanzishaShule|MaombiMmilikiShule|MaombiKusajiliShule|MaombiKusajiliShuleSerikali|KuongezaMikondo|BadiliJina|KuongezaTahasusi|KuongezaDahalia|KuongezaBweni|BadiliUsajili|Hamisha|BadiliMmiliki|BadiliMeneja|FutaShule|SajiliOmbi/*|TaarifaOmbi/*|SajiliOmbiSerikali/*|BadiliMkondo/*|BadiliTahasusi/*|BadiliBweni/*|BadiliDahalia/*|HamishaShuleDetails/*|ViewOmbiMmiliki/*|ViewOmbiMeneja/*|FutaShuleTaarifa/*',
+        subMenus : [
+            {
+                label : "Kuanzisha Shule",
+                url  : "MaombiKuanzishaShule",
+                icon : "",
+                counterId : "kuanzacounti"
+            },
+            {
+                label : "Mmiliki/Meneja wa Shule",
+                url  : "MaombiMmilikiShule",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+            {
+                label : "Kusajili Shule (Binafsi)",
+                url  : "MaombiKusajiliShule",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+            {
+                label : "Kusajili Shule (Serikali)",
+                url  : "/MaombiKusajiliShuleSerikali",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+            {
+                label : "Kuongeza Mikondo",
+                url  : "KuongezaMikondo",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+            {
+                label : "Kubadili Jina la Shule",
+                url  : "BadiliJina",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+            {
+                label : "Kuongeza Tahasusi",
+                url  : "KuongezaTahasusi",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+            {
+                label : "Kuongeza Bweni",
+                url  : "KuongezaBweni",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+            {
+                label : "Kuongeza Dahalia",
+                url  : "KuongezaDahalia",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+            {
+                label : "Kubadili Aina ya Usajili",
+                url  : "BadiliUsajili",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+            {
+                label : "Kuhamisha Shule",
+                url  : "Hamisha",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+            {
+                label : "Kubadili Mmiliki wa Shule",
+                url  : "BadiliMmiliki",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+            {
+                label : "Kubadili Meneja wa Shule",
+                url  : "BadiliMeneja",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+            {
+                label : "Kufuta Usajili wa Shule(Hiari)",
+                url  : "FutaShule",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+        ]
+   },
+//    RIPOTI
+   {
+        label : "Ripoti",
+        url  : "#sidebarRipoti",
+        menuTitle : '',
+        icon : "ri-bubble-chart-line",
+        menuId : "sidebarRipoti",
+        pattern : "",
+        // subMenuOpenPattern : 'RipotiZilizosajiliwa|TaarifaSajili/*|TaarifaBilaMajengo/*|TaarifaMajengoKat/*|SajiliwaZilizokataliwa|RipotiAnzishaBilaMajengo|RipotiAnzishaBilaMajengoKataliwa|RipotiUthibitisho|RipotiKubadiliJina|RipotiKuongezaBweni|RipotiDahalia|RipotiBadiliMmiliki|ViewBadilimeneja|RipotiZilizofutiwa|RipotiKuongezaMikondo|RipotiTahasusi|ViewRipotiDahalia/*',
+        subMenus : [
+            {
+                label : "Shule Zilizosajiliwa",
+                url  : "RipotiZilizosajiliwa",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+            {
+                label : "Sajiliwa Zilizokataliwa",
+                url  : "SajiliwaZilizokataliwa",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+            {
+                label : "Kibali cha Kuanzisha Shule Bila Majengo",
+                url  : "RipotiAnzishaBilaMajengo",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+            {
+                label : "Kibali cha Kuanzisha Shule Bila Majengo - Kataliwa",
+                url  : "RipotiAnzishaBilaMajengoKataliwa",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+            {
+                label : "Kibali cha Kuanzisha Shule kwa Majengo",
+                url  : "RipotiAnzishaMajengo",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+            {
+                label : "Kibali cha Kuanzisha Shule kwa Majengo - Kataliwa",
+                url  : "RipotiAnzishaMajengoKataliwa",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+            {
+                label : "Uthibitisho wa Umiliki na Umeneja",
+                url  : "RipotiUthibitisho",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+            {
+                label : "Kubadili Jina la Shule",
+                url  : "RipotiKubadiliJina",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+             {
+                label : "Kibali cha Bweni",
+                url  : "RipotiKuongezaBweni",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+             {
+                label : "Kibali cha Dahalia",
+                url  : "RipotiDahalia",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+             {
+                label : "Kubadili Umiliki",
+                url  : "RipotiBadiliMmiliki",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+             {
+                label : "Kubadili Umeneja",
+                url  : "ViewBadilimeneja",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+             {
+                label : "Kufuta Usajili",
+                url  : "RipotiZilizofutiwa",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+             {
+                label : "Kibali cha Kuongeza Mikondo",
+                url  : "RipotiKuongezaMikondo",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+             {
+                label : "Kibali cha Kuongeza Tahasusi",
+                url  : "RipotiTahasusi",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+        ]
+   },
+   //MPANGLIO
+   {
+        label : "Mpangilio",
+        url  : "#sidebarUI",
+        menuTitle : 'UTHIBITISHO',
+        icon : "ri-list-settings-line",
+        menuId : "sidebarUI",
+        pattern : "",
+        subMenus : [
+            {
+                label : "Vyeo",
+                url  : "Vyeo",
+                icon : "",
+                counterId : "",
+                pattern : "Vyeo",
+            },
+            {
+                label : "Watumiaji",
+                url  : "Watumiaji",
+                icon : "",
+                counterId : "",
+                pattern : "Watumiaji",
+            },
+            {
+                label : "Waombaji",
+                url  : "Waombaji",
+                icon : "",
+                counterId : "",
+                pattern : "Waombaji",
+            },
+            {
+                label : "Kanda (Zones)",
+                url  : "Zoni",
+                icon : "",
+                counterId : "",
+                pattern : "",
+            },
+            {
+                label : "Mikoa",
+                url  : "Mikoa",
+                icon : "",
+                counterId : "",
+                pattern : "Mikoa",
+            },
+            {
+                label : "Halmashauri",
+                url  : "Halmashauri",
+                icon : "",
+                counterId : "",
+                pattern : "Halmashauri",
+            },
+            {
+                label : "Kata",
+                url  : "Kata",
+                icon : "",
+                counterId : "",
+                pattern : "Kata",
+            },
+             {
+                label : "Mitaa",
+                url  : "Mitaa",
+                icon : "",
+                counterId : "",
+                pattern : "Mitaa",
+            },
+             {
+                label : "Viambatisho",
+                url  : "Viambatisho",
+                icon : "",
+                counterId : "",
+                pattern : "Viambatisho",
+            },
+             {
+                label : "Ada za Malipo",
+                url  : "Malipo",
+                icon : "",
+                counterId : "",
+                pattern : "Malipo",
+            },
+             {
+                label : "Tahasusi",
+                url  : "Tahasusi",
+                icon : "",
+                counterId : "",
+                pattern : "Tahasusi",
+            },
+             {
+                label : "Michepuo",
+                url  : "Michepuo",
+                icon : "",
+                counterId : "",
+                pattern : "Michepuo",
+            },
+             {
+                label : "Roles & Permissions",
+                url  : "Roles",
+                icon : "",
+                counterId : "",
+                pattern : "Roles|EditRole/*|CreateRole",
+            },
+             {
+                label : "Permissions",
+                url  : "Permissions",
+                icon : "",
+                counterId : "",
+                pattern : "Permissions|Permissions/*",
+            },
+        ]
+   },
+   // AUDIT TRAIL
+    {
+        label : "Audit Trail",
+        url  : "AuditTrail",
+        menuTitle : '',
+        icon : "ri-user-search-line",
+        menuId : "",
+        pattern : "AuditTrail",
+   },
+   // LOGOUT
+    {
+        label : "Ondoka",
+        url  : "/",
+        menuTitle : '',
+        icon : "ri-logout-circle-r-line",
+        menuId : "",
+        pattern : "",
+   },
+];
+%>
+<div id="scrollbar">
+    <div class="container-fluid">
+        <div id="two-column-menu">
+        </div>
+        <ul class="navbar-nav" id="navbar-nav">
+            <li class="menu-title"><span data-key="t-menu">Menu</span></li>
+
+            <% menuItems.forEach( function(item) { 
+                if(item.menuTitle){
+                    %>
+                     <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-components"><%= item.menuTitle %></span></li>
+                    <%
+                }
+                if(typeof item.subMenus !== 'undefined' && item.subMenus.length > 0 )
+                {
+                    %>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" 
+                            href="<%= item.menuId ? item.url : '/'+item.url %>" 
+                            data-bs-toggle="collapse" 
+                            role="button" aria-expanded="false" 
+                            aria-controls="<%= item.menuId %>"
+                        >
+                            <i class="<%= item.icon %>"></i> 
+                            <span data-key="t-dashboards"><%= item.label %></span>
+                        </a>
+                         <div class="collapse menu-dropdown
+                            <%= routeIs(pluck(item.subMenus , 'pattern').join("|") , getCurrentUrl(req)) ? 'show' : '' %>
+                            " 
+                            id="<%= item.menuId %>"
+                          >
+                                <ul class="nav nav-sm flex-column">
+                                     <% item.subMenus.forEach( function(subItem) { %>
+                                         <li class="nav-item">
+                                            <a href="/<%= subItem.url %>" 
+                                                class="nav-link <%= routeIs(subItem.pattern , getCurrentUrl(req)) ? 'active' : '' %>" 
+                                                data-key="t-analytics">
+                                                  <%= subItem.label %>
+                                                  <% if(subItem.counterId ){%>
+                                                        <span class="badge badge-pill bg-danger" id="<%=subItem.counterId%>" data-key="t-new"></span> 
+                                                    <% } %>
+                                                </a>
+                                         </li>
+                                     <% }) %>
+                                </ul>
+                         </div>
+                    </li>
+                    <%
+                }else{
+                    %>
+                    <li class="nav-item">
+                        <a href="<%= item.url %>" 
+                            class="nav-link menu-link <%= routeIs( item.patten , getCurrentUrl(req)) ? 'active' : '' %>"
+                         >
+                            <i class="ri <%=item.icon%>"></i> 
+                            <span data-key="t-widgets"><%=item.label%></span>
+                        </a>
+                    </li>
+                    <% 
+                }
+            }) 
+           %>           
+    </div>
+</div>
+  <!-- Sidebar -->

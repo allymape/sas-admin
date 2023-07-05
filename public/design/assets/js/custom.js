@@ -1,10 +1,183 @@
+function ajaxRequest(url, method, callback, formData = {} , loading = true){
+    var curretntUrl = window.location.href;
+    var parameters = curretntUrl.split("?")[1] || "";
+    if(loading) { showLoadingSpinner(); }
+    $.ajax({
+        url: url +  (parameters ? "?" + parameters : ""),
+        type: method,
+        contentType: "application/json",
+        dataType: 'json',
+        data: formData,
+        success: function (response) {
+             if(loading) {hideLoadingSpinner();}
+             callback(response)
+        },
+        error: function (xhr, exception) {
+          if(loading) {hideLoadingSpinner();}
+          var msg = "";
+          if (xhr.status === 0) {
+            msg = "Not connect.\n Verify Network." + xhr.responseText;
+          } else if (xhr.status == 404) {
+            msg = "Requested page not found. [404]" + xhr.responseText;
+          } else if (xhr.status == 500) {
+            msg = "Internal Server Error [500]." + xhr.responseText;
+          } else if (exception === "parsererror") {
+            msg = "Requested JSON parse failed.";
+          } else if (exception === "timeout") {
+            msg = "Time out error." + xhr.responseText;
+          } else if (exception === "abort") {
+            msg = "Ajax request aborted.";
+          } else {
+            msg = "Error:" + xhr.status + " " + xhr.responseText;
+          }
+          console.log(msg);
+        },
+    });
+}
+
+var dataTable = (url,tableId , fields , response , 
+    actionBtn = {
+      showBtn :  { show : false}, 
+      editBtn :  { show : true }, 
+      deleteBtn: { show : true },
+      otherBtn:  { show : false }
+    }, hasRowNumber = true , caption = 'Idadi iliyopatikana') => {
+      var table = $(`#${tableId}`);
+      var tBody = table.find("tbody");
+      var data = response.data;
+      var pages = response.pagination.pages;
+      var per_page = response.pagination.per_page;
+      var current = response.pagination.current;
+      var total = response.pagination.total;
+      var first_item = per_page * (current - 1) + 1;
+  tBody.empty(); //empty table body
+  $(".table-caption-header").remove();
+  table.before(
+    `<div class="table-caption-header alert alert-info h6 d-flex align-items-center justify-content-between">
+        <span>${caption} ${total}.</span> 
+        <span class='justify-content-end'>Ukurasa ${current}  kati ya ${pages}     
+        [${first_item} hadi ${first_item - 1 + data.length}] </span>
+    </div>`
+  );
+  table.closest(".card-body").append(`<div class="ribbon-three ribbon-three-info">
+                                        <span class="badge">${total}</span>
+                                    </div>`);
+  $.each(data, (dataKey, dataValue) => {
+    var  rowData = "";
+    var dataAttributes='';
+    //  rowData =  rowData + `<tr>`;
+     rowData =  rowData + (hasRowNumber ? `<td>${ first_item + dataKey }</td>` : "");
+    var tdCheckbox = "";
+    
+    $.each(fields, (fieldKey, fieldValues) => {
+      dataAttributes =  dataAttributes + (containtHtmlTags(dataValue[fieldKey])? '' :`data-${fieldKey}="${dataValue[fieldKey]}"`);
+      if (isCheckBox(dataValue[fieldKey])) {
+        tdCheckbox = tdCheckbox + `<td>${dataValue[fieldKey]}</td>`;
+        // return;
+      }else{
+          var hidden = typeof fieldValues.hidden !== undefined ? fieldValues.hidden : false;
+          if(!hidden){
+            rowData =  rowData + `<td 
+                        ${typeof fieldValues.tdClass      !=='undefined' ? "class='"+ fieldValues.tdClass +"'" : '' } 
+                        ${typeof fieldValues.tdTitle      !=='undefined' ? "title='"+ fieldValues.tdTitle +"'" : '' } 
+                        ${typeof fieldValues.tdStyle      !=='undefined' ? "style='"+ fieldValues.tdStyle +"'" : '' }
+                        ${typeof fieldValues.tdAttributes !=='undefined' ? fieldValues.tdAttributes : '' }
+                        >
+                        ${dataValue[fieldKey]}
+                        </td>`;
+          }
+      }
+      
+    });
+    if ( actionBtn !== null && typeof actionBtn !== "undefined") {
+
+             rowData =  rowData + `<td class="text-center">`;
+            if (typeof actionBtn.showBtn !== "undefined" && actionBtn.showBtn.show) {
+               rowData =  rowData + `Show`;
+            }
+            if (typeof actionBtn.editBtn !== "undefined" && actionBtn.editBtn.show) {
+               rowData =  rowData +` <a href='#' class="btn btn-link text-primary" 
+                            data-id="${dataValue.id ? dataValue.id : ''}" 
+                            ${dataAttributes}
+                            onclick="${typeof actionBtn.editBtn.callback !== 'undefined' ? actionBtn.editBtn.callback:''}"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" 
+                                  width="24" height="24" viewBox="0 0 24 24" 
+                                  fill="none" stroke="currentColor" stroke-width="2" 
+                                  stroke-linecap="round" stroke-linejoin="round" 
+                                  class="feather feather-edit-3">
+                                  <path d="M12 20h9"
+                              >
+                              </path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z">
+                              </path>
+                          </svg>
+                        </a>`;
+            }
+            if (typeof actionBtn.deleteBtn !== "undefined" && actionBtn.deleteBtn.show) {
+               rowData = rowData +` <button type="button" class="btn btn-link text-danger" 
+                          data-id="${dataValue.id ? dataValue.id : ''}" 
+                          ${dataAttributes}
+                          onclick="${typeof actionBtn.deleteBtn.callback !== 'undefined' ? actionBtn.deleteBtn.callback :''}"
+                          >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+                          class="feather feather-trash-2">
+                          <polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line>
+                          </svg>
+                          </button>`;
+            }
+            if (typeof actionBtn.otherBtn !== "undefined" && actionBtn.otherBtn.show) {
+                 rowData =  rowData +`<button type="button" class="btn btn-link text-warning" 
+                            data-id="${dataValue.id ? dataValue.id : ''}" 
+                            ${dataAttributes}
+                            onclick="${typeof actionBtn.otherBtn.callback !== 'undefined' ? actionBtn.otherBtn.callback :''}"
+                          ><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-unlock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>
+                          </button>`;
+            }
+             rowData =  rowData + `</td>`;
+
+    }
+    if(tdCheckbox){
+         rowData = tdCheckbox +  rowData;
+    }
+     rowData = `<tr>`+ rowData + `</tr>`;
+    tBody.append( rowData); //add table  rowData to table body
+  });
+  paginate(url , pages, current, per_page); //add pagination
+}
+
+function containtHtmlTags(str){
+   const specialHtmlCharacters = /[<>]/;
+   return specialHtmlCharacters.test(str);
+}
+// check if is checkbox
+function isCheckBox(str) {
+  if(containtHtmlTags(str)){
+    var element = $(str);
+       if ( typeof element.attr('type') !== 'undefined'){
+           return true;
+       }
+  }
+  return false;
+}
+
+function modal(modalId , show = false){
+  var myModal = new bootstrap.Modal(document.getElementById(modalId), {
+        keyboard: false,
+        backdrop: 'static'
+    });
+  show ? myModal.show() : myModal.hide();  
+}
+
 
 function formatDate(date) {
   if (date) {
-    var newDate = new Date(date).toISOString().split("T");
-        return `${newDate[0]} ${newDate[1].replace(".000Z", "")}`;
+        if(date.split("T").length > 1){
+            var newDate = new Date(date).toISOString().split("T");
+            return newDate;
+        }
+        return date;
   }
-  return '';
+  return;
 }
 
 function showLoadingSpinner(){
@@ -12,7 +185,7 @@ function showLoadingSpinner(){
             var opts = {
                 lines: 12, // The number of lines to draw
                 length: 7, // The length of each line
-                width: 4, // The line thickness
+                width: 5, // The line thickness
                 radius: 10, // The radius of the inner circle
                 color: '#000', // #rgb or #rrggbb
                 speed: 1, // Rounds per second
@@ -32,12 +205,48 @@ $("#page-size").on("change" , function(){
   $(this).closest('form').submit();
 });
 
- $(function(){
-      $(".btn-delete").on("click" , function(e){
-          e.preventDefault()
-          confirmAction(() => {
-              $(this).closest('form').submit()
-          } , 'Futa' , 'warning' , `Hautaweza kurudisha kitendo hiki kikifanikiwa!` , 'Je, unataka kuendelea?')
-      })
-  })
+
+$(".btn-delete").on("click" , function(e){
+    e.preventDefault()
+    confirmAction(() => {
+        $(this).closest('form').submit()
+    } , 'Futa' , 'warning' , `Hautaweza kurudisha kitendo hiki kikifanikiwa!` , 'Je, unataka kuendelea?')
+})
+
+
+function appendSelectionOption(selectId , data , selected = [] , defaultText = 'Chagua'){
+  var fieldSelect = $("#" + selectId);
+  var options = `<option value="">${defaultText}</option>`;
+  var id = ''
+  var name = ''
+  for (var i = 0; i < data.length; i++) {
+    id = data[i].id;
+    name = data[i].name;
+    options =
+      options +
+      `<option value='${id}'  ${ selected.includes(id) ? 'selected' : ''} > ${name} </option>`;
+  }
+  fieldSelect.html(options);
+}
+
+ function getAllRegions(zoneId , selectedRegion = null){
+            if(zoneId){
+                ajaxRequest('/MikoaList' , 'GET' , (regionsResponse) => {
+                        if(regionsResponse.statusCode == 300){
+                            var regions = regionsResponse.regions;
+                            appendSelectionOption('region-field' ,regions.map( (region , index) => ({'name' : region.regionName,'id' : region.regionCode}) ), [selectedRegion] , 'Chagua Mkoa');
+                          }
+                } , { is_paginated : false, zone_id : zoneId })
+            }
+}
+
+function getAllDistricts(regionCode , selectedDistrict = null){
+  ajaxRequest('/HalmashauriList' , 'GET' , (councilsResponse) => {
+                          if(councilsResponse.statusCode == 300){
+                                var councils = councilsResponse.councils;
+                                $('#lga-field').prop('disabled' , regionCode ? false : true)
+                                appendSelectionOption('lga-field' ,councils.map( (council , index) => ({'name' : council.LgaName,'id' : council.LgaCode})), [selectedDistrict], 'Chagua Halmashauri');
+                          }
+            } , { is_paginated : false , region_code : regionCode })
+}
 

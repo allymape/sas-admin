@@ -47,6 +47,7 @@ permissionController.post("/badiliPermission/:id", function (req, res) {
           permissionName: req.body.permission_name,
           displayName: req.body.display_name,
           status: req.body.status,
+          is_default: req.body.is_default,
   }
   sendRequest(req, res, updatePermissionAPI + "/" + id, "PUT", formData , (jsonData) => {
         var statusCode = jsonData.statusCode;

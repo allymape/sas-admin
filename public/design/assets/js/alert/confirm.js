@@ -15,13 +15,15 @@ function confirmAction(callback , confirmBtnText = 'delete it' , icon='warning' 
     });
 }
 
-function alertMessage(title = "Deleted!" , text='Your file has been deleted.' , icon = 'success') {
+function alertMessage(title = "Deleted!" , text='Your file has been deleted.' , icon = 'success' , callback , data = null) {
   Swal.fire({
-    title: title,
-    text: text,
-    icon: icon,
-    confirmButtonClass: "btn btn-primary w-xs mt-2",
-    confirmButtonText:'Funga',
-    buttonsStyling: !1,
+        title: title,
+        text: text,
+        icon: icon,
+        confirmButtonClass: "btn btn-primary w-xs mt-2",
+        confirmButtonText:'Funga',
+        buttonsStyling: !1,
+  }).then(function(t){
+      t.value && callback(data)
   });
 }

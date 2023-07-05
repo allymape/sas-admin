@@ -29,6 +29,17 @@ const cookieParser = require('cookie-parser')
 const helmet = require('helmet')
 const flash = require('connect-flash');
 const permissionController = require("./public/controllers/permissionController");
+const regionController = require("./public/controllers/regionController");
+const districtController = require("./public/controllers/districtController");
+const wardController = require("./public/controllers/wardController");
+const streetController = require("./public/controllers/streetController");
+const userController = require("./public/controllers/userController");
+const roleController = require("./public/controllers/roleController");
+const rankController = require("./public/controllers/rankController");
+const zoneController = require("./public/controllers/zoneController");
+const attachmentTypeController = require("./public/controllers/attachmentTypeController");
+const applicationCategoryController = require("./public/controllers/applicationCategoryController");
+const registrationTypeController = require("./public/controllers/registrationTypeController");
 
 
 var app = express();
@@ -37,23 +48,6 @@ app.use(cookieParser())
 app.use(flash());
 // Create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
-
-// var logFile = fs.createWriteStream('log.txt', { flags: 'a' });
-//   // Or 'w' to truncate the file every time the process starts.
-// var logStdout = process.stdout;
-
-// console.log = function () {
-//   logFile.write(util.format.apply(null, arguments) + '\n');
-//   logStdout.write(util.format.apply(null, arguments) + '\n');
-// }
-// console.error = console.log;
-// app.use(function (req, res, next) {
-//   res.setHeader(
-//     'Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; frame-src 'self'"
-//   );
-  
-//   next();
-// });
 
 app.use(
   session({
@@ -89,20 +83,27 @@ app.use(bodyParser.json());
 app.locals.getCurrentUrl = function (req) {
   return req.originalUrl;
 };
-global.routeIs = function (url_segments, currentUrl) {
-  var urls = url_segments.split("|");
-
-  if (Array.isArray(urls) && urls.length > 0) {
-  
-    for(var i=0; i< urls.length; i++){
-      console.log(modifyUrl(currentUrl) , urls[i]);
-      if(modifyUrl(currentUrl) === urls[i]){
-          return true;
-      }
+global.routeIs =  (url_segments, currentUrl) => {
+    if(url_segments){
+        var urls = url_segments.split("|");
+        if (Array.isArray(urls) && urls.length > 0) {
+        
+              for(var i=0; i< urls.length; i++){
+                // console.log(modifyUrl(currentUrl) , urls[i]);
+                if(modifyUrl(currentUrl) === urls[i].trim()){
+                    return true;
+                }
+              }
+        }
     }
-  }
   return false;
 };
+
+global.permission = () => {
+  const pluck = (arr , key) => arr.map(i => i[key].toLowerCase());
+  const permissions = session().RoleManage;
+       console.log(pluck(permissions , 'permission_name'));
+}
 
 var modifyUrl = function(currentUrl){
     var url = currentUrl.split("?").length == 2 ? currentUrl.split("?")[0].split("/") : currentUrl.split("/");
@@ -126,27 +127,25 @@ var wezeshaAPI = BASEURL + "wezesha2fa";
 var thibitishaAPI = BASEURL + "thibitisha2fa";
 var simulateAPI = BASEURL + "simulatepay";
 var sajiliGrahpAPI = BASEURL + "usajiligraph";
-var VutaMikoaListAPI = BASEURL + "usajiliMikoa";
-var VutaWilayaListAPI = BASEURL + "usajiliWilaya";
 var VutaKataListAPI = BASEURL + "usajiliKata";
 var VutaMitaaListAPI = BASEURL + "usajiliMitaa";
 var VutaShuleListAPI = BASEURL + "existingSchools"; 
 var activeUserAPI = BASEURL + "active-user";
 var activeMenuAPI = BASEURL + "active-menu";
 var kandaListAPI = BASEURL + "zonilist";
-var mikoaListAPI = BASEURL + "regions";
 var sajiliZoniAPI = BASEURL + "addZoni";
 var tengenezaRoleAPI = BASEURL + "addRole";
 var tengenezaPermissionAPI = BASEURL + "addPermission";
+var permissionsAPI = BASEURL + "allPermissions";
 
-var sasishaRoleAPI = BASEURL + "editRole"; 
+var sasishaRoleAPI = BASEURL + "updateRole"; 
 var updateZoniAPI = BASEURL + "editZoni";
 var deleteZoniAPI = BASEURL + "deleteZoni";
-var lgaListAPI = BASEURL + "allDistricts";
 var wardListAPI = BASEURL + "allWards";
 var streetListAPI = BASEURL + "allStreets";
-var permissionsAPI = BASEURL + "permissions";
-var editRoleAPI = BASEURL + "editRoles";
+var rolesAPI = BASEURL + "allRoles";
+var editRoleAPI = BASEURL + "editRole";
+var watumiajiAPI = BASEURL + "users";
 var ongezaReply = BASEURL + "tuma-ongeza-majibu";
 var maoanzishaShuleListAPI = BASEURL + "maombi-kuanzisha-shule";
 var anzishaShuleBilaMajAPI = BASEURL + "bila-majengo-shule";
@@ -226,9 +225,8 @@ var badiliainaReply = BASEURL + "tuma-badili-aina-majibu";
 var changeShule = BASEURL + "change-shule";
 var sajiliReply = BASEURL + "tuma-sajili-majibu";
 var futaReply = BASEURL + "futa-sajili";
-var ainaMaombiAPI = BASEURL + "ainaMaombi";
-var watumiajiAPI = BASEURL + "users";
-var rolesAPI = BASEURL + "roles";
+var listAttachmentTypeAPI = BASEURL + "all-attachment-types";
+// var rolesAPI = BASEURL + "roles";
 var waombajiAPI = BASEURL + "applicants";
 var vyeoAPI = BASEURL + "vyeolist";
 var auditTrailAPI = BASEURL + "auditTrail";
@@ -236,7 +234,7 @@ var tahasusiAPI = BASEURL + "taasusilist";
 var michepuoAPI = BASEURL + "michepuolist";
 var malipoAPI = BASEURL + "malipolist";
 var registerWatumiajiAPI = BASEURL + "register";
-var updateWatumiajiAPI = BASEURL + "update-user";
+
 var updateWaombajiAPI = BASEURL + "update-applicant";
 var FutaRoleAPI = BASEURL + "futarole";
 var futaTahasusiAPI = BASEURL + "futatahasusi";
@@ -253,134 +251,12 @@ var futaMchepuoAPI = BASEURL + "deleteMchepuo";
 var registerAdaAPI = BASEURL + "registerAda";
 var registerKumbNaAPI = BASEURL + "registerKumbNa";
 var editAdaAPI = BASEURL + "editAda";
-var logoutAPI = BASEURL + "logout";
 var sajiliHatiAPI = BASEURL + "add-attachment";
-var updateHatiAPI = BASEURL + "edit-attachment";
-var mkoaKandaAPI = BASEURL + "assign-region-zone";
+// var updateHatiAPI = BASEURL + "edit-attachment";
 var pandishaHatiAPI = BASEURL + "upload-attachment";
 var verify = BASEURL + "verify";
 var changepassAPI = BASEURL + "changepass";
 
-// app.get('/',function(req,res){
-// /**
-//  * Take an object which has the following model
-//  * @param {Object} item
-//  * @model
-//  * {
-//  *   "invoiceId": `Number`,
-//  *   "createdDate": `String`,
-//  *   "dueDate": `String`,
-//  *   "address": `String`,
-//  *   "companyName": `String`,
-//  *   "invoiceName": `String`,
-//  *   "price": `Number`,
-//  * }
-//  *
-//  * @returns {String}
-//  */
-// const createRow = (item) => `
-//   <tr>
-//     <td>${item.invoiceId}</td>
-//     <td>${item.invoiceName}</td>
-//     <td>${item.price}</td>
-//     <td>${item.createdDate}</td>
-//     <td>${item.dueDate}</td>
-//     <td>${item.address}</td>
-//     <td>${item.companyName}</td>
-//   </tr>
-// `;
-
-// /**
-//  * @description Generates an `html` table with all the table rows
-//  * @param {String} rows
-//  * @returns {String}
-//  */
-// const createTable = (rows) => `
-//   <table>
-//     <tr>
-//         <th>Invoice Id</td>
-//         <th>Invoice Name</td>
-//         <th>Price</td>
-//         <th>Invoice Created</td>
-//         <th>Due Date</td>
-//         <th>Vendor Address</td>
-//         <th>Vendor Name</td>
-//     </tr>
-//     ${rows}
-//   </table>
-// `;
-
-// /**
-//  * @description Generate an `html` page with a populated table
-//  * @param {String} table
-//  * @returns {String}
-//  */
-// const createHtml = (table) => `
-//   <html>
-//     <head>
-//       <style>
-//         table {
-//           width: 100%;
-//         }
-//         tr {
-//           text-align: left;
-//           border: 1px solid black;
-//         }
-//         th, td {
-//           padding: 15px;
-//         }
-//         tr:nth-child(odd) {
-//           background: #CCC
-//         }
-//         tr:nth-child(even) {
-//           background: #FFF
-//         }
-//         .no-content {
-//           background-color: red;
-//         }
-//       </style>
-//     </head>
-//     <body>
-//       ${table}
-//     </body>
-//   </html>
-// `;
-
-// /**
-//  * @description this method takes in a path as a string & returns true/false
-//  * as to if the specified file path exists in the system or not.
-//  * @param {String} filePath
-//  * @returns {Boolean}
-//  */
-// const doesFileExist = (filePath) => {
-// 	try {
-// 		fs.statSync(filePath); // get information of the specified file path.
-// 		return true;
-// 	} catch (error) {
-// 		return false;
-// 	}
-// };
-
-// try {
-// 	/* Check if the file for `html` build exists in system or not */
-// 	if (doesFileExist(buildPathHtml)) {
-// 		console.log('Deleting old build file');
-// 		/* If the file exists delete the file from system */
-// 		fs.unlinkSync(buildPathHtml);
-// 	}
-// 	/* generate rows */
-// 	const rows = data.map(createRow).join('');
-// 	/* generate table */
-// 	const table = createTable(rows);
-// 	/* generate html */
-// 	const html = createHtml(table);
-// 	/* write the generated html to file */
-// 	fs.writeFileSync(buildPathHtml, html);
-// 	console.log('Succesfully created an HTML table');
-// } catch (error) {
-// 	console.log('Error generating table', error);
-// }
-// });
 
 app.get("/", function (req, res) {
   var clientIp = requestIp.getClientIp(req);
@@ -391,8 +267,34 @@ app.get("/", function (req, res) {
   });
 });
 
+
+
+app.get("/Watumiaji", function (req, res) {
+  if (
+    typeof req.session.userName !== "undefined" ||
+    req.session.userName === true
+  ) {
+    var hasMatch = false;
+    for (var index = 0; index < req.session.RoleManage.length; ++index) {
+      var animal = req.session.RoleManage[index];
+      if (animal.permission_id == 34) {
+        res.render(path.join(__dirname + "/public/design/watumiaji"), {
+                  req: req,
+                  useLev: req.session.UserLevel,
+                  userName: req.session.userName,
+                  RoleManage: req.session.RoleManage,
+                  userID: req.session.userID,
+                  cheoName: req.session.cheoName,
+                });
+      }
+    }
+  } else {
+    res.redirect("/");
+  }
+});
+
 app.post("/auth", function (req, res) {
-  console.log("url " + req.url);
+  // console.log("url " + req.url);
   var username = req.body.username;
   var password = req.body.password;
   var ip_address = requestIp.getClientIp(req);
@@ -412,20 +314,10 @@ app.post("/auth", function (req, res) {
     },
     function (error, response, body) {
       if (error) {
-        console.error(
-          new Date() +
-            ": " +
-            username +
-            " with IP: " +
-            requestIp.getClientIp(req) +
-            " fail to login " +
-            error
-        );
-        res.send("failed");
-      }
-      if (body !== undefined) {
-        console.log('body')
-        console.log(body)
+        res.redirect("/");
+      } else if (body !== undefined) {
+        // console.log('body')
+        // console.log(body)
         if(body == 'Too many requests, please try again later.'){
           res.render(path.join(__dirname + "/public/design/login"), {
             req: req,
@@ -436,8 +328,6 @@ app.post("/auth", function (req, res) {
         var statusCode = body.statusCode;
         if (statusCode == 302) {
           req.session.loginAttempt = req.session.loginAttempt+1
-          console.log("req.session.loginAttempt")
-          console.log(req.session.loginAttempt)
           res.render(path.join(__dirname + "/public/design/login"), {
             req: req,
             message: message,
@@ -470,19 +360,19 @@ app.post("/auth", function (req, res) {
           //   objPerm.push({"permmission_id": permmission_id})
           // }
 
-          console.info(
-            new Date() +
-              ": " +
-              username +
-              " with IP: " +
-              requestIp.getClientIp(req) +
-              ": Successful login"
-          );
+          // console.info(
+          //   new Date() +
+          //     ": " +
+          //     username +
+          //     " with IP: " +
+          //     requestIp.getClientIp(req) +
+          //     ": Successful login"
+          // );
           if (twofa == 0) {
             if (req.session.UserLevel == 10) {
               res.redirect("/RipotiZilizosajiliwa");
             } else {
-              res.redirect("/Dashboard");
+              res.redirect("/Viambatisho");
             }
           } else {
             res.redirect("/TwoFA");
@@ -506,14 +396,14 @@ app.get("/TwoFA", function (req, res) {
     typeof req.session.userName !== "undefined" ||
     req.session.userName === true
   ) {
-    console.info(
-      new Date() +
-        ": " +
-        req.session.userName +
-        " with IP: " +
-        requestIp.getClientIp(req) +
-        ": access 2FA"
-    );
+    // console.info(
+    //   new Date() +
+    //     ": " +
+    //     req.session.userName +
+    //     " with IP: " +
+    //     requestIp.getClientIp(req) +
+    //     ": access 2FA"
+    // );
     res.render(path.join(__dirname + "/public/design/twofa"), {
       req: req,
       useLev: req.session.UserLevel,
@@ -645,63 +535,6 @@ app.post("/WekaNywira", function (req, res) {
             req: req,
             email: email,
           });
-        }
-        else {
-          res.redirect("/");
-        }
-      }
-    }
-  );
-});
-
-app.post("/TumaEmail", function (req, res) {
-  var email = req.body.email;
-  request(
-    {
-      url: sendMailAPI,
-      method: "POST",
-      json: {
-        browser_used: req.session.browser_used,
-        ip_address: req.session.ip_address,
-        email: email,
-      },
-    },
-    function (error, response, body) {
-      if (error) {
-        console.error(
-          new Date() +
-            ": " +
-            email +
-            " with IP: " +
-            requestIp.getClientIp(req) +
-            " fail to access /TumaEmail " +
-            error
-        );
-        res.send("failed");
-      }
-      if (body !== undefined) {
-        // console.log(body)
-        var message = body.message;
-        var statusCode = body.statusCode;
-        var msg = body.msg;
-        if (statusCode == 302) {
-          res.render(path.join(__dirname + "/public/design/login"), {
-            req: req,
-            message: message,
-          });
-        } else if (statusCode == 300) {
-          // console.log("2FA: " + req.session.twofa);
-          // console.log(new Date() +  ": Successful verified")
-          console.info(
-            new Date() +
-              ": " +
-              email +
-              " with IP: " +
-              requestIp.getClientIp(req) +
-              " able to access  /TumaEmail "
-          );
-
-          res.send({ msg: msg });
         }
         else {
           res.redirect("/");
@@ -1016,12 +849,12 @@ app.get("/UsajiliGraph", function (req, res) {
   );
 });
 
-app.get("/RolesPermissions", function (req, res) {
+app.get("/CreateRole", function (req, res) {
+
   if (
     typeof req.session.userName !== "undefined" ||
     req.session.userName === true
   ) {
-    console.log(req.session.office + " jjdjdjd " + req.session.UserLevel);
     request(
       {
         url: permissionsAPI,
@@ -1035,6 +868,8 @@ app.get("/RolesPermissions", function (req, res) {
           ip_address: req.session.ip_address,
           UserLevel: req.session.UserLevel,
           Office: req.session.office,
+          is_paginated : 'false',
+          status : true
         },
       },
       function (error, response, body) {
@@ -1044,27 +879,28 @@ app.get("/RolesPermissions", function (req, res) {
           );
           res.send("failed");
         }
-
+          console.log("here" , body.data);
         if (body !== undefined) {
           // var jsonData = JSON.parse(body)
           var jsonData = body;
           var message = jsonData.message;
           var statusCode = jsonData.statusCode;
           var data = jsonData.data;
-
+        
           if (statusCode == 300) {
-            console.log(data);
-            console.log(
-              new Date() + " " + req.session.userName + ": /KuongezaMikondo"
-            );
+            // console.log(data);
+            // console.log(
+            //   new Date() + " " + req.session.userName + ": /KuongezaMikondo"
+            // );
+            
             res.render(
-              path.join(__dirname + "/public/design/role_permission"),
+              path.join(__dirname + "/public/design/create_role"),
               {
                 req: req,
                 useLev: req.session.UserLevel,
-                                  userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
+                userName: req.session.userName,
+                RoleManage: req.session.RoleManage,
+                userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 data: data,
               }
@@ -1081,17 +917,17 @@ app.get("/RolesPermissions", function (req, res) {
   }
 });
 
-app.get("/EditRolesPermissions/:id", function (req, res) {
+app.get("/EditRole/:id", function (req, res) {
   var role_id = req.params.id;
   if (
     typeof req.session.userName !== "undefined" ||
     req.session.userName === true
   ) {
-    console.log(req.session.office + " jjdjdjd " + req.session.UserLevel);
+    // console.log(req.session.office + " jjdjdjd " + req.session.UserLevel);
     request(
       {
-        url: editRoleAPI,
-        method: "POST",
+        url: editRoleAPI+`/${role_id}`,
+        method: "GET",
         headers: {
           Authorization: "Bearer" + " " + req.session.Token,
           "Content-Type": "application/json",
@@ -1115,17 +951,17 @@ app.get("/EditRolesPermissions/:id", function (req, res) {
         if (body !== undefined) {
           // var jsonData = JSON.parse(body)
           var jsonData = body;
-          var message = jsonData.message;
           var statusCode = jsonData.statusCode;
-          var permissions = jsonData.permissions;
-          var assigned_permissions = jsonData.assigned_permissions;
-          var role_name = jsonData.role_name;
-
+       
           if (statusCode == 300) {
-            // console.log(data);
-            console.log(
-              new Date() + " " + req.session.userName + ": /KuongezaMikondo"
-            );
+              var message = jsonData.message;
+              var permissions = jsonData.permissions;
+              var role_permissions = jsonData.role_permissions;
+              var role = jsonData.role;
+              var assigned_permissions = [];
+              role_permissions.forEach(role_permission =>{
+                  assigned_permissions.push(role_permission.permission_id);
+              });
             res.render(path.join(__dirname + "/public/design/edit_roles"), {
               req: req,
               useLev: req.session.UserLevel,
@@ -1135,12 +971,14 @@ app.get("/EditRolesPermissions/:id", function (req, res) {
               cheoName: req.session.cheoName,
               permissions: permissions,
               assigned_permissions: assigned_permissions,
-              role_name: role_name,
-              role_id : role_id
+              role : role
             });
           }
           if (statusCode == 209) {
             res.redirect("/");
+          }
+          if (statusCode == 306) {
+            res.redirect("/Roles");
           }
         }
       }
@@ -1150,159 +988,30 @@ app.get("/EditRolesPermissions/:id", function (req, res) {
   }
 });
 
-app.get("/VutaMikoa", function (req, res) {
-  // console.log("jkgfjhf")
-  request(
-    {
-      url: VutaMikoaListAPI,
-      method: "GET",
-      headers: {
-        Authorization: "Bearer" + " " + req.session.Token,
-        "Content-Type": "application/json",
-      },
-      //json: {"browser_used": req.session.browser_used, "ip_address": req.session.ip_address, trackingNo: trackingNo}
-    },
-    function (error, response, body) {
-      if (error) {
-        console.log(
-          new Date() +
-            ": " +
-            req.session.userName +
-            " fail to pull regions via /VutaMikoa Endpoint " +
-            error
-        );
-        res.send("failed");
-      }
-      if (body !== undefined) {
-        console.log(body);
-        var jsonData = JSON.parse(body);
-        var message = jsonData.message;
-        var statusCode = jsonData.statusCode;
-        console.log(
-          new Date() +
-            ": " +
-            req.session.userName +
-            " Successful to pull VutaMikoa EndPoint"
-        );
-        res.send({ statusCode: statusCode, message: message });
-      }
-    }
-  );
-});
 
-app.get("/VutaWilaya", function (req, res) {
-  console.log("jkgfjhf");
-  request(
-    {
-      url: VutaWilayaListAPI,
-      method: "GET",
-      headers: {
-        Authorization: "Bearer" + " " + req.session.Token,
-        "Content-Type": "application/json",
-      },
-    },
-    function (error, response, body) {
-      if (error) {
-        console.error(
-          new Date() +
-            ": " +
-            req.session.userName +
-            " fail to pull Lgas via /VutaWilaya Endpoint " +
-            error
-        );
-        res.send("failed");
-      }
-      console.log(body);
-      if (body !== undefined) {
-        var jsonData = JSON.parse(body);
-        var message = jsonData.message;
-        var statusCode = jsonData.statusCode;
-        console.info(
-          new Date() +
-            ": " +
-            req.session.userName +
-            " Successful to pull VutaWilaya EndPoint"
-        );
-        res.send({ statusCode: statusCode, message: message });
-      }
-    }
-  );
-});
 
-app.get("/VutaKata", function (req, res) {
-  request(
-    {
-      url: VutaKataListAPI,
-      method: "GET",
-      headers: {
-        Authorization: "Bearer" + " " + req.session.Token,
-        "Content-Type": "application/json",
-      },
-    },
-    function (error, response, body) {
-      if (error) {
-        console.error(
-          new Date() +
-            ": " +
-            req.session.userName +
-            " fail to pull Lgas via /VutaKata Endpoint " +
-            error
-        );
-        res.send("failed");
+app.get("/Kata", function (req, res) {
+  if (
+    typeof req.session.userName !== "undefined" ||
+    req.session.userName === true
+  ) {
+        var hasMatch = false;
+        for (var index = 0; index < req.session.RoleManage.length; ++index) {
+          var animal = req.session.RoleManage[index];
+          if (animal.permission_id == 53) {
+            res.render(path.join(__dirname + "/public/design/wards"), {
+                    req: req,
+                    useLev: req.session.UserLevel,
+                    userName: req.session.userName,
+                    RoleManage: req.session.RoleManage,
+                    userID: req.session.userID,
+                    cheoName: req.session.cheoName,
+            });
+          }
+        }
+      } else {
+        res.redirect("/");
       }
-      console.log(body);
-      if (body !== undefined) {
-        var jsonData = JSON.parse(body);
-        var message = jsonData.message;
-        var statusCode = jsonData.statusCode;
-        console.info(
-          new Date() +
-            ": " +
-            req.session.userName +
-            " Successful to pull VutaWilaya EndPoint"
-        );
-        res.send({ statusCode: statusCode, message: message });
-      }
-    }
-  );
-});
-
-app.get("/VutaMitaa", function (req, res) {
-  request(
-    {
-      url: VutaMitaaListAPI,
-      method: "GET",
-      headers: {
-        Authorization: "Bearer" + " " + req.session.Token,
-        "Content-Type": "application/json",
-      },
-    },
-    function (error, response, body) {
-      if (error) {
-        console.error(
-          new Date() +
-            ": " +
-            req.session.userName +
-            " fail to pull mitaa via /VutaMitaa Endpoint " +
-            error
-        );
-        res.send("failed");
-      }
-      console.log(body);
-      if (body !== undefined) {
-        var jsonData = JSON.parse(body);
-        var message = jsonData.message;
-        var statusCode = jsonData.statusCode;
-        console.info(
-          new Date() +
-            ": " +
-            req.session.userName +
-            " Successful to pull VutaMitaa EndPoint"
-        );
-        res.send({ statusCode: statusCode, message: message });
-      }
-    }
-  );
 });
 
 app.get("/VutaShule", function (req, res) {
@@ -1370,19 +1079,19 @@ app.get("/Dashboard", function (req, res) {
       },
       function (error, response, body) {
         if (error) {
-          console.error(
-            new Date() +
-              ": " +
-              req.session.userName +
-              " with IP: " +
-              requestIp.getClientIp(req) +
-              " fail to access Dashboard  via /Dashboard Endpoint " +
-              error
-          );
+          // console.error(
+          //   new Date() +
+          //     ": " +
+          //     req.session.userName +
+          //     " with IP: " +
+          //     requestIp.getClientIp(req) +
+          //     " fail to access Dashboard  via /Dashboard Endpoint " +
+          //     error
+          // );
           res.send("failed");
         }
-        console.log("RoleManage");
-        console.log(req.session.RoleManage);
+        // console.log("RoleManage");
+        // console.log(req.session.RoleManage);
         // console.log(body);
         if (body !== undefined) {
           // console.log(body);
@@ -1408,14 +1117,14 @@ app.get("/Dashboard", function (req, res) {
           var wastani = (successApplications / totalApplications) * 100;
           if (statusCode == 300) {
             // console.info(new Date() + ": " + req.session.userName + " access Dashboard Data via /Dashboard EndPoint")
-            console.info(
-              new Date() +
-                ": " +
-                req.session.userName +
-                " with IP: " +
-                requestIp.getClientIp(req) +
-                " access Dashboard Data via /Dashboard EndPoint "
-            );
+            // console.info(
+            //   new Date() +
+            //     ": " +
+            //     req.session.userName +
+            //     " with IP: " +
+            //     requestIp.getClientIp(req) +
+            //     " access Dashboard Data via /Dashboard EndPoint "
+            // );
             res.render(path.join(__dirname + "/public/design/dashboard"), {
               req: req,
               salamu: majira,
@@ -1435,7 +1144,7 @@ app.get("/Dashboard", function (req, res) {
               zisizosajiliwa: zisizosajiliwa,
               wastani: wastani.toFixed(2),
               kauntimmiliki: kauntimmiliki,
-              kauntidahalia: kauntidahalia,
+              kauntidahalia: kauntidahalia, 
               totalApplications: totalApplications,
               kauntiainausajili: kauntiainausajili,
               sajiliwa: sajiliwa,
@@ -1790,7 +1499,7 @@ app.get("/verify/:id", function (req, res) {
 });
 
 app.get("/ActiveMenu", function (req, res) {
-  console.log("ghhghg");
+ 
   // if(req.session.userName){
   if (
     typeof req.session.userName !== "undefined" ||
@@ -1822,7 +1531,7 @@ app.get("/ActiveMenu", function (req, res) {
         }
         // console.log(body)
         if (body !== undefined) {
-          console.log(body);
+          // console.log(body);
           var jsonData = JSON.parse(body);
           var message = jsonData.message;
           var statusCode = jsonData.statusCode;
@@ -1836,8 +1545,8 @@ app.get("/ActiveMenu", function (req, res) {
           // var kauntidahalia = jsonData.kauntidahalia;
           // var kauntiainausajili = jsonData.kauntiainausajili;
           if (statusCode == 300) {
-            console.log("2FA: " + req.session.twofa);
-            console.log(new Date() + ": Successful dashbord");
+            // console.log("2FA: " + req.session.twofa);
+            // console.log(new Date() + ": Successful dashbord");
             res.send({
               salamu: majira,
               name: data,
@@ -2071,18 +1780,19 @@ app.post("/tengenezaRoles", function (req, res) {
   }
 });
 
-app.post("/sasishaRoles", function (req, res) {
+app.post("/sasishaRole/:id", function (req, res) {
   // for(var i = 0; i < req.body.permissions.length; i++){
   //   console.log(req.body.permissions[i])
   // }
+  console.log('hiii')
   if (
     typeof req.session.userName !== "undefined" ||
     req.session.userName === true
   ) {
     request(
       {
-        url: sasishaRoleAPI,
-        method: "POST",
+        url: sasishaRoleAPI+"/"+req.params.id,
+        method: "PUT",
         headers: {
           Authorization: "Bearer" + " " + req.session.Token,
           "Content-Type": "application/json",
@@ -2100,7 +1810,7 @@ app.post("/sasishaRoles", function (req, res) {
         }
         //  console.log(body)
         if (body !== undefined) {
-          console.log("permissions zilizochaguliwa: " , req.body.permissions);
+          // console.log("permissions zilizochaguliwa: " , req.body.permissions);
           res.send({ statusCode: body.statusCode, message: body.message });
         }
       }
@@ -2336,78 +2046,6 @@ app.get("/Mikoa", function (req, res) {
   }
 });
 
-app.get("/MikoaList", function (req, res) {
-  var obj = [];
-  var per_page =  Number(req.query.per_page || 10);
-  var page = Number(req.query.page || 1);
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: mikoaListAPI + "?page="+page+"&per_page="+per_page,
-        // query : {page : page , per_page: per_page},
-        method: "GET",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(new Date() + ": fail to KandaList " + error);
-          res.send("failed");
-        }
-        // console.log(body)
-        if (body !== undefined) {
-          //  console.log(body)
-          var jsonData = JSON.parse(body);
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-          var numRows = jsonData.numRows
-
-          if (statusCode == 300) {
-            //
-
-            if (data.length <= 0) {
-              var regionCode = "";
-              var regionName = "";
-              obj.push({ regionCode: regionCode, regionName: regionName });
-            } else {
-              for (var i = 0; i < data.length; i++) {
-                console.log(data);
-                var regionCode = data[i].regionCode;
-                var regionName = data[i].regionName;
-                var zoneName = data[i].zoneName;
-                var createdAt = data[i].createdAt;
-                var updatedAt = data[i].updatedAt;
-                obj.push({
-                  regionCode: regionCode,
-                  regionName: regionName,
-                  zoneName: zoneName,
-                  createdAt: createdAt,
-                  updatedAt: updatedAt,
-                });
-              }
-            }
-            // console.log(obj)
-            console.log(new Date() + ": Successful KandaList");
-            res.send({regions : obj , pagination : {total : numRows , current : page , per_page : per_page , pages : Math.ceil( numRows / per_page)}});
-            //
-          }
-          if (statusCode == 209) {
-              res.redirect("/");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
-
 app.get("/ZoneList", function (req, res) {
   var obj = [];
   if (
@@ -2489,185 +2127,7 @@ app.get("/Halmashauri", function (req, res) {
   }
 });
 
-app.get("/HalmashauriList", function (req, res) {
-  var obj = [];
-  var per_page =  Number(req.query.per_page || 10);
-  var page = Number(req.query.page || 1);
- 
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    
-    request(
-      {
-        url: lgaListAPI+ "?page="+page+"&per_page="+per_page,
-        method: "GET",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-      },
-      function (error, response, body) {
-       
-        if (error) {
-          console.log(new Date() + ": fail to KandaList " + error);
-          res.send("failed");
-        }
-        // console.log(body)
-        if (body !== undefined) {
-          // console.log(body)
-          var jsonData = JSON.parse(body);
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-          var numRows = jsonData.numRows;
-          
-          if (statusCode == 300) {
-            //
-            if (data.length <= 0) {
-              var LgaCode = "";
-              var LgaName = "";
-              var regionName = "";
-              obj.push({
-                LgaCode: LgaCode,
-                LgaName: LgaName,
-                regionName: regionName,
-              });
-            } else {
-              for (var i = 0; i < data.length; i++) {
-                console.log(data);
-                var LgaCode = data[i].LgaCode;
-                var LgaName = data[i].LgaName;
-                var regionName = data[i].regionName;
-                var createdAt = data[i].createdAt;
-                var updatedAt = data[i].updatedAt;
-                obj.push({
-                  LgaCode: LgaCode,
-                  LgaName: LgaName,
-                  regionName: regionName,
-                  createdAt: createdAt,
-                  updatedAt: updatedAt,
-                });
-              }
-               // console.log(obj)
-            res.send({councils : obj , pagination : {total : numRows , current : page , per_page : per_page , pages : Math.ceil( numRows / per_page)}});
-            }
-           
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
 
-app.get("/Kata", function (req, res) {
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    var hasMatch =false;
-    for (var index = 0; index < req.session.RoleManage.length; ++index) {
-        var animal = req.session.RoleManage[index]; 
-    if(animal.permission_id == 53){ 
-    res.render(path.join(__dirname + "/public/design/wards"), {
-      req: req,
-      useLev: req.session.UserLevel,
-                        userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
-      cheoName: req.session.cheoName,
-    });
-  }
-}
-  } else {
-    res.redirect("/");
-  }
-});
-
-app.get("/WardList", function (req, res) {
-  var obj = [];
-  var per_page =  Number(req.query.per_page || 10);
-  var page = Number(req.query.page || 1);
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: wardListAPI +"?page="+page+"&per_page="+per_page,
-        method: "GET",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(new Date() + ": fail to KandaList " + error);
-          res.send("failed");
-        }
-        // console.log(body)
-        if (body !== undefined) {
-          // console.log(body)
-          var jsonData = JSON.parse(body);
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-          var numRows = jsonData.numRows
-          if (statusCode == 300) {
-            //
-
-            if (data.length <= 0) {
-              var WardCode = "";
-              var WardName = "";
-              var LgaName = "";
-              var regionName = "";
-              obj.push({
-                WardCode: WardCode,
-                WardName: WardName,
-                LgaName: LgaName,
-                regionName: regionName,
-              });
-            } else {
-              for (var i = 0; i < data.length; i++) {
-                console.log(data);
-                var WardCode = data[i].WardCode;
-                var WardName = data[i].wardName;
-                var LgaName = data[i].LgaName;
-                var RegionName = data[i].RegionName;
-                var CreatedAt = data[i].CreatedAt;
-                var UpdatedAt = data[i].UpdatedAt;
-                obj.push({
-                  WardCode: WardCode,
-                  WardName: WardName,
-                  LgaName: LgaName,
-                  RegionName: RegionName,
-                  CreatedAt: CreatedAt,
-                  UpdatedAt: UpdatedAt,
-                });
-              }
-            }
-            // console.log(obj)
-            // console.log(new Date() + ": Successful KandaList");
-              res.send({wards : obj , pagination : {total : numRows , current : page , per_page : per_page , pages : Math.ceil( numRows / per_page)}});
-            //
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
 
 app.get("/Mitaa", function (req, res) {
   if (
@@ -2693,96 +2153,6 @@ app.get("/Mitaa", function (req, res) {
   }
 });
 
-app.get("/MitaaList", function (req, res) {
-  var obj = [];
-  var per_page = Number(req.query.per_page || 10);
-  var page = Number(req.query.page || 1);
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: streetListAPI + "?page=" + page + "&per_page=" + per_page,
-        method: "GET",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(new Date() + ": fail to KandaList " + error);
-          res.send("failed");
-        }
-        // console.log(body)
-        if (body !== undefined) {
-          // console.log(body)
-          var jsonData = JSON.parse(body);
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-          var numRows = jsonData.numRows;
-          if (statusCode == 300) {
-            //
-
-            if (data.length <= 0) {
-              var StreetCode = "";
-              var StreetName = "";
-              var WardName = "";
-              var LgaName = "";
-              var RegionName = "";
-              obj.push({
-                StreetCode : StreetCode,
-                WardName   : WardName,
-                StreetName : StreetName,
-                LgaName    : LgaName,
-                RegionName : RegionName,
-              });
-            } else {
-              for (var i = 0; i < data.length; i++) {
-                // console.log(data);
-                var StreetCode = data[i].StreetCode;
-                var StreetName = data[i].StreetName;
-                var WardName   = data[i].WardName;
-                var LgaName    = data[i].LgaName;
-                var RegionName = data[i].RegionName;
-                var CreatedAt = data[i].CreatedAt;
-                var UpdatedAt = data[i].UpdatedAt;
-                obj.push({
-                    StreetCode : StreetCode,
-                    WardName   : WardName,
-                    StreetName : StreetName,
-                    LgaName    : LgaName,
-                    RegionName : RegionName,
-                    CreatedAt  : CreatedAt,
-                    UpdatedAt  : UpdatedAt,
-                });
-              }
-            }
-            // console.log(obj)
-            // console.log(new Date() + ": Successful KandaList");
-            res.send({
-              streets: obj,
-              pagination: {
-                total: numRows,
-                current: page,
-                per_page: per_page,
-                pages: Math.ceil(numRows / per_page),
-              },
-            });
-            //
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
 
 app.get("/MaombiMmilikiShule", function (req, res) {
   var obj = [];
@@ -5382,51 +4752,53 @@ app.get("/MaombiKuanzishaSerikali", function (req, res) {
   }
 });
 
-app.get("/getAinaMaombi", function (req, res) {
-  var obj = [];
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: ainaMaombiAPI,
-        method: "GET",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(
-            new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
-          );
-          res.send("failed");
-        }
-        //  console.log(body)
-        if (body !== undefined) {
-          var jsonData = JSON.parse(body);
-          // var jsonData = body
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-          if (statusCode == 300) {
-            console.log(
-              new Date() + " " + req.session.userName + ": /getAinaMaombi"
-            );
-            res.send({ data: data });
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
+// app.get("/getAinaMaombi", function (req, res) {
+//   var obj = [];
+//   var per_page = Number(req.query.per_page || 10);
+//   var page = Number(req.query.page || 1);
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//     request(
+//       {
+//         url: listAttachmentTypeAPI +`?page=${page}&per_page=${per_page}`,
+//         method: "GET",
+//         headers: {
+//           Authorization: "Bearer" + " " + req.session.Token,
+//           "Content-Type": "application/json",
+//         },
+//       },
+//       function (error, response, body) {
+//         if (error) {
+//           console.log(
+//             new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
+//           );
+//           res.send("failed");
+//         }
+//         //  console.log(body)
+//         if (body !== undefined) {
+//           var jsonData = JSON.parse(body);
+//           // var jsonData = body
+//           var message = jsonData.message;
+//           var statusCode = jsonData.statusCode;
+//           var data = jsonData.data;
+//           if (statusCode == 300) {
+//             console.log(
+//               new Date() + " " + req.session.userName + ": /getAinaMaombi"
+//             );
+//             res.send({ data: data });
+//           }
+//           if (statusCode == 209) {
+//             res.redirect("/");
+//           }
+//         }
+//       }
+//     );
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
 app.post("/sajiliHati", function (req, res) {
   // console.log(req.body)
@@ -5477,98 +4849,58 @@ app.post("/sajiliHati", function (req, res) {
   }
 });
 
-app.post("/updateHati", function (req, res) {
-  console.log(req.body);
-  var jina_hati = req.body.jina_hati;
-  var ukubwa = req.body.ukubwa;
-  var file_format = req.body.file_format;
-  var aina_ombi = req.body.aina_ombi;
-  var aina_mwombaji = req.body.aina_mwombaji;
-  var fileId = req.body.fileId;
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: updateHatiAPI,
-        method: "POST",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-        json: {
-          browser_used: req.session.browser_used,
-          ip_address: req.session.ip_address,
-          jina_hati: jina_hati,
-          ukubwa: ukubwa,
-          file_format: file_format,
-          aina_ombi: aina_ombi,
-          aina_mwombaji: aina_mwombaji,
-          fileId: fileId,
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(new Date() + ": fail to login " + error);
-          res.send("failed");
-        }
-        // console.log(body)
-        if (body !== undefined) {
-          // console.log(body)
-          console.log(
-            new Date() + " " + req.session.userName + ": /sajiliHati"
-          );
-          res.send({ status: "success" });
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
+// app.post("/updateHati", function (req, res) {
+//   console.log(req.body);
+//   var jina_hati = req.body.jina_hati;
+//   var ukubwa = req.body.ukubwa;
+//   var file_format = req.body.file_format;
+//   var aina_ombi = req.body.aina_ombi;
+//   var aina_mwombaji = req.body.aina_mwombaji;
+//   var fileId = req.body.fileId;
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//     request(
+//       {
+//         url: updateHatiAPI,
+//         method: "POST",
+//         headers: {
+//           Authorization: "Bearer" + " " + req.session.Token,
+//           "Content-Type": "application/json",
+//         },
+//         json: {
+//           browser_used: req.session.browser_used,
+//           ip_address: req.session.ip_address,
+//           jina_hati: jina_hati,
+//           ukubwa: ukubwa,
+//           file_format: file_format,
+//           aina_ombi: aina_ombi,
+//           aina_mwombaji: aina_mwombaji,
+//           fileId: fileId,
+//         },
+//       },
+//       function (error, response, body) {
+//         if (error) {
+//           console.log(new Date() + ": fail to login " + error);
+//           res.send("failed");
+//         }
+//         // console.log(body)
+//         if (body !== undefined) {
+//           // console.log(body)
+//           console.log(
+//             new Date() + " " + req.session.userName + ": /sajiliHati"
+//           );
+//           res.send({ status: "success" });
+//         }
+//       }
+//     );
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
-app.post("/MkoaKanda", function (req, res) {
-  // console.log(req.body)
-  var kanda = req.body.kanda;
-  var regionId = req.body.regionId;
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: mkoaKandaAPI,
-        method: "POST",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-        json: {
-          browser_used: req.session.browser_used,
-          ip_address: req.session.ip_address,
-          kanda: kanda,
-          regionId: regionId,
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(new Date() + ": fail to assign region " + error);
-          res.send("failed");
-        }
-        //  console.log(body)
-        if (body !== undefined) {
-          // var jsonData = JSON.parse(body)
-          // console.log(body.data.status)
-          console.log(new Date() + " " + req.session.userName + ": /MkoaKanda");
-          res.send(body.data.status);
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
+
 
 app.get("/TaarifaOmbi/:id", function (req, res) {
   var obj = [];
@@ -9845,248 +9177,6 @@ app.get("/ViewRipotiMmiliki/:id", function (req, res) {
             // Finalize PDF file
             doc.end();
           }
-
-          // if (fs.existsSync(tracking_number+'.pdf')) {
-          //   console.log('file exists');
-          // } else {
-          //   console.log('file not found!');
-          // //barua meneja
-          // doc1.pipe(fs.createWriteStream(tracking_number+'.pdf'));
-
-          // // Adding functionality
-          // doc1
-
-          //   .fontSize(12)
-          //   .font('Times-Bold')
-          //   .text('JAMHURI YA MUUNGANO WA TANZANIA',220, 20, 100, 100);
-
-          //   doc1
-          //   .text('WIZARA YA ELIMU, SAYANSI NA TEKNOLOJIA',210, 35, 100, 100);
-
-          // // Adding an image in the pdf.
-
-          // doc1.image('arm.png',280, 50, 50, 50);
-
-          // doc1
-          //   .fontSize(10)
-          //   .font('Times-Roman')
-          //   .text('Mji wa Serikali,',450, 80, 50, 50);
-
-          //   doc1
-          //   .text('Mtumba,',450, 90, 50, 50);
-
-          //   doc1
-          //   .text('Mtaa wa Afya,',450, 100, 50, 50);
-
-          //   doc1
-          //   .text('S. L. P. 10,',450, 110, 50, 50);
-
-          //   doc1
-          //   .font('Times-Bold')
-          //   .text('40479 DODOMA.',450, 120, 50, 50);
-
-          //   doc1
-          //   .fontSize(10)
-          //   .font('Times-Roman')
-          //   .text(new Date(),450, 140, 50, 50);
-
-          //   doc1
-          //   .text('Anuani ya simu “ELIMU”,',100, 80, 50, 50);
-
-          //   doc1
-          //   .text('Simu: 026 296 35 33,',100, 90, 50, 50);
-
-          //   doc1
-          //   .text('Baruapepe: info@moe.go.tz,',100, 100, 50, 50);
-
-          //   doc1
-          //   .fillColor('blue')
-          //   .text('Tovuti: www.moe.go.tz,',100, 110, 50, 50)
-          //   .link(100, 100, 160, 27, 'https://www.moe.go.tz/');
-
-          //   doc1
-          //   .fontSize(10)
-          //   .fillColor('black')
-          //   .text('Upatapo tafadhali jibu kwa:',100, 130, 50, 50);
-
-          //   doc1
-          //   .font('Times-Bold')
-          //   .text('Kumb. Na. ' + tracking_number,100, 150, 50, 50);
-
-          //   doc1
-          //   .font('Times-Roman')
-          //   .text(fullname+',',100, 170, 170, 50);
-
-          //   doc1
-          //   .text(mwombajiAddress+',',100, 180, 50, 50);
-
-          //   doc1
-          //   .font('Times-Bold')
-          //   .text(LgaName+' - '+RegionName,100, 190, 50, 50);
-          //   if(schoolCategory == 'Chuo cha ualimu'){
-          //     doc1
-          //     .text('YAH: UTHIBITISHO WA KUWA MENEJA WA ' + schoolCategory.toUpperCase() + ' ' + school_name.toUpperCase(),210, 220, 50, 50);
-
-          //     doc1
-          //     .font('Times-Roman')
-          //     .text('Tafadhali rejea somo la barua hii.',100, 240, 50, 50);
-
-          //     doc1
-          //     .text('Ninafurahi kukufahamisha kuwa uthibitisho umetolewa kwa ' + manager_name.toUpperCase() + ' kuwa Meneja wa ' + schoolCategory.toUpperCase() + ' '  + school_name.toUpperCase() + '.',100, 260, 50, 50);
-
-          //   }else{
-          //   doc1
-          //   .text('YAH: UTHIBITISHO WA KUWA MENEJA WA SHULE YA ' + schoolCategory.toUpperCase() + ' ' + school_name.toUpperCase(),210, 220, 50, 50);
-
-          //   doc1
-          //   .font('Times-Roman')
-          //   .text('Tafadhali rejea somo la barua hii.',100, 240, 50, 50);
-
-          //   doc1
-          //   .text('Ninafurahi kukufahamisha kuwa uthibitisho umetolewa kwa ' + manager_name.toUpperCase() + ' kuwa Meneja wa shule ya ' + schoolCategory.toUpperCase() + ' '  + school_name.toUpperCase() + '.',100, 260, 50, 50);
-          //   }
-          //   doc1
-          //   .text('Uthibitisho huu umetolewa tarehe ' + created_at +' kwa mujibu wa Sheria ya Elimu, Sura 353. Utamiliki shule hii kwa kuzingatia Sheria na Miongozo ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina kasiki kwa ajili ya kuhifadhia nyaraka nyeti.',100, 290, 50, 50);
-
-          //   // doc
-          //   // .text('Kufuatana na Sheria ya Elimu, Sura 353, cheti cha Usajili kiwekwe bayana na Uongozi wa Shule uwe tayari kukionesha iwapo kitatakiwa. Hakikisha kuwa Kamati ya Shule inaundwa katika muda wa miezi sita baada ya usajili. Kulingana na Waraka wa Elimu Na. 10 wa mwaka 2011 usajili wa shule hii utarudiwa baada ya miaka 4.',100, 320, 50, 50);
-
-          //   // doc
-          //   // .text('Mmiliki wa Shule atatakiwa kuja kuchukua cheti cha usajili wa shule akiwa na kitambulisho chake mwezi mmoja baada ya kupokea barua hii',100, 370, 50, 50);
-
-          //   doc1
-          //   .text('Nakutakia utekelezaji mwema.',100, 400, 50, 50);
-
-          //   doc1.image('arm.png',280, 430, 50, 50);
-
-          //   doc1
-          //   .text("ke",280, 520, 50, 50);
-
-          //   doc1
-          //   .font('Times-Bold')
-          //   .text('KAMISHNA WA ELIMU',250, 540, 50, 50);
-
-          //   doc1
-          //   .text('Nakala:',100, 580, 50, 50);
-
-          //   doc1
-          //   .font('Times-Roman')
-          //   .text('Katibu Mkuu,',100, 600, 50, 50);
-
-          //   doc1
-          //   .text('OR – TAMISEMI,',100, 610, 50, 50);
-
-          //   doc1
-          //   .text('S.L.P.1923,',100, 620, 50, 50);
-
-          //   doc1
-          //   .font('Times-Bold')
-          //   .text('DODOMA.',100, 630, 50, 50);
-
-          //   doc1
-          //   .font('Times-Roman')
-          //   .text('Katibu Mtendaji,',100, 650, 50, 50);
-
-          //   doc1
-          //   .text('Baraza la Mitihani Tanzania,',100, 660, 50, 50);
-
-          //   doc1
-          //   .text('S.L.P.2624,',100, 670, 50, 50);
-
-          //   doc1
-          //   .font('Times-Bold')
-          //   .text('DAR ES SALAAM.',100, 680, 50, 50);
-
-          //   doc1
-          //   .addPage()
-          //   .font('Times-Roman')
-          //   .text('Mthibiti Mkuu Ubora wa Shule,',100, 50, 50, 50);
-
-          //   doc1
-          //   .text('Kanda ya Mashariki,',100, 60, 50, 50);
-
-          //   doc1
-          //   .text('S.L.P.2419,',100, 70, 50, 50);
-
-          //   doc1
-          //   .font('Times-Bold')
-          //   .text(RegionName+'.',100, 80, 50, 50);
-
-          //   doc1
-          //   .font('Times-Roman')
-          //   .text('Afisa Elimu Mkoa,',100, 100, 50, 50);
-
-          //   doc1
-          //   .text('Mkoa wa ' + RegionName+',',100, 110, 50, 50);
-
-          //   doc1
-          //   .text('S.L.P.315,',100, 120, 50, 50);
-
-          //   doc1
-          //   .font('Times-Bold')
-          //   .text(RegionName+'.',100, 130, 50, 50);
-
-          //   doc1
-          //   .font('Times-Roman')
-          //   .text('Afisa Elimu ' + schoolCategory+',',100, 150, 50, 50);
-
-          //   doc1
-          //   .text(LgaName+',',100, 160, 50, 50);
-
-          //   doc1
-          //   .text('S.L.P.384,',100, 170, 50, 50);
-
-          //   doc1
-          //   .font('Times-Bold')
-          //   .text(RegionName+'.',100, 180, 50, 50);
-
-          //   doc1
-          //   .font('Times-Bold')
-          //   .text(RegionName+'.',100, 130, 50, 50);
-
-          //   doc1
-          //   .font('Times-Roman')
-          //   .text('Mthibiti Mkuu Ubora wa Shule,',100, 200, 50, 50);
-
-          //   doc1
-          //   .text(LgaName+',',100, 160, 50, 50);
-
-          //   doc1
-          //   .text('S.L.P.384,',100, 210, 50, 50);
-
-          //   doc1
-          //   .font('Times-Bold')
-          //   .text(RegionName+'.',100, 220, 50, 50);
-
-          // // Finalize PDF file
-          // doc1.end();
-
-          // console.log(new Date() + " " + req.session.userName +  ": /ViewOmbiMmiliki")
-          // res.render(path.join(__dirname+'/public/design/view-ripoti-badili-mmiliki-details'),
-          //   {"muda_ombi": remain_days, "useLev": req.session.UserLevel, "phone_number_old": phone_number_old,
-          //   "userName": req.session.userName, "cheoName": req.session.cheoName, "owner_email_old": owner_email_old,
-          //   "authorized_person_old": authorized_person_old, "owner_name_old": owner_name_old,
-          //   "created_at": created_at, "tracking_number": tracking_number, "authorized_person": authorized_person,
-          //     "school_name": school_name, "LgaName": LgaName, "objAttachment": objAttachment,
-          //     "RegionName": RegionName, "RegionNameMtu": RegionNameMtu, "title": title,
-          //     "fullname": fullname, "schoolCategory": schoolCategory,
-          //     "registry": registry, "owner_name": owner_name, "manager_name": manager_name,
-          //     "occupation": occupation, "mwombajiAddress": mwombajiAddress,
-          //     "owner_phone_no": owner_phone_no, "education_level": education_level,
-          //     "mwombajiPhoneNo": mwombajiPhoneNo, "baruaPepe": baruaPepe,
-          //     "manager_street": manager_street, "managerRegionName": managerRegionName,
-          //     "owner_email": owner_email, "manager_email": manager_email,
-          //     "house_number": house_number, "old_tracking_number": old_tracking_number,
-          //     "language": language, "school_size": school_size, "purpose": purpose,
-          //     "manager_phone_number": manager_phone_number,
-          //     "area": area, "WardName": WardName, "structure": structure,
-          //     "occupationManager": occupationManager, "expertise_level": expertise_level,
-          //     "LgaNameMtu": LgaNameMtu, "WardNameMtu": WardNameMtu, "userLevel": req.session.UserLevel,
-          //     "subcategory": subcategory, "count": count, "staffs": jsonData.staffs,
-          //     "attachment_path": attachment_path,
-          //     "status": jsonData.status, "Maoni": Maoni, "Refferes": Refferes
-          //   });
-          // }
           if (statusCode == 209) {
             res.redirect("/");
           }
@@ -14724,63 +13814,28 @@ app.get("/Baruameneja/:id", function (req, res) {
 
 app.get("/Viambatisho", function (req, res) {
   var obj = [];
+  
   if (
     typeof req.session.userName !== "undefined" ||
     req.session.userName === true
   ) {
-    var hasMatch =false;
-    for (var index = 0; index < req.session.RoleManage.length; ++index) {
-        var animal = req.session.RoleManage[index]; 
-    if(animal.permission_id == 51){ 
-    request(
-      {
-        url: ainaMaombiAPI,
-        method: "GET",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(
-            new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
-          );
-          res.send("failed");
-        }
-        console.log(body);
-        if (body !== undefined) {
-          var jsonData = JSON.parse(body);
-          // var jsonData = body
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-          var listWaombaji = jsonData.listWaombaji;
-          var objAttachment = jsonData.objAttachment;
-          if (statusCode == 300) {
-            console.log(
-              new Date() + " " + req.session.userName + ": /Viambatisho"
-            );
-            res.render(path.join(__dirname + "/public/design/viambatisho"), {
-              req: req,
-              data: data,
-              useLev: req.session.UserLevel,
-                                userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
-              cheoName: req.session.cheoName,
-              listWaombaji: listWaombaji,
-              objAttachment: objAttachment,
-            });
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-    }
-  }
+          var hasMatch =false;
+          for (var index = 0; index < req.session.RoleManage.length; ++index) {
+              var animal = req.session.RoleManage[index]; 
+              if(animal.permission_id == 51){ 
+              res.render(path.join(__dirname + "/public/design/viambatisho"), {
+                        req: req,
+                        // data: data,
+                        useLev: req.session.UserLevel,
+                        userName: req.session.userName,
+                        RoleManage: req.session.RoleManage,
+                        userID: req.session.userID,
+                        cheoName: req.session.cheoName,
+                        // listWaombaji: listWaombaji,
+                        // objAttachment: objAttachment,
+                      });
+              }
+            }
   } else {
     res.redirect("/");
   }
@@ -14838,82 +13893,11 @@ app.get("/Malipo", function (req, res) {
   }
 });
 
-app.get("/Watumiaji", function (req, res) {
-  var obj = [];
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    var hasMatch =false;
-    for (var index = 0; index < req.session.RoleManage.length; ++index) {
-        var animal = req.session.RoleManage[index]; 
-    if(animal.permission_id == 34){ 
-    request(
-      {
-        url: watumiajiAPI,
-        method: "POST",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-        json: {
-          browser_used: req.session.browser_used,
-          ip_address: req.session.ip_address,
-          useLevel: req.session.UserLevel,
-          office: req.session.office,
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(
-            new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
-          );
-          res.send("failed");
-        }
-        console.log(body);
-        if (body !== undefined) {
-          // var jsonData = JSON.parse(body)
-          var jsonData = body;
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-          var vyeo = jsonData.vyeo;
-          var lgas = jsonData.lgas;
-          var zones = jsonData.zones;
-          var RoleManagement = jsonData.RoleManagement;
-          if (statusCode == 300) {
-            console.log(
-              new Date() + " " + req.session.userName + ": /Watumiaji"
-            );
-            res.render(path.join(__dirname + "/public/design/watumiaji"), {
-              req: req,
-              data: data,
-              vyeo: vyeo,
-              lgas: lgas,
-              zones: zones,
-              useLev: req.session.UserLevel,
-              userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-              userID: req.session.userID,
-              cheoName: req.session.cheoName,
-              RoleManagement: RoleManagement,
-            });
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-    }
-  }
-  } else {
-    res.redirect("/");
-  }
-});
+
 
 app.get("/Roles", function (req, res) {
-  var obj = [];
+  var per_page = Number(req.query.per_page || 10);
+  var page = Number(req.query.page || 1);
   if (
     typeof req.session.userName !== "undefined" ||
     req.session.userName === true
@@ -14924,7 +13908,7 @@ app.get("/Roles", function (req, res) {
     if(animal.permission_id == 64){ 
     request(
       {
-        url: rolesAPI,
+        url: rolesAPI+`?page=${page}&per_page=${per_page}`,
         method: "GET",
         headers: {
           Authorization: "Bearer" + " " + req.session.Token,
@@ -14944,7 +13928,6 @@ app.get("/Roles", function (req, res) {
           );
           res.send("failed");
         }
-        console.log(body);
         if (body !== undefined) {
           // var jsonData = JSON.parse(body)
           var jsonData = body;
@@ -14952,17 +13935,22 @@ app.get("/Roles", function (req, res) {
           var statusCode = jsonData.statusCode;
           var data = jsonData.data;
           if (statusCode == 300) {
-            console.log(
-              new Date() + " " + req.session.userName + ": /Watumiaji"
-            );
+            var numRows = jsonData.numRows;
             res.render(path.join(__dirname + "/public/design/roles"), {
               req: req,
               data: data,
               useLev: req.session.UserLevel,
                                 userName: req.session.userName,
               RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
+              userID: req.session.userID,
               cheoName: req.session.cheoName,
+              pagination : {
+                    total : numRows , 
+                    current : page , 
+                    per_page : per_page , 
+                    url : 'Roles',
+                    pages : Math.ceil( numRows / per_page)
+                }
             });
           }
           if (statusCode == 209) {
@@ -14978,7 +13966,7 @@ app.get("/Roles", function (req, res) {
   }
 });
 
-// 
+
 
 app.get("/Waombaji", function (req, res) {
   var obj = [];
@@ -15121,83 +14109,7 @@ app.post("/SajiliWatumiaji", function (req, res) {
   }
 });
 
-app.post("/UpdateWatumiaji", function (req, res) {
-  console.log(req.body);
-  var name = req.body.name;
-  var username = req.body.username;
-  var phoneNumber = req.body.phone;
-  var email = req.body.email;
-  var roleId = req.body.status;
-  var password = req.body.password;
-  var cheo = req.body.cheo;
-  var lgas = req.body.lgas;
-  var kanda = req.body.kanda;
-  var sign = req.body.selectedFile;
-  var userId = req.body.userId;
-  var roleRMe = req.body.roleRMe;
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: updateWatumiajiAPI,
-        method: "POST",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-        json: {
-          browser_used: req.session.browser_used,
-          ip_address: req.session.ip_address,
-          name: name,
-          username: username,
-          phoneNumber: phoneNumber,
-          email: email,
-          roleId: roleId,
-          password: password,
-          cheo: cheo,
-          lgas: lgas,
-          kanda: kanda,
-          sign: sign,
-          userId: userId,
-          roleRMe: roleRMe,
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(new Date() + ": fail to TumaComment " + error);
-          res.send("failed");
-        }
 
-        if (body !== undefined) {
-          var jsonData = body;
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          if (statusCode == 300) {
-            console.log(
-              new Date() + " " + req.session.userName + ": /SajiliWatumiaji"
-            );
-            res.send({
-              message: message,
-              statusCode: statusCode,
-              useLev: req.session.UserLevel,
-                                userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
-              cheoName: req.session.cheoName,
-            });
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
 
 app.post("/UpdateWaombaji", function (req, res) {
   console.log(req.body);
@@ -16433,38 +15345,6 @@ app.post("/EditAda", function (req, res) {
   }
 });
 
-// app.get('/logout', function (req, res) {
-//   console.log("lkjbhgvcfd")
-//   if(typeof req.session.userName !== "undefined" || req.session.userName === true){
-
-//   request({
-//     url: logoutAPI,
-//     method: 'POST',
-//     headers: {
-//       'Authorization': 'Bearer' + " " + req.session.Token,
-//       'Content-Type': 'application/json',
-//     },
-//     json: {"browser_used": req.session.browser_used, "ip_address": req.session.ip_address, "userdetails": req.session.userID}
-//   }, function(error, response, body){
-//     if(error) {
-//       console.log(new Date() + ": fail to access logout api " + error)
-//       res.send("failed")
-//     }
-
-//     if (body !== undefined) {
-//       var jsonData = body
-//       var message = jsonData.message;
-//       var statusCode = jsonData.statusCode;
-//       if(statusCode == 300){
-//         console.log(new Date() + " " + req.session.userName +  ": user successful logged out")
-//         res.redirect('/');
-//       }
-//     }
-//   });
-// }else{
-//   res.redirect('/');
-// }
-// })
 
 // DELETE /api/auth/logout
 app.delete("/logout", (req, res) => {
@@ -16483,22 +15363,21 @@ app.delete("/logout", (req, res) => {
   }
 });
 
-// app.get('/logout',function(req,res){
-//   //req.session.destroy();
-//   req.session.destroy((err) => {
-//     console.log(new Date() + ": Successful logout")
-//     console.log(new Date() + " " + req.session.userName +  ": Successful logout")
-//     req.session.userName = false;
-//     req.session.Token = false;
-//     res.clearCookie(req.session.Token)
-//     res.redirect('/');
-//   })
-
-// });
-
-// function checkCount(){
-//   console.log("yesssssssssssss")
-// }
+var port = process.env.PORT || 8087;
+var url = process.env.APP_URL || "http://localhost";
+app.use("/", userController)
+app.use("/", regionController)
+app.use("/", districtController)
+app.use("/", wardController)
+app.use("/", streetController)
+app.use("/", roleController)
 app.use("/", permissionController)
-var server = app.listen(8087);
-console.log("Hello IRS");
+app.use("/", rankController)
+app.use("/", zoneController)
+app.use("/", attachmentTypeController)
+app.use("/", applicationCategoryController)
+app.use("/", registrationTypeController)
+
+app.listen(port, () => {
+  console.log(`Hello IRS, Client Server is running at ${url}${port ? ':'+port : ''} on ${new Date()} `);
+});

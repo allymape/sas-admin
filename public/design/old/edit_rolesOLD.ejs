@@ -9,18 +9,18 @@
         <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
         <meta content="Themesbrand" name="author" />
         <!-- App favicon -->
-        <link rel="shortcut icon" href="design/assets/images/favicon.ico">
+        <link rel="shortcut icon" href="../design/assets/images/favicon.ico">
 
         <!-- Layout config Js -->
-        <script src="design/assets/js/layout.js"></script>
+        <script src="../design/assets/js/layout.js"></script>
         <!-- Bootstrap Css -->
-        <link href="design/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="../design/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <!-- Icons Css -->
-        <link href="design/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+        <link href="../design/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
         <!-- App Css-->
-        <link href="design/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+        <link href="../design/assets/css/app.min.css" rel="stylesheet" type="text/css" />
         <!-- custom Css-->
-        <link href="design/assets/css/custom.min.css" rel="stylesheet" type="text/css" />
+        <link href="../design/assets/css/custom.min.css" rel="stylesheet" type="text/css" />
 
 
     </head>
@@ -79,7 +79,8 @@
                                                                 <label class="form-check-label" for="roleName">
                                                                    Jina la Role
                                                                 </label>
-                                                                <input type="text" class="form-control" id="roleName"
+                                                                <input type="hidden" value="<%= role[0].id %>" id="roleID"/>
+                                                                <input type="text" class="form-control" value="<%= role[0].role_name %>" id="roleName"
                                                                 placeholder="Mfano: Admin">
                                                         </div> 
                     
@@ -87,11 +88,14 @@
                                                         <label><input type="checkbox" class="form-check-input" id="check-all"/> Chagua Zote</label>
                                                          <hr/>
                                                          <div class="row">
-                                                                <% for(var i = 0; i < data.length; i++){ %>
+                                                                <% for(var i = 0; i < permissions.length; i++){ %>
                                                                 <div class="col-md-4 mb-2">
                                                                     <label class="form-check-label" for="formCheck<%=i%>"> 
-                                                                    <input class="form-check-input checkbox" value="<%= data[i].perm_id %>" type="checkbox" name="formCheck1" id="formCheck<%=i%>">
-                                                                        <span class="ml-4"><%= data[i].permission_name %>  </span>  
+                                                                    <input class="form-check-input checkbox" 
+                                                                    value="<%= permissions[i].id %>" 
+                                                                    <%=assigned_permissions.includes(permissions[i].id) ? 'checked' : '' %>
+                                                                    type="checkbox" name="formCheck1" id="formCheck<%=i%>">
+                                                                        <span class="ml-4"><%= permissions[i].permission_name %>  </span>  
                                                                     </label>
                                                                 </div>
                                                                 <% } %>
@@ -108,7 +112,7 @@
                                                         </div>  
                                                         <hr/>
                                                         <div class="mb-2 mt-4" id="sajilbtn">
-                                                            <button type="button" class="btn btn-success bg-gradient waves-effect waves-light" onclick="tengenezaRole()">Tengeneza</button>
+                                                            <button type="button" class="btn btn-success bg-gradient waves-effect waves-light" onclick="tengenezaRole()">Sasisha</button>
                                                         </div> 
                                                         <div id="pakiabtn" style="display: none;">
                                                             <button type="button" class="btn btn-success btn-load">
@@ -126,107 +130,65 @@
                                                 </div><!--end col-->
                                             </div><!--end row-->
                                         </div>
-<script>
-    function tengenezaRole(){
-    var checkboxes = 
-                document.getElementsByName('formCheck1');
-        var role_name = document.getElementById('roleName').value;
-  
-            var result = [];
-  
-            for (var i = 0; i < checkboxes.length; i++) {
-                if (checkboxes[i].checked) {
-                    result += checkboxes[i].value+",";
-                
-                }
-            }
-            if(role_name.length <= 0){
-                alert("Jina la Role haliwezi kuwa null")
-            }else{
-            $("#sajilbtn").hide();
-            $("#pakiabtn").show();
-            $.ajax({
-                    url: "/tengenezaRoles",
-                    type: 'POST',
-                    data: JSON.stringify({"role_name": role_name, "permissions": result}),
-                    contentType: 'application/json',
-                    success: function(response) {
-                        if(response.statusCode == 300){
-                            $("#sajilbtn").show();
-                            $("#pakiabtn").hide();
-                            $("#alertsuccess").show();
-                            window.location.href = "/RolesPermissions"
-                        }if(response.statusCode == 306){
-                            $("#sajilbtn").show();
-                            $("#pakiabtn").hide();
-                            $("#alertexist").show();
-                        }if(response.statusCode == 400 || response.statusCode == 500){
-                            $("#sajilbtn").show();
-                            $("#pakiabtn").hide();
-                            $("#alertmtandao").show();
-                        }
-                    }
-                });
-            }
-        }
-</script>
-<script>
-    function tengenezaRole(){
-    // var checkboxes = 
-    //             document.getElementsByName('formCheck1');
-        var role_name = document.getElementById('roleName').value;
+                                        <script>
 
-        var checkboxes = document.querySelectorAll('input[name="formCheck1"]');
-var values = [];
-// looping through all checkboxes
-// if checked property is true then push
-for (var i = 0; i < checkboxes.length; i++) {
-  if (checkboxes[i].checked == true) {
-    values.push(checkboxes[i].value);
-  }
-}
-// alert(values);
-  
-            // var result = [];
-  
-            // for (var i = 0; i < checkboxes.length; i++) {
-            //     if (checkboxes[i].checked) {
-            //         result += checkboxes[i].value;
-                
-            //     }
-            // }
-            // alert(result)
-            if(role_name.length <= 0){
-                alert("Jina la Role haliwezi kuwa null")
-            }else{
-            $("#sajilbtn").hide();
-            $("#pakiabtn").show();
-            $.ajax({
-                    url: "/tengenezaRoles",
-                    type: 'POST',
-                    data: JSON.stringify({"role_name": role_name, "permissions": values}),
-                    contentType: 'application/json',
-                    success: function(response) {
-                        if(response.statusCode == 300){
-                            $("#sajilbtn").show();
-                            $("#pakiabtn").hide();
-                            $("#alertsuccess").show();
-                            window.location.href = "/RolesPermissions"
-                        }if(response.statusCode == 306){
-                            $("#sajilbtn").show();
-                            $("#pakiabtn").hide();
-                            $("#alertexist").show();
-                        }if(response.statusCode == 400 || response.statusCode == 500){
-                            $("#sajilbtn").show();
-                            $("#pakiabtn").hide();
-                            $("#alertmtandao").show();
-                        }
-                    }
-                });
-            }
-       
-       }
-</script>
+                                           
+                                            function tengenezaRole(){
+                                                var checkboxes = document.getElementsByName('formCheck1');
+                                                var role_id = document.getElementById('roleID').value;
+                                                var role_name = document.getElementById('roleName').value;
+                                                var checkboxes = document.querySelectorAll('input[name="formCheck1"]');
+                                                var values = [];
+
+                                                // looping through all checkboxes
+                                                // if checked property is true then push
+                                                for (var i = 0; i < checkboxes.length; i++) {
+                                                    if (checkboxes[i].checked == true) {
+                                                        values.push(checkboxes[i].value);
+                                                    }
+                                                }
+                                        // alert(values);
+                                          
+                                                    // var result = [];
+                                          
+                                                    // for (var i = 0; i < checkboxes.length; i++) {
+                                                    //     if (checkboxes[i].checked) {
+                                                    //         result += checkboxes[i].value;
+                                                        
+                                                    //     }
+                                                    // }
+                                                    // alert(result)
+                                                    if(role_name.length <= 0){
+                                                        alert("Jina la Role haliwezi kuwa null")
+                                                    }else{
+                                                    $("#sajilbtn").hide();
+                                                    $("#pakiabtn").show();
+                                                    $.ajax({
+                                                            url: "/sasishaRoles",
+                                                            type: 'POST',
+                                                            data: JSON.stringify({"role_id" : role.id , "role_name": role_name, "permissions": values}),
+                                                            contentType: 'application/json',
+                                                            success: function(response) {
+                                                                if(response.statusCode == 300){
+                                                                    $("#sajilbtn").show();
+                                                                    $("#pakiabtn").hide();
+                                                                    $("#alertsuccess").show();
+                                                                    window.location.href = "/EditRolesPermissions/"+role.id
+                                                                }if(response.statusCode == 306){
+                                                                    $("#sajilbtn").show();
+                                                                    $("#pakiabtn").hide();
+                                                                    $("#alertexist").show();
+                                                                }if(response.statusCode == 400 || response.statusCode == 500){
+                                                                    $("#sajilbtn").show();
+                                                                    $("#pakiabtn").hide();
+                                                                    $("#alertmtandao").show();
+                                                                }
+                                                            }
+                                                        });
+                                                    }
+                                               
+                                               }
+                                        </script>
                                     </div>
                                 </div>
                             </div> <!-- end col -->
@@ -258,17 +220,16 @@ for (var i = 0; i < checkboxes.length; i++) {
         <!-- END layout-wrapper -->
 
         <!-- JAVASCRIPT -->
-        <script src="design/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-        <script src="design/assets/libs/simplebar/simplebar.min.js"></script>
-        <script src="design/assets/libs/node-waves/waves.min.js"></script>
-        <script src="design/assets/libs/feather-icons/feather.min.js"></script>
-        <script src="design/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
-        <script src="design/assets/js/plugins.js"></script>
+        <script src="../design/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="../design/assets/libs/simplebar/simplebar.min.js"></script>
+        <script src="../design/assets/libs/node-waves/waves.min.js"></script>
+        <script src="../design/assets/libs/feather-icons/feather.min.js"></script>
+        <script src="../design/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
+        <script src="../design/assets/js/plugins.js"></script>
         <script src="../js/checkboxes.js"></script>
         <!-- prismjs plugin -->
-        <script src="design/assets/libs/prismjs/prism.js"></script>
-
-        <script src="design/assets/js/app.js"></script>
+        <script src="../design/assets/libs/prismjs/prism.js"></script>
+        <script src="../design/assets/js/app.js"></script>
 
     </body>
 </html>
