@@ -26,8 +26,12 @@ card_title : 'Tengeneza Role'
                 </div> 
 
                 <h4 class="mt-4">Permissions</h4>
-                <label><input type="checkbox" class="form-check-input" id="check-all"/> Chagua Zote</label>
+                   <div class="d-flex justify-content-between">
+                        <label><input type="checkbox" class="form-check-input" id="check-all"/> Chagua Zote</label>
+                        <input type="text" id="search-permission" placeholder="Search ..." />
+                    </div>
                     <hr/>
+                    <div id="message-box" class="alert alert-info d-none"></div>
                     <div class="row">
                         <% for(var i = 0; i < data.length; i++){ %>
                         <div class="col-md-4 mb-2">
@@ -37,7 +41,10 @@ card_title : 'Tengeneza Role'
                             <%=data[i].is_default ? 'checked disabled' : ''%>
                             type="checkbox" name="formCheck1" 
                             id="formCheck<%=i%>">
-                                <span class="ml-4"><%= data[i].permission_name %>  </span>  
+                                <% var display_name = data[i].display_name %>
+                                <span class="ml-4 <%= display_name.includes('Futa ') ? 'text-danger' : (
+                                        display_name.includes('Ona ') ? 'text-success' : (display_name.includes('Tengeneza') ? 'text-primary' : (display_name.includes('Badili') ? ' text-secondary' : '' ) )
+                                    ) %>"><%= display_name %>  </span>  
                             </label>
                         </div>
                         <% } %>

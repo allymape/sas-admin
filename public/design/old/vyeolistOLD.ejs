@@ -76,7 +76,9 @@
                                         <div class="row g-4 mb-3">
                                             <div class="col-sm-auto">
                                                 <div>
-                                                    <button type="button" class="btn btn-success add-btn" id="btn-create-user" ><i class="ri-add-line align-bottom me-1"></i> Sajili</button>
+                                                    <button type="button" class="btn btn-success add-btn" 
+                                                    data-bs-toggle="modal" id="create-btn" data-bs-target="#showModal"><i 
+                                                    class="ri-add-line align-bottom me-1"></i> Sajili</button>
                                                     <!-- <button class="btn btn-soft-danger" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button> -->
                                                 </div>
                                             </div>
@@ -91,9 +93,6 @@
                                         </div>
 
                                         <div class="table-responsive table-card mt-3 mb-1">
-                                            <div class="alert alert-info">
-                                                Jumla ya Watumiaji <%= pagination.total %> wamepatikana.
-                                            </div>
                                             <table class="table align-middle table-nowrap" id="customerTable">
                                                 <thead class="table-light">
                                                     <tr>
@@ -102,12 +101,11 @@
                                                                 <input class="form-check-input" type="checkbox" id="checkAll" value="option">
                                                             </div>
                                                         </th> -->
-                                                        <th class="sort" data-sort="customer_name">Na.</th>
-                                                        <th class="sort" data-sort="email">Jina</th>
-                                                        <th class="sort" data-sort="email">User Name</th>
-                                                        <th class="sort" data-sort="email">User Level</th>
-                                                        <th class="sort" data-sort="email" width="15%">Last Login</th>
-                                                        <th class="sort text-center" width="15%" data-sort="email">Action</th>
+                                                        <th class="sort" data-sort="customer_name" width="5%">Na.</th>
+                                                        <!-- <th class="sort" data-sort="email">Jina</th> -->
+                                                        <th class="sort" data-sort="email">Cheo</th>
+                                                        <th class="sort" data-sort="email">Level</th>
+                                                        <th class="sort text-center" data-sort="action" width="10%">Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="list form-check-all">
@@ -121,42 +119,24 @@
                                                         <td class="id"><a href="javascript:void(0);" class="fw-medium link-primary"><%= i+1 %></a></td>
                                                         <!-- <td class="customer_name">Mary Cousar</td>
                                                         <td class="email">marycousar@velzon.com</td> -->
-                                                        <!-- <td class="date"><a href="/TaarifaMtumiaji/<%= data[i].userId %>"  -->
-                                                            <td class="date"><a href="#"
-                                                            class="fw-medium link-primary"><%= data[i].name %></a></td>
-                                                        <td class="date"><%= data[i].username %></td>
+                                                        <!-- <td class="date"><%= data[i].name %></td> -->
+                                                        <td class="phone"><%= data[i].name %></td>
                                                         <td class="phone"><%= data[i].role %></td>
-                                                        <td class="phone"><%= data[i].last_login %></td>
-                                                        <td class="phone text-center"> 
-                                                            <button type="button" class="btn btn-link text-primary" 
-                                                                data-bs-toggle="" 
-                                                                data-id="<%= data[i].userId %>" 
-                                                                data-name="<%= data[i].name %>" 
-                                                                data-email="<%= data[i].email %>" 
-                                                                data-phone="<%= data[i].phoneNumber %>"  
-                                                                onclick="editUser(this); return false;"
-                                                            >
-                                                            <svg xmlns="http://www.w3.org/2000/svg" 
-                                                            width="24" height="24" viewBox="0 0 24 24" 
-                                                            fill="none" stroke="currentColor" stroke-width="2" 
-                                                            stroke-linecap="round" stroke-linejoin="round" 
-                                                            class="feather feather-edit-3"><path d="M12 20h9">
 
-                                                            </path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z">
-
-                                                            </path></svg></button>
-                                                            <button type="button" class="btn btn-link text-danger add-btn" 
-                                                            data-bs-toggle="modal" data-id="<%= data[i].userId %>" 
-                                                            data-name="<%= data[i].name %>" 
-                                                            onclick="AddZone1(this); return false;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
-                                                            <button type="button" class="btn btn-link text-warning add-btn" 
-                                                            data-bs-toggle="modal" data-id="<%= data[i].userId %>" 
-                                                            data-name="<%= data[i].name %>" data-email="<%= data[i].email %>"
-                                                            onclick="ResetPassword(this); return false;">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-unlock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>
+                                                        <td class="text-center">
+                                                            <button type="button" class="btn btn-link btn-sm" 
+                                                            data-bs-toggle="modal" data-id="<%= data[i].rolesId %>" 
+                                                            data-name="<%= data[i].name %>" id="create-btn" 
+                                                            onclick="BadiliData(this); return false;">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                                                        </button>
+                                                            <button type="button" class="btn btn-link btn-sm text-danger" 
+                                                            data-bs-toggle="modal" data-id="<%= data[i].rolesId %>" 
+                                                            id="create-btn" 
+                                                            onclick="AddZone1(this); return false;">
+                                                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                                                         </button>
                                                         </td>
-
                                                     </tr>
                                                     <% } %>
                                                 </tbody>
@@ -170,22 +150,17 @@
                                             </div>
                                         </div>
 
-                                    <!-- Pagination and page length -->
-                                        <div class="d-flex justify-content-between">
-                                        <div>
-                                            <form action="" method="GET">
-                                                    <select class="form-control" name="per_page" style="width: 80px;" id="page-size">
-                                                        <option value="5"   <%-req.query.per_page ==  5  ? 'selected' : '' %> >5</option>
-                                                        <option value="10"  <%-req.query.per_page == 10 || !req.query.per_page   ? 'selected' : '' %> >10</option>
-                                                        <option value="20"  <%-req.query.per_page == 20  ? 'selected' : '' %> >20</option>
-                                                        <option value="50"  <%-req.query.per_page == 50  ? 'selected' : '' %> >50</option>
-                                                        <option value="100" <%-req.query.per_page == 100 ? 'selected' : '' %> >100</option>
-                                                    </select>
-                                            </form>
+                                        <div class="d-flex justify-content-end">
+                                            <div class="pagination-wrap hstack gap-2">
+                                                <a class="page-item pagination-prev disabled" href="#">
+                                                    Previous
+                                                </a>
+                                                <ul class="pagination listjs-pagination mb-0"></ul>
+                                                <a class="page-item pagination-next" href="#">
+                                                    Next
+                                                </a>
+                                            </div>
                                         </div>
-                                        <%- include('paginations/paginate.ejs'); %>
-                                        </div>
-                                    <!-- End pagination and page length -->
                                     </div>
                                 </div><!-- end card -->
                             </div>
@@ -195,70 +170,21 @@
                     </div>
                     <!-- end row -->
                     <script>
+                        function BadiliData(e){
+                        var nameId = e.getAttribute('data-id');
+                        var name = e.getAttribute('data-name');
+                        document.getElementById("id1-field3").value = nameId;
+                        document.getElementById("customername1-field").value = name;
+                        $('#showEditModal').modal('show');
+                    }
                     function AddZone1(e){
                         var nameId = e.getAttribute('data-id');
-                        var name = e.getAttribute('data-name');
                         document.getElementById("code-field-edit").value = nameId;
-                        document.getElementById("ada-field-edit").value = name;
-                        document.getElementById("ada-field-edit").value = name;
-                        // var kanda = document.getElementById("ada-field").value;
                         $('#deleteRecordModal').modal('show');
-                    }
-                    function ResetPassword(e){
-                        var nameId = e.getAttribute('data-id');
-                        var name = e.getAttribute('data-name');
-                        var email = e.getAttribute('data-email');
-                        var email_length = email.length;
-                        var first_four_letter = email.substr(0, 4)
-                        var rest_letters_len = email.substr(email_length - 4, email_length)
-                        var rest_letters = first_four_letter+'*********'+rest_letters_len;
-                        // for(var i = 0; i < rest_letters_len.length; i++){
-                        //     rest_letters = '*'
-                        // }
-                        var last_four_letter = email.substr(email_length - 4, email_length)
-                        document.getElementById("code-field-edit").value = nameId;
-                        document.getElementById("code1-field-edit").value = name;
-                        document.getElementById("ada1-field-edit").value = rest_letters;
-                        document.getElementById("email_only").value = email;
-                        // var kanda = document.getElementById("ada-field").value;
-                        $('#resetPasswordModal').modal('show');
-                    }
-                    
-                    function futaHati(){
-                            var name = document.getElementById('code-field-edit').value;
-                             
-                                $.ajax({
-                                    url: "/FutaWatumiaji",
-                                    type: 'POST',
-                                    data: JSON.stringify({"name": name}),
-                                    contentType: 'application/json',
-                                    success: function(response) {
-                                    alert("Mdau amefutwa kikamilifu")
-                                    $('#kaimishaModal').modal('hide');
-                                    window.location.href = "/Watumiaji"
-                                    }
-                                });
-
-                        }
-                    function TumaEmail(){
-                        var email_only = document.getElementById('email_only').value;
-                            
-                            $.ajax({
-                                url: "/TumaEmail",
-                                type: 'POST',
-                                data: JSON.stringify({"email": email_only}),
-                                contentType: 'application/json',
-                                success: function(response) {
-                                alert(response.msg)
-                                $('#kaimishaModal').modal('hide');
-                                window.location.href = "/Watumiaji"
-                                }
-                            });
-
                     }
                     </script>
                     <div class="modal fade" id="showModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header bg-light p-3">
                                     <h5 class="modal-title" id="exampleModalLabel"></h5>
@@ -266,10 +192,10 @@
                                 </div>
                                 <form>
                                     <div class="alert alert-success shadow" role="alert" id="alertsuccess" style="display: none;">
-                                        <strong> Hongera! </strong> Mtumiaji <b>amesajiliwa</b> kikamilifu!
+                                        <strong> Hongera! </strong> Cheo <b>kimesajiliwa</b> kikamilifu!
                                     </div>
                                     <div class="alert alert-danger shadow mb-xl-0" role="alert" id="alertexist" style="display: none;">
-                                        <strong> Imeshindwa Kusajili! </strong> Mtumiaji <b>alishasajiliwa</b> kwenye mfumo tayari!
+                                        <strong> Imeshindwa Kusajili! </strong> Cheo <b>kilishasajiliwa</b> kwenye mfumo tayari!
                                      </div>
                                      <div class="alert alert-warning shadow shadow" role="alert" id="alertmtandao" style="display: none;">
                                         <strong> Uh oh, kuna tatizo </strong> la <b>mtandao,</b> tafadhali jaribu tena badae!
@@ -281,158 +207,41 @@
                                             <input type="text" id="id-field" class="form-control" placeholder="ID" readonly />
                                         </div>
 
-                                        <div class="row">
-                                        <div class="mb-3 col-xxl-4">
-                                            <label for="customername-field" class="form-label">Jina Kamili(<span style="color: red;">*</span>)</label>
-                                            <input type="text" id="customername-field" class="form-control" placeholder="Mfano: Olivia Samwel" onkeyup="checkOnlyNo()" required />
-                                            <span style="color: red;display: none;" id="jazanamba">Tafadhali jina haliwezi kuwa namba pekee</span>
-                                            <span style="color: red;display: none;" id="jazanalama">Tafadhali jina haliwezi kuwa na alama</span>
-                                            <span style="color: red;display: none;" id="jazaname">Tafadhali jaza Jina Kamili</span>
+                                        <div class="mb-3">
+                                            <label for="customername-field" class="form-label">Cheo</label>
+                                            <input type="text" id="cheo-field" class="form-control" placeholder="Mfano: USJ2" required />
+                                            <span style="color: red;display: none;" id="jazasimu">Tafadhali jaza Cheo</span>
                                         </div>
-                                        <div class="mb-3 col-xxl-4">
-                                            <label for="email-field" class="form-label">Barua Pepe(<span style="color: red;">*</span>)</label>
-                                            <input type="email" autocomplete="off" id="username-field" class="form-control" placeholder="Mfano: olivia@gmail.com" onkeyup="ValidateEmail();" required />
-                                            <span style="color: red;display: none;" id="jazausername">Tafadhali jaza Barua Pepe</span>
-                                            <span id="lblError" style="color: red"></span>
-                                        </div>
-
-                                        <div class="mb-3 col-xxl-4">
-                                            <label for="email-field" class="form-label">Namba ya Simu(<span style="color: red;">*</span>)</label>
-                                            <input type="phone" id="phone-field" class="form-control" onkeypress="return onlyNumberKey(event)" 
-                                            maxlength="20"  placeholder="Mfano: 0768556633" required />
-                                            <input type="hidden" id="strengthhidden" class="form-control" />
-                                            <span style="color: red;display: none;" id="jazasimu">Tafadhali jaza Namba ya Simu</span>
-                                        </div>
-                                        </div>
-                                        <script>
-                                            function checkOnlyNo(){
-                                                var email = document.getElementById("customername-field").value;
-                                                let isnum = /^\d+$/.test(email);
-                                                if(isnum){
-                                                    // $("#sajilbtn").hide();
-                                                    $("#jazanamba").show();
-                                                    $('#add-btnmwox').prop('disabled', true);
-                                                }
-                                                if(!isnum){
-                                                    $("#jazanamba").hide();
-                                                    $('#add-btnmwox').prop('disabled', false);
-                                                    const specialChars = /[`!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?~]/;
-                                                    if (specialChars.test(email)) {
-                                                        $("#jazanalama").show();
-                                                        $('#add-btnmwox').prop('disabled', true);
-                                                    } else {
-                                                        $("#jazanalama").hide();
-                                                        $('#add-btnmwox').prop('disabled', false);
-                                                    }
-                                                }
-                                            }
-                                        </script>
-
-                           
-                                        <script>
-                                                    function onlyNumberKey(evt) {
-              
-                                                        // Only ASCII character in that range allowed
-                                                        var ASCIICode = (evt.which) ? evt.which : evt.keyCode
-                                                        if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
-                                                            return false;
-                                                        return true;
-                                                    }
-                                        </script>
-                                        <div class="row">
-                                            <div class="mb-3 col-xxl-4">
-                                                <label for="email-field" class="form-label">Nenosiri</label>
-                                                <input type="password" autocomplete="off" name="password-field" id="password-field" 
-                                                class="form-control" size="15" maxlength="100" onkeyup="return passwordChanged();" placeholder="Mfano: 2" required />
-                                                <span id="strength">Type Password</span>
-                                            </div>
-                                            <div class="mb-3 col-xxl-4">
-                                                <label for="email-field" class="form-label">Thibithisha Nenosiri</label>
-                                                <input type="password" autocomplete="off" id="repassword-field" class="form-control" placeholder="Mfano: 2" required />
-                                            </div>
-                                        </div>
-                                        <% if(req.session.useLev == 11){ %>
-                                       <div class="row">
-                                            <div class="col-xxl-8 mb-3">
-                                                <label for="status-field" class="form-label">User Role(<span style="color: red;">*</span>)</label>
-                                                <select class="form-control" data-trigger name="roleRM-field1" id="roleRM-field1" 
-                                                >
-                                                    <option value="#"> Chagua </option>
-                                                    <% for(var i = 0; i < RoleManagement.length; i++){ %>
-                                                        <option value="<%= RoleManagement[i].RoleMId %> %>"><%= RoleManagement[i].role_name %></option>
-                                                    <% } %>
-                                                </select>
-                                                <span style="color: red;display: none;" id="jazacheo">Tafadhali Chagua Role</span>
-                                            </div>
-                                       </div>
-                                        <% } %>
-                                         <div class="row">
-                                            <div class="col-xxl-8 mb-3">
-                                            <label for="status-field" class="form-label">User Level(<span style="color: red;">*</span>)</label>
-                                            <select class="form-control" data-trigger name="status-field" id="status-field" 
-                                            onchange="vyeo()">
+                                        <div>
+                                            <label for="status-field" class="form-label">User Level</label>
+                                            <select class="form-control" data-trigger name="status-field" id="status-field" onchange="vyeoLocation()">
                                                 <option value="#"> Chagua </option>
                                                 <% for(var i = 0; i < vyeo.length; i++){ %>
-                                                    <option value="<%= vyeo[i].vyeoIdExist %>-<%= vyeo[i].rankLevel %>"><%= vyeo[i].roleExist %></option>
+                                                    <option value="<%= vyeo[i].vyeoIdExist %> - <%= vyeo[i].vyeoLocation %>"><%= vyeo[i].roleExist %></option>
                                                 <% } %>
                                             </select>
-                                            <span style="color: red;display: none;" id="jazacheo">Tafadhali Chagua Cheo</span>
+                                            <span style="color: red;display: none;" id="jazacheo">Tafadhali Chagua User Level</span>
                                         </div>
-                                        </div>
-                                         <div class="row">
-                                            <div  style="display: none; " class="lga-div col-xxl-8 mb-3">
-                                                <label for="status-field" class="form-label">Halmashauri</label>
-                                                <select class="form-control" data-trigger name="lga-field" id="lga-field">
-                                                    <option value="0"> Chagua </option>
-                                                    <% for(var i = 0; i < lgas.length; i++){ %>
-                                                        <option value="<%= lgas[i].LgaCode %>"><%= lgas[i].LgaName %></option>
-                                                    <% } %>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class=""row>
-                                            <div style="display: none;" class="kanda-div col-xxl-8 mb-3">
-                                                <label for="status-field" class="form-label">Kanda</label>
-                                                <select class="form-control" data-trigger name="kanda-field" id="kanda-field">
-                                                    <option value="0"> Chagua </option>
-                                                    <% for(var i = 0; i < zones.length; i++){ %>
-                                                        <option value="<%= zones[i].zoneCode %>"><%= zones[i].zoneName %></option>
-                                                    <% } %>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="mb-3 col-xxl-8">
-                                                <label for="email-field" class="form-label">Saini</label>
-                                                <input type="file" id="sign-field" class="form-control"  accept="image/*"/>
-                                            </div>
+                                        <div style="display: none" id="rank_level">
+                                            <label for="status-field" class="form-label">Halmashauri/Wilaya</label>
+                                            <select class="form-control" data-trigger name="lga-field" id="lga-field">
+                                                <option value="#"> Chagua </option>
+                                                <% for(var i = 0; i < vyeo.length; i++){ %>
+                                                    <option value="<%= vyeo[i].vyeoIdExist %>"><%= vyeo[i].roleExist %></option>
+                                                <% } %>
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
                                         <div class="hstack gap-2 justify-content-end">
                                             <button type="button" class="btn btn-light" onclick="funga()" data-bs-dismiss="modal">Funga</button>
-                                            <div id="sajilbtn">
-                                            <button type="button" class="btn btn-success" onclick="sajiliHati()" id="add-btnmwox">Sajili</button>
-                                            </div>
-                                            <div id="pakiabtn" style="display: none;">
-                                                <button type="button" class="btn btn-success btn-load">
-                                                    <span class="d-flex align-items-center">
-                                                        <span class="spinner-border flex-shrink-0" role="status">
-                                                            <span class="visually-hidden">Tafadhali subiri...</span>
-                                                        </span>
-                                                        <span class="flex-grow-1 ms-2">
-                                                            Tafadhali subiri...
-                                                        </span>
-                                                    </span>
-                                                </button>
-                                            </div>
+                                            <button type="button" class="btn btn-success" onclick="sajiliHati()" id="add-btn">Sajili</button>
                                         </div>
                                     </div>
                                 </form>
                             </div>
                         </div>
                     </div>
-
                     <div class="modal fade" id="showEditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
@@ -441,115 +250,127 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
                                 </div>
                                 <form>
-                                    <div class="alert alert-success shadow" role="alert" id="alertsuccess1" style="display: none;">
-                                        <strong> Hongera! Kila kitu kimeenda sawa! </strong> Taarifa za Mtumiaji <b>zimesasishwa</b> kikamilifu!
-                                    </div>
-                                    <div class="alert alert-danger shadow mb-xl-0" role="alert" id="alertexist1" style="display: none;">
-                                        <strong> Imeshindwa Kusasisha! </strong> Taarifa za Mtumiaji <b>hazijasasishwa.</b> tafadhali jaribu tena badaae!
-                                     </div>
-                                     <div class="alert alert-warning shadow shadow" role="alert" id="alertmtandao1" style="display: none;">
-                                        <strong> Uh oh, kuna tatizo </strong> la <b>mtandao,</b> tafadhali jaribu tena badae!
-                                    </div>
                                     <div class="modal-body">
 
                                         <div class="mb-3" id="modal-id" style="display: none;">
                                             <label for="id-field" class="form-label">ID</label>
-                                            <input type="text" id="id-field" class="form-control" placeholder="ID" />
+                                            <input type="text" id="id-field" class="form-control" placeholder="ID" readonly />
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="customername1-field" class="form-label">Jina Kamili</label>
-                                            <input type="hidden" id="id1-field" class="form-control" placeholder="ID" />
-                                            <input type="text" id="customername1-field" class="form-control" required />
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="email-field" class="form-label">Barua Pepe</label>
-                                            <input type="email" id="username1-field" class="form-control" placeholder="Mfano: olivia@gmail.com" required />
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="email-field" class="form-label">Namba ya Simu</label>
-                                            <input type="phone" id="phone1-field" class="form-control" onkeypress="return onlyNumberKey(event)" 
-                                            maxlength="20" placeholder="Mfano: 0768556633" required />
-                                            <input type="hidden" id="strengthhidden1" class="form-control" />
-                                        </div>
-                                        <!-- <div class="mb-3">
-                                            <label for="email-field" class="form-label">Barua Pepe</label>
-                                            <input type="email" id="email-field" class="form-control" placeholder="Mfano: 2" required />
-                                        </div> -->
-                                        <div class="mb-3">
-                                            <label for="email-field" class="form-label">Nenosiri</label>
-                                            <input type="password" name="password1-field" id="password1-field" 
-                                            class="form-control" size="15" maxlength="100" onkeyup="return passwordChanged1();" placeholder="Mfano: 2" required />
-                                            <span id="strength1">Type Password</span>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="email-field" class="form-label">Thibithisha Nenosiri</label>
-                                            <input type="password" id="repassword1-field" class="form-control" placeholder="Mfano: 2" required />
-                                        </div>
-                                        <div>
-                                            <label for="status-field" class="form-label">User Role(<span style="color: red;">*</span>)</label>
-                                            <select class="form-control" data-trigger name="roleRMe-field" id="roleRMe-field" 
-                                            >
-                                                <option value="#"> Chagua </option>
-                                                <% for(var i = 0; i < RoleManagement.length; i++){ %>
-                                                    <option value="<%= RoleManagement[i].RoleMId %> %>"><%= RoleManagement[i].role_name %></option>
-                                                <% } %>
-                                            </select>
-                                            <span style="color: red;display: none;" id="jazacheo">Tafadhali Chagua Role</span>
+                                            <label for="customername-field" class="form-label">Cheo</label>
+                                            <input type="text" id="customername1-field" class="form-control" placeholder="Mfano: USJ2" required />
+                                            <input type="hidden" id="id1-field3" class="form-control" placeholder="ID" />
                                         </div>
                                         <div>
                                             <label for="status-field" class="form-label">User Level</label>
-                                            <select class="form-control" data-trigger name="status1-field" id="status1-field" 
-                                            onchange="vyeo1()">
+                                            <select class="form-control" data-trigger name="status1-field" id="status1-field" onchange="vyeoLocation()">
+                                                <option value="# - 0"> Chagua </option>
+                                                <% for(var i = 0; i < vyeo.length; i++){ %>
+                                                    <option value="<%= vyeo[i].vyeoIdExist %> - <%= vyeo[i].vyeoLocation %>"><%= vyeo[i].roleExist %></option>
+                                                <% } %>
+                                            </select>
+                                        </div>
+                                        <div style="display: none" id="rank_level">
+                                            <label for="status-field" class="form-label">Halmashauri/Wilaya</label>
+                                            <select class="form-control" data-trigger name="lga-field" id="lga-field">
                                                 <option value="#"> Chagua </option>
                                                 <% for(var i = 0; i < vyeo.length; i++){ %>
-                                                    <option value="<%= vyeo[i].vyeoIdExist %>-<%= vyeo[i].rankLevel %>"><%= vyeo[i].roleExist %></option>
+                                                    <option value="<%= vyeo[i].vyeoIdExist %>"><%= vyeo[i].roleExist %></option>
                                                 <% } %>
                                             </select>
-                                        </div>
-                                        <div style="display: none;" class="lga1-div">
-                                            <label for="status-field" class="form-label">Halmashauri</label>
-                                            <select class="form-control" data-trigger name="lga1-field" id="lga1-field">
-                                                <option value="0"> Chagua </option>
-                                                <% for(var i = 0; i < lgas.length; i++){ %>
-                                                    <option value="<%= lgas[i].LgaCode %>"><%= lgas[i].LgaName %></option>
-                                                <% } %>
-                                            </select>
-                                        </div>
-                                        <div style="display: none;" class="kanda1-div">
-                                            <label for="status-field" class="form-label">Kanda</label>
-                                            <select class="form-control" data-trigger name="kanda1-field" id="kanda1-field">
-                                                <option value="0"> Chagua </option>
-                                                <% for(var i = 0; i < zones.length; i++){ %>
-                                                    <option value="<%= zones[i].zoneCode %>"><%= zones[i].zoneName %></option>
-                                                <% } %>
-                                            </select>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="email-field" class="form-label">Saini</label>
-                                            <input type="file" id="sign1-field" class="form-control" accept="image/*"/>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
                                         <div class="hstack gap-2 justify-content-end">
-                                            <button type="button" class="btn btn-light" onclick="funga()" data-bs-dismiss="modal">Funga</button>
-                                            <button type="button" class="btn btn-success" onclick="EditUser()" id="add-btn1">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
-                                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3">
-                                                <path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z">
-
-                                                </path></svg></button>
+                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Funga</button>
+                                            <button type="button" class="btn btn-success" onclick="sasishaHati()" id="add-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></button>
                                         </div>
                                     </div>
                                 </form>
                             </div>
                         </div>
                     </div>
-                   
-                    
-
+                    <script>
+                        function sajiliHati(){
+                            var name = document.getElementById('cheo-field').value;
+                            var level = document.getElementById('status-field').value;
+                            var cheo_rank = level.split(" - ");
+                            var location = cheo_rank[0];
+                            if(name.length <= 0){
+                                $("#jazasimu").show();
+                            }
+                            if(location == '#'){
+                                $("#jazacheo").show();
+                            }if(name.length > 0 && location != '#'){
+                                $.ajax({
+                                    url: "/SajiliCheo",
+                                    type: 'POST',
+                                    data: JSON.stringify({"name": name, "level": location}),
+                                    contentType: 'application/json',
+                                    success: function(response) {
+                                        if(response.statusCode == 300){
+                                            $("#alertsuccess").show();
+                                        }if(response.statusCode == 306){
+                                            $("#alertexist").show();
+                                        }if(response.statusCode == 400 || response.statusCode == 500){
+                                            $("#alertmtandao").show();
+                                        }
+                                        // if(typeof(response) === "string"){response = JSON.parse(response)}
+                                    }
+                                });
+                            }
+                        }
+                        function sasishaHati(){
+                            var name = document.getElementById('customername1-field').value;
+                            var cheoId = document.getElementById('id1-field3').value;
+                            var level = document.getElementById('status1-field').value;
+                            var cheo_rank = level.split(" - ");
+                            var location = cheo_rank[0];
+                            $.ajax({
+                                url: "/BadiliCheo",
+                                type: 'POST',
+                                data: JSON.stringify({"name": name, "level": location, 
+                                "cheoId": cheoId}),
+                                contentType: 'application/json',
+                                success: function(response) {
+                                alert("response")
+                                $('#showModal').modal('hide');
+                                //nata();
+                                window.location.href = "/Vyeo"
+                                    // if(typeof(response) === "string"){response = JSON.parse(response)}
+                                }
+                            });
+                        }
+                        function futaCheo(){
+                            var cheoId = document.getElementById('code-field-edit').value;
+                            $.ajax({
+                                url: "/FutaCheo",
+                                type: 'POST',
+                                data: JSON.stringify({"cheoId": cheoId}),
+                                contentType: 'application/json',
+                                success: function(response) {
+                                alert("response")
+                                $('#showModal').modal('hide');
+                                //nata();
+                                window.location.href = "/Vyeo"
+                                    // if(typeof(response) === "string"){response = JSON.parse(response)}
+                                }
+                            });
+                        }
+                        function funga(){
+                            window.location.href = "/Vyeo"
+                        }
+                    </script>
+                    <script>
+                        function vyeoLocation(){
+                            var vcheo = document.getElementById("status-field").value;
+                            var cheo_rank = vcheo.split(" - ");
+                            var location = cheo_rank[0];
+                            // alert("location")
+                        }
+                    </script>
+                    <!-- Modal -->
                     <div class="modal fade zoomIn" id="deleteRecordModal" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
@@ -562,57 +383,23 @@
                                         <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
                                             <h4>Are you Sure ?</h4>
                                             <p class="text-muted mx-4 mb-0">Are you Sure You want to Remove this Record ?</p>
+                                            <input type="hidden" id="code-field-edit" class="form-control"/>
                                         </div>
-                                        <!-- <div class="mb-3"> -->
-                                            <!-- <label for="customername-field" class="form-label">Je, unataka kumfuta mtumiaji kwenye mfumo</label> -->
-                                            <input type="hidden" id="ada-field-edit" class="form-control" placeholder="Mfano: Ada ya usajili"/>
-                                        <!-- </div> -->
-                                        <!-- <div class="mb-3">
-                                            <label for="customername-field" class="form-label">Code ya Ada</label> -->
-                                            <input type="hidden" id="code-field-edit" class="form-control" placeholder="Mfano: RF01"/>
-                                        <!-- </div> -->
                                     </div>
                                     <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
                                         <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
-                                        <button type="button" class="btn w-sm btn-danger " onclick="futaHati()" id="delete-record">Yes, Delete It!</button>
+                                        <button type="button" class="btn w-sm btn-danger " onclick="futaCheo()" id="delete-record">Yes, Delete It!</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="modal fade zoomIn" id="resetPasswordModal" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btn-close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="mt-2 text-center">
-                                        <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
-                                        <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
-                                            <h4>Nenosiri/Nywira</h4>
-                                            <p class="text-muted mx-4 mb-0">Maelekezo ya kuweka upya nenosiri yatatumwa kwenye barua pepe hapo chini  ! Tafadhali thibitisha</p>
-                                        </div>
-                                        <div class="mb-3">
-                                            <p class="text-muted mx-4 mb-0">Barua Pepe</p>
-                                            <input type="text" id="ada1-field-edit" class="form-control" disabled/>
-                                            <input type="text" id="email_only" class="form-control"/>
-                                        </div>
-                                        <div class="mb-3">
-                                            <p class="text-muted mx-4 mb-0">Jina la Mtumiaji</p>
-                                            <input type="text" id="code1-field-edit" class="form-control" disabled/>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-                                        <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Funga</button>
-                                        <button type="button" class="btn w-sm btn-danger " onclick="TumaEmail()" id="delete-record">Ndio, Nathibitisha!</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <!--end modal -->
+
                 </div>
+                <!-- container-fluid -->
             </div>
+            <!-- End Page-content -->
 
             <footer class="footer">
                 <div class="container-fluid">
@@ -621,6 +408,9 @@
                             <script>document.write(new Date().getFullYear())</script> © IRS
                         </div>
                         <div class="col-sm-6">
+                            <!-- <div class="text-sm-end d-none d-sm-block">
+                                Design & Develop by Themesbrand
+                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -1253,7 +1043,7 @@
     <!-- prismjs plugin -->
     <script src="design/assets/libs/prismjs/prism.js"></script>
     <script src="design/assets/libs/list.js/list.min.js"></script>
-    <!-- <script src="design/assets/libs/list.pagination.js/list.pagination.min.js"></script> -->
+    <script src="design/assets/libs/list.pagination.js/list.pagination.min.js"></script>
 
     <!-- listjs init -->
     <script src="design/assets/js/pages/listjs.init.js"></script>
@@ -1273,436 +1063,5 @@
 
     <!-- prismjs plugin -->
     <script src="design/assets/libs/prismjs/prism.js"></script>
-     <script src="design/assets/js/pagination.js"></script>
-    <script src="design/assets/js/alert/confirm.js"></script>
-    <script src="design/assets/js/spin/spin.min.js"></script>
-    <script src="design/assets/js/custom.js"></script>
-    <script>
-      
-        $("#btn-create-user").on("click" , function(){
-             modal('showModal' , true);
-        })
-        function editUser(e){
-            // var nameId = e.getAttribute('data-id');
-            // var name = e.getAttribute('data-name');
-            // var email = e.getAttribute('data-email');
-            // var phone = e.getAttribute('data-phone');
-           
-            var userId = e.getAttribute('data-id');
-            var url = '/findUser/'+userId
-            ajaxRequest(url , 'GET' , (userResponse) => {
-                if(userResponse.statusCode == 300){
-                    ajaxRequest('/roles' , 'GET' , (rolesResponse) => {
-                          if(rolesResponse.statusCode == 300){
-                                //  document.getElementById("id1-field").value = nameId;
-                                var user = userResponse.data[0];
-                                document.getElementById("customername-field").value = user.name;
-                                // document.getElementById("username1-field").value = email;
-                                // document.getElementById("username1-field").value = email;
-                                document.getElementById("phone-field").value = user.phone_no;
-                                document.getElementById("password-field").value = '';
-                                modal('showModal' , true);
-                                 // alert(rolesResponse.statusCode)
-                          }
-                        } , { is_paginated : false})
-                }
-            })
-        }
-        function sajiliHati(){
-
-            var name = document.getElementById('customername-field').value;
-            
-            // var jazaname = document.getElementById('jazaname');
-           
-            var username = document.getElementById('username-field').value;
-            
-            var phone = document.getElementById('phone-field').value;
-            
-            var email = document.getElementById('username-field').value;
-            
-            var status = document.getElementById('status-field').value;
-            // alert(status)
-            var selectedFile = document.getElementById('sign-field').files;
-            var roleRMe = document.getElementById('roleRM-field1').value;
-            // alert(roleRMe)
-            var cheo = status.split("-");
-            var password = document.getElementById('password-field').value;
-            var repassword = document.getElementById('repassword-field').value;
-            var strength = document.getElementById('strength').value;
-            // alert(strength)
-            var strengthhidden = document.getElementById('strengthhidden').value;
-            var lgas = document.getElementById('lga-field').value;
-            var kanda = document.getElementById('kanda-field').value;
-            var rankLevel = document.getElementById('status-field').value;
-            var cheo = rankLevel.split("-");
-            // let isnum = /^\d+$/.test(name);
-            // const specialChars = /[`!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?~]/;
-        if(lblError.innerHTML == "Invalid email address."){
-            alert('Tafadhali hakiki barua pepe')
-        }else{
-
-            if(password == repassword){
-                if(name.length <= 0){
-                    $("#jazaname").show();
-                    
-                }
-                if(username.length <= 0){
-                    $("#jazausername").show();
-                }
-                if(phone.length <= 0){
-                    $("#jazasimu").show();
-                }
-                if(name.length > 0 && username.length > 0 && phone.length > 0){
-                    $("#sajilbtn").hide();
-                    $("#pakiabtn").show();
-                    if(strengthhidden == 'Strong!'){
-                        // alert(isnum)
-                        // alert(specialChars.test(name))
-                    // if(!isnum){
-                    //     if (specialChars.test(name)) {
-                    if (selectedFile.length > 0) {
-                    // Select the very first file from list
-                    var fileToLoad = selectedFile[0];
-                    // FileReader function for read the file.
-                    var fileReader = new FileReader();
-                    // var base64;
-                    // Onload of file read the file content
-                    fileReader.onload = function(fileLoadedEvent) {
-                        base64 = fileLoadedEvent.target.result;
-                        // Print data in console
-                    //alert(base64);
-                    var taachedFile = base64.split(",")
-
-                    $.ajax({
-                        url: "/SajiliWatumiaji",
-                        type: 'POST',
-                        data: JSON.stringify({"name": name, "username": username, "lgas": lgas, "kanda": kanda,
-                        "phone": phone, "email": email, "status": cheo[0], 
-                        "password": password, "cheo": cheo[1], "selectedFile": taachedFile[1], "roleRMe": roleRMe}),
-                        contentType: 'application/json',
-                        success: function(response) {
-                            // console.log(response)
-                            // alert(response.statusCode)
-                            if(response.statusCode == 300){
-                            $("#sajilbtn").show();
-                            $("#pakiabtn").hide();
-                            $("#alertsuccess").show();
-                        }if(response.statusCode == 306){
-                            $("#sajilbtn").show();
-                            $("#pakiabtn").hide();
-                            $("#alertexist").show();
-                        }if(response.statusCode == 400 || response.statusCode == 500){
-                            $("#sajilbtn").show();
-                            $("#pakiabtn").hide();
-                            $("#alertmtandao").show();
-                        }
-                        }
-                    });
-                    };
-                    // Convert data to base64
-                    fileReader.readAsDataURL(fileToLoad);
-                }else{
-                    $.ajax({
-                        url: "/SajiliWatumiaji",
-                        type: 'POST',
-                        data: JSON.stringify({"name": name, "username": username, "lgas": lgas, "kanda": kanda,
-                        "phone": phone, "email": email, "status": cheo[0], 
-                        "password": password, "cheo": cheo[1], "selectedFile": "", "roleRMe": roleRMe}),
-                        contentType: 'application/json',
-                        success: function(response) {
-                            // console.log(response)
-                            // alert(response.statusCode)
-                        if(response.statusCode == 300){
-                            $("#sajilbtn").show();
-                            $("#pakiabtn").hide();
-                            $("#alertsuccess").show();
-                        }if(response.statusCode == 306){
-                            $("#sajilbtn").show();
-                            $("#pakiabtn").hide();
-                            $("#alertexist").show();
-                        }if(response.statusCode == 400 || response.statusCode == 500){
-                            $("#sajilbtn").show();
-                            $("#pakiabtn").hide();
-                            $("#alertmtandao").show();
-                        }
-                        }
-                    });
-                }
-            // }else{
-            //     alert('Tafadhali rekebisha jina kamili haliwezi kuwa na special character')
-            // }
-            // }else{
-            //     alert('Tafadhali rekebisha jina kamili haliwezi kuwa namba pekee')
-            // }
-                    }else{
-                        alert("Nenosiri sio Salama")
-                    }
-                }else{
-                    alert("Imeshindwa kusajili, Tafadhali Angalia taarifa na utume tena") 
-                }
-            }else{
-                alert("Nenosiri hazifanani")
-            }
-        }
-
-        }
-        function funga(){
-            window.location.href = "/Watumiaji"
-        }
-    </script>
-    <script>
-        function EditUser(){
-            var name = document.getElementById('customername1-field').value;
-            var username = document.getElementById('username1-field').value;
-            var phone = document.getElementById('phone1-field').value;
-            var email = document.getElementById('username1-field').value;
-            var roleRMe = document.getElementById('roleRMe-field').value;
-            var status = document.getElementById('status1-field').value;
-            var selectedFile = document.getElementById('sign1-field').files;
-            var cheo = status.split("-");
-            var password = document.getElementById('password1-field').value;
-            var repassword = document.getElementById('repassword1-field').value;
-            var strength = document.getElementById('strength1').value;
-            var strengthhidden = document.getElementById('strengthhidden').value;
-            var lgas = document.getElementById('lga1-field').value;
-            var kanda = document.getElementById('kanda1-field').value;
-            // var rankLevel = document.getElementById('status1-field').value;
-            var userId = document.getElementById('id1-field').value;
-            // var cheo = rankLevel.split("-");
-            if(password.length > 0){
-                if(password == repassword){
-                    
-                    if(strengthhidden == 'Strong!'){
-                    
-                    if (selectedFile.length > 0) {
-                    // Select the very first file from list
-                    var fileToLoad = selectedFile[0];
-                    // FileReader function for read the file.
-                    var fileReader = new FileReader();
-                    // var base64;
-                    // Onload of file read the file content
-                    fileReader.onload = function(fileLoadedEvent) {
-                        base64 = fileLoadedEvent.target.result;
-                        // Print data in console
-                    //alert(base64);
-                    var taachedFile = base64.split(",")
-
-                    $.ajax({
-                        url: "/UpdateWatumiaji",
-                        type: 'POST',
-                        data: JSON.stringify({"name": name, "username": username, "lgas": lgas, "kanda": kanda,
-                        "phone": phone, "email": email, "status": cheo[0], 
-                        "password": password, "cheo": cheo[1], 
-                        "selectedFile": taachedFile[1], "userId": userId, "roleRMe": roleRMe}),
-                        contentType: 'application/json',
-                        success: function(response) {
-                        if(response.statusCode == 300){
-                            $("#alertsuccess1").show();
-                        }if(response.statusCode == 306){
-                            $("#alertexist1").show();
-                        }if(response.statusCode == 400 || response.statusCode == 500){
-                            $("#alertmtandao1").show();
-                        }
-                        }
-                    });
-                    };
-                    // Convert data to base64
-                    fileReader.readAsDataURL(fileToLoad);
-                }
-                else{
-                    $.ajax({
-                        url: "/UpdateWatumiaji",
-                        type: 'POST',
-                        data: JSON.stringify({"name": name, "username": username, "lgas": lgas, "kanda": kanda,
-                        "phone": phone, "email": email, "status": cheo[0], 
-                        "password": password, "cheo": cheo[1], "selectedFile": "", "userId": userId, "roleRMe": roleRMe}),
-                        contentType: 'application/json',
-                        success: function(response) {
-                        if(response.statusCode == 300){
-                            $("#alertsuccess1").show();
-                        }if(response.statusCode == 306){
-                            $("#alertexist1").show();
-                        }if(response.statusCode == 400 || response.statusCode == 500){
-                            $("#alertmtandao1").show();
-                        }
-                        }
-                    });
-                }
-                    }else{
-                        alert("Nenosiri sio Salama")
-                    }
-                }
-                else{
-                    alert("Nenosiri hazifanani")
-                }
-            }
-            else{
-                if (selectedFile.length > 0) {
-                    // Select the very first file from list
-                    var fileToLoad = selectedFile[0];
-                    // FileReader function for read the file.
-                    var fileReader = new FileReader();
-                    // var base64;
-                    // Onload of file read the file content
-                    fileReader.onload = function(fileLoadedEvent) {
-                        base64 = fileLoadedEvent.target.result;
-                        // Print data in console
-                    //alert(base64);
-                    var taachedFile = base64.split(",")
-
-                    $.ajax({
-                        url: "/UpdateWatumiaji",
-                        type: 'POST',
-                        data: JSON.stringify({"name": name, "username": username, "lgas": lgas, "kanda": kanda,
-                        "phone": phone, "email": email, "status": cheo[0], 
-                        "password": "0", "cheo": cheo[1], "selectedFile": taachedFile[1], "userId": userId}),
-                        contentType: 'application/json',
-                        success: function(response) {
-                        if(response.statusCode == 300){
-                            $("#alertsuccess1").show();
-                        }if(response.statusCode == 306){
-                            $("#alertexist1").show();
-                        }if(response.statusCode == 400 || response.statusCode == 500){
-                            $("#alertmtandao1").show();
-                        }
-                        }
-                    });
-                    };
-                    // Convert data to base64
-                    fileReader.readAsDataURL(fileToLoad);
-                }
-                else{
-                    $.ajax({
-                        url: "/UpdateWatumiaji",
-                        type: 'POST',
-                        data: JSON.stringify({"name": name, "username": username, "lgas": lgas, "kanda": kanda,
-                        "phone": phone, "email": email, "status": cheo[0], 
-                        "password": "0", "cheo": cheo[1], "selectedFile": "", "userId": userId}),
-                        contentType: 'application/json',
-                        success: function(response) {
-                        if(response.statusCode == 300){
-                            $("#alertsuccess1").show();
-                        }if(response.statusCode == 306){
-                            $("#alertexist1").show();
-                        }if(response.statusCode == 400 || response.statusCode == 500){
-                            $("#alertmtandao1").show();
-                        }
-                        }
-                    });
-                }
-            }
-
-        }
-    </script>
-    <script language="javascript">
-        function passwordChanged() {
-            var strength = document.getElementById('strength');
-            var strongRegex = new RegExp("^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$", "g");
-            var mediumRegex = new RegExp("^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$", "g");
-            var enoughRegex = new RegExp("(?=.{6,}).*", "g");
-            var pwd = document.getElementById("password-field");
-            if (pwd.value.length == 0) {
-                strength.innerHTML = 'Type Password';
-                strengthhidden.value = 'Type Password';
-            } else if (false == enoughRegex.test(pwd.value)) {
-                strength.innerHTML = 'More Characters';
-                strengthhidden.value = 'More Characters';
-            } else if (strongRegex.test(pwd.value)) {
-                strength.innerHTML = '<span style="color:green">Strong!</span>';
-                strengthhidden.value = 'Strong!';
-            } else if (mediumRegex.test(pwd.value)) {
-                strength.innerHTML = '<span style="color:orange">Medium!</span>';
-                strengthhidden.value = 'Medium!';
-            } else {
-                strength.innerHTML = '<span style="color:red">Weak!</span>';
-                strengthhidden.value = 'Weak!';
-            }
-        }
-    </script>
-    <script language="javascript">
-        function passwordChanged1() {
-            var strength = document.getElementById('strength1');
-            var strongRegex = new RegExp("^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$", "g");
-            var mediumRegex = new RegExp("^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$", "g");
-            var enoughRegex = new RegExp("(?=.{6,}).*", "g");
-            var pwd = document.getElementById("password1-field");
-            if (pwd.value.length == 0) {
-                strength.innerHTML = 'Type Password';
-                strengthhidden.value = 'Type Password';
-            } else if (false == enoughRegex.test(pwd.value)) {
-                strength.innerHTML = 'More Characters';
-                strengthhidden.value = 'More Characters';
-            } else if (strongRegex.test(pwd.value)) {
-                strength.innerHTML = '<span style="color:green">Strong!</span>';
-                strengthhidden.value = 'Strong!';
-            } else if (mediumRegex.test(pwd.value)) {
-                strength.innerHTML = '<span style="color:orange">Medium!</span>';
-                strengthhidden.value = 'Medium!';
-            } else {
-                strength.innerHTML = '<span style="color:red">Weak!</span>';
-                strengthhidden.value = 'Weak!';
-            }
-        }
-    </script>
-    <script>
-        function vyeo(){
-            var rankLevel = document.getElementById('status-field').value;
-            var cheo = rankLevel.split("-");
-            var lgas = document.getElementById('lga-div');
-            var kandas = document.getElementById('kanda-div');
-            if(cheo[1] == 3){
-                $(".lga-div").show();
-                $(".kanda-div").hide();
-            }
-            if(cheo[1] == 2){
-                $(".kanda-div").show();
-                $(".lga-div").hide();
-            }
-            if(cheo[1] == 4){
-                $(".kanda-div").show();
-                $(".lga-div").hide();
-            }
-            if(cheo[1] == 1){
-                $(".kanda-div").hide();
-                $(".lga-div").hide();
-            }
-        }
-    </script>
-    <script>
-        function vyeo1(){
-            var rankLevel = document.getElementById('status1-field').value;
-            var cheo = rankLevel.split("-");
-            var lgas = document.getElementById('lga1-div');
-            var kandas = document.getElementById('kanda1-div');
-            if(cheo[1] == 3){
-                $(".lga1-div").show();
-                $(".kanda1-div").hide();
-            }
-            if(cheo[1] == 2){
-                $(".kanda1-div").show();
-                $(".lga1-div").hide();
-            }
-            if(cheo[1] == 4){
-                $(".kanda1-div").show();
-                $(".lga1-div").hide();
-            }
-            if(cheo[1] == 1){
-                $(".kanda1-div").hide();
-                $(".lga1-div").hide();
-            }
-        }
-    </script>
-    <script type="text/javascript">
-    function ValidateEmail() {
-        var email = document.getElementById("username-field").value;
-        var lblError = document.getElementById("lblError");
-        lblError.innerHTML = "";
-        var expr = /^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
-        if (!expr.test(email)) {
-            lblError.innerHTML = "Invalid email address.";
-        }
-    }
-</script>
 </body>
-
 </html>

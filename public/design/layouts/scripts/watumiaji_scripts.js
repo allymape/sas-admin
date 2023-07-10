@@ -1,9 +1,5 @@
 getUsers();
 //   Populate list of users to a table
-$("select").select2({
-  dropdownParent: $("#showModal"),
-//   theme: "classic",
-});
 function getUsers() {
   ajaxRequest("users", "GET", (response) => {
     if (response.statusCode == 300) {
@@ -79,11 +75,12 @@ function getUsers() {
 }
 
 $("#btn-create-user").on("click", function () {
-  modal("showModal", true);
   resetAllFields();
+  getLookUpData();
 });
 function editUser(e) {
   var userId = e.getAttribute("data-id");
+  resetAllFields();
   getUser(userId);
 }
 function getUser(userId) {
@@ -100,97 +97,98 @@ function getUser(userId) {
         document.getElementById("phone-field").value = user.phone_no;
         document.getElementById("username-field").value = user.email;
         document.getElementById("password-field").value = "";
-        // Load roles
-        ajaxRequest(
-          "/allRoles",
-          "GET",
-          (rolesResponse) => {
-            if (rolesResponse.statusCode == 300) {
-              var roles = rolesResponse.data;
-              appendSelectionOption(
-                "role-field",
-                roles.map((role, index) => ({
-                  name: role.role_name,
-                  id: role.id,
-                })),
-                [Number(user.role_id)],
-                "Chagua Role"
-              );
-
-              // Load levels
-              ajaxRequest(
-                "/ranks",
-                "GET",
-                (ranksResponse) => {
-                  if (ranksResponse.statusCode == 300) {
-                    var ranks = ranksResponse.data;
-                    appendSelectionOption(
-                      "level-field",
-                      ranks.map((rank, index) => ({
-                        name: rank.rank_name,
-                        id: rank.id,
-                      })),
-                      [user.vyeoId],
-                      "Chagua Level"
-                    );
-                    var selectedLevel = $("#level-field")
-                      .find("option:selected")
-                      .text();
-                    showHiddenFieldBasedOnSelectedLevel(selectedLevel);
-                    // Load zones
-                    ajaxRequest(
-                      "/zones",
-                      "GET",
-                      (zonesResponse) => {
-                        if (zonesResponse.statusCode == 300) {
-                          var zones = zonesResponse.data;
-                          appendSelectionOption(
-                            "zone-field",
-                            zones.map((zone, index) => ({
-                              name: zone.zone_name,
-                              id: zone.id,
-                            })),
-                            [user.zone_id],
-                            "Chagua Kanda"
-                          );
-                          //show modal after all lookup data loaded
-                          modal("showModal", true);
-                          if (user.zone_id) {
-                            $("#region-field").prop(
-                              "disabled",
-                              user.zone_id ? false : true
-                            );
-                            getAllRegions(user.zone_id, user.region_code);
-                          }
-                          if (user.region_code) {
-                            $("#lga-field").prop(
-                              "disabled",
-                              user.region_code ? false : true
-                            );
-                            getAllDistricts(
-                              user.region_code,
-                              user.district_code
-                            );
-                          }
-                        }
-                      },
-                      { is_paginated: false }
-                    ); // end of zones ajax request
-                  }
-                },
-                { is_paginated: false },
-                false
-              ); //end of levels ajax request
-            }
-          },
-          { is_paginated: false },
-          false
-        ); // end of roles ajax request
+        getLookUpData(user);
       }
     },
     {},
     false
   );
+}
+
+function getLookUpData(user){
+  // Load roles
+  ajaxRequest(
+    "/allRoles",
+    "GET",
+    (rolesResponse) => {
+      if (rolesResponse.statusCode == 300) {
+        var roles = rolesResponse.data;
+        appendSelectionOption(
+          "role-field",
+          roles.map((role, index) => ({
+            name: role.role_name,
+            id: role.role_id,
+          })),
+          [Number(user ? user.role_id : null)],
+          "Chagua Role"
+        );
+
+        // Load levels
+        ajaxRequest(
+          "/ranks",
+          "GET",
+          (ranksResponse) => {
+            if (ranksResponse.statusCode == 300) {
+              var ranks = ranksResponse.data;
+              appendSelectionOption(
+                "level-field",
+                ranks.map((rank, index) => ({
+                  name: rank.rank_name,
+                  id: rank.id,
+                })),
+                [user ? user.vyeoId : null],
+                "Chagua Level"
+              );
+              var selectedLevel = $("#level-field")
+                .find("option:selected")
+                .text();
+              showHiddenFieldBasedOnSelectedLevel(selectedLevel);
+              // Load zones
+              ajaxRequest(
+                "/zones",
+                "GET",
+                (zonesResponse) => {
+                  if (zonesResponse.statusCode == 300) {
+                    var zones = zonesResponse.data;
+                    appendSelectionOption(
+                      "zone-field",
+                      zones.map((zone, index) => ({
+                        name: zone.zone_name,
+                        id: zone.id,
+                      })),
+                      [user ? user.zone_id : null],
+                      "Chagua Kanda"
+                    );
+                    //show modal after all lookup data loaded
+                    modal("showModal", true);
+                    if (user && user.zone_id) {
+                      $("#region-field").prop(
+                        "disabled",
+                        user.zone_id ? false : true
+                      );
+                      getAllRegions(user ? user.zone_id : null, user ? user.region_code : null);
+                    }
+                    if (user && user.region_code) {
+                      $("#lga-field").prop(
+                        "disabled",
+                        user && user.region_code ? false : true
+                      );
+                      getAllDistricts(user ? user.region_code : null, user ? user.district_code : null);
+                    }
+                  }
+                },
+                { is_paginated: false }
+              ); // end of zones ajax request
+            }
+          },
+          { is_paginated: false },
+          false
+        ); //end of levels ajax request
+      }
+    },
+    { is_paginated: false },
+    false
+  ); // end of roles ajax request
 }
 
 $("#level-field").on("change", function () {
@@ -203,14 +201,14 @@ $("#zone-field").on("change", function () {
   if ($("#region-field").is(":visible")) {
     // Load regions
     $("#region-field").prop("disabled", zoneId ? false : true);
-    emptyLgaField()
+    emptyLgaField();
     zoneId ? getAllRegions(zoneId) : emptyRegionField();
   }
 });
 
 $("#region-field").on("change", function () {
   var regionCode = $(this).val();
-      regionCode ? getAllDistricts(regionCode) : emptyLgaField();
+  regionCode ? getAllDistricts(regionCode) : emptyLgaField();
 });
 
 function showHiddenFieldBasedOnSelectedLevel(selectLevel) {
@@ -247,21 +245,46 @@ function hideAllSelectField() {
     .html("<option value=''>Chagua Mkoa kwanza</option>");
 }
 
-function emptyLgaField(){
-    $("#lga-field").val("")
-                   .prop("disabled", true)
-                   .html("<option value=''>Chagua Mkoa kwanza</option>");
+function emptyLgaField() {
+  $("#lga-field")
+    .prop("disabled", true)
+    .html("<option value=''>Chagua Mkoa kwanza</option>");
 }
 
 function emptyRegionField() {
   $("#region-field")
-    .val("")
     .prop("disabled", true)
     .html("<option value=''>Chagua Kanda kwanza</option>");
 }
 
 function resetAllFields() {
-  $("#showModal").find("input,select,file").val("");
+  $("#showModal").find("input,file").val("");
+  $("select").html("").select2({ data: [{ id: "", text: "" }] });
+  $("#level-field").select2({
+    placeholder: "Chagua Cheo",
+    dropdownParent: $("#showModal"),
+    //   theme: "classic",
+  });
+  $("#role-field").select2({
+    placeholder: "Chagua Role",
+    dropdownParent: $("#showModal"),
+    //   theme: "classic",
+  });
+  $("#zone-field").select2({
+    placeholder: "Chagua Kanda",
+    dropdownParent: $("#showModal"),
+    //   theme: "classic",
+  });
+  $("#region-field").select2({
+    placeholder: "Chagua Kanda kwanza",
+    dropdownParent: $("#showModal"),
+    //   theme: "classic",
+  });
+  $("#lga-field").select2({
+    placeholder: "Chagua Mkoa kwanza",
+    dropdownParent: $("#showModal"),
+    //   theme: "classic",
+  });
 }
 
 $("#show-password-checkbox").on("change", function () {
@@ -617,8 +640,6 @@ function passwordChanged1() {
   }
 }
 
-
-
 function ValidateEmail() {
   var email = document.getElementById("username-field").value;
   var lblError = document.getElementById("lblError");
@@ -630,88 +651,94 @@ function ValidateEmail() {
   }
 }
 
-function AddZone1(e){
-    var nameId = e.getAttribute('data-id');
-    var name = e.getAttribute('data-name');
-    document.getElementById("code-field-edit").value = nameId;
-    document.getElementById("ada-field-edit").value = name;
-    document.getElementById("ada-field-edit").value = name;
-    // var kanda = document.getElementById("ada-field").value;
-    $('#deleteRecordModal').modal('show');
+function AddZone1(e) {
+  var nameId = e.getAttribute("data-id");
+  var name = e.getAttribute("data-name");
+  document.getElementById("code-field-edit").value = nameId;
+  document.getElementById("ada-field-edit").value = name;
+  document.getElementById("ada-field-edit").value = name;
+  // var kanda = document.getElementById("ada-field").value;
+  $("#deleteRecordModal").modal("show");
 }
-function ResetPassword(e){
-    modal('resetPasswordModal' , true);
-    var nameId = e.getAttribute('data-id');
-    var name = e.getAttribute('data-name');
-    var email = e.getAttribute('data-email');
-    var email_length = email.length;
-    var first_four_letter = email.substr(0, 4)
-    var rest_letters_len = email.substr(email_length - 4, email_length)
-    var rest_letters = first_four_letter+'*********'+rest_letters_len;
-    // for(var i = 0; i < rest_letters_len.length; i++){
-    //     rest_letters = '*'
-    // }
-    var last_four_letter = email.substr(email_length - 4, email_length)
-    document.getElementById("code-field-edit").value = nameId;
-    document.getElementById("code1-field-edit").value = name;
-    document.getElementById("ada1-field-edit").value = email;
-    // document.getElementById("email_only").value = email;
-    // var kanda = document.getElementById("ada-field").value;
-    $('#resetPasswordModal').modal('show');
-}
-
-function futaHati(){
-    var name = document.getElementById('code-field-edit').value;
-        
-        $.ajax({
-            url: "/FutaWatumiaji",
-            type: 'POST',
-            data: JSON.stringify({"name": name}),
-            contentType: 'application/json',
-            success: function(response) {
-            alert("Mdau amefutwa kikamilifu")
-            $('#kaimishaModal').modal('hide');
-            window.location.href = "/Watumiaji"
-            }
-        });
-
-}
-function TumaEmail(){
-    var email_only = document.getElementById('ada1-field-edit').value;
-        ajaxRequest('/TumaEmail' , 'POST' , (response) => {
-            var statusCode = response.statusCode;
-            var message = response.message;
-            alertMessage(statusCode == 300 ? 'Success' : 'Error!' , message , statusCode == '300' ? 'success' : 'error')
-        } , JSON.stringify({email : email_only}))
+function ResetPassword(e) {
+  modal("resetPasswordModal", true);
+  var nameId = e.getAttribute("data-id");
+  var name = e.getAttribute("data-name");
+  var email = e.getAttribute("data-email");
+  var email_length = email.length;
+  var first_four_letter = email.substr(0, 4);
+  var rest_letters_len = email.substr(email_length - 4, email_length);
+  var rest_letters = first_four_letter + "*********" + rest_letters_len;
+  // for(var i = 0; i < rest_letters_len.length; i++){
+  //     rest_letters = '*'
+  // }
+  var last_four_letter = email.substr(email_length - 4, email_length);
+  document.getElementById("code-field-edit").value = nameId;
+  document.getElementById("code1-field-edit").value = name;
+  document.getElementById("ada1-field-edit").value = email;
+  // document.getElementById("email_only").value = email;
+  // var kanda = document.getElementById("ada-field").value;
+  $("#resetPasswordModal").modal("show");
 }
 
-        function checkOnlyNo() {
-          var email = document.getElementById("customername-field").value;
-          let isnum = /^\d+$/.test(email);
-          if (isnum) {
-            // $("#sajilbtn").hide();
-            $("#jazanamba").show();
-            $("#add-btnmwox").prop("disabled", true);
-          }
-          if (!isnum) {
-            $("#jazanamba").hide();
-            $("#add-btnmwox").prop("disabled", false);
-            const specialChars = /[`!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?~]/;
-            if (specialChars.test(email)) {
-              $("#jazanalama").show();
-              $("#add-btnmwox").prop("disabled", true);
-            } else {
-              $("#jazanalama").hide();
-              $("#add-btnmwox").prop("disabled", false);
-            }
-          }
-        }
+function futaHati() {
+  var name = document.getElementById("code-field-edit").value;
 
+  $.ajax({
+    url: "/FutaWatumiaji",
+    type: "POST",
+    data: JSON.stringify({ name: name }),
+    contentType: "application/json",
+    success: function (response) {
+      alert("Mdau amefutwa kikamilifu");
+      $("#kaimishaModal").modal("hide");
+      window.location.href = "/Watumiaji";
+    },
+  });
+}
+function TumaEmail() {
+  var email_only = document.getElementById("ada1-field-edit").value;
+  ajaxRequest(
+    "/TumaEmail",
+    "POST",
+    (response) => {
+      var statusCode = response.statusCode;
+      var message = response.message;
+      alertMessage(
+        statusCode == 300 ? "Success" : "Error!",
+        message,
+        statusCode == "300" ? "success" : "error"
+      );
+    },
+    JSON.stringify({ email: email_only })
+  );
+}
 
-         function onlyNumberKey(evt) {
-           // Only ASCII character in that range allowed
-           var ASCIICode = evt.which ? evt.which : evt.keyCode;
-           if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
-             return false;
-           return true;
-         }
+function checkOnlyNo() {
+  var email = document.getElementById("customername-field").value;
+  let isnum = /^\d+$/.test(email);
+  if (isnum) {
+    // $("#sajilbtn").hide();
+    $("#jazanamba").show();
+    $("#add-btnmwox").prop("disabled", true);
+  }
+  if (!isnum) {
+    $("#jazanamba").hide();
+    $("#add-btnmwox").prop("disabled", false);
+    const specialChars = /[`!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?~]/;
+    if (specialChars.test(email)) {
+      $("#jazanalama").show();
+      $("#add-btnmwox").prop("disabled", true);
+    } else {
+      $("#jazanalama").hide();
+      $("#add-btnmwox").prop("disabled", false);
+    }
+  }
+}
+
+function onlyNumberKey(evt) {
+  // Only ASCII character in that range allowed
+  var ASCIICode = evt.which ? evt.which : evt.keyCode;
+  if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57)) return false;
+  return true;
+}

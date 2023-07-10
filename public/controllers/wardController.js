@@ -4,7 +4,7 @@ const request = require("request");
 const wardController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { sendRequest } = require("../../util");
+const { sendRequest, isAuthenticated, can } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var wardListAPI = API_BASE_URL + "allwards";
 var vutaKataListAPI = API_BASE_URL + "usajiliKata";
@@ -18,7 +18,7 @@ var vutaKataListAPI = API_BASE_URL + "usajiliKata";
 // );
 
 
-wardController.get("/WardList", function (req, res) {
+wardController.get("/WardList",  isAuthenticated, can('view-wards'), function (req, res) {
   var per_page = Number(req.query.per_page || 10);
   var page = Number(req.query.page || 1);
   sendRequest(
@@ -43,7 +43,7 @@ wardController.get("/WardList", function (req, res) {
   );
 });
 
-wardController.post("/VutaKata", function (req, res) {
+wardController.post("/VutaKata",  isAuthenticated, can('create-wards'), function (req, res) {
   sendRequest(req, res, vutaKataListAPI, "POST", {}, (jsonData) => {
         res.send({
             statusCode: jsonData.statusCode,

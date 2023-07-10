@@ -10,10 +10,19 @@
                 <!-- container-fluid -->
             </div>
             <!-- End Page-content -->
-            <%- include('copyright.ejs') %>
+             <footer class="footer">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                 <%- include('copyright.ejs') %>
+            </div>
+            <!-- <div class="col-sm-6">
+            </div> -->
         </div>
-        <!-- end main content-->
-
+    </div>
+</footer>
+</div>
+    <!-- end main content-->
     </div>
     <!-- END layout-wrapper -->
     <!--start back-to-top-->
@@ -30,6 +39,7 @@
      <%- include('settings.ejs') %>
      <!-- End Theme Settings -->
     <!-- JAVASCRIPT -->
+    <script src="/design/assets/js/jquery-3.5.1.min.js"></script>
     <script src="/design/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/design/assets/libs/simplebar/simplebar.min.js"></script>
     <script src="/design/assets/libs/node-waves/waves.min.js"></script>
@@ -39,7 +49,10 @@
     <!-- prismjs plugin -->
     <script src="/design/assets/libs/prismjs/prism.js"></script>
     <script src="/design/assets/libs/list.js/list.min.js"></script>
-    <!-- <script src="/design/assets/libs/list.pagination.js/list.pagination.min.js"></script> -->
+  
+    <% if(typeof pagination_script !== 'undefined' && pagination_script){ %>
+        <script src="/design/assets/libs/list.pagination.js/list.pagination.min.js"></script>
+    <% } %>
 
     <!-- listjs init -->
     <script src="/design/assets/js/pages/listjs.init.js"></script>

@@ -113,3 +113,9 @@ $(".read-more").on('click' , function(){
 });
 hiddenPermissions.hide();
 
+$("#search-permission").on('keyup' , function(){
+    let targetedElements = $(".checkbox").closest("div").find("span");
+    let parent = "div"; 
+    let messageId = "message-box";
+    search(this, targetedElements, parent, messageId);
+});

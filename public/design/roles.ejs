@@ -51,13 +51,22 @@
                         <%= (Number(pagination.current) - 1) * Number(pagination.per_page) + i + 1 %></a></td>
                     <td class="date"><%= data[i].role_name %></td>
                     <td class="text-wrap">
-                            <% var permissions = data[i].permissions ? data[i].permissions.split(",").filter( function(el) { return el !== ''}) : []; %>
-                            <% var hideStart = 8 %>
+                            <% var permissions = data[i].permissions;
+                            // ? data[i].permissions.split(",").filter( function(el) { return el !== ''}) : []; 
+                            %>
+                            <% var hideStart = 5 %>
                             <% var totalHidden = 0 %>
                             <% permissions.forEach( (permission , i ) => { 
                             if( i >= hideStart) totalHidden++;
                             %>
-                                <span class="badge rounded-pill permission badge-outline-secondary <%= i >= hideStart  ? 'hidden-permission' : '' %>"><%=permission%></span>
+                            <span class="badge rounded-pill permission badge-outline-<%= permission.includes('Futa ') ? 'danger' : (
+                                    permission.includes('Ona ') ? 'success' : (
+                                        permission.includes('Tengeneza') ? 'primary' : (
+                                            permission.includes('Badili') ? 'secondary' : '' ) )
+                                ) %>
+                                <%= i >= hideStart  ? 'hidden-permission' : '' %>">
+                                    <%=permission%>
+                                </span>
                             <% }) %>
                         <% if(permissions.length > hideStart){ %>
                              <button type="button" class="btn btn-sm btn-rounded read-more" >

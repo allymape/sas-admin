@@ -35,100 +35,20 @@
                 <!-- App Search-->
                 <form class="app-search d-none d-md-block">
                     <div class="position-relative">
-                        <input type="text" class="form-control" placeholder="Search..." autocomplete="off"
+                        <input type="text" name="tafuta" 
+                        value="<%= req.query.tafuta ? req.query.tafuta : ''%>"
+                        class="form-control" placeholder="Search..." autocomplete="off"
                             id="search-options" value="">
                         <span class="mdi mdi-magnify search-widget-icon"></span>
-                        <span class="mdi mdi-close-circle search-widget-icon search-widget-icon-close d-none"
-                            id="search-close-options"></span>
-                    </div>
-                    <div class="dropdown-menu dropdown-menu-lg" id="search-dropdown">
-                        <div data-simplebar style="max-height: 320px;">
-                            <!-- item-->
-                            <div class="dropdown-header">
-                                <h6 class="text-overflow text-muted mb-0 text-uppercase">Recent Searches</h6>
-                            </div>
-
-                            <div class="dropdown-item bg-transparent text-wrap">
-                                <a href="index-2.html" class="btn btn-soft-secondary btn-sm btn-rounded">how to setup <i
-                                        class="mdi mdi-magnify ms-1"></i></a>
-                                <a href="index-2.html" class="btn btn-soft-secondary btn-sm btn-rounded">buttons <i
-                                        class="mdi mdi-magnify ms-1"></i></a>
-                            </div>
-                            <!-- item-->
-                            <div class="dropdown-header mt-2">
-                                <h6 class="text-overflow text-muted mb-1 text-uppercase">Pages</h6>
-                            </div>
-
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item notify-item">
-                                <i class="ri-bubble-chart-line align-middle fs-18 text-muted me-2"></i>
-                                <span>Analytics Dashboard</span>
-                            </a>
-
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item notify-item">
-                                <i class="ri-lifebuoy-line align-middle fs-18 text-muted me-2"></i>
-                                <span>Help Center</span>
-                            </a>
-
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item notify-item">
-                                <i class="ri-user-settings-line align-middle fs-18 text-muted me-2"></i>
-                                <span>My account settings</span>
-                            </a>
-
-                            <!-- item-->
-                            <div class="dropdown-header mt-2">
-                                <h6 class="text-overflow text-muted mb-2 text-uppercase">Members</h6>
-                            </div>
-
-                            <div class="notification-list">
-                                <!-- item -->
-                                <a href="javascript:void(0);" class="dropdown-item notify-item py-2">
-                                    <div class="d-flex">
-                                        <img src="/design/assets/images/users/avatar-2.jpg"
-                                            class="me-3 rounded-circle avatar-xs" alt="user-pic">
-                                        <div class="flex-1">
-                                            <h6 class="m-0">Angela Bernier</h6>
-                                            <span class="fs-11 mb-0 text-muted">Manager</span>
-                                        </div>
-                                    </div>
-                                </a>
-                                <!-- item -->
-                                <a href="javascript:void(0);" class="dropdown-item notify-item py-2">
-                                    <div class="d-flex">
-                                        <img src="design/assets/images/users/avatar-3.jpg"
-                                            class="me-3 rounded-circle avatar-xs" alt="user-pic">
-                                        <div class="flex-1">
-                                            <h6 class="m-0">David Grasso</h6>
-                                            <span class="fs-11 mb-0 text-muted">Web Designer</span>
-                                        </div>
-                                    </div>
-                                </a>
-                                <!-- item -->
-                                <a href="javascript:void(0);" class="dropdown-item notify-item py-2">
-                                    <div class="d-flex">
-                                        <img src="design/assets/images/users/avatar-5.jpg"
-                                            class="me-3 rounded-circle avatar-xs" alt="user-pic">
-                                        <div class="flex-1">
-                                            <h6 class="m-0">Mike Bunch</h6>
-                                            <span class="fs-11 mb-0 text-muted">React Developer</span>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="text-center pt-3 pb-1">
-                            <a href="pages-search-results.html" class="btn btn-primary btn-sm">View All Results <i
-                                    class="ri-arrow-right-line ms-1"></i></a>
-                        </div>
+                       <% if(req.query.tafuta) {%>
+                            <span class="mdi mdi-close-circle search-widget-icon search-widget-icon-close"
+                                id="search-close">
+                            </span>
+                        <% } %>
                     </div>
                 </form>
             </div>
-
             <div class="d-flex align-items-center">
-
                 <div class="dropdown d-md-none topbar-head-dropdown header-item">
                     <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle"
                         id="page-header-search-dropdown" data-bs-toggle="dropdown" aria-haspopup="true"
@@ -190,8 +110,8 @@
                             src="/design/assets/images/users/arm.png"
                                 alt="Header Avatar">
                             <span class="text-start ms-xl-2">
-                                <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text"><%= userName %></span>
-                                <span class="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text"><%= cheoName %></span>
+                                <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text"><%= req.session.userName %></span>
+                                <span class="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text"><%= req.session.cheoName %></span>
                             </span>
                         </span>
                     </button>
@@ -203,7 +123,7 @@
                                 class="align-middle" data-key="t-logout" onclick="logoutFx()">Ondoka</span></a>
                                 <a class="dropdown-item" href="#"><i
                                     class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span
-                                    class="align-middle" data-key="t-logout" data-id="<%= userID %>" onclick="changePassFx(this); return false;">Badili Nywira</span></a>
+                                    class="align-middle" data-key="t-logout" data-id="<%= req.session.userID %>" onclick="changePassFx(this); return false;">Badili Nywira</span></a>
                         <a class="dropdown-item" href="#"><i
                             class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span
                             class="align-middle">Wezesha 2FA
@@ -216,21 +136,21 @@
                         </span></a>
 
                         <script>
-                            function logoutFx(){
-                                $.ajax({
-                                    url: "/logout",
-                                    type: 'DELETE',
-                                    // data: JSON.stringify({"trackno": scantrackno}),
-                                    contentType: 'application/json',
-                                    success: function(response) {
-                                        if(response.statusCode == 300){
-                                            window.location.href = "/"
-                                        }else if(response.statusCode == 306){
-                                            alert(response.message)
-                                        }
-                                    }
-                                });
-                            }
+                            // function logoutFx(){
+                            //     $.ajax({
+                            //         url: "/Logout",
+                            //         type: 'POST',
+                            //         // data: JSON.stringify({"trackno": scantrackno}),
+                            //         contentType: 'application/json',
+                            //         success: function(response) {
+                            //             if(response.statusCode == 300){
+                            //                 window.location.href = "/"
+                            //             }else if(response.statusCode == 306){
+                            //                 alert(response.message)
+                            //             }
+                            //         }
+                            //     });
+                            // }
                             function changePassFx(e){
                                 var nameId = e.getAttribute('data-id');
                                 document.getElementById('id-field').value = nameId
@@ -259,19 +179,19 @@
         <!-- Dark Logo-->
         <a href="/Dashboard" class="logo logo-dark mt-2">
             <span class="logo-sm">
-                <img src="design//assets/images/users/arm.png" alt="" height="50">
+                <img src="/design//assets/images/users/arm.png" alt="" height="50">
             </span>
             <span class="logo-lg">
-                <img src="design//assets/images/users/arm.png" alt="" height="100">
+                <img src="/design//assets/images/users/arm.png" alt="" height="100">
             </span>
         </a>
         <!-- Light Logo-->
         <a href="/Dashboard" class="logo logo-light mt-2">
             <span class="logo-sm">
-                <img src="design//assets/images/users/arm.png" alt="" height="50">
+                <img src="/design//assets/images/users/arm.png" alt="" height="50">
             </span>
             <span class="logo-lg">
-                <img src="design//assets/images/users/arm.png" alt="" height="100">
+                <img src="/design//assets/images/users/arm.png" alt="" height="100">
             </span>
         </a>
         <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
@@ -353,115 +273,4 @@
                     </div>
                 </div>
             </div>
-<script>
-    setTimeout(
-    function viewMenu(){
-       var kuanzacounti = document.getElementById('kuanzacounti');
-        $.ajax({
-            url: "/ActiveMenu",
-            type: 'GET',
-            contentType: 'application/json',
-            success: function(response) {
-            if(typeof(response) === "string"){response = JSON.parse(response)}
-            txt = document.createTextNode(response.kauntikuanza);
-            kuanzacounti.appendChild(txt);
-            if(response.TwoFA == 0){
-                document.getElementById('controls-slide').checked = false;
-            }
-            if(response.TwoFA == 1){
-                document.getElementById('controls-slide').checked = true;
-            }
-            }
-        });
-    }, 1000)
-    function validate2FA(){
-        var wezesha = document.getElementById('controls-slide');
-        var wezeshaValue = 0;
-        if(wezesha.checked == true){
-            wezeshaValue = 1;
-        }
-        if(wezesha.checked == false){
-            wezeshaValue = 0;
-        }
-        $.ajax({
-            url: "/Wezesha2FA",
-            type: 'POST',
-            data: JSON.stringify({"faValue": wezeshaValue}),
-            contentType: 'application/json',
-            success: function(response) {
-            if(typeof(response) === "string"){response = JSON.parse(response)}
-                alert(response.message)
-            }
-        });
-    }
-    function passwordChanged() {
-    var strength = document.getElementById('strengthmwox');
-    var strongRegex = new RegExp("^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$", "g");
-    var mediumRegex = new RegExp("^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$", "g");
-    var enoughRegex = new RegExp("(?=.{6,}).*", "g");
-    var pwd = document.getElementById("new-pass-field");
-    var strengthhidden = document.getElementById('strengthhiddenmwox');
-    if (pwd.value.length == 0) {
-        strength.innerHTML = 'Type Password';
-        strengthhidden.value = 'Type Password';
-    } else if (false == enoughRegex.test(pwd.value)) {
-        strength.innerHTML = 'More Characters';
-        strengthhidden.value = 'More Characters';
-    } else if (strongRegex.test(pwd.value)) {
-        strength.innerHTML = '<span style="color:green">Strong!</span>';
-        strengthhidden.value = 'Strong!';
-    } else if (mediumRegex.test(pwd.value)) {
-        strength.innerHTML = '<span style="color:orange">Medium!</span>';
-        strengthhidden.value = 'Medium!';
-    } else {
-        strength.innerHTML = '<span style="color:red">Weak!</span>';
-        strengthhidden.value = 'Weak!';
-    }
-}
-    function badliPass(){
-        var userid = document.getElementById('id-fieldmwox').value;
-        var oldpassword = document.getElementById('old-pass-field').value;
-    var password = document.getElementById('new-pass-field').value;
-    var repassword = document.getElementById('re-pass-field').value;
-    var strengthhidden = document.getElementById('strengthhiddenmwox').value;
-        if(password == repassword){
-            
-            $("#sajilbtn").hide();
-            $("#pakiabtn").show();
-            if(strengthhidden == 'Strong!'){
-            $.ajax({
-                url: "/BadiliPass",
-                type: 'POST',
-                data: JSON.stringify({"userid": userid, "oldpassword": oldpassword, "password": password}),
-                contentType: 'application/json',
-                success: function(response) {
-                    // console.log(response)
-                    // alert(response.statusCode)
-                if(response.statusCode == 300){
-                    $("#sajilbtn").show();
-                    $("#pakiabtn").hide();
-                    $("#alertsuccessmwox").show();
-                    setTimeout(
-                        function() {
-                            logoutFx()
-                        }, 2000);
-                }if(response.statusCode == 306){
-                    $("#sajilbtn").show();
-                    $("#pakiabtn").hide();
-                    $("#alertexistmwox").show();
-                }if(response.statusCode == 400 || response.statusCode == 500){
-                    $("#sajilbtn").show();
-                    $("#pakiabtn").hide();
-                    $("#alertmtandaomwox").show();
-                }
-                }
-            });
-            }else{
-                alert("Nenosiri sio Salama")
-            }
-    }else{
-        alert("Nenosiri hazifanani")
-    }
-    }
-</script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- <script> -->

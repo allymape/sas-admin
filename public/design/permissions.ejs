@@ -89,7 +89,9 @@
                 <tr class="<%= data[i].status_id == 0 ? 'text-danger' : ''%>">
                     <td class="id">
                         <a href="/javascript:void(0);" class="fw-medium link-primary">
-                            <%=((Number(pagination.current) - 1) * Number(pagination.per_page)) + i + 1 %>
+                            <%- include('paginations/numbering.ejs' , {
+                                index : i
+                             }) %>
                         </a>
                     </td>
                     <td class=""><%= data[i].permission_name %></td>
@@ -134,20 +136,7 @@
             </div>
         </div>
     <!-- Pagination and page length -->
-        <div class="d-flex justify-content-between">
-            <div>
-                <form action="" method="GET">
-                        <select class="form-control" name="per_page" style="width: 80px;" id="page-size">
-                            <option value="5"   <%-req.query.per_page ==  5  ? 'selected' : '' %> >5</option>
-                            <option value="10"  <%-req.query.per_page == 10 || !req.query.per_page   ? 'selected' : '' %> >10</option>
-                            <option value="20"  <%-req.query.per_page == 20  ? 'selected' : '' %> >20</option>
-                            <option value="50"  <%-req.query.per_page == 50  ? 'selected' : '' %> >50</option>
-                            <option value="100" <%-req.query.per_page == 100 ? 'selected' : '' %> >100</option>
-                        </select>
-                </form>
-            </div>
             <%- include('paginations/html_pagination.ejs'); %>
-        </div>
     <!-- End pagination and page length -->
     </div>
 </div>

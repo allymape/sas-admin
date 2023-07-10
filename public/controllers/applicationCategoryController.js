@@ -13,7 +13,7 @@ var updateAppliciationCategoriesAPI = API_BASE_URL + "update-application-categor
 var deleteAppliciationCategoriesAPI = API_BASE_URL + "delete-application-category";
 
 
-// Get all applicationCategorys
+// Get all applicationCategories
 applicationCategoryController.get("/AppliciationCategories", function (req, res) {
   var per_page = Number(req.query.per_page || 10);
   var page = Number(req.query.page || 1);
@@ -25,7 +25,6 @@ applicationCategoryController.get("/AppliciationCategories", function (req, res)
             var statusCode = jsonData.statusCode;
             var data = jsonData.data;
             var numRows = jsonData.numRows;
-            console.log(data , numRows);
             res.send({
               statusCode: statusCode,
               data: data,

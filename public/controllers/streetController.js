@@ -4,20 +4,12 @@ const request = require("request");
 const streetController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { sendRequest } = require("../../util");
+const { sendRequest, can, isAuthenticated } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var streetListAPI = API_BASE_URL + "allstreets";
 var vutaMitaaListAPI = API_BASE_URL + "usajiliMitaa";
 
-// streetController.use(
-//   session({
-//     secret: "secret",
-//     resave: true,
-//     saveUninitialized: true,
-//   })
-// );
-
-streetController.get("/MitaaList", function (req, res) {
+streetController.get("/MitaaList", isAuthenticated, can('view-streets'), function (req, res) {
   var per_page = Number(req.query.per_page || 10);
   var page = Number(req.query.page || 1);
   sendRequest(
@@ -42,7 +34,7 @@ streetController.get("/MitaaList", function (req, res) {
   );
 });
 
-streetController.post("/VutaMitaa", function (req, res) {
+streetController.post("/VutaMitaa",  isAuthenticated, can('create-streets'), function (req, res) {
   sendRequest(req, res, vutaMitaaListAPI, "POST", {}, (jsonData) => {
     res.send({
       statusCode: jsonData.statusCode,

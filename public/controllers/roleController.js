@@ -4,7 +4,7 @@ const request = require("request");
 const roleController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { sendRequest } = require("../../util");
+const { sendRequest, can, isAuthenticated } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var allRolesAPI = API_BASE_URL + "allRoles";
 var tengenezaRoleAPI = API_BASE_URL + "addRole";
@@ -15,7 +15,7 @@ var syncRolesAndPermissions = API_BASE_URL + "generate_roles_permissions";
 
 
 // Get all roles
-roleController.get("/allRoles", function (req, res) {
+roleController.get("/allRoles",  isAuthenticated, can('view-roles'), function (req, res) {
   var per_page = Number(req.query.per_page || 10);
   var page = Number(req.query.page || 1);
   var formData = {
@@ -33,7 +33,7 @@ roleController.get("/allRoles", function (req, res) {
 });
 
 // Store Role
-roleController.post("/tengenezaRole", function (req, res) {
+roleController.post("/tengenezaRole",  isAuthenticated, can('create-roles'), function (req, res) {
     var formData = {
         roleName: req.body.role_name,
         displayName: req.body.display_name,
@@ -47,7 +47,7 @@ roleController.post("/tengenezaRole", function (req, res) {
 });
 
 // Edit Role
-roleController.get("/Roles/:id", function (req, res) {
+roleController.get("/Roles/:id",  isAuthenticated, can('update-roles'), function (req, res) {
   var id = Number(req.params.id);
   sendRequest(req, res, editRoleAPI + "/" + id, "GET", {}, (jsonData) => {
       getAllRoles(req, res, true, jsonData.data);
@@ -55,7 +55,7 @@ roleController.get("/Roles/:id", function (req, res) {
 });
 
 // Update Role
-roleController.post("/badiliRole/:id", function (req, res) {
+roleController.post("/badiliRole/:id",  isAuthenticated, can('update-roles'), function (req, res) {
   var id = Number(req.params.id);
   var formData = {
           roleName: req.body.role_name,
@@ -73,7 +73,7 @@ roleController.post("/badiliRole/:id", function (req, res) {
 });
 
 // Delete Role
-roleController.post("/futaRole/:id", function (req, res) {
+roleController.post("/futaRole/:id",  isAuthenticated, can('delete-roles'), function (req, res) {
   var id = Number(req.params.id);
   sendRequest(req, res, deleteRoleAPI + "/" + id, "DELETE", {}, (jsonData) => {
         var statusCode = jsonData.statusCode;
@@ -83,7 +83,7 @@ roleController.post("/futaRole/:id", function (req, res) {
   });
 });
 // sync roles and permissions 
-roleController.post("/sync_roles_and_permissions" , function(req, res){
+roleController.post("/sync_roles_and_permissions" ,  isAuthenticated, can('create-roles') , function(req, res){
      sendRequest(req, res, syncRolesAndPermissions , "POST" , {} , (data) => {
          res.send({
            statusCode: data.statusCode,

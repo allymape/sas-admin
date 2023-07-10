@@ -18,9 +18,6 @@ const menuItems = [
         menuTitle : '',
         icon : "ri-git-pull-request-line",
         menuId : "sidebarDashboards",
-        pattern : "",
-        hasPermissionTo : permission(req , 'view-initiate-schools|view-school-owners'),
-        // subMenuOpenPattern : 'MaombiKuanzishaShule|MaombiMmilikiShule|MaombiKusajiliShule|MaombiKusajiliShuleSerikali|KuongezaMikondo|BadiliJina|KuongezaTahasusi|KuongezaDahalia|KuongezaBweni|BadiliUsajili|Hamisha|BadiliMmiliki|BadiliMeneja|FutaShule|SajiliOmbi/*|TaarifaOmbi/*|SajiliOmbiSerikali/*|BadiliMkondo/*|BadiliTahasusi/*|BadiliBweni/*|BadiliDahalia/*|HamishaShuleDetails/*|ViewOmbiMmiliki/*|ViewOmbiMeneja/*|FutaShuleTaarifa/*',
         subMenus : [
             {
                 label : "Kuanzisha Shule",
@@ -28,6 +25,7 @@ const menuItems = [
                 icon : "",
                 counterId : "kuanzacounti",
                 pattern : "",
+                menuId : "",
                 hasPermissionTo : permission(req , 'view-initiate-schools'),
             },
             {
@@ -36,7 +34,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-school-owners'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-school-owners-and-managers'),
             },
             {
                 label : "Kusajili Shule (Binafsi)",
@@ -44,7 +43,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-school-registration-private'),
             },
             {
                 label : "Kusajili Shule (Serikali)",
@@ -52,7 +52,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-school-registration-government'),
             },
             {
                 label : "Kuongeza Mikondo",
@@ -60,7 +61,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-change-of-streams'),
             },
             {
                 label : "Kubadili Jina la Shule",
@@ -68,7 +70,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-change-school-name'),
             },
             {
                 label : "Kuongeza Tahasusi",
@@ -76,7 +79,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-change-of-bias'),
             },
             {
                 label : "Kuongeza Bweni",
@@ -84,7 +88,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-addition-of-domitory'),
             },
             {
                 label : "Kuongeza Dahalia",
@@ -92,7 +97,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-change-of-combinations'),
             },
             {
                 label : "Kubadili Aina ya Usajili",
@@ -100,7 +106,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-change-registration-type'),
             },
             {
                 label : "Kuhamisha Shule",
@@ -108,7 +115,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-change-school-location'),
             },
             {
                 label : "Kubadili Mmiliki wa Shule",
@@ -116,7 +124,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-change-of-school-owner'),
             },
             {
                 label : "Kubadili Meneja wa Shule",
@@ -124,7 +133,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-change-of-school-manager'),
             },
             {
                 label : "Kufuta Usajili wa Shule(Hiari)",
@@ -132,7 +142,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-deregistration'),
             },
         ]
    },
@@ -144,8 +155,8 @@ const menuItems = [
         icon : "ri-bubble-chart-line",
         menuId : "sidebarRipoti",
         pattern : "",
-        hasPermissionTo : permission(req , 'view-'),
-        // subMenuOpenPattern : 'RipotiZilizosajiliwa|TaarifaSajili/*|TaarifaBilaMajengo/*|TaarifaMajengoKat/*|SajiliwaZilizokataliwa|RipotiAnzishaBilaMajengo|RipotiAnzishaBilaMajengoKataliwa|RipotiUthibitisho|RipotiKubadiliJina|RipotiKuongezaBweni|RipotiDahalia|RipotiBadiliMmiliki|ViewBadilimeneja|RipotiZilizofutiwa|RipotiKuongezaMikondo|RipotiTahasusi|ViewRipotiDahalia/*',
+        menuId : "",
+        hasPermissionTo : '',
         subMenus : [
             {
                 label : "Shule Zilizosajiliwa",
@@ -153,7 +164,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-registered-school-reports'),
             },
             {
                 label : "Sajiliwa Zilizokataliwa",
@@ -161,7 +173,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-rejected-application-reports'),
             },
             {
                 label : "Kibali cha Kuanzisha Shule Bila Majengo",
@@ -169,7 +182,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-initiate-school-without-buildings-report'),
             },
             {
                 label : "Kibali cha Kuanzisha Shule Bila Majengo - Kataliwa",
@@ -177,7 +191,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-initiate-school-without-buildings-rejected-report'),
             },
             {
                 label : "Kibali cha Kuanzisha Shule kwa Majengo",
@@ -185,7 +200,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-initiate-school-with-building-report'),
             },
             {
                 label : "Kibali cha Kuanzisha Shule kwa Majengo - Kataliwa",
@@ -193,7 +209,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-initiate-school-with-building-rejected-report'),
             },
             {
                 label : "Uthibitisho wa Umiliki na Umeneja",
@@ -201,7 +218,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-owner-manager-approval-report'),
             },
             {
                 label : "Kubadili Jina la Shule",
@@ -209,7 +227,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-change-school-name-report'),
             },
              {
                 label : "Kibali cha Bweni",
@@ -217,7 +236,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-addition-of-domitory-report'),
             },
              {
                 label : "Kibali cha Dahalia",
@@ -225,7 +245,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-addition-of-combinations-report'),
             },
              {
                 label : "Kubadili Umiliki",
@@ -233,7 +254,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-change-school-owners-report'),
             },
              {
                 label : "Kubadili Umeneja",
@@ -241,7 +263,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-change-school-managers-report'),
             },
              {
                 label : "Kufuta Usajili",
@@ -249,7 +272,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-deregistration-report'),
             },
              {
                 label : "Kibali cha Kuongeza Mikondo",
@@ -257,7 +281,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-addition-of-streams-report'),
             },
              {
                 label : "Kibali cha Kuongeza Tahasusi",
@@ -265,7 +290,8 @@ const menuItems = [
                 icon : "",
                 counterId : "",
                 pattern : "",
-                hasPermissionTo : permission(req , 'view-'),
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-addition-of-bias-report'),
             },
         ]
    },
@@ -276,16 +302,30 @@ const menuItems = [
         menuTitle : 'UTHIBITISHO',
         icon : "ri-list-settings-line",
         menuId : "sidebarUI",
-        pattern : "",
-        hasPermissionTo : permission(req , 'view-designations'),
         subMenus : [
-            {
-                label : "Vyeo",
-                url  : "Vyeo",
+              {
+                label : "Waombaji",
+                url  : "Waombaji",
                 icon : "",
                 counterId : "",
-                pattern : "Vyeo",
-                hasPermissionTo : permission(req , 'view-designations'),
+                pattern : "Waombaji|Mwombaji/*|Mwombaji/*/badili",
+                hasPermissionTo : permission(req , 'view-applicants'),
+            },
+              {
+                label : "Roles & Permissions",
+                url  : "Roles",
+                icon : "",
+                counterId : "",
+                pattern : "Roles|EditRole/*|CreateRole",
+                hasPermissionTo : permission(req , 'view-roles'),
+            },
+             {
+                label : "Permissions",
+                url  : "Permissions",
+                icon : "",
+                counterId : "",
+                pattern : "Permissions|Permissions/*",
+                hasPermissionTo : permission(req , 'view-permissions'),
             },
             {
                 label : "Watumiaji",
@@ -296,19 +336,12 @@ const menuItems = [
                 hasPermissionTo : permission(req , 'view-users'),
             },
             {
-                label : "Waombaji",
-                url  : "Waombaji",
-                icon : "",
-                counterId : "",
-                pattern : "Waombaji",
-                hasPermissionTo : permission(req , 'view-applicants'),
-            },
-            {
                 label : "Kanda (Zones)",
                 url  : "Zoni",
                 icon : "",
                 counterId : "",
-                pattern : "",
+                pattern : "Zoni",
+                menuId : "",
                 hasPermissionTo : permission(req , 'view-zones'),
             },
             {
@@ -343,6 +376,14 @@ const menuItems = [
                 pattern : "Mitaa",
                 hasPermissionTo : permission(req , 'view-streets'),
             },
+            {
+                label : "Vyeo",
+                url  : "Vyeo",
+                icon : "",
+                counterId : "",
+                pattern : "Vyeo",
+                hasPermissionTo : permission(req , 'view-designations'),
+            },
              {
                 label : "Viambatisho",
                 url  : "Viambatisho",
@@ -375,22 +416,7 @@ const menuItems = [
                 pattern : "Michepuo",
                 hasPermissionTo : permission(req , 'view-combinations'),
             },
-             {
-                label : "Roles & Permissions",
-                url  : "Roles",
-                icon : "",
-                counterId : "",
-                pattern : "Roles|EditRole/*|CreateRole",
-                hasPermissionTo : permission(req , 'view-roles'),
-            },
-             {
-                label : "Permissions",
-                url  : "Permissions",
-                icon : "",
-                counterId : "",
-                pattern : "Permissions|Permissions/*",
-                hasPermissionTo : permission(req , 'view-permissions'),
-            },
+           
         ]
    },
    // AUDIT TRAIL
@@ -406,11 +432,12 @@ const menuItems = [
    // LOGOUT
     {
         label : "Ondoka",
-        url  : "/",
+        url  : "#",
         menuTitle : '',
         icon : "ri-logout-circle-r-line",
         menuId : "",
         pattern : "",
+        menuId : "logout",
         hasPermissionTo : true,
    },
 ];
@@ -427,9 +454,10 @@ const menuItems = [
                 if(typeof item.subMenus !== 'undefined' && item.subMenus.length > 0 )
                 {
                     // Check Permissions for all submenus items
-                        if(item.hasPermissionTo){
+                        if(pluck(item.subMenus , 'hasPermissionTo').includes(true)){
                             if(item.menuTitle){
                                 %>
+                                
                                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-components"><%= item.menuTitle %></span></li>
                                 <%
                             }
@@ -456,6 +484,7 @@ const menuItems = [
                                             %>
                                                 <li class="nav-item">
                                                     <a href="/<%= subItem.url %>" 
+                                                         <%= typeof subItem.menuId !== 'undefined' && subItem.menuId ? `id=${item.menuId}` : ''%>
                                                         class="nav-link <%= routeIs(subItem.pattern , getCurrentUrl(req)) ? 'active' : '' %>" 
                                                         data-key="t-analytics">
                                                         <%= subItem.label %>
@@ -483,6 +512,7 @@ const menuItems = [
                     %>
                             <li class="nav-item">
                                 <a href="<%= item.url %>" 
+                                    <%= typeof item.menuId !== 'undefined' && item.menuId ? `id=${item.menuId}` : ''%>
                                     class="nav-link menu-link <%= routeIs(item.patten , getCurrentUrl(req)) ? 'active' : '' %>"
                                 >
                                     <i class="ri <%=item.icon%>"></i> 
@@ -491,8 +521,10 @@ const menuItems = [
                             </li>
                         <% }
                 }
-            }) 
-           %>           
+            })
+           %>   
+        </ul>        
     </div>
 </div>
   <!-- Sidebar -->
+

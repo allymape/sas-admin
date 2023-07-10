@@ -4,14 +4,33 @@ const request = require("request");
 const userController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { sendRequest } = require("../../util");
+const { sendRequest, isAuthenticated, redirectIfAuthenticated, can } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var watumiajiAPI = API_BASE_URL + "users";
 var updateWatumiajiAPI = API_BASE_URL + "update-user";
 var sendMailAPI = API_BASE_URL + "reset-user-password";
 
+
+// Login Page
+userController.get("/", redirectIfAuthenticated, function (req, res) {
+  res.render(path.join(__dirname + "/../design/login"), {
+    req: req,
+    message: "Ingia Kuendelea",
+  });
+});
+
+userController.get("/Watumiaji", isAuthenticated, can('view-users'), function (req, res) {
+    res.render(path.join(__dirname + "/../design/watumiaji"), {
+      req: req,
+      useLev: req.session.UserLevel,
+      userName: req.session.userName,
+      RoleManage: req.session.RoleManage,
+      userID: req.session.userID,
+      cheoName: req.session.cheoName,
+    });
+});
 // get list of users
-userController.get("/users", function (req, res) {
+userController.get("/users", isAuthenticated, can('view-users') , function (req, res) {
   var per_page = Number(req.query.per_page || 10);
   var page = Number(req.query.page || 1);
   sendRequest(
@@ -37,7 +56,7 @@ userController.get("/users", function (req, res) {
   );
 });
 
-userController.get("/findUser/:id", function (req, res) {
+userController.get("/findUser/:id", isAuthenticated, can('update-users'), function (req, res) {
     var userId = req.params.id;
     sendRequest(req, res, watumiajiAPI+"/"+userId, "GET", {}, (jsonData) => {
         // console.log(jsonData)
@@ -49,7 +68,7 @@ userController.get("/findUser/:id", function (req, res) {
   });
 });
 
-userController.post("/UpdateWatumiaji", function (req, res) {
+userController.post("/UpdateWatumiaji", isAuthenticated, can('update-users'), function (req, res) {
        var userId = req.body.userId;
         var userData = {
           fullname: req.body.name,
@@ -73,7 +92,7 @@ userController.post("/UpdateWatumiaji", function (req, res) {
         });
 });
 // Reset user password from Admin
-userController.post("/TumaEmail", function (req, res) {
+userController.post("/TumaEmail", isAuthenticated, can('update-users'), function (req, res) {
  
   var userData = {
                 browser_used: req.session.browser_used,
@@ -87,7 +106,6 @@ userController.post("/TumaEmail", function (req, res) {
                 message: jsonData.message,
          });
   } );
-  
 //   request(
 //     {
 //       url: sendMailAPI,
@@ -141,6 +159,15 @@ userController.post("/TumaEmail", function (req, res) {
 //       }
 //     }
 //   );
+});
+// Logout User
+userController.post("/Logout" , isAuthenticated, function(req,res){
+     req.session.destroy( error => {
+        if(error){
+          console.log(error);
+        }
+        res.redirect('/');
+     });
 });
 module.exports = userController;
 

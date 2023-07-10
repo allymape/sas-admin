@@ -29,3 +29,8 @@
         font-size:larger;
         padding-top:80px;
     }
+    
+.select2-selection__choice{
+    background-color: #337ab7 !important;
+    color: #fff;
+}

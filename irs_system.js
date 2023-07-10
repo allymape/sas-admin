@@ -14,7 +14,7 @@ const { constants } = require("buffer");
 let formidable = require("formidable");
 const https = require("https");
 const axios = require("axios");
-const { report } = require("process");
+const { report, title } = require("process");
 var sql = require("mssql");
 var http = require("http");
 var json2xls = require("json2xls");
@@ -35,12 +35,17 @@ const wardController = require("./public/controllers/wardController");
 const streetController = require("./public/controllers/streetController");
 const userController = require("./public/controllers/userController");
 const roleController = require("./public/controllers/roleController");
-const rankController = require("./public/controllers/rankController");
 const zoneController = require("./public/controllers/zoneController");
 const attachmentTypeController = require("./public/controllers/attachmentTypeController");
 const applicationCategoryController = require("./public/controllers/applicationCategoryController");
 const registrationTypeController = require("./public/controllers/registrationTypeController");
-
+const errorController = require("./public/controllers/errorController");
+const { can, isAuthenticated, titleCase, lowerCase } = require("./util");
+const dashboardController = require("./public/controllers/dashboardController");
+const designationController = require("./public/controllers/designationController");
+const applicantController = require("./public/controllers/applicantController");
+const numeral = require('numeral');
+const schoolController = require("./public/controllers/schoolController");
 
 var app = express();
 app.use(helmet.frameguard())
@@ -111,7 +116,7 @@ global.permission = (req , permission_name) => {
               if(permission_name.includes("|")){
                  var found = false;
                   permission_name.split('|').forEach( function(p){
-                        if(user_permissions.includes(p.toLowerCase())){
+                        if(p && user_permissions.includes(p.trim().toLowerCase())){
                             found = true;
                             return true;
                         }
@@ -132,8 +137,20 @@ var modifyUrl = function(currentUrl){
      if(url.length == 3){
         return url[1]+"/*";
      }
+     if(url.length == 4){
+        return url[1]+"/*/"+url[3];
+     }
      return currentUrl;
 } 
+
+global.nameCase = (text) => {
+  return titleCase(lowerCase(text));
+};
+
+global.numberFormat = (number , format = `0,0`) => {
+    return numeral(number).format(format);
+}
+
 
 var VERURL = "http://41.59.228.17:9010/";
 var BASEURL = "http://127.0.0.1:8088/api/";
@@ -276,42 +293,6 @@ var pandishaHatiAPI = BASEURL + "upload-attachment";
 var verify = BASEURL + "verify";
 var changepassAPI = BASEURL + "changepass";
 
-
-app.get("/", function (req, res) {
-  var clientIp = requestIp.getClientIp(req);
-  logger.info(new Date() + ": " + clientIp + ": Access /");
-  res.render(path.join(__dirname + "/public/design/login"), {
-    req: req,
-    message: "Ingia Kuendelea",
-  });
-});
-
-
-
-app.get("/Watumiaji", function (req, res) {
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    var hasMatch = false;
-    for (var index = 0; index < req.session.RoleManage.length; ++index) {
-      var animal = req.session.RoleManage[index];
-      if (animal.permission_id == 34) {
-        res.render(path.join(__dirname + "/public/design/watumiaji"), {
-                  req: req,
-                  useLev: req.session.UserLevel,
-                  userName: req.session.userName,
-                  RoleManage: req.session.RoleManage,
-                  userID: req.session.userID,
-                  cheoName: req.session.cheoName,
-                });
-      }
-    }
-  } else {
-    res.redirect("/");
-  }
-});
-
 app.post("/auth", function (req, res) {
   // console.log("url " + req.url);
   var username = req.body.username;
@@ -391,7 +372,7 @@ app.post("/auth", function (req, res) {
             if (req.session.UserLevel == 10) {
               res.redirect("/RipotiZilizosajiliwa");
             } else {
-              res.redirect("/Viambatisho");
+              res.redirect("/Dashboard");
             }
           } else {
             res.redirect("/TwoFA");
@@ -981,13 +962,9 @@ app.get("/EditRole/:id", function (req, res) {
               role_permissions.forEach(role_permission =>{
                   assigned_permissions.push(role_permission.permission_id);
               });
-            res.render(path.join(__dirname + "/public/design/edit_roles"), {
+            res.render(path.join(__dirname + "/public/design/edit_role"), {
               req: req,
-              useLev: req.session.UserLevel,
-              userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-              userID: req.session.userID,
-              cheoName: req.session.cheoName,
+             
               permissions: permissions,
               assigned_permissions: assigned_permissions,
               role : role
@@ -1071,107 +1048,7 @@ app.get("/VutaShule", function (req, res) {
   );
 });
 
-app.get("/Dashboard", function (req, res) {
-  // if(req.session.userName){
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    const date = new Date().getHours();
-    var majira;
-    if (date < 12) {
-      majira = "Habari za Asubuhi";
-    } else if (date < 18) {
-      majira = "Habari za Mchana";
-    } else if (date > 18) {
-      majira = "Habari za Jioni";
-    }
-    //  console.log(req.session.Token)
-    request(
-      {
-        url: activeUserAPI,
-        method: "GET",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          // console.error(
-          //   new Date() +
-          //     ": " +
-          //     req.session.userName +
-          //     " with IP: " +
-          //     requestIp.getClientIp(req) +
-          //     " fail to access Dashboard  via /Dashboard Endpoint " +
-          //     error
-          // );
-          res.send("failed");
-        }
-        // console.log("RoleManage");
-        // console.log(req.session.RoleManage);
-        // console.log(body);
-        if (body !== undefined) {
-          // console.log(body);
-          var jsonData = JSON.parse(body);
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-          var count = jsonData.count;
-          var kauntibilamajengo = jsonData.kauntibilamajengo;
-          var kauntimajengo = jsonData.kauntimajengo;
-          var tahasusiCount = jsonData.tahasusiCount;
-          var kauntimmiliki = jsonData.kauntimmiliki;
-          var kauntibadilijina = jsonData.kauntibadilijina;
-          var kauntibweni = jsonData.kauntibweni;
-          var totalApplications = jsonData.totalApplications;
-          var successApplications = jsonData.successApplications;
-          var kauntidahalia = jsonData.kauntidahalia;
-          var kauntiainausajili = jsonData.kauntiainausajili;
-          var sajiliwa = jsonData.sajiliwa;
-          var mikoa = jsonData.mikoa;
-          var ngazi = jsonData.ngazi;
-          var zisizosajiliwa = totalApplications - successApplications;
-          var wastani = (successApplications / totalApplications) * 100;
-          if (statusCode == 300) {
-            res.render(path.join(__dirname + "/public/design/dashboard/dashboard"), {
-              req: req,
-              salamu: majira,
-              name: data,
-              count: count,
-              useLev: req.session.UserLevel,
-                            userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-              userID: req.session.userID,
-              cheoName: req.session.cheoName,
-              kauntibilamajengo: kauntibilamajengo,
-              kauntimajengo: kauntimajengo,
-              kauntibadilijina: kauntibadilijina,
-              kauntibweni: kauntibweni,
-              tahasusiCount: tahasusiCount,
-              successApplications: successApplications,
-              zisizosajiliwa: zisizosajiliwa,
-              wastani: wastani.toFixed(2),
-              kauntimmiliki: kauntimmiliki,
-              kauntidahalia: kauntidahalia, 
-              totalApplications: totalApplications,
-              kauntiainausajili: kauntiainausajili,
-              sajiliwa: sajiliwa,
-              mikoa: mikoa,
-              ngazi: ngazi,
-            });
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
+
 
 app.get("/BadiliTahasusi/:id", function (req, res) {
   var obj = [];
@@ -1581,99 +1458,6 @@ app.get("/ActiveMenu", function (req, res) {
   }
 });
 
-app.get("/Zoni", function (req, res) {
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    var hasMatch =false;
-    for (var index = 0; index < req.session.RoleManage.length; ++index) {
-        var animal = req.session.RoleManage[index]; 
-    if(animal.permission_id == 39){ 
-    res.render(path.join(__dirname + "/public/design/kanda"), {
-      req: req,
-      useLev: req.session.UserLevel,
-                        userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
-      cheoName: req.session.cheoName,
-    });
-  }
-}
-  } else {
-    res.redirect("/");
-  }
-});
-
-app.get("/KandaList", function (req, res) {
-  var obj = [];
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: kandaListAPI,
-        method: "GET",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(new Date() + ": fail to KandaList " + error);
-          res.send("failed");
-        }
-        // console.log(body)
-        if (body !== undefined) {
-          // console.log(body)
-          var jsonData = JSON.parse(body);
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-
-          if (statusCode == 300) {
-            //
-
-            if (data.length <= 0) {
-              var zoneCode = "";
-              var zoneName = "";
-              var zoneId = "";
-              obj.push({
-                zoneId: zoneId,
-                zoneCode: zoneCode,
-                zoneName: zoneName,
-              });
-            } else {
-              for (var i = 0; i < data.length; i++) {
-                console.log(data);
-                var zoneId = data[i].zoneId;
-                var zoneCode = data[i].zoneCode;
-                var zoneName = data[i].zoneName;
-                obj.push({
-                  zoneId: zoneId,
-                  zoneCode: zoneCode,
-                  zoneName: zoneName,
-                });
-              }
-            }
-            console.log(obj);
-            console.log(new Date() + ": Successful KandaList");
-            res.send(obj);
-            //
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
-
 app.post("/OngezaComment", function (req, res) {
   // console.log(req.body)
   var trackerId = req.body.trackerId;
@@ -2000,61 +1784,7 @@ app.get("/TaarifaMtumiaji/:id", function (req, res) {
   }
 });
 
-app.get("/Mikoa", function (req, res) {
-  var obj = [];
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    var hasMatch =false;
-    for (var index = 0; index < req.session.RoleManage.length; ++index) {
-        var animal = req.session.RoleManage[index]; 
-    if(animal.permission_id == 43){ 
-    request(
-      {
-        url: kandaListAPI,
-        method: "GET",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(new Date() + ": fail to KandaList " + error);
-          res.send("failed");
-        }
-        // console.log(body)
-        if (body !== undefined) {
-          //  console.log(body)
-          var jsonData = JSON.parse(body);
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var zones = jsonData.data;
 
-          if (statusCode == 300) {
-            res.render(path.join(__dirname + "/public/design/mikoa"), {
-              req: req,
-              zones: zones,
-              useLev: req.session.UserLevel,
-                                userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
-              cheoName: req.session.cheoName,
-            });
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-    }
-  }
-  } else {
-    res.redirect("/");
-  }
-});
 
 app.get("/ZoneList", function (req, res) {
   var obj = [];
@@ -4672,11 +4402,7 @@ app.get("/MaombiKuanzishaShule", function (req, res) {
             res.render(path.join(__dirname + "/public/design/kuanzishashule"), {
               req: req,
               total_month: data,
-              useLev: req.session.UserLevel,
-              userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-              userID: req.session.userID,
-              cheoName: req.session.cheoName,
+             
             });
           }
           if (statusCode == 209) {
@@ -13905,7 +13631,7 @@ app.get("/Malipo", function (req, res) {
 
 
 
-app.get("/Roles", function (req, res) {
+app.get("/Roles", isAuthenticated ,can('view-roles'), function (req, res) {
   var per_page = Number(req.query.per_page || 10);
   var page = Number(req.query.page || 1);
   if (
@@ -13939,7 +13665,6 @@ app.get("/Roles", function (req, res) {
           res.send("failed");
         }
         if (body !== undefined) {
-          // var jsonData = JSON.parse(body)
           var jsonData = body;
           var message = jsonData.message;
           var statusCode = jsonData.statusCode;
@@ -13976,75 +13701,8 @@ app.get("/Roles", function (req, res) {
   }
 });
 
-
-
-app.get("/Waombaji", function (req, res) {
-  var obj = [];
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    var hasMatch =false;
-    for (var index = 0; index < req.session.RoleManage.length; ++index) {
-        var animal = req.session.RoleManage[index]; 
-    if(animal.permission_id == 38){ 
-    request(
-      {
-        url: waombajiAPI,
-        method: "POST",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-        json: {
-          browser_used: req.session.browser_used,
-          ip_address: req.session.ip_address,
-          useLevel: req.session.UserLevel,
-          office: req.session.office,
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(
-            new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
-          );
-          res.send("failed");
-        }
-        // console.log(body)
-        if (body !== undefined) {
-          // var jsonData = JSON.parse(body)
-          var jsonData = body;
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-          // var objAttachment = jsonData.objAttachment;
-          if (statusCode == 300) {
-          
-            res.render(path.join(__dirname + "/public/design/waombaji"), {
-              req: req,
-              data: data,
-              useLev: req.session.UserLevel,
-                                userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
-              cheoName: req.session.cheoName,
-            });
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-    }
-  }
-  } else {
-    res.redirect("/");
-  }
-});
-
 app.post("/SajiliWatumiaji", function (req, res) {
-  console.log(req.body);
+  // console.log(req.body);
   var name = req.body.name;
   var username = req.body.username;
   var phoneNumber = req.body.phone;
@@ -14467,67 +14125,7 @@ app.post("/FutaKiambatisho", function (req, res) {
   }
 });
 
-app.get("/Vyeo", function (req, res) {
-  var obj = [];
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    var hasMatch =false;
-    for (var index = 0; index < req.session.RoleManage.length; ++index) {
-        var animal = req.session.RoleManage[index]; 
-    if(animal.permission_id == 30){ 
-    request(
-      {
-        url: vyeoAPI,
-        method: "GET",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(
-            new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
-          );
-          res.send("failed");
-        }
-        // console.log(body)
-        if (body !== undefined) {
-          var jsonData = JSON.parse(body);
-          // var jsonData = body
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-          var vyeo = jsonData.vyeo;
-          // var listWaombaji = jsonData.listWaombaji;
-          // var objAttachment = jsonData.objAttachment;
-          if (statusCode == 300) {
-            console.log(new Date() + " " + req.session.userName + ": /Vyeo");
-            res.render(path.join(__dirname + "/public/design/vyeolist"), {
-              req: req,
-              data: data,
-              vyeo: vyeo,
-              useLev: req.session.UserLevel,
-                                userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
-              cheoName: req.session.cheoName,
-            });
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-    }
-  }
-  } else {
-    res.redirect("/");
-  }
-});
+
 
 app.get("/AuditTrail", function (req, res) {
   var obj = [];
@@ -15337,11 +14935,7 @@ app.post("/EditAda", function (req, res) {
             res.send({
               message: message,
               statusCode: statusCode,
-              useLev: req.session.UserLevel,
-                                userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
-              cheoName: req.session.cheoName,
+             
             });
           }
           if (statusCode == 209) {
@@ -15357,37 +14951,41 @@ app.post("/EditAda", function (req, res) {
 
 
 // DELETE /api/auth/logout
-app.delete("/logout", (req, res) => {
-  if (req.session) {
-    req.session.destroy((err) => {
-      if (err) {
-        // res.status(400).send('Unable to log out')
-        res.send({ statusCode: 306, message: "Umeshindwa kutoka nje" });
-      } else {
-        res.send({ statusCode: 300, message: "Karibu tena" });
-        // res.redirect('/')
-      }
-    });
-  } else {
-    res.end();
-  }
-});
+// app.delete("/logout", (req, res) => {
+//   if (req.session) {
+//     req.session.destroy((err) => {
+//       if (err) {
+//         // res.status(400).send('Unable to log out')
+//         res.send({ statusCode: 306, message: "Umeshindwa kutoka nje" });
+//       } else {
+//         res.send({ statusCode: 300, message: "Karibu tena" });
+//         // res.redirect('/')
+//       }
+//     });
+//   } else {
+//     res.end();
+//   }
+// });
 
 var port = process.env.PORT || 8087;
 var url = process.env.APP_URL || "http://localhost";
 app.use("/", userController)
+app.use("/", dashboardController)
 app.use("/", regionController)
 app.use("/", districtController)
 app.use("/", wardController)
 app.use("/", streetController)
 app.use("/", roleController)
 app.use("/", permissionController)
-app.use("/", rankController)
+app.use("/", designationController)
 app.use("/", zoneController)
 app.use("/", attachmentTypeController)
 app.use("/", applicationCategoryController)
 app.use("/", registrationTypeController)
+app.use("/", applicantController)
+app.use("/", schoolController)
 
+app.use("/", errorController);
 app.listen(port, () => {
   console.log(`Hello IRS, Client Server is running at ${url}${port ? ':'+port : ''} on ${new Date()} `);
 });

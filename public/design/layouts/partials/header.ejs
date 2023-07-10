@@ -41,9 +41,11 @@
         <div class="main-content">
             <div class="page-content">
                 <div class="container-fluid">
-                    <!-- start page title -->
-                    <%- include('page_title.ejs') %>
-                    <!-- end page title -->
+                    <% if(typeof page_title !== 'undefine' && page_title) {%>
+                        <!-- start page title -->
+                        <%- include('page_title.ejs') %>
+                        <!-- end page title -->
+                    <% } %>
                     <div class="row">
                         <div class="col-lg-12">
                             <% if(typeof card_title && card_title){ %>

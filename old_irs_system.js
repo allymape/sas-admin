@@ -1127,11 +1127,7 @@ app.get("/EditRolesPermissions/:id", function (req, res) {
             );
             res.render(path.join(__dirname + "/public/design/edit_roles"), {
               req: req,
-              useLev: req.session.UserLevel,
-              userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-              userID: req.session.userID,
-              cheoName: req.session.cheoName,
+             
               permissions: permissions,
               assigned_permissions: assigned_permissions,
               role_name: role_name,
@@ -4990,11 +4986,7 @@ app.get("/MaombiKuanzishaShule", function (req, res) {
             res.render(path.join(__dirname + "/public/design/kuanzishashule"), {
               req: req,
               total_month: data,
-              useLev: req.session.UserLevel,
-              userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-              userID: req.session.userID,
-              cheoName: req.session.cheoName,
+             
             });
           }
           if (statusCode == 209) {
@@ -14549,11 +14541,7 @@ app.get("/Watumiaji", function (req, res) {
               vyeo: vyeo,
               lgas: lgas,
               zones: zones,
-              useLev: req.session.UserLevel,
-              userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-              userID: req.session.userID,
-              cheoName: req.session.cheoName,
+             
               RoleManagement: RoleManagement,
             });
           }

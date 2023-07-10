@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none">
+
+
+<!-- Mirrored from themesbrand.com/velzon/html/default/tables-listjs.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 02 Sep 2022 10:26:15 GMT -->
+<head>
+
+    <meta charset="utf-8" />
+    <title>Watumiaji | IRS - Institution Registration System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="Themesbrand" name="author" />
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="design/assets/images/favicon.ico">
+
+    <!-- Sweet Alert css-->
+    <link href="design/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Layout config Js -->
+    <script src="design/assets/js/layout.js"></script>
+    <!-- Bootstrap Css -->
+    <link href="design/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="design/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <!-- App Css-->
+    <link href="design/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+    <!-- custom Css-->
+    <link href="design/assets/css/custom.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> -->
+
+</head>
+
+<body>
+
+    <!-- Begin page -->
+    <div id="layout-wrapper">
+
+        <%- include('sidebar.ejs') %>
+
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+        <div class="main-content">
+
+            <div class="page-content">
+                <div class="container-fluid">
+
+                    <!-- start page title -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                <h4 class="mb-sm-0">Waombaji</h4>
+
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        <li class="breadcrumb-item"><a href="javascript: void(0);">Mipangilio</a></li>
+                                        <li class="breadcrumb-item active">Waombaji</li>
+                                    </ol>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end page title -->
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title mb-0">Orodha ya Waombaji</h4>
+                                </div><!-- end card header -->
+
+                                <div class="card-body">
+                                    <div id="customerList">
+                                        <div class="row g-4 mb-3">
+                                            <div class="col-sm-auto">
+                                                <div>
+                                                    <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn" data-bs-target="#showModal"><i class="ri-add-line align-bottom me-1"></i> Sajili</button>
+                                                    <button class="btn btn-soft-danger" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm">
+                                                <div class="d-flex justify-content-sm-end">
+                                                    <div class="search-box ms-2">
+                                                        <input type="text" class="form-control search" placeholder="Tafuta...">
+                                                        <i class="ri-search-line search-icon"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="table-responsive table-card mt-3 mb-1">
+                                            <table class="table align-middle table-nowrap" id="customerTable">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th scope="col" style="width: 50px;">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="checkAll" value="option">
+                                                            </div>
+                                                        </th>
+                                                        <th class="sort" data-sort="customer_name">#</th>
+                                                        <th class="sort" data-sort="email">Jina</th>
+                                                        <th class="sort" data-sort="email">Barua Pepe</th>
+                                                        <!-- <th class="sort" data-sort="email">Action</th> -->
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="list form-check-all">
+                                                    <% for(var i = 0; i < data.length; i++){ %>
+                                                    <tr>
+                                                        <th scope="row">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" name="chk_child" value="option1">
+                                                            </div>
+                                                        </th>
+                                                        <td class="id"><a href="javascript:void(0);" class="fw-medium link-primary">#<%= i+1 %></a></td>
+                                                        <!-- <td class="customer_name">Mary Cousar</td>
+                                                        <td class="email">marycousar@velzon.com</td> -->
+                                                        <td class="date"><a href="#" class="fw-medium link-primary"><%= data[i].name %></a></td>
+                                                        <td class="date"><%= data[i].email %></td>
+                                                        <!-- <td> <button type="button" class="btn btn-success add-btn" 
+                                                        data-bs-toggle="modal" data-id="<%= data[i].userId %>" 
+                                                        data-name="<%= data[i].name %>" 
+                                                        data-email="<%= data[i].email %>" id="create-btn" 
+                                                        onclick="BadiliData(this); return false;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></button></td> -->
+                                                        <!-- <td class="phone"> <button type="button" class="btn btn-danger add-btn" data-bs-toggle="modal" id="create-btn" data-bs-target="#kaimishaModal">Kaimisha</button></td> -->
+
+                                                    </tr>
+                                                    <% } %>
+                                                </tbody>
+                                            </table>
+                                            <div class="noresult" style="display: none">
+                                                <div class="text-center">
+                                                    <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                                                    <h5 class="mt-2">Sorry! No Result Found</h5>
+                                                    <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex justify-content-end">
+                                            <div class="pagination-wrap hstack gap-2">
+                                                <a class="page-item pagination-prev disabled" href="#">
+                                                    Previous
+                                                </a>
+                                                <ul class="pagination listjs-pagination mb-0"></ul>
+                                                <a class="page-item pagination-next" href="#">
+                                                    Next
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!-- end card -->
+                            </div>
+                            <!-- end col -->
+                        </div>
+                        <!-- end col -->
+                    </div>
+                    <!-- end row -->
+                </div>
+            </div>
+            <script>
+                function BadiliData(e){
+                    var nameId = e.getAttribute('data-id');
+                    var name = e.getAttribute('data-name');
+                    var email = e.getAttribute('data-email');
+                    var phone = e.getAttribute('data-phone');
+                    document.getElementById("id1-field").value = nameId;
+                    document.getElementById("customername1-field").value = name;
+                    document.getElementById("username1-field").value = email;
+                    document.getElementById("username1-field").value = email;
+                    document.getElementById("phone1-field").value = phone;
+                    // var kanda = document.getElementById("ada-field").value;
+                    $('#showEditModal').modal('show');
+                }
+            </script>
+
+<div class="modal fade" id="showEditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title" id="exampleModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+
+                    <div class="mb-3" id="modal-id" style="display: none;">
+                        <label for="id-field" class="form-label">ID</label>
+                        <input type="text" id="id-field" class="form-control" placeholder="ID" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="customername1-field" class="form-label">Jina Kamili</label>
+                        <input type="hidden" id="id1-field" class="form-control" placeholder="ID" />
+                        <input type="text" id="customername1-field" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email-field" class="form-label">Barua Pepe</label>
+                        <input type="email" id="username1-field" class="form-control" placeholder="Mfano: olivia@gmail.com" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="email-field" class="form-label">Namba ya Simu</label>
+                        <input type="phone" id="phone1-field" class="form-control" placeholder="Mfano: 0768556633" required />
+                        <input type="hidden" id="strengthhidden1" class="form-control" />
+                    </div>
+                    <!-- <div class="mb-3">
+                        <label for="email-field" class="form-label">Barua Pepe</label>
+                        <input type="email" id="email-field" class="form-control" placeholder="Mfano: 2" required />
+                    </div> -->
+                    <div class="mb-3">
+                        <label for="email-field" class="form-label">Nenosiri</label>
+                        <input type="password" name="password1-field" id="password1-field" 
+                        class="form-control" size="15" maxlength="100" onkeyup="return passwordChanged1();" placeholder="Mfano: 2" required />
+                        <span id="strength1">Type Password</span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email-field" class="form-label">Thibithisha Nenosiri</label>
+                        <input type="password" id="repassword1-field" class="form-control" placeholder="Mfano: 2" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Funga</button>
+                        <button type="button" class="btn btn-success" onclick="EditUser()" id="add-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script language="javascript">
+    function passwordChanged1() {
+        var strength = document.getElementById('strength1');
+        var strongRegex = new RegExp("^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$", "g");
+        var mediumRegex = new RegExp("^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$", "g");
+        var enoughRegex = new RegExp("(?=.{6,}).*", "g");
+        var pwd = document.getElementById("password1-field");
+        if (pwd.value.length == 0) {
+            strength.innerHTML = 'Type Password';
+            strengthhidden.value = 'Type Password';
+        } else if (false == enoughRegex.test(pwd.value)) {
+            strength.innerHTML = 'More Characters';
+            strengthhidden.value = 'More Characters';
+        } else if (strongRegex.test(pwd.value)) {
+            strength.innerHTML = '<span style="color:green">Strong!</span>';
+            strengthhidden.value = 'Strong!';
+        } else if (mediumRegex.test(pwd.value)) {
+            strength.innerHTML = '<span style="color:orange">Medium!</span>';
+            strengthhidden.value = 'Medium!';
+        } else {
+            strength.innerHTML = '<span style="color:red">Weak!</span>';
+            strengthhidden.value = 'Weak!';
+        }
+    }
+</script>
+<script>
+    function EditUser(){
+        var name = document.getElementById('customername1-field').value;
+        var username = document.getElementById('username1-field').value;
+        var phone = document.getElementById('phone1-field').value;
+        var email = document.getElementById('username1-field').value;
+        var password = document.getElementById('password1-field').value;
+        var repassword = document.getElementById('repassword1-field').value;
+        var strength = document.getElementById('strength1').value;
+        var strengthhidden = document.getElementById('strengthhidden1').value;
+        var userId = document.getElementById('id1-field').value;
+        // var cheo = rankLevel.split("-");
+        if(password.length > 0){
+            if(password == repassword){
+                if(strengthhidden == 'Strong!'){
+                $.ajax({
+                    url: "/UpdateWaombaji",
+                    type: 'POST',
+                    data: JSON.stringify({"name": name, "username": username,
+                    "phone": phone, "email": email, 
+                    "password": password, "userId": userId}),
+                    contentType: 'application/json',
+                    success: function(response) {
+                    alert("response")
+                    $('#showEditModal').modal('hide');
+                    window.location.href = "/Waombaji"
+                    }
+                });
+                }else{
+                    alert("Nenosiri sio Salama")
+                }
+            }
+            else{
+                alert("Nenosiri hazifanani")
+            }
+        }
+        else{
+            $.ajax({
+                url: "/UpdateWaombaji",
+                type: 'POST',
+                data: JSON.stringify({"name": name, "username": username,
+                "phone": phone, "email": email, 
+                "password": "0", "userId": userId}),
+                contentType: 'application/json',
+                success: function(response) {
+                alert("response")
+                $('#showEditModal').modal('hide');
+                window.location.href = "/Waombaji"
+                }
+            });
+        }
+
+    }
+</script>
+            <footer class="footer">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <script>document.write(new Date().getFullYear())</script> © IRS
+                        </div>
+                        <div class="col-sm-6">
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        <!-- end main content-->
+
+    </div>
+    <!-- END layout-wrapper -->
+
+
+
+    <!--start back-to-top-->
+    <button onclick="topFunction()" class="btn btn-danger btn-icon" id="back-to-top">
+        <i class="ri-arrow-up-line"></i>
+    </button>
+    <!--end back-to-top-->
+
+    <!-- JAVASCRIPT -->
+    <script src="design/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="design/assets/libs/simplebar/simplebar.min.js"></script>
+    <script src="design/assets/libs/node-waves/waves.min.js"></script>
+    <script src="design/assets/libs/feather-icons/feather.min.js"></script>
+    <script src="design/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
+    <script src="design/assets/js/plugins.js"></script>
+    <!-- prismjs plugin -->
+    <script src="design/assets/libs/prismjs/prism.js"></script>
+    <script src="design/assets/libs/list.js/list.min.js"></script>
+    <script src="design/assets/libs/list.pagination.js/list.pagination.min.js"></script>
+
+    <!-- listjs init -->
+    <script src="design/assets/js/pages/listjs.init.js"></script>
+
+    <!-- Sweet Alerts js -->
+    <script src="design/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+
+    <!-- App js -->
+    <script src="design/assets/js/app.js"></script>
+
+    <!--jquery cdn-->
+    <script src="../js/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <!--select2 cdn-->
+    <script src="../js/select2.min.js"></script>
+
+    <script src="design/assets/js/pages/select2.init.js"></script>
+
+    <!-- prismjs plugin -->
+    <script src="design/assets/libs/prismjs/prism.js"></script>
+</body>
+
+</html>

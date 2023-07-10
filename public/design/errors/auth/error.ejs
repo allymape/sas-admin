@@ -1,0 +1,29 @@
+
+<%- include('../../layouts/partials/header.ejs' , {
+title : title,
+page_title : title,
+card_title :  title,
+breadcrumb_main : 'Error' 
+}) %>
+<div class="card-body">
+    <div class="ribbon-three ribbon-three-danger">
+        <span class="badge"><%=`${statusCode}`%></span>
+    </div>
+<div class="text-center">
+<div class="mb-2">
+    <!-- <h1 class="display-6 coming-soon-text" 
+        style="text-shadow: 3px 4px #b3380a; color: #35a5f1fa;"><%= title %>
+    </h1> -->
+    <p class="fs-14"><%= message %></p>
+    <div class="row justify-content-center">
+</div>
+    <div class="pt-2">
+        <a href="/" class="btn btn-outline-primary"><i class="mdi mdi-home me-1"></i> Back to Home</a>
+    </div>
+</div>
+</div>
+</div>
+<%- include('../../layouts/partials/footer.ejs' , {card_title :  ''}) %>
+<!-- <script type="text/javascript" src="design/layouts/scripts/kata_scripts.js"></script> -->
+</body>
+</html>
