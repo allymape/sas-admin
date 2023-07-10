@@ -36,11 +36,6 @@ designationController.get("/Vyeo", isAuthenticated, can('view-designations'), fu
             req: req,
             designations: jsonData.designations,
             levels: jsonData.levels,
-            useLev: req.session.UserLevel,
-            userName: req.session.userName,
-            RoleManage: req.session.RoleManage,
-            userID: req.session.userID,
-            cheoName: req.session.cheoName,
             pagination: {
               total: Number(numRows),
               current: Number(page),
@@ -73,15 +68,14 @@ designationController.get("/designations",  isAuthenticated, can('view-designati
 
 // Store Designation
 designationController.post("/tengenezaDesignation",  isAuthenticated, can('create-designations'),function (req, res) {
-    var formData = {
-        designationName: req.body.designation_name,
-        displayName: req.body.display_name,
-        };
-    sendRequest(req, res, tengenezaDesignationAPI, "POST", formData, (body) => {
+    
+    sendRequest(req, res, tengenezaDesignationAPI, "POST", req.body, (body) => {
         var statusCode = body.statusCode;
         var message = body.message;
-        req.flash(statusCode == 300 ? "success" : "error", message);
-        res.redirect("/Designations");
+           res.send({
+             statusCode: statusCode,
+             message: message,
+           });
     });
 });
 
@@ -96,17 +90,13 @@ designationController.get("/Designation/:id",  isAuthenticated, can('update-desi
 // Update Designation
 designationController.post("/badiliDesignation/:id",  isAuthenticated, can('update-designations'),function (req, res) {
   var id = Number(req.params.id);
-  var formData = {
-          designationName: req.body.designation_name,
-          displayName: req.body.display_name,
-          status: req.body.status,
-  }
-  sendRequest(req, res, updateDesignationAPI + "/" + id, "PUT", formData , (jsonData) => {
+  sendRequest(req, res, updateDesignationAPI + "/" + id, "PUT", req.body , (jsonData) => {
         var statusCode = jsonData.statusCode;
         var message = jsonData.message;
-        req.flash(statusCode == 300 ? "success" : "error", message);
-        // Make redirection
-        statusCode == 300 ? res.redirect("/Designations"): res.redirect("/Designations/" + id);
+        res.send({
+          statusCode : statusCode,
+          message : message
+        });
   });
 });
 
@@ -116,8 +106,10 @@ designationController.post("/futaDesignation/:id",  isAuthenticated, can('delete
   sendRequest(req, res, deleteDesignationAPI + "/" + id, "DELETE", {}, (jsonData) => {
         var statusCode = jsonData.statusCode;
         var message = jsonData.message;
-        req.flash(statusCode == 300 ? "success" : "error", message);
-        res.redirect("/Designations");
+          res.send({
+            statusCode: statusCode,
+            message: message,
+          });
   });
 });
 
@@ -142,13 +134,13 @@ function getAllDesignations(req, res, edit = false, editedData = null) {
          res.render(path.join(__dirname + "/../design/designations"), {
            req: req,
            data: data,
-           useLev: req.session.UserLevel,
-           userName: req.session.userName,
-           DesignationManage: req.session.DesignationManage,
-           userID: req.session.userID,
-           cheoName: req.session.cheoName,
-           edit: edit,
-           eDesignation: editedData,
+          //  useLev: req.session.UserLevel,
+          //  userName: req.session.userName,
+          //  DesignationManage: req.session.DesignationManage,
+          //  userID: req.session.userID,
+          //  cheoName: req.session.cheoName,
+          //  edit: edit,
+          //  eDesignation: editedData,
            pagination: {
              total: Number(numRows),
              current: Number(page),

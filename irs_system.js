@@ -46,6 +46,12 @@ const designationController = require("./public/controllers/designationControlle
 const applicantController = require("./public/controllers/applicantController");
 const numeral = require('numeral');
 const schoolController = require("./public/controllers/schoolController");
+const levelController = require("./public/controllers/rankController");
+const rankController = require("./public/controllers/rankController");
+const hierarchyController = require("./public/controllers/hierarchyController");
+const biasController = require("./public/controllers/combinationController");
+const combinationController = require("./public/controllers/biasController");
+const feeController = require("./public/controllers/feeController");
 
 var app = express();
 app.use(helmet.frameguard())
@@ -372,7 +378,7 @@ app.post("/auth", function (req, res) {
             if (req.session.UserLevel == 10) {
               res.redirect("/RipotiZilizosajiliwa");
             } else {
-              res.redirect("/Dashboard");
+              res.redirect("/Michepuo");
             }
           } else {
             res.redirect("/TwoFA");
@@ -1614,125 +1620,125 @@ app.post("/sasishaRole/:id", function (req, res) {
   }
 });
 
-app.post("/saveZone", function (req, res) {
-  // console.log(req.body)
-  var zonecode = req.body.zonecode;
-  var zonename = req.body.zonename;
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: sajiliZoniAPI,
-        method: "POST",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-        json: {
-          browser_used: req.session.browser_used,
-          ip_address: req.session.ip_address,
-          zonecode: zonecode,
-          zonename: zonename,
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(new Date() + ": fail to login " + error);
-          res.send("failed");
-        }
-        // console.log(body)
-        if (body !== undefined) {
-          // console.log(body)
-          res.send({ statusCode: body.statusCode, message: body.message });
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
+// app.post("/saveZone", function (req, res) {
+//   // console.log(req.body)
+//   var zonecode = req.body.zonecode;
+//   var zonename = req.body.zonename;
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//     request(
+//       {
+//         url: sajiliZoniAPI,
+//         method: "POST",
+//         headers: {
+//           Authorization: "Bearer" + " " + req.session.Token,
+//           "Content-Type": "application/json",
+//         },
+//         json: {
+//           browser_used: req.session.browser_used,
+//           ip_address: req.session.ip_address,
+//           zonecode: zonecode,
+//           zonename: zonename,
+//         },
+//       },
+//       function (error, response, body) {
+//         if (error) {
+//           console.log(new Date() + ": fail to login " + error);
+//           res.send("failed");
+//         }
+//         // console.log(body)
+//         if (body !== undefined) {
+//           // console.log(body)
+//           res.send({ statusCode: body.statusCode, message: body.message });
+//         }
+//       }
+//     );
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
-app.post("/updateZone", function (req, res) {
-  console.log(req.body);
-  var zoneid = req.body.zoneid;
-  var zonecode = req.body.zonecode;
-  var zonename = req.body.zonename;
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: updateZoniAPI,
-        method: "POST",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-        json: {
-          browser_used: req.session.browser_used,
-          ip_address: req.session.ip_address,
-          zonecode: zonecode,
-          zonename: zonename,
-          zoneid: zoneid,
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(new Date() + ": fail to login " + error);
-          res.send("failed");
-        }
-        // console.log(body)
-        if (body !== undefined) {
-          console.log(body);
-          res.send({ statusCode: body.statusCode, message: body.message });
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
+// app.post("/updateZone", function (req, res) {
+//   console.log(req.body);
+//   var zoneid = req.body.zoneid;
+//   var zonecode = req.body.zonecode;
+//   var zonename = req.body.zonename;
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//     request(
+//       {
+//         url: updateZoniAPI,
+//         method: "POST",
+//         headers: {
+//           Authorization: "Bearer" + " " + req.session.Token,
+//           "Content-Type": "application/json",
+//         },
+//         json: {
+//           browser_used: req.session.browser_used,
+//           ip_address: req.session.ip_address,
+//           zonecode: zonecode,
+//           zonename: zonename,
+//           zoneid: zoneid,
+//         },
+//       },
+//       function (error, response, body) {
+//         if (error) {
+//           console.log(new Date() + ": fail to login " + error);
+//           res.send("failed");
+//         }
+//         // console.log(body)
+//         if (body !== undefined) {
+//           console.log(body);
+//           res.send({ statusCode: body.statusCode, message: body.message });
+//         }
+//       }
+//     );
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
-app.post("/FutaZoni", function (req, res) {
-  console.log(req.body);
-  var zoneid = req.body.name;
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: deleteZoniAPI,
-        method: "POST",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-        json: {
-          browser_used: req.session.browser_used,
-          ip_address: req.session.ip_address,
-          zoneid: zoneid,
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(new Date() + ": fail to login " + error);
-          res.send("failed");
-        }
-        // console.log(body)
-        if (body !== undefined) {
-          console.log(body);
-          res.send({ status: "success" });
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
+// app.post("/FutaZoni", function (req, res) {
+//   console.log(req.body);
+//   var zoneid = req.body.name;
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//     request(
+//       {
+//         url: deleteZoniAPI,
+//         method: "POST",
+//         headers: {
+//           Authorization: "Bearer" + " " + req.session.Token,
+//           "Content-Type": "application/json",
+//         },
+//         json: {
+//           browser_used: req.session.browser_used,
+//           ip_address: req.session.ip_address,
+//           zoneid: zoneid,
+//         },
+//       },
+//       function (error, response, body) {
+//         if (error) {
+//           console.log(new Date() + ": fail to login " + error);
+//           res.send("failed");
+//         }
+//         // console.log(body)
+//         if (body !== undefined) {
+//           console.log(body);
+//           res.send({ status: "success" });
+//         }
+//       }
+//     );
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
 app.post("/UserProfile", function (req, res) {
   console.log(req.body);
@@ -1786,62 +1792,62 @@ app.get("/TaarifaMtumiaji/:id", function (req, res) {
 
 
 
-app.get("/ZoneList", function (req, res) {
-  var obj = [];
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: mikoaListAPI,
-        method: "GET",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(new Date() + ": fail to KandaList " + error);
-          res.send("failed");
-        }
-        // console.log(body)
-        if (body !== undefined) {
-          // console.log(body)
-          var jsonData = JSON.parse(body);
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var zones = jsonData.zones;
+// app.get("/ZoneList", function (req, res) {
+//   var obj = [];
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//     request(
+//       {
+//         url: mikoaListAPI,
+//         method: "GET",
+//         headers: {
+//           Authorization: "Bearer" + " " + req.session.Token,
+//           "Content-Type": "application/json",
+//         },
+//       },
+//       function (error, response, body) {
+//         if (error) {
+//           console.log(new Date() + ": fail to KandaList " + error);
+//           res.send("failed");
+//         }
+//         // console.log(body)
+//         if (body !== undefined) {
+//           // console.log(body)
+//           var jsonData = JSON.parse(body);
+//           var message = jsonData.message;
+//           var statusCode = jsonData.statusCode;
+//           var zones = jsonData.zones;
 
-          if (statusCode == 300) {
-            if (zones.length <= 0) {
-              var zoneCode = "";
-              var zoneName = "";
-              obj.push({ zoneCode: zoneCode, zoneName: zoneName });
-            } else {
-              for (var i = 0; i < zones.length; i++) {
-                console.log(zones);
-                var zoneCode = zones[i].zoneCode;
-                var zoneName = zones[i].zoneName;
-                obj.push({ zoneCode: zoneCode, zoneName: zoneName });
-              }
-            }
-            // console.log(obj)
-            console.log(new Date() + ": Successful KandaList");
-            res.send(obj);
-            //
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
+//           if (statusCode == 300) {
+//             if (zones.length <= 0) {
+//               var zoneCode = "";
+//               var zoneName = "";
+//               obj.push({ zoneCode: zoneCode, zoneName: zoneName });
+//             } else {
+//               for (var i = 0; i < zones.length; i++) {
+//                 console.log(zones);
+//                 var zoneCode = zones[i].zoneCode;
+//                 var zoneName = zones[i].zoneName;
+//                 obj.push({ zoneCode: zoneCode, zoneName: zoneName });
+//               }
+//             }
+//             // console.log(obj)
+//             console.log(new Date() + ": Successful KandaList");
+//             res.send(obj);
+//             //
+//           }
+//           if (statusCode == 209) {
+//             res.redirect("/");
+//           }
+//         }
+//       }
+//     );
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
 app.get("/Halmashauri", function (req, res) {
   if (
@@ -13577,57 +13583,57 @@ app.get("/Viambatisho", function (req, res) {
   }
 });
 
-app.get("/Malipo", function (req, res) {
-  var obj = [];
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: malipoAPI,
-        method: "GET",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(
-            new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
-          );
-          res.send("failed");
-        }
-        // console.log(body)
-        if (body !== undefined) {
-          var jsonData = JSON.parse(body);
-          // var jsonData = body
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-          if (statusCode == 300) {
-            console.log(new Date() + " " + req.session.userName + ": /Malipo");
-            res.render(path.join(__dirname + "/public/design/malipo"), {
-              req: req,
-              data: data,
-              useLev: req.session.UserLevel,
-                                userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
-              cheoName: req.session.cheoName,
-            });
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
+// app.get("/Malipo", function (req, res) {
+//   var obj = [];
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//     request(
+//       {
+//         url: malipoAPI,
+//         method: "GET",
+//         headers: {
+//           Authorization: "Bearer" + " " + req.session.Token,
+//           "Content-Type": "application/json",
+//         },
+//       },
+//       function (error, response, body) {
+//         if (error) {
+//           console.log(
+//             new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
+//           );
+//           res.send("failed");
+//         }
+//         // console.log(body)
+//         if (body !== undefined) {
+//           var jsonData = JSON.parse(body);
+//           // var jsonData = body
+//           var message = jsonData.message;
+//           var statusCode = jsonData.statusCode;
+//           var data = jsonData.data;
+//           if (statusCode == 300) {
+//             console.log(new Date() + " " + req.session.userName + ": /Malipo");
+//             res.render(path.join(__dirname + "/public/design/malipo"), {
+//               req: req,
+//               data: data,
+//               useLev: req.session.UserLevel,
+//                                 userName: req.session.userName,
+//               RoleManage: req.session.RoleManage,
+//     userID: req.session.userID,
+//               cheoName: req.session.cheoName,
+//             });
+//           }
+//           if (statusCode == 209) {
+//             res.redirect("/");
+//           }
+//         }
+//       }
+//     );
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
 
 
@@ -14189,129 +14195,129 @@ app.get("/AuditTrail", function (req, res) {
   }
 });
 
-app.get("/Tahasusi", function (req, res) {
-  var obj = [];
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    var hasMatch =false;
-    for (var index = 0; index < req.session.RoleManage.length; ++index) {
-        var animal = req.session.RoleManage[index]; 
-    if(animal.permission_id == 61){ 
-    request(
-      {
-        url: tahasusiAPI,
-        method: "GET",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(
-            new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
-          );
-          res.send("failed");
-        }
-        // console.log(body)
-        if (body !== undefined) {
-          var jsonData = JSON.parse(body);
-          // var jsonData = body
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-          var michepuo = jsonData.michepuo;
-          // var listWaombaji = jsonData.listWaombaji;
-          // var objAttachment = jsonData.objAttachment;
-          if (statusCode == 300) {
-            console.log(new Date() + " " + req.session.userName + ": /Vyeo");
-            res.render(path.join(__dirname + "/public/design/taasusilist"), {
-              req: req,
-              data: data,
-              michepuo: michepuo,
-              useLev: req.session.UserLevel,
-                                userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
-              cheoName: req.session.cheoName,
-            });
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-    }
-  }
-  } else {
-    res.redirect("/");
-  }
-});
+// app.get("/Tahasusi", function (req, res) {
+//   var obj = [];
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//     var hasMatch =false;
+//     for (var index = 0; index < req.session.RoleManage.length; ++index) {
+//         var animal = req.session.RoleManage[index]; 
+//     if(animal.permission_id == 61){ 
+//     request(
+//       {
+//         url: tahasusiAPI,
+//         method: "GET",
+//         headers: {
+//           Authorization: "Bearer" + " " + req.session.Token,
+//           "Content-Type": "application/json",
+//         },
+//       },
+//       function (error, response, body) {
+//         if (error) {
+//           console.log(
+//             new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
+//           );
+//           res.send("failed");
+//         }
+//         // console.log(body)
+//         if (body !== undefined) {
+//           var jsonData = JSON.parse(body);
+//           // var jsonData = body
+//           var message = jsonData.message;
+//           var statusCode = jsonData.statusCode;
+//           var data = jsonData.data;
+//           var michepuo = jsonData.michepuo;
+//           // var listWaombaji = jsonData.listWaombaji;
+//           // var objAttachment = jsonData.objAttachment;
+//           if (statusCode == 300) {
+//             console.log(new Date() + " " + req.session.userName + ": /Vyeo");
+//             res.render(path.join(__dirname + "/public/design/taasusilist"), {
+//               req: req,
+//               data: data,
+//               michepuo: michepuo,
+//               useLev: req.session.UserLevel,
+//                                 userName: req.session.userName,
+//               RoleManage: req.session.RoleManage,
+//     userID: req.session.userID,
+//               cheoName: req.session.cheoName,
+//             });
+//           }
+//           if (statusCode == 209) {
+//             res.redirect("/");
+//           }
+//         }
+//       }
+//     );
+//     }
+//   }
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
-app.get("/Michepuo", function (req, res) {
-  var obj = [];
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    var hasMatch =false;
-    for (var index = 0; index < req.session.RoleManage.length; ++index) {
-        var animal = req.session.RoleManage[index]; 
-    if(animal.permission_id == 57){ 
-    request(
-      {
-        url: michepuoAPI,
-        method: "GET",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(
-            new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
-          );
-          res.send("failed");
-        }
-        // console.log(body)
-        if (body !== undefined) {
-          var jsonData = JSON.parse(body);
-          // var jsonData = body
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-          var michepuo = jsonData.michepuo;
-          // var listWaombaji = jsonData.listWaombaji;
-          // var objAttachment = jsonData.objAttachment;
-          if (statusCode == 300) {
-            console.log(new Date() + " " + req.session.userName + ": /Vyeo");
-            res.render(path.join(__dirname + "/public/design/tmichepuolist"), {
-              req: req,
-              data: data,
-              michepuo: michepuo,
-              useLev: req.session.UserLevel,
-                                userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
-              cheoName: req.session.cheoName,
-            });
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-    }
-  }
-  } else {
-    res.redirect("/");
-  }
-});
+// app.get("/Michepuo", function (req, res) {
+//   var obj = [];
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//     var hasMatch =false;
+//     for (var index = 0; index < req.session.RoleManage.length; ++index) {
+//         var animal = req.session.RoleManage[index]; 
+//     if(animal.permission_id == 57){ 
+//     request(
+//       {
+//         url: michepuoAPI,
+//         method: "GET",
+//         headers: {
+//           Authorization: "Bearer" + " " + req.session.Token,
+//           "Content-Type": "application/json",
+//         },
+//       },
+//       function (error, response, body) {
+//         if (error) {
+//           console.log(
+//             new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
+//           );
+//           res.send("failed");
+//         }
+//         // console.log(body)
+//         if (body !== undefined) {
+//           var jsonData = JSON.parse(body);
+//           // var jsonData = body
+//           var message = jsonData.message;
+//           var statusCode = jsonData.statusCode;
+//           var data = jsonData.data;
+//           var michepuo = jsonData.michepuo;
+//           // var listWaombaji = jsonData.listWaombaji;
+//           // var objAttachment = jsonData.objAttachment;
+//           if (statusCode == 300) {
+//             console.log(new Date() + " " + req.session.userName + ": /Vyeo");
+//             res.render(path.join(__dirname + "/public/design/tmichepuolist"), {
+//               req: req,
+//               data: data,
+//               michepuo: michepuo,
+//               useLev: req.session.UserLevel,
+//                                 userName: req.session.userName,
+//               RoleManage: req.session.RoleManage,
+//     userID: req.session.userID,
+//               cheoName: req.session.cheoName,
+//             });
+//           }
+//           if (statusCode == 209) {
+//             res.redirect("/");
+//           }
+//         }
+//       }
+//     );
+//     }
+//   }
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
 app.post("/SajiliCheo", function (req, res) {
   var name = req.body.name;
@@ -14977,6 +14983,8 @@ app.use("/", wardController)
 app.use("/", streetController)
 app.use("/", roleController)
 app.use("/", permissionController)
+app.use("/", rankController)
+app.use("/", hierarchyController)
 app.use("/", designationController)
 app.use("/", zoneController)
 app.use("/", attachmentTypeController)
@@ -14984,6 +14992,9 @@ app.use("/", applicationCategoryController)
 app.use("/", registrationTypeController)
 app.use("/", applicantController)
 app.use("/", schoolController)
+app.use("/", biasController)
+app.use("/", combinationController)
+app.use("/", feeController)
 
 app.use("/", errorController);
 app.listen(port, () => {

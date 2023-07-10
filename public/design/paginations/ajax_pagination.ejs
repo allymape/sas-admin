@@ -1,5 +1,5 @@
 <div class="d-flex justify-content-between">
-    <div>
+    <div class="page-length">
         <form action="" method="GET">
                 <select class="form-control" name="per_page" style="width: 80px;" id="page-size">
                     <option value="5"   <%-req.query.per_page ==  5  ? 'selected' : '' %> >5</option>
@@ -9,7 +9,7 @@
                     <option value="100" <%-req.query.per_page == 100 ? 'selected' : '' %> >100</option>
                 </select>
         </form>
-        </div>
+    </div>
     <div class="d-flex justify-content-end pagination">
     </div>
 </div>

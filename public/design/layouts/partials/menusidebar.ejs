@@ -7,7 +7,7 @@ const menuItems = [
         url  : "Dashboard",
         menuTitle : 'Menu',
         icon : "ri-dashboard-2-line",
-        menuId : "",
+        // menuId : "",
         pattern : "Dashboard",
         hasPermissionTo : permission(req , 'view-dashboard'),
    },
@@ -154,8 +154,7 @@ const menuItems = [
         menuTitle : '',
         icon : "ri-bubble-chart-line",
         menuId : "sidebarRipoti",
-        pattern : "",
-        menuId : "",
+        // pattern : "",
         hasPermissionTo : '',
         subMenus : [
             {
@@ -375,6 +374,22 @@ const menuItems = [
                 counterId : "",
                 pattern : "Mitaa",
                 hasPermissionTo : permission(req , 'view-streets'),
+            },
+             {
+                label : "Ngazi",
+                url  : "Ngazi",
+                icon : "",
+                counterId : "",
+                pattern : "Ngazi",
+                hasPermissionTo : permission(req , 'view-ranks'),
+            },
+             {
+                label : "Uongozi",
+                url  : "Uongozi",
+                icon : "",
+                counterId : "",
+                pattern : "Uongozi",
+                hasPermissionTo : permission(req , 'view-hierarchies'),
             },
             {
                 label : "Vyeo",

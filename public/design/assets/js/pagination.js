@@ -24,6 +24,9 @@ function paginate(url , pages , current , per_page){
                     paginationDiv =  paginationDiv +'</ul>';
                     paginationDiv =  paginationDiv+'</div>'; 
                 $(".pagination").append(paginationDiv);
+
+    }else{
+        $(".page-length").hide();
     }
 }
 

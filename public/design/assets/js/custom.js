@@ -45,32 +45,40 @@ function ajaxRequest(url, method, callback, formData = {}, loading = true) {
   });
 }
 
-var ajaxSelect2 = (selector , url , placeholder = 'Chagua ...' , modalId = 'modal' , selectedValue = null , exclude = null , delay = 250) =>{
-     const select2 =  $(`#${selector}`).select2({
-                    ajax: {
-                      url: url,
-                      dataType: "json",
-                      delay: delay,
-                      data: function (params) {
-                        return {
-                          q: params.term, // search term entered by user
-                          exclude: exclude,
-                        };
-                      },
-                      processResults: function (response) {
-                        return {
-                          results: response.data,
-                        };
-                      },
-                    },
-                    placeholder: placeholder,
-                    dropdownParent: $(`#${modalId}`),
-                    theme: "classic",
-                  });
-    if(selectedValue){
-       select2.val(selectedValue);
-    }
-}
+var ajaxSelect2 = (
+  selector,
+  url,
+  placeholder = "Chagua ...",
+  modalId = "modal",
+  selectedValue = null,
+  exclude = null,
+  delay = 250
+) => {
+  const select2 = $(`#${selector}`).select2({
+    ajax: {
+      url: url,
+      dataType: "json",
+      delay: delay,
+      data: function (params) {
+        return {
+          q: params.term, // search term entered by user
+          exclude: exclude,
+        };
+      },
+      processResults: function (response) {
+        return {
+          results: response.data,
+        };
+      },
+    },
+    placeholder: placeholder,
+    dropdownParent: $(`#${modalId}`),
+    theme: "classic",
+  });
+  if (selectedValue) {
+    select2.val(selectedValue);
+  }
+};
 
 var dataTable = (
   url,
@@ -105,8 +113,8 @@ var dataTable = (
   );
   table.closest(".card-body")
     .append(`<div class="ribbon-three ribbon-three-info">
-                                        <span class="badge">${total}</span>
-                                    </div>`);
+              <span class="badge">${total}</span>
+              </div>`);
   $.each(data, (dataKey, dataValue) => {
     var rowData = "";
     var dataAttributes = "";
@@ -131,29 +139,29 @@ var dataTable = (
           rowData =
             rowData +
             `<td 
-                        ${
-                          typeof fieldValues.tdClass !== "undefined"
-                            ? "class='" + fieldValues.tdClass + "'"
-                            : ""
-                        } 
-                        ${
-                          typeof fieldValues.tdTitle !== "undefined"
-                            ? "title='" + fieldValues.tdTitle + "'"
-                            : ""
-                        } 
-                        ${
-                          typeof fieldValues.tdStyle !== "undefined"
-                            ? "style='" + fieldValues.tdStyle + "'"
-                            : ""
-                        }
-                        ${
-                          typeof fieldValues.tdAttributes !== "undefined"
-                            ? fieldValues.tdAttributes
-                            : ""
-                        }
-                        >
-                        ${dataValue[fieldKey]}
-                        </td>`;
+              ${
+                typeof fieldValues.tdClass !== "undefined"
+                  ? "class='" + fieldValues.tdClass + "'"
+                  : ""
+              } 
+              ${
+                typeof fieldValues.tdTitle !== "undefined"
+                  ? "title='" + fieldValues.tdTitle + "'"
+                  : ""
+              } 
+              ${
+                typeof fieldValues.tdStyle !== "undefined"
+                  ? "style='" + fieldValues.tdStyle + "'"
+                  : ""
+              }
+              ${
+                typeof fieldValues.tdAttributes !== "undefined"
+                  ? fieldValues.tdAttributes
+                  : ""
+              }
+              >
+              ${dataValue[fieldKey]}
+            </td>`;
         }
       }
     });
@@ -292,8 +300,8 @@ function hideLoadingSpinner() {
 
 $(".page-size").on("change", function (e) {
   e.preventDefault();
-  var isRefreshed = updateUrl('per_page' , $(this).val());
-     if(!isRefreshed) window.location.reload()
+  var isRefreshed = updateUrl("per_page", $(this).val());
+  if (!isRefreshed) window.location.reload();
 });
 
 $(".btn-delete").on("click", function (e) {
@@ -412,11 +420,10 @@ function search(searchElementInput, targetedElements, parent, messageId) {
   }
 }
 
-$("#logout").on("click" , function(e){
+$("#logout").on("click", function (e) {
   e.preventDefault();
   logoutFx();
 });
-
 
 var urlWithoutQuery =
   window.location.protocol +
@@ -425,154 +432,148 @@ var urlWithoutQuery =
   window.location.pathname;
 
 // on search
-$(".app-search").on('submit' , function(e){
+$(".app-search").on("submit", function (e) {
   e.preventDefault();
   var search = $("#search-options").val();
-  var refreshed = updateUrl('tafuta' , search);
-    if(!refreshed){
-      window.location.reload();
-    }
+  var refreshed = updateUrl("tafuta", search);
+  if (!refreshed) {
+    window.location.reload();
+  }
 });
 
 //on close search
-$('#search-close').on('click' , function(){
-   var refreshed = updateUrl("tafuta", '');
-   if (!refreshed) {
-     window.location.reload();
-   }
+$("#search-close").on("click", function () {
+  var refreshed = updateUrl("tafuta", "");
+  if (!refreshed) {
+    window.location.reload();
+  }
 });
 
-const updateUrl = (param , value) => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const hasPageParam = searchParams.has("page");
-    let refreshed = false;
-    if (hasPageParam) {
-      //  newUrl = newUrl.replace(/(\?|&)page=([^&]*)/, `?page=1`);
-      searchParams.delete("page");
-      refreshed = true;
-    }
-    value ? searchParams.set(param, value) : searchParams.delete(param)
-    let newUrl = window.location.pathname + "?" + searchParams.toString();
-    history.pushState({}, document.title, newUrl);
-    if (hasPageParam) {
-      window.location.reload();
-    }
-    return refreshed;
+const updateUrl = (param, value) => {
+  const searchParams = new URLSearchParams(window.location.search);
+  const hasPageParam = searchParams.has("page");
+  let refreshed = false;
+  if (hasPageParam) {
+    //  newUrl = newUrl.replace(/(\?|&)page=([^&]*)/, `?page=1`);
+    searchParams.delete("page");
+    refreshed = true;
+  }
+  value ? searchParams.set(param, value) : searchParams.delete(param);
+  let newUrl = window.location.pathname + "?" + searchParams.toString();
+  history.pushState({}, document.title, newUrl);
+  if (hasPageParam) {
+    window.location.reload();
+  }
+  return refreshed;
+};
+
+function logoutFx() {
+  $(
+    `<form action='/Logout' method='POST'><input type='hidden' value='logout'></form>`
+  )
+    .appendTo("body")
+    .submit()
+    .remove();
 }
 
-
-function logoutFx(){
-  $(`<form action='/Logout' method='POST'><input type='hidden' value='logout'></form>`).appendTo('body').submit().remove();
+function validate2FA() {
+  var wezesha = document.getElementById("controls-slide");
+  var wezeshaValue = 0;
+  if (wezesha.checked == true) {
+    wezeshaValue = 1;
+  }
+  if (wezesha.checked == false) {
+    wezeshaValue = 0;
+  }
+  $.ajax({
+    url: "/Wezesha2FA",
+    type: "POST",
+    data: JSON.stringify({ faValue: wezeshaValue }),
+    contentType: "application/json",
+    success: function (response) {
+      if (typeof response === "string") {
+        response = JSON.parse(response);
+      }
+      alert(response.message);
+    },
+  });
 }
-
-
-
-
-   // setTimeout(
-    // function viewMenu(){
-    //    var kuanzacounti = document.getElementById('kuanzacounti');
-    //     $.ajax({
-    //         url: "/ActiveMenu",
-    //         type: 'GET',
-    //         contentType: 'application/json',
-    //         success: function(response) {
-    //         if(typeof(response) === "string"){response = JSON.parse(response)}
-    //         txt = document.createTextNode(response.kauntikuanza);
-    //         kuanzacounti.appendChild(txt);
-    //         if(response.TwoFA == 0){
-    //             document.getElementById('controls-slide').checked = false;
-    //         }
-    //         if(response.TwoFA == 1){
-    //             document.getElementById('controls-slide').checked = true;
-    //         }
-    //         }
-    //     });
-    // }, 1000)
-    function validate2FA(){
-        var wezesha = document.getElementById('controls-slide');
-        var wezeshaValue = 0;
-        if(wezesha.checked == true){
-            wezeshaValue = 1;
-        }
-        if(wezesha.checked == false){
-            wezeshaValue = 0;
-        }
-        $.ajax({
-            url: "/Wezesha2FA",
-            type: 'POST',
-            data: JSON.stringify({"faValue": wezeshaValue}),
-            contentType: 'application/json',
-            success: function(response) {
-            if(typeof(response) === "string"){response = JSON.parse(response)}
-                alert(response.message)
-            }
-        });
-    }
-    function passwordChanged() {
-    var strength = document.getElementById('strengthmwox');
-    var strongRegex = new RegExp("^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$", "g");
-    var mediumRegex = new RegExp("^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$", "g");
-    var enoughRegex = new RegExp("(?=.{6,}).*", "g");
-    var pwd = document.getElementById("new-pass-field");
-    var strengthhidden = document.getElementById('strengthhiddenmwox');
-    if (pwd.value.length == 0) {
-        strength.innerHTML = 'Type Password';
-        strengthhidden.value = 'Type Password';
-    } else if (false == enoughRegex.test(pwd.value)) {
-        strength.innerHTML = 'More Characters';
-        strengthhidden.value = 'More Characters';
-    } else if (strongRegex.test(pwd.value)) {
-        strength.innerHTML = '<span style="color:green">Strong!</span>';
-        strengthhidden.value = 'Strong!';
-    } else if (mediumRegex.test(pwd.value)) {
-        strength.innerHTML = '<span style="color:orange">Medium!</span>';
-        strengthhidden.value = 'Medium!';
+function passwordChanged() {
+  var strength = document.getElementById("strengthmwox");
+  var strongRegex = new RegExp(
+    "^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$",
+    "g"
+  );
+  var mediumRegex = new RegExp(
+    "^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$",
+    "g"
+  );
+  var enoughRegex = new RegExp("(?=.{6,}).*", "g");
+  var pwd = document.getElementById("new-pass-field");
+  var strengthhidden = document.getElementById("strengthhiddenmwox");
+  if (pwd.value.length == 0) {
+    strength.innerHTML = "Type Password";
+    strengthhidden.value = "Type Password";
+  } else if (false == enoughRegex.test(pwd.value)) {
+    strength.innerHTML = "More Characters";
+    strengthhidden.value = "More Characters";
+  } else if (strongRegex.test(pwd.value)) {
+    strength.innerHTML = '<span style="color:green">Strong!</span>';
+    strengthhidden.value = "Strong!";
+  } else if (mediumRegex.test(pwd.value)) {
+    strength.innerHTML = '<span style="color:orange">Medium!</span>';
+    strengthhidden.value = "Medium!";
+  } else {
+    strength.innerHTML = '<span style="color:red">Weak!</span>';
+    strengthhidden.value = "Weak!";
+  }
+}
+function badliPass() {
+  var userid = document.getElementById("id-fieldmwox").value;
+  var oldpassword = document.getElementById("old-pass-field").value;
+  var password = document.getElementById("new-pass-field").value;
+  var repassword = document.getElementById("re-pass-field").value;
+  var strengthhidden = document.getElementById("strengthhiddenmwox").value;
+  if (password == repassword) {
+    $("#sajilbtn").hide();
+    $("#pakiabtn").show();
+    if (strengthhidden == "Strong!") {
+      $.ajax({
+        url: "/BadiliPass",
+        type: "POST",
+        data: JSON.stringify({
+          userid: userid,
+          oldpassword: oldpassword,
+          password: password,
+        }),
+        contentType: "application/json",
+        success: function (response) {
+          // console.log(response)
+          // alert(response.statusCode)
+          if (response.statusCode == 300) {
+            $("#sajilbtn").show();
+            $("#pakiabtn").hide();
+            $("#alertsuccessmwox").show();
+            setTimeout(function () {
+              logoutFx();
+            }, 2000);
+          }
+          if (response.statusCode == 306) {
+            $("#sajilbtn").show();
+            $("#pakiabtn").hide();
+            $("#alertexistmwox").show();
+          }
+          if (response.statusCode == 400 || response.statusCode == 500) {
+            $("#sajilbtn").show();
+            $("#pakiabtn").hide();
+            $("#alertmtandaomwox").show();
+          }
+        },
+      });
     } else {
-        strength.innerHTML = '<span style="color:red">Weak!</span>';
-        strengthhidden.value = 'Weak!';
+      alert("Nenosiri sio Salama");
     }
+  } else {
+    alert("Nenosiri hazifanani");
+  }
 }
-    function badliPass(){
-        var userid = document.getElementById('id-fieldmwox').value;
-        var oldpassword = document.getElementById('old-pass-field').value;
-    var password = document.getElementById('new-pass-field').value;
-    var repassword = document.getElementById('re-pass-field').value;
-    var strengthhidden = document.getElementById('strengthhiddenmwox').value;
-        if(password == repassword){
-            $("#sajilbtn").hide();
-            $("#pakiabtn").show();
-            if(strengthhidden == 'Strong!'){
-            $.ajax({
-                url: "/BadiliPass",
-                type: 'POST',
-                data: JSON.stringify({"userid": userid, "oldpassword": oldpassword, "password": password}),
-                contentType: 'application/json',
-                success: function(response) {
-                    // console.log(response)
-                    // alert(response.statusCode)
-                if(response.statusCode == 300){
-                    $("#sajilbtn").show();
-                    $("#pakiabtn").hide();
-                    $("#alertsuccessmwox").show();
-                    setTimeout(
-                        function() {
-                            logoutFx()
-                        }, 2000);
-                }if(response.statusCode == 306){
-                    $("#sajilbtn").show();
-                    $("#pakiabtn").hide();
-                    $("#alertexistmwox").show();
-                }if(response.statusCode == 400 || response.statusCode == 500){
-                    $("#sajilbtn").show();
-                    $("#pakiabtn").hide();
-                    $("#alertmtandaomwox").show();
-                }
-                }
-            });
-            }else{
-                alert("Nenosiri sio Salama")
-            }
-    }else{
-        alert("Nenosiri hazifanani")
-    }
-    }

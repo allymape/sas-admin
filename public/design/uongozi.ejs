@@ -1,8 +1,8 @@
 <% var card_title = '' %> 
 <%- include('layouts/partials/header.ejs' , {
-    title : 'Vyeo',
-    page_title : 'Orodha ya Vyeo',
-    card_title : 'Vyeo vilivyopo',
+    title : 'Ngazi za Uongozi',
+    page_title : 'Orodha ya Ngazi za Uongozi',
+    card_title : 'Ngazi za Uongozi zilizopo',
     breadcrumb_main : 'Mipangilio' 
 }) %>
 <div class="card-body">
@@ -14,7 +14,7 @@
         <div class="col-sm-auto">
             <div>
                 <button type="button" class="btn btn-success add-btn" 
-                 id="create-btn"><i 
+                id="create-btn"><i 
                 class="ri-add-line align-bottom me-1"></i> Sajili</button>
                 <!-- <button class="btn btn-soft-danger" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button> -->
             </div>
@@ -40,40 +40,38 @@
                     </th> -->
                     <th  width="5%">Na.</th>
                     <!-- <th class="">Jina</th> -->
-                    <th class="">Cheo</th>
-                    <th class="">Ngazi ya Uongozi</th>
-                    <th class="text-center">Status</th>
+                    <th class="">Name</th>
+                    <th class="">Ngazi</th>
+                    <th class="text-center">Ngazi Code</th>
+                    <th class="text-center">Hali</th>
                     <th class="sort text-center" data-sort="action" width="10%">Action</th>
                 </tr>
             </thead>
             <tbody class="list form-check-all">
-                <% for(var i = 0; i < designations.length; i++){ %>
+                <% for(var i = 0; i < hierarchies.length; i++){ %>
                 <tr>
-                    <td class="id">
-                      <%- include('paginations/numbering.ejs' , {
-                        index : i
-                      }) %>
-                    </td>
-                    <td class="phone"><%= designations[i].name %></td>
-                    <td class="phone"><%= designations[i].role %></td>
+                    <td class="id"><a href="javascript:void(0);" class="fw-medium link-primary"><%= i+1 %></a></td>
+                    <td class="phone"><%= hierarchies[i].name %></td>
+                    <td class="phone"><%= hierarchies[i].rank_name %></td>
+                    <td class="text-center"><%= hierarchies[i].rank_level %></td>
                     <td class="text-center">
-                        <% var status = designations[i].status %>
+                        <% var status = hierarchies[i].status %>
                         <span class="<%= status ? 'ri ri-checkbox-circle-line text-success' : 'ri ri-close-fill text-danger' %>"></span>
                     </td>
                     <td class="text-center">
-                        <button type="button" class="btn btn-link btn-sm" 
-                        data-id="<%= designations[i].id %>" 
-                        data-name="<%= designations[i].name %>" 
-                        data-level="<%= designations[i].level %>" 
-                        data-status="<%= designations[i].status %>" 
+                    <button type="button" class="btn btn-link btn-sm" 
+                        data-bs-toggle="modal" data-id="<%= hierarchies[i].id %>" 
+                        data-name="<%= hierarchies[i].name %>" 
+                        data-status="<%= hierarchies[i].status %>" 
+                        data-rank-level="<%= hierarchies[i].rank_level %>" 
                         onclick="BadiliData(this); return false;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                     </button>
+                    
                     <!-- <button type="button" class="btn btn-link btn-sm text-danger" 
-                        data-bs-toggle="modal" data-id="<%= designations[i].rolesId %>" 
-                        
+                        data-bs-toggle="modal" data-id="<%= hierarchies[i].id %>" 
                         onclick="AddZone1(this); return false;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                     </button> -->
                     </td>
                 </tr>
@@ -104,26 +102,26 @@
             <form>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="name-field" class="form-label">Jina la Cheo</label>
-                        <input type="text" id="name-field" class="form-control" placeholder="Mfano: USJ2" required />
+                        <label for="rank-name-field" class="form-label">Jina la Uongozi</label>
+                        <input type="text" name="rank-name-field" id="rank-name-field" class="form-control" placeholder="Mfano: KE" required />
                         <span style="color: red;display: none;" id="jazasimu">Tafadhali jaza Cheo</span>
                     </div>
                     <div>
-                        <label for="uongozi-field" class="form-label">Ngazi ya Uongozi</label>
-                        <select class="form-control" data-trigger name="uongozi-field" id="uongozi-field">
+                        <label for="ranks-field" class="form-label">Ngazi</label>
+                        <select class="form-control" data-trigger name="ranks-field" id="ranks-field">
                             <option value="#"> Chagua </option>
-                            <% for(var i = 0; i < levels.length; i++){ %>
-                                <option value="<%= levels[i].id %>"><%= levels[i].name %></option>
+                            <% for(var i = 0; i < ranks.length; i++){ %>
+                                <option value="<%= ranks[i].id %>"><%= ranks[i].name %></option>
                             <% } %>
                         </select>
                         <span style="color: red;display: none;" id="jazacheo">Tafadhali Chagua User Level</span>
                     </div>
-              
+                  
                 </div>
                 <div class="modal-footer">
                     <div class="hstack gap-2 justify-content-end">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Funga</button>
-                        <button type="button" class="btn btn-success" onclick="sajiliHati()">Sajili</button>
+                        <button type="button" class="btn btn-light" onclick="funga()" data-bs-dismiss="modal">Funga</button>
+                        <button type="button" class="btn btn-success" onclick="sajiliHati()" id="add-btn">Sajili</button>
                     </div>
                 </div>
             </form>
@@ -141,19 +139,20 @@
                 <div class="modal-body">
 
                     <div class="mb-3" id="modal-id" style="display: none;">
+                        <label for="id-field" class="form-label">ID</label>
                         <input type="hidden" id="id-field" class="form-control" placeholder="ID" readonly />
                     </div>
 
                     <div class="mb-3">
-                        <label for="name2-field" class="form-label">Jina la Cheo</label>
-                        <input type="text" class="form-control" name="name2-field" id="name2-field" placeholder="Mfano: USJ2" required />
+                        <label for="customername-field" class="form-label">Jina la Uongozi</label>
+                        <input type="text" id="rank-name2-field" class="form-control" placeholder="Mfano: USJ2" required />
                     </div>
                     <div>
-                        <label for="uongozi2-field" class="form-label">Ngazi ya Uongozi</label>
-                        <select class="form-control" name="uongozi2-field" id="uongozi2-field">
+                        <label for="ranks2-field" class="form-label">Ngazi</label>
+                        <select class="form-control" data-trigger name="ranks-field" id="ranks2-field" onchange="vyeoLocation()">
                             <option value="# - 0"> Chagua </option>
-                            <% for(var i = 0; i < levels.length; i++){ %>
-                                <option value="<%= levels[i].id %>"><%= levels[i].name %></option>
+                            <% for(var i = 0; i < ranks.length; i++){ %>
+                                <option value="<%= ranks[i].id %>"><%= ranks[i].name %></option>
                             <% } %>
                         </select>
                     </div>
@@ -161,13 +160,14 @@
                         <label for="status-field" class="form-check-label">
                             <input type="checkbox" id="status-field" class="form-check-input"/> Ipo Active?
                         </label>
+                        <span style="color: red;display: none;" id="editkanda">Tafadhali jaza jina la kanda</span>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <div class="hstack gap-2 justify-content-end">
                         <button type="button" class="btn btn-light" data-bs-dismiss="modal">Funga</button>
                         <button type="button" class="btn btn-success" onclick="sasishaHati()" id="add-btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                            Badili
                         </button>
                     </div>
                 </div>
@@ -179,6 +179,6 @@
      card_title :  card_title , 
      pagination_script : false,
     }) %>
-<script type="text/javascript" src="design/layouts/scripts/vyeo_scripts.js"></script>
+<script type="text/javascript" src="design/layouts/scripts/uongozi_scripts.js"></script>
 </body>
 </html>

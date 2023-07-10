@@ -1,0 +1,161 @@
+<% var card_title = '' %>
+<%- include('layouts/partials/header.ejs' , {
+        title : 'Michepuo',
+        page_title : 'Orodha ya Michepuo',
+        card_title : 'Michepuo iliyopo',
+        breadcrumb_main : 'Mipangilio' 
+}) %>
+<div class="card-body">
+  <div class="ribbon-three ribbon-three-info">
+    <span class="badge"><%=`${pagination.total}`%></span>
+  </div>
+  <div id="customerList">
+    <div class="row g-4 mb-3">
+      <div class="col-sm-auto">
+        <div>
+          <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn" data-bs-target="#showModal"><i class="ri-add-line align-bottom me-1"></i> Sajili</button>
+          <button class="btn btn-soft-danger" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button>
+        </div>
+      </div>
+      <div class="col-sm">
+        <div class="d-flex justify-content-sm-end">
+          <div class="search-box ms-2">
+            <input type="text" class="form-control search" placeholder="Tafuta...">
+            <i class="ri-search-line search-icon"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-responsive table-card mt-3 mb-1">
+      <table class="table align-middle table-nowrap" id="customerTable">
+        <thead class="table-light">
+          <tr>
+            <!-- <th scope="col" style="width: 50px;">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="checkAll" value="option">
+                            </div>
+                        </th> -->
+            <th class="sort" width="5%" data-sort="customer_name">Na.</th>
+            <!-- <th class="sort" data-sort="email">Jina</th> -->
+            <!-- <th class="sort" data-sort="email">Tahasusi</th> -->
+            <th class="sort" data-sort="email">Mchepuo</th>
+            <th class="sort" width="15%" data-sort="action">Action</th>
+          </tr>
+        </thead>
+        <tbody class="list form-check-all">
+          <% for(var i = 0; i < michepuo.length; i++){ %>
+          <tr>
+            <td class="id">
+                <%- include('paginations/numbering.ejs' , { index : i}) %>
+            </td>
+            <td class="phone"><%= michepuo[i].specialization %></td>
+            <td>
+              <button type="button" class="btn btn-link text-primary add-btn" data-bs-toggle="modal" data-id="<%= michepuo[i].id %>" data-name="<%= michepuo[i].specialization %>" id="create-btn" onclick="BadiliData(this); return false;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg></button>
+              <button type="button" class="btn btn-link text-danger add-btn" data-bs-toggle="modal" data-id="<%= michepuo[i].id %>" id="create-btn" onclick="AddZone1(this); return false;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  <line x1="10" y1="11" x2="10" y2="17"></line>
+                  <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg></button>
+            </td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+      <div class="noresult" style="display: none">
+        <div class="text-center">
+          <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+          <h5 class="mt-2">Sorry! No Result Found</h5>
+          <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
+        </div>
+      </div>
+    </div>
+    <%- include('paginations/html_pagination.ejs') %>
+  </div>
+</div><!-- end card -->
+
+<div class="modal fade" id="showModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-light p-3">
+        <h5 class="modal-title" id="exampleModalLabel"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+      </div>
+      <form>
+        <div class="modal-body">
+
+          <div class="mb-3" id="modal-id" style="display: none;">
+            <label for="id-field" class="form-label">ID</label>
+            <input type="text" id="id-field" class="form-control" placeholder="ID" readonly />
+          </div>
+
+          <div class="mb-3">
+            <label for="customername-field" class="form-label">Jina la Mchepuo</label>
+            <input type="text" id="cheo-field" class="form-control" placeholder="Mfano: SAYANSI" required />
+          </div>
+          <!-- <div>
+                        <label for="status-field" class="form-label">Mchepuo</label>
+                        <select class="form-control" data-trigger name="status-field" id="status-field">
+                            <option value="#"> Chagua </option>
+                            <% for(var i = 0; i < michepuo.length; i++){ %>
+                                <option value="<%= michepuo[i].id %>"><%= michepuo[i].specialization %></option>
+                            <% } %>
+                        </select>
+                    </div> -->
+        </div>
+        <div class="modal-footer">
+          <div class="hstack gap-2 justify-content-end">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Funga</button>
+            <button type="button" class="btn btn-success" onclick="sajiliHati()" id="add-btn">Sajili</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="showEditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-light p-3">
+        <h5 class="modal-title" id="exampleModalLabel"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+      </div>
+      <form>
+        <div class="modal-body">
+
+          <div class="mb-3" id="modal-id" style="display: none;">
+            <label for="id-field" class="form-label">ID</label>
+            <input type="text" id="id-field" class="form-control" placeholder="ID" readonly />
+          </div>
+
+          <div class="mb-3">
+            <label for="customername-field" class="form-label">Jina la Mchepuo</label>
+            <input type="text" id="cheo1-field" class="form-control" placeholder="Mfano: SAYANSI" required />
+            <input type="hidden" id="id1-field" class="form-control" placeholder="ID" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="hstack gap-2 justify-content-end">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Funga</button>
+            <button type="button" class="btn btn-success" onclick="updateHati()" id="add-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </svg></button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<%- include('layouts/partials/footer.ejs' , {
+                card_title :  card_title , 
+                pagination_script : false,
+}) %>
+<script type="text/javascript" src="design/layouts/scripts/michepuo_scripts.js"></script>
+</body>
+
+</html>

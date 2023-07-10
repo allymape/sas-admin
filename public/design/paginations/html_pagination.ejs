@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-between">
 <div>
-   <% if(pagination.total > 10) {%>
+   <% if(pagination.pages > 1) {%>
      <form action="" method="GET">
             <select class="form-control page-size" name="per_page" style="width: 80px;">
                 <option value="5"   <%-req.query.per_page ==  5  ? 'selected' : '' %> >5</option>
