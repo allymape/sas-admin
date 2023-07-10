@@ -3,7 +3,7 @@ var checkboxes = $(".checkbox");
 var check_all = $("#check-all");
 check_all.on("change", function () {
   var checked = $(this).prop("checked");
-  checkboxes.prop("checked", checked);
+  checkboxes.not(":disabled").prop("checked", checked);
 });
 
 checkboxes.on("change", function () {

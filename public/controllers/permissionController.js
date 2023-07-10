@@ -4,7 +4,7 @@ const request = require("request");
 const permissionController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { sendRequest } = require("../../util");
+const { sendRequest, can, isAuthenticated } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var allPermissionsAPI   = API_BASE_URL + "allPermissions";
 var tengenezaPermissionAPI = API_BASE_URL + "addPermission";
@@ -14,12 +14,12 @@ var deletePermissionAPI = API_BASE_URL + "deletePermission";
 
 
 // Get all permissions
-permissionController.get("/Permissions", function (req, res) {
+permissionController.get("/Permissions",  isAuthenticated, can('view-permissions'), function (req, res) {
   getAllPermissions(req, res);
 });
 
 // Store Permission
-permissionController.post("/tengenezaPermission", function (req, res) {
+permissionController.post("/tengenezaPermission",  isAuthenticated, can('create-permissions'), function (req, res) {
     var formData = {
         permissionName: req.body.permission_name,
         displayName: req.body.display_name,
@@ -33,7 +33,7 @@ permissionController.post("/tengenezaPermission", function (req, res) {
 });
 
 // Edit Permission
-permissionController.get("/Permissions/:id", function (req, res) {
+permissionController.get("/Permissions/:id",  isAuthenticated, can('update-permissions'), function (req, res) {
   var id = Number(req.params.id);
   sendRequest(req, res, editPermissionAPI + "/" + id, "GET", {}, (jsonData) => {
       getAllPermissions(req, res, true, jsonData.data);
@@ -41,12 +41,13 @@ permissionController.get("/Permissions/:id", function (req, res) {
 });
 
 // Update Permission
-permissionController.post("/badiliPermission/:id", function (req, res) {
+permissionController.post("/badiliPermission/:id",  isAuthenticated, can('update-designations'), function (req, res) {
   var id = Number(req.params.id);
   var formData = {
           permissionName: req.body.permission_name,
           displayName: req.body.display_name,
           status: req.body.status,
+          is_default: req.body.is_default,
   }
   sendRequest(req, res, updatePermissionAPI + "/" + id, "PUT", formData , (jsonData) => {
         var statusCode = jsonData.statusCode;
@@ -58,7 +59,7 @@ permissionController.post("/badiliPermission/:id", function (req, res) {
 });
 
 // Delete Permission
-permissionController.post("/futaPermission/:id", function (req, res) {
+permissionController.post("/futaPermission/:id",  isAuthenticated, can('delete-permissions'), function (req, res) {
   var id = Number(req.params.id);
   sendRequest(req, res, deletePermissionAPI + "/" + id, "DELETE", {}, (jsonData) => {
         var statusCode = jsonData.statusCode;

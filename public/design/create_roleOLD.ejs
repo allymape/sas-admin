@@ -90,7 +90,7 @@
                                                                 <% for(var i = 0; i < data.length; i++){ %>
                                                                 <div class="col-md-4 mb-2">
                                                                     <label class="form-check-label" for="formCheck<%=i%>"> 
-                                                                    <input class="form-check-input checkbox" value="<%= data[i].perm_id %>" type="checkbox" name="formCheck1" id="formCheck<%=i%>">
+                                                                    <input class="form-check-input checkbox" value="<%= data[i].id %>" type="checkbox" name="formCheck1" id="formCheck<%=i%>">
                                                                         <span class="ml-4"><%= data[i].permission_name %>  </span>  
                                                                     </label>
                                                                 </div>
@@ -155,7 +155,7 @@
                             $("#sajilbtn").show();
                             $("#pakiabtn").hide();
                             $("#alertsuccess").show();
-                            window.location.href = "/RolesPermissions"
+                            window.location.href = "/CreateRole"
                         }if(response.statusCode == 306){
                             $("#sajilbtn").show();
                             $("#pakiabtn").hide();
@@ -211,7 +211,7 @@ for (var i = 0; i < checkboxes.length; i++) {
                             $("#sajilbtn").show();
                             $("#pakiabtn").hide();
                             $("#alertsuccess").show();
-                            window.location.href = "/RolesPermissions"
+                            window.location.href = "/CreateRole"
                         }if(response.statusCode == 306){
                             $("#sajilbtn").show();
                             $("#pakiabtn").hide();

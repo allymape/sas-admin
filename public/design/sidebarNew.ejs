@@ -763,8 +763,8 @@
                                     <img class="rounded-circle header-profile-user" src="../design//assets/images/users/arm.png"
                                         alt="Header Avatar">
                                     <span class="text-start ms-xl-2">
-                                        <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text"><%= userName %></span>
-                                        <span class="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text"><%= cheoName %></span>
+                                        <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text"><%= req.session.userName %></span>
+                                        <span class="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text"><%= req.session.cheoName %></span>
                                     </span>
                                 </span>
                             </button>

@@ -1,7 +1,7 @@
    #loading
     {
         display:none;
-        position:fixed;
+        position:absolute;
         left:0;
         top:0;
         width:100%;
@@ -13,7 +13,7 @@
     #loadingcontent
     {
         display:table;
-        position:fixed;
+        position:absolute;
         left:0;
         top:0;
         width:100%;
@@ -29,3 +29,8 @@
         font-size:larger;
         padding-top:80px;
     }
+    
+.select2-selection__choice{
+    background-color: #337ab7 !important;
+    color: #fff;
+}

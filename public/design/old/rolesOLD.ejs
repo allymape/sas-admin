@@ -1,0 +1,1338 @@
+<!doctype html>
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none">
+
+
+<!-- Mirrored from themesbrand.com/velzon/html/default/tables-listjs.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 02 Sep 2022 10:26:15 GMT -->
+<head>
+
+    <meta charset="utf-8" />
+    <title>Roles | IRS - Institution Registration System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="Themesbrand" name="author" />
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="design/assets/images/favicon.ico">
+
+    <!-- Sweet Alert css-->
+    <link href="design/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Layout config Js -->
+    <script src="design/assets/js/layout.js"></script>
+    <!-- Bootstrap Css -->
+    <link href="design/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="design/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <!-- App Css-->
+    <link href="design/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+    <!-- custom Css-->
+    <link href="design/assets/css/custom.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> -->
+
+</head>
+
+<body>
+
+    <!-- Begin page -->
+    <div id="layout-wrapper">
+        <%- include('sidebar.ejs') %>
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+        <div class="main-content">
+
+            <div class="page-content">
+                <div class="container-fluid">
+
+                    <!-- start page title -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                <h4 class="mb-sm-0">Roles</h4>
+
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        <li class="breadcrumb-item"><a href="javascript: void(0);">Mipangilio</a></li>
+                                        <li class="breadcrumb-item active">Roles</li>
+                                    </ol>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end page title -->
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title mb-0">Orodha ya Roles</h4>
+                                </div><!-- end card header -->
+
+                                <div class="card-body">
+                                    <div id="customerList">
+                                        <div class="row g-4 mb-3">
+                                            <div class="col-sm-auto">
+                                                <div>
+                                                    <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn" onclick="sajiliRole()"><i class="ri-add-line align-bottom me-1"></i> Sajili</button>
+                                                    <!-- <button class="btn btn-soft-danger" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button> -->
+                                                </div>
+                                                <script>
+                                                    function sajiliRole(){
+                                                        window.location.href = "/CreateRole"
+                                                    }
+                                                </script>
+                                            </div>
+                                            <div class="col-sm">
+                                                <div class="d-flex justify-content-sm-end">
+                                                    <div class="search-box ms-2">
+                                                        <input type="text" class="form-control search" placeholder="Tafuta...">
+                                                        <i class="ri-search-line search-icon"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="table-responsive table-card mt-3 mb-1">
+                                            <table class="table align-middle table-nowrap" id="customerTable">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <!-- <th scope="col" style="width: 50px;">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="checkAll" value="option">
+                                                            </div>
+                                                        </th> -->
+                                                        <th width="5%">Na.</th>
+                                                        <th>Jina</th>
+                                                        <th width="50%">Permissions</th>
+                                                        <th class="text-center" width="15%">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="list form-check-all">
+                                                    <% for(var i = 0; i < data.length; i++){ %>
+                                                    <tr>
+                                                        <td class="id"><a href="javascript:void(0);" class="fw-medium link-primary"><%= i+1 %></a></td>
+                                                        <td class="date"><%= data[i].role_name %></td>
+                                                        <td><%= data[i].permissions %></td>
+                                                        <td class="text-center"> 
+                                                            <button type="button" class="btn btn-link text-primary add-btn" 
+                                                            data-bs-toggle="modal" data-id="<%= data[i].id %>" 
+                                                            id="create-btn" 
+                                                            onclick="BadiliData(this); return false;"><svg xmlns="http://www.w3.org/2000/svg" 
+                                                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+                                                            class="feather feather-edit-3"><path d="M12 20h9"></path>
+                                                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></button>
+                                                            <button type="button" class="btn btn-link text-danger add-btn" 
+                                                            data-bs-toggle="modal" data-id="<%= data[i].rolesId %>" 
+                                                            id="create-btn" 
+                                                            onclick="AddZone1(this); return false;"><svg xmlns="http://www.w3.org/2000/svg" 
+                                                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+                                                            class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline>
+                                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                            <line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
+                                                        </td>
+
+                                                    </tr>
+                                                    <% } %>
+                                                </tbody>
+                                            </table>
+                                            <div class="noresult" style="display: none">
+                                                <div class="text-center">
+                                                    <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                                                    <h5 class="mt-2">Sorry! No Result Found</h5>
+                                                    <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex justify-content-end">
+                                            <div class="pagination-wrap hstack gap-2">
+                                                <a class="page-item pagination-prev disabled" href="#">
+                                                    Previous
+                                                </a>
+                                                <ul class="pagination listjs-pagination mb-0"></ul>
+                                                <a class="page-item pagination-next" href="#">
+                                                    Next
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!-- end card -->
+                            </div>
+                            <!-- end col -->
+                        </div>
+                        <!-- end col -->
+                    </div>
+                    <!-- end row -->
+                    <script>
+                    function AddZone1(e){
+                        var nameId = e.getAttribute('data-id');
+                        // alert(nameId)
+                        document.getElementById("code-field-edit").value = nameId;
+                        $('#deleteRecordModal').modal('show');
+                    }
+                    function ResetPassword(e){
+                        var nameId = e.getAttribute('data-id');
+                        var name = e.getAttribute('data-name');
+                        var email = e.getAttribute('data-email');
+                        var email_length = email.length;
+                        var first_four_letter = email.substr(0, 4)
+                        var rest_letters_len = email.substr(email_length - 4, email_length)
+                        var rest_letters = first_four_letter+'*********'+rest_letters_len;
+                        // for(var i = 0; i < rest_letters_len.length; i++){
+                        //     rest_letters = '*'
+                        // }
+                        var last_four_letter = email.substr(email_length - 4, email_length)
+                        document.getElementById("code-field-edit").value = nameId;
+                        document.getElementById("code1-field-edit").value = name;
+                        document.getElementById("ada1-field-edit").value = rest_letters;
+                        document.getElementById("email_only").value = email;
+                        // var kanda = document.getElementById("ada-field").value;
+                        $('#resetPasswordModal').modal('show');
+                    }
+                    function BadiliData(e){
+                        var nameId = e.getAttribute('data-id');
+                        var url = "/EditRolesPermissions/"+nameId;
+                        window.location.href = url;
+                    }
+                    function futaHati(){
+                        var name = document.getElementById('code-field-edit').value; 
+                            $.ajax({
+                                url: "/FutaRole",
+                                type: 'POST',
+                                data: JSON.stringify({"name": name}),
+                                contentType: 'application/json',
+                                success: function(response) {
+                                alert("Role imefutwa kikamilifu")
+                                $('#kaimishaModal').modal('hide');
+                                window.location.href = "/Roles"
+                                }
+                            });
+                        }
+                    function TumaEmail(){
+                        var email_only = document.getElementById('email_only').value;
+                            
+                            $.ajax({
+                                url: "/TumaEmail",
+                                type: 'POST',
+                                data: JSON.stringify({"email": email_only}),
+                                contentType: 'application/json',
+                                success: function(response) {
+                                alert(response.msg)
+                                $('#kaimishaModal').modal('hide');
+                                window.location.href = "/Watumiaji"
+                                }
+                            });
+
+                    }
+                    </script>
+
+                   
+                    
+
+                    <div class="modal fade zoomIn" id="deleteRecordModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btn-close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mt-2 text-center">
+                                        <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
+                                        <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
+                                            <h4>Are you Sure ?</h4>
+                                            <p class="text-muted mx-4 mb-0">Are you Sure You want to Remove this Record ?</p>
+                                        </div>
+                                        <!-- <div class="mb-3"> -->
+                                            <!-- <label for="customername-field" class="form-label">Je, unataka kumfuta mtumiaji kwenye mfumo</label> -->
+                                            <input type="hidden" id="ada-field-edit" class="form-control" placeholder="Mfano: Ada ya usajili"/>
+                                        <!-- </div> -->
+                                        <!-- <div class="mb-3">
+                                            <label for="customername-field" class="form-label">Code ya Ada</label> -->
+                                            <input type="hidden" id="code-field-edit" class="form-control" placeholder="Mfano: RF01"/>
+                                        <!-- </div> -->
+                                    </div>
+                                    <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+                                        <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn w-sm btn-danger " onclick="futaHati()" id="delete-record">Yes, Delete It!</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade zoomIn" id="resetPasswordModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btn-close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mt-2 text-center">
+                                        <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
+                                        <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
+                                            <h4>Nenosiri/Nywira</h4>
+                                            <p class="text-muted mx-4 mb-0">Maelekezo ya kuweka upya nenosiri yatatumwa kwenye barua pepe hapo chini  ! Tafadhali thibitisha</p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <p class="text-muted mx-4 mb-0">Barua Pepe</p>
+                                            <input type="text" id="ada1-field-edit" class="form-control" disabled/>
+                                            <input type="text" id="email_only" class="form-control"/>
+                                        </div>
+                                        <div class="mb-3">
+                                            <p class="text-muted mx-4 mb-0">Jina la Mtumiaji</p>
+                                            <input type="text" id="code1-field-edit" class="form-control" disabled/>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+                                        <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Funga</button>
+                                        <button type="button" class="btn w-sm btn-danger " onclick="TumaEmail()" id="delete-record">Ndio, Nathibitisha!</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="footer">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <script>document.write(new Date().getFullYear())</script> © IRS
+                        </div>
+                        <div class="col-sm-6">
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        <!-- end main content-->
+
+    </div>
+    <!-- END layout-wrapper -->
+
+
+
+    <!--start back-to-top-->
+    <button onclick="topFunction()" class="btn btn-danger btn-icon" id="back-to-top">
+        <i class="ri-arrow-up-line"></i>
+    </button>
+    <!--end back-to-top-->
+
+    <div class="customizer-setting d-none d-md-block">
+        <div class="btn-info btn-rounded shadow-lg btn btn-icon btn-lg p-2" data-bs-toggle="offcanvas" data-bs-target="#theme-settings-offcanvas" aria-controls="theme-settings-offcanvas">
+            <i class='mdi mdi-spin mdi-cog-outline fs-22'></i>
+        </div>
+    </div>
+
+    <!-- Theme Settings -->
+    <div class="offcanvas offcanvas-end border-0" tabindex="-1" id="theme-settings-offcanvas">
+        <div class="d-flex align-items-center bg-primary bg-gradient p-3 offcanvas-header">
+            <h5 class="m-0 me-2 text-white">Theme Customizer</h5>
+
+            <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <div data-simplebar class="h-100">
+                <div class="p-4">
+                    <h6 class="mb-0 fw-semibold text-uppercase">Layout</h6>
+                    <p class="text-muted">Choose your layout</p>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-check card-radio">
+                                <input id="customizer-layout01" name="data-layout" type="radio" value="vertical" class="form-check-input">
+                                <label class="form-check-label p-0 avatar-md w-100" for="customizer-layout01">
+                                    <span class="d-flex gap-1 h-100">
+                                        <span class="flex-shrink-0">
+                                            <span class="bg-light d-flex h-100 flex-column gap-1 p-1">
+                                                <span class="d-block p-1 px-2 bg-soft-primary rounded mb-2"></span>
+                                                <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                            </span>
+                                        </span>
+                                        <span class="flex-grow-1">
+                                            <span class="d-flex h-100 flex-column">
+                                                <span class="bg-light d-block p-1"></span>
+                                                <span class="bg-light d-block p-1 mt-auto"></span>
+                                            </span>
+                                        </span>
+                                    </span>
+                                </label>
+                            </div>
+                            <h5 class="fs-13 text-center mt-2">Vertical</h5>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-check card-radio">
+                                <input id="customizer-layout02" name="data-layout" type="radio" value="horizontal" class="form-check-input">
+                                <label class="form-check-label p-0 avatar-md w-100" for="customizer-layout02">
+                                    <span class="d-flex h-100 flex-column gap-1">
+                                        <span class="bg-light d-flex p-1 gap-1 align-items-center">
+                                            <span class="d-block p-1 bg-soft-primary rounded me-1"></span>
+                                            <span class="d-block p-1 pb-0 px-2 bg-soft-primary ms-auto"></span>
+                                            <span class="d-block p-1 pb-0 px-2 bg-soft-primary"></span>
+                                        </span>
+                                        <span class="bg-light d-block p-1"></span>
+                                        <span class="bg-light d-block p-1 mt-auto"></span>
+                                    </span>
+                                </label>
+                            </div>
+                            <h5 class="fs-13 text-center mt-2">Horizontal</h5>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-check card-radio">
+                                <input id="customizer-layout03" name="data-layout" type="radio" value="twocolumn" class="form-check-input">
+                                <label class="form-check-label p-0 avatar-md w-100" for="customizer-layout03">
+                                    <span class="d-flex gap-1 h-100">
+                                        <span class="flex-shrink-0">
+                                            <span class="bg-light d-flex h-100 flex-column gap-1">
+                                                <span class="d-block p-1 bg-soft-primary mb-2"></span>
+                                                <span class="d-block p-1 pb-0 bg-soft-primary"></span>
+                                                <span class="d-block p-1 pb-0 bg-soft-primary"></span>
+                                                <span class="d-block p-1 pb-0 bg-soft-primary"></span>
+                                            </span>
+                                        </span>
+                                        <span class="flex-shrink-0">
+                                            <span class="bg-light d-flex h-100 flex-column gap-1 p-1">
+                                                <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                            </span>
+                                        </span>
+                                        <span class="flex-grow-1">
+                                            <span class="d-flex h-100 flex-column">
+                                                <span class="bg-light d-block p-1"></span>
+                                                <span class="bg-light d-block p-1 mt-auto"></span>
+                                            </span>
+                                        </span>
+                                    </span>
+                                </label>
+                            </div>
+                            <h5 class="fs-13 text-center mt-2">Two Column</h5>
+                        </div>
+                        <!-- end col -->
+                    </div>
+
+                    <h6 class="mt-4 mb-0 fw-semibold text-uppercase">Color Scheme</h6>
+                    <p class="text-muted">Choose Light or Dark Scheme.</p>
+
+                    <div class="colorscheme-cardradio">
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-check card-radio">
+                                    <input class="form-check-input" type="radio" name="data-layout-mode" id="layout-mode-light" value="light">
+                                    <label class="form-check-label p-0 avatar-md w-100" for="layout-mode-light">
+                                        <span class="d-flex gap-1 h-100">
+                                            <span class="flex-shrink-0">
+                                                <span class="bg-light d-flex h-100 flex-column gap-1 p-1">
+                                                    <span class="d-block p-1 px-2 bg-soft-primary rounded mb-2"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                </span>
+                                            </span>
+                                            <span class="flex-grow-1">
+                                                <span class="d-flex h-100 flex-column">
+                                                    <span class="bg-light d-block p-1"></span>
+                                                    <span class="bg-light d-block p-1 mt-auto"></span>
+                                                </span>
+                                            </span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <h5 class="fs-13 text-center mt-2">Light</h5>
+                            </div>
+
+                            <div class="col-4">
+                                <div class="form-check card-radio dark">
+                                    <input class="form-check-input" type="radio" name="data-layout-mode" id="layout-mode-dark" value="dark">
+                                    <label class="form-check-label p-0 avatar-md w-100 bg-dark" for="layout-mode-dark">
+                                        <span class="d-flex gap-1 h-100">
+                                            <span class="flex-shrink-0">
+                                                <span class="bg-soft-light d-flex h-100 flex-column gap-1 p-1">
+                                                    <span class="d-block p-1 px-2 bg-soft-light rounded mb-2"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-light"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-light"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-light"></span>
+                                                </span>
+                                            </span>
+                                            <span class="flex-grow-1">
+                                                <span class="d-flex h-100 flex-column">
+                                                    <span class="bg-soft-light d-block p-1"></span>
+                                                    <span class="bg-soft-light d-block p-1 mt-auto"></span>
+                                                </span>
+                                            </span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <h5 class="fs-13 text-center mt-2">Dark</h5>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="layout-width">
+                        <h6 class="mt-4 mb-0 fw-semibold text-uppercase">Layout Width</h6>
+                        <p class="text-muted">Choose Fluid or Boxed layout.</p>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-check card-radio">
+                                    <input class="form-check-input" type="radio" name="data-layout-width" id="layout-width-fluid" value="fluid">
+                                    <label class="form-check-label p-0 avatar-md w-100" for="layout-width-fluid">
+                                        <span class="d-flex gap-1 h-100">
+                                            <span class="flex-shrink-0">
+                                                <span class="bg-light d-flex h-100 flex-column gap-1 p-1">
+                                                    <span class="d-block p-1 px-2 bg-soft-primary rounded mb-2"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                </span>
+                                            </span>
+                                            <span class="flex-grow-1">
+                                                <span class="d-flex h-100 flex-column">
+                                                    <span class="bg-light d-block p-1"></span>
+                                                    <span class="bg-light d-block p-1 mt-auto"></span>
+                                                </span>
+                                            </span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <h5 class="fs-13 text-center mt-2">Fluid</h5>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-check card-radio">
+                                    <input class="form-check-input" type="radio" name="data-layout-width" id="layout-width-boxed" value="boxed">
+                                    <label class="form-check-label p-0 avatar-md w-100 px-2" for="layout-width-boxed">
+                                        <span class="d-flex gap-1 h-100 border-start border-end">
+                                            <span class="flex-shrink-0">
+                                                <span class="bg-light d-flex h-100 flex-column gap-1 p-1">
+                                                    <span class="d-block p-1 px-2 bg-soft-primary rounded mb-2"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                </span>
+                                            </span>
+                                            <span class="flex-grow-1">
+                                                <span class="d-flex h-100 flex-column">
+                                                    <span class="bg-light d-block p-1"></span>
+                                                    <span class="bg-light d-block p-1 mt-auto"></span>
+                                                </span>
+                                            </span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <h5 class="fs-13 text-center mt-2">Boxed</h5>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="layout-position">
+                        <h6 class="mt-4 mb-0 fw-semibold text-uppercase">Layout Position</h6>
+                        <p class="text-muted">Choose Fixed or Scrollable Layout Position.</p>
+
+                        <div class="btn-group radio" role="group">
+                            <input type="radio" class="btn-check" name="data-layout-position" id="layout-position-fixed" value="fixed">
+                            <label class="btn btn-light w-sm" for="layout-position-fixed">Fixed</label>
+
+                            <input type="radio" class="btn-check" name="data-layout-position" id="layout-position-scrollable" value="scrollable">
+                            <label class="btn btn-light w-sm ms-0" for="layout-position-scrollable">Scrollable</label>
+                        </div>
+                    </div>
+                    <h6 class="mt-4 mb-0 fw-semibold text-uppercase">Topbar Color</h6>
+                    <p class="text-muted">Choose Light or Dark Topbar Color.</p>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-check card-radio">
+                                <input class="form-check-input" type="radio" name="data-topbar" id="topbar-color-light" value="light">
+                                <label class="form-check-label p-0 avatar-md w-100" for="topbar-color-light">
+                                    <span class="d-flex gap-1 h-100">
+                                        <span class="flex-shrink-0">
+                                            <span class="bg-light d-flex h-100 flex-column gap-1 p-1">
+                                                <span class="d-block p-1 px-2 bg-soft-primary rounded mb-2"></span>
+                                                <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                            </span>
+                                        </span>
+                                        <span class="flex-grow-1">
+                                            <span class="d-flex h-100 flex-column">
+                                                <span class="bg-light d-block p-1"></span>
+                                                <span class="bg-light d-block p-1 mt-auto"></span>
+                                            </span>
+                                        </span>
+                                    </span>
+                                </label>
+                            </div>
+                            <h5 class="fs-13 text-center mt-2">Light</h5>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-check card-radio">
+                                <input class="form-check-input" type="radio" name="data-topbar" id="topbar-color-dark" value="dark">
+                                <label class="form-check-label p-0 avatar-md w-100" for="topbar-color-dark">
+                                    <span class="d-flex gap-1 h-100">
+                                        <span class="flex-shrink-0">
+                                            <span class="bg-light d-flex h-100 flex-column gap-1 p-1">
+                                                <span class="d-block p-1 px-2 bg-soft-primary rounded mb-2"></span>
+                                                <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                            </span>
+                                        </span>
+                                        <span class="flex-grow-1">
+                                            <span class="d-flex h-100 flex-column">
+                                                <span class="bg-primary d-block p-1"></span>
+                                                <span class="bg-light d-block p-1 mt-auto"></span>
+                                            </span>
+                                        </span>
+                                    </span>
+                                </label>
+                            </div>
+                            <h5 class="fs-13 text-center mt-2">Dark</h5>
+                        </div>
+                    </div>
+
+                    <div id="sidebar-size">
+                        <h6 class="mt-4 mb-0 fw-semibold text-uppercase">Sidebar Size</h6>
+                        <p class="text-muted">Choose a size of Sidebar.</p>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-check sidebar-setting card-radio">
+                                    <input class="form-check-input" type="radio" name="data-sidebar-size" id="sidebar-size-default" value="lg">
+                                    <label class="form-check-label p-0 avatar-md w-100" for="sidebar-size-default">
+                                        <span class="d-flex gap-1 h-100">
+                                            <span class="flex-shrink-0">
+                                                <span class="bg-light d-flex h-100 flex-column gap-1 p-1">
+                                                    <span class="d-block p-1 px-2 bg-soft-primary rounded mb-2"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                </span>
+                                            </span>
+                                            <span class="flex-grow-1">
+                                                <span class="d-flex h-100 flex-column">
+                                                    <span class="bg-light d-block p-1"></span>
+                                                    <span class="bg-light d-block p-1 mt-auto"></span>
+                                                </span>
+                                            </span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <h5 class="fs-13 text-center mt-2">Default</h5>
+                            </div>
+
+                            <div class="col-4">
+                                <div class="form-check sidebar-setting card-radio">
+                                    <input class="form-check-input" type="radio" name="data-sidebar-size" id="sidebar-size-compact" value="md">
+                                    <label class="form-check-label p-0 avatar-md w-100" for="sidebar-size-compact">
+                                        <span class="d-flex gap-1 h-100">
+                                            <span class="flex-shrink-0">
+                                                <span class="bg-light d-flex h-100 flex-column gap-1 p-1">
+                                                    <span class="d-block p-1 bg-soft-primary rounded mb-2"></span>
+                                                    <span class="d-block p-1 pb-0 bg-soft-primary"></span>
+                                                    <span class="d-block p-1 pb-0 bg-soft-primary"></span>
+                                                    <span class="d-block p-1 pb-0 bg-soft-primary"></span>
+                                                </span>
+                                            </span>
+                                            <span class="flex-grow-1">
+                                                <span class="d-flex h-100 flex-column">
+                                                    <span class="bg-light d-block p-1"></span>
+                                                    <span class="bg-light d-block p-1 mt-auto"></span>
+                                                </span>
+                                            </span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <h5 class="fs-13 text-center mt-2">Compact</h5>
+                            </div>
+
+                            <div class="col-4">
+                                <div class="form-check sidebar-setting card-radio">
+                                    <input class="form-check-input" type="radio" name="data-sidebar-size" id="sidebar-size-small" value="sm">
+                                    <label class="form-check-label p-0 avatar-md w-100" for="sidebar-size-small">
+                                        <span class="d-flex gap-1 h-100">
+                                            <span class="flex-shrink-0">
+                                                <span class="bg-light d-flex h-100 flex-column gap-1">
+                                                    <span class="d-block p-1 bg-soft-primary mb-2"></span>
+                                                    <span class="d-block p-1 pb-0 bg-soft-primary"></span>
+                                                    <span class="d-block p-1 pb-0 bg-soft-primary"></span>
+                                                    <span class="d-block p-1 pb-0 bg-soft-primary"></span>
+                                                </span>
+                                            </span>
+                                            <span class="flex-grow-1">
+                                                <span class="d-flex h-100 flex-column">
+                                                    <span class="bg-light d-block p-1"></span>
+                                                    <span class="bg-light d-block p-1 mt-auto"></span>
+                                                </span>
+                                            </span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <h5 class="fs-13 text-center mt-2">Small (Icon View)</h5>
+                            </div>
+
+                            <div class="col-4">
+                                <div class="form-check sidebar-setting card-radio">
+                                    <input class="form-check-input" type="radio" name="data-sidebar-size" id="sidebar-size-small-hover" value="sm-hover">
+                                    <label class="form-check-label p-0 avatar-md w-100" for="sidebar-size-small-hover">
+                                        <span class="d-flex gap-1 h-100">
+                                            <span class="flex-shrink-0">
+                                                <span class="bg-light d-flex h-100 flex-column gap-1">
+                                                    <span class="d-block p-1 bg-soft-primary mb-2"></span>
+                                                    <span class="d-block p-1 pb-0 bg-soft-primary"></span>
+                                                    <span class="d-block p-1 pb-0 bg-soft-primary"></span>
+                                                    <span class="d-block p-1 pb-0 bg-soft-primary"></span>
+                                                </span>
+                                            </span>
+                                            <span class="flex-grow-1">
+                                                <span class="d-flex h-100 flex-column">
+                                                    <span class="bg-light d-block p-1"></span>
+                                                    <span class="bg-light d-block p-1 mt-auto"></span>
+                                                </span>
+                                            </span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <h5 class="fs-13 text-center mt-2">Small Hover View</h5>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="sidebar-view">
+                        <h6 class="mt-4 mb-0 fw-semibold text-uppercase">Sidebar View</h6>
+                        <p class="text-muted">Choose Default or Detached Sidebar view.</p>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-check sidebar-setting card-radio">
+                                    <input class="form-check-input" type="radio" name="data-layout-style" id="sidebar-view-default" value="default">
+                                    <label class="form-check-label p-0 avatar-md w-100" for="sidebar-view-default">
+                                        <span class="d-flex gap-1 h-100">
+                                            <span class="flex-shrink-0">
+                                                <span class="bg-light d-flex h-100 flex-column gap-1 p-1">
+                                                    <span class="d-block p-1 px-2 bg-soft-primary rounded mb-2"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                </span>
+                                            </span>
+                                            <span class="flex-grow-1">
+                                                <span class="d-flex h-100 flex-column">
+                                                    <span class="bg-light d-block p-1"></span>
+                                                    <span class="bg-light d-block p-1 mt-auto"></span>
+                                                </span>
+                                            </span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <h5 class="fs-13 text-center mt-2">Default</h5>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-check sidebar-setting card-radio">
+                                    <input class="form-check-input" type="radio" name="data-layout-style" id="sidebar-view-detached" value="detached">
+                                    <label class="form-check-label p-0 avatar-md w-100" for="sidebar-view-detached">
+                                        <span class="d-flex h-100 flex-column">
+                                            <span class="bg-light d-flex p-1 gap-1 align-items-center px-2">
+                                                <span class="d-block p-1 bg-soft-primary rounded me-1"></span>
+                                                <span class="d-block p-1 pb-0 px-2 bg-soft-primary ms-auto"></span>
+                                                <span class="d-block p-1 pb-0 px-2 bg-soft-primary"></span>
+                                            </span>
+                                            <span class="d-flex gap-1 h-100 p-1 px-2">
+                                                <span class="flex-shrink-0">
+                                                    <span class="bg-light d-flex h-100 flex-column gap-1 p-1">
+                                                        <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                        <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                        <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                    </span>
+                                                </span>
+                                            </span>
+                                            <span class="bg-light d-block p-1 mt-auto px-2"></span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <h5 class="fs-13 text-center mt-2">Detached</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="sidebar-color">
+                        <h6 class="mt-4 mb-0 fw-semibold text-uppercase">Sidebar Color</h6>
+                        <p class="text-muted">Choose a color of Sidebar.</p>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-check sidebar-setting card-radio" data-bs-toggle="collapse" data-bs-target="#collapseBgGradient.show">
+                                    <input class="form-check-input" type="radio" name="data-sidebar" id="sidebar-color-light" value="light">
+                                    <label class="form-check-label p-0 avatar-md w-100" for="sidebar-color-light">
+                                        <span class="d-flex gap-1 h-100">
+                                            <span class="flex-shrink-0">
+                                                <span class="bg-white border-end d-flex h-100 flex-column gap-1 p-1">
+                                                    <span class="d-block p-1 px-2 bg-soft-primary rounded mb-2"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-primary"></span>
+                                                </span>
+                                            </span>
+                                            <span class="flex-grow-1">
+                                                <span class="d-flex h-100 flex-column">
+                                                    <span class="bg-light d-block p-1"></span>
+                                                    <span class="bg-light d-block p-1 mt-auto"></span>
+                                                </span>
+                                            </span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <h5 class="fs-13 text-center mt-2">Light</h5>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-check sidebar-setting card-radio" data-bs-toggle="collapse" data-bs-target="#collapseBgGradient.show">
+                                    <input class="form-check-input" type="radio" name="data-sidebar" id="sidebar-color-dark" value="dark">
+                                    <label class="form-check-label p-0 avatar-md w-100" for="sidebar-color-dark">
+                                        <span class="d-flex gap-1 h-100">
+                                            <span class="flex-shrink-0">
+                                                <span class="bg-primary d-flex h-100 flex-column gap-1 p-1">
+                                                    <span class="d-block p-1 px-2 bg-soft-light rounded mb-2"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-light"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-light"></span>
+                                                    <span class="d-block p-1 px-2 pb-0 bg-soft-light"></span>
+                                                </span>
+                                            </span>
+                                            <span class="flex-grow-1">
+                                                <span class="d-flex h-100 flex-column">
+                                                    <span class="bg-light d-block p-1"></span>
+                                                    <span class="bg-light d-block p-1 mt-auto"></span>
+                                                </span>
+                                            </span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <h5 class="fs-13 text-center mt-2">Dark</h5>
+                            </div>
+                            <div class="col-4">
+                                <button class="btn btn-link avatar-md w-100 p-0 overflow-hidden border collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBgGradient" aria-expanded="false" aria-controls="collapseBgGradient">
+                                    <span class="d-flex gap-1 h-100">
+                                        <span class="flex-shrink-0">
+                                            <span class="bg-vertical-gradient d-flex h-100 flex-column gap-1 p-1">
+                                                <span class="d-block p-1 px-2 bg-soft-light rounded mb-2"></span>
+                                                <span class="d-block p-1 px-2 pb-0 bg-soft-light"></span>
+                                                <span class="d-block p-1 px-2 pb-0 bg-soft-light"></span>
+                                                <span class="d-block p-1 px-2 pb-0 bg-soft-light"></span>
+                                            </span>
+                                        </span>
+                                        <span class="flex-grow-1">
+                                            <span class="d-flex h-100 flex-column">
+                                                <span class="bg-light d-block p-1"></span>
+                                                <span class="bg-light d-block p-1 mt-auto"></span>
+                                            </span>
+                                        </span>
+                                    </span>
+                                </button>
+                                <h5 class="fs-13 text-center mt-2">Gradient</h5>
+                            </div>
+                        </div>
+                        <!-- end row -->
+
+                        <div class="collapse" id="collapseBgGradient">
+                            <div class="d-flex gap-2 flex-wrap img-switch p-2 px-3 bg-light rounded">
+
+                                <div class="form-check sidebar-setting card-radio">
+                                    <input class="form-check-input" type="radio" name="data-sidebar" id="sidebar-color-gradient" value="gradient">
+                                    <label class="form-check-label p-0 avatar-xs rounded-circle" for="sidebar-color-gradient">
+                                        <span class="avatar-title rounded-circle bg-vertical-gradient"></span>
+                                    </label>
+                                </div>
+                                <div class="form-check sidebar-setting card-radio">
+                                    <input class="form-check-input" type="radio" name="data-sidebar" id="sidebar-color-gradient-2" value="gradient-2">
+                                    <label class="form-check-label p-0 avatar-xs rounded-circle" for="sidebar-color-gradient-2">
+                                        <span class="avatar-title rounded-circle bg-vertical-gradient-2"></span>
+                                    </label>
+                                </div>
+                                <div class="form-check sidebar-setting card-radio">
+                                    <input class="form-check-input" type="radio" name="data-sidebar" id="sidebar-color-gradient-3" value="gradient-3">
+                                    <label class="form-check-label p-0 avatar-xs rounded-circle" for="sidebar-color-gradient-3">
+                                        <span class="avatar-title rounded-circle bg-vertical-gradient-3"></span>
+                                    </label>
+                                </div>
+                                <div class="form-check sidebar-setting card-radio">
+                                    <input class="form-check-input" type="radio" name="data-sidebar" id="sidebar-color-gradient-4" value="gradient-4">
+                                    <label class="form-check-label p-0 avatar-xs rounded-circle" for="sidebar-color-gradient-4">
+                                        <span class="avatar-title rounded-circle bg-vertical-gradient-4"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="sidebar-img">
+                        <h6 class="mt-4 mb-0 fw-semibold text-uppercase">Sidebar Images</h6>
+                        <p class="text-muted">Choose a image of Sidebar.</p>
+
+                        <div class="d-flex gap-2 flex-wrap img-switch">
+                            <div class="form-check sidebar-setting card-radio">
+                                <input class="form-check-input" type="radio" name="data-sidebar-image" id="sidebarimg-none" value="none">
+                                <label class="form-check-label p-0 avatar-sm h-auto" for="sidebarimg-none">
+                                    <span class="avatar-md w-auto bg-light d-flex align-items-center justify-content-center">
+                                        <i class="ri-close-fill fs-20"></i>
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div class="form-check sidebar-setting card-radio">
+                                <input class="form-check-input" type="radio" name="data-sidebar-image" id="sidebarimg-01" value="img-1">
+                                <label class="form-check-label p-0 avatar-sm h-auto" for="sidebarimg-01">
+                                    <img src="design/assets/images/sidebar/img-1.jpg" alt="" class="avatar-md w-auto object-cover">
+                                </label>
+                            </div>	
+
+                            <div class="form-check sidebar-setting card-radio">
+                                <input class="form-check-input" type="radio" name="data-sidebar-image" id="sidebarimg-02" value="img-2">
+                                <label class="form-check-label p-0 avatar-sm h-auto" for="sidebarimg-02">
+                                    <img src="design/assets/images/sidebar/img-2.jpg" alt="" class="avatar-md w-auto object-cover">
+                                </label>
+                            </div>
+                            <div class="form-check sidebar-setting card-radio">
+                                <input class="form-check-input" type="radio" name="data-sidebar-image" id="sidebarimg-03" value="img-3">
+                                <label class="form-check-label p-0 avatar-sm h-auto" for="sidebarimg-03">
+                                    <img src="design/assets/images/sidebar/img-3.jpg" alt="" class="avatar-md w-auto object-cover">
+                                </label>
+                            </div>
+                            <div class="form-check sidebar-setting card-radio">
+                                <input class="form-check-input" type="radio" name="data-sidebar-image" id="sidebarimg-04" value="img-4">
+                                <label class="form-check-label p-0 avatar-sm h-auto" for="sidebarimg-04">
+                                    <img src="design/assets/images/sidebar/img-4.jpg" alt="" class="avatar-md w-auto object-cover">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="offcanvas-footer border-top p-3 text-center">
+            <div class="row">
+                <div class="col-6">
+                    <button type="button" class="btn btn-light w-100" id="reset-layout">Reset</button>
+                </div>
+                <div class="col-6">
+                    <a href="https://1.envato.market/velzon-admin" target="_blank" class="btn btn-primary w-100">Buy Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script src="design/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="design/assets/libs/simplebar/simplebar.min.js"></script>
+    <script src="design/assets/libs/node-waves/waves.min.js"></script>
+    <script src="design/assets/libs/feather-icons/feather.min.js"></script>
+    <script src="design/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
+    <script src="design/assets/js/plugins.js"></script>
+    <!-- prismjs plugin -->
+    <script src="design/assets/libs/prismjs/prism.js"></script>
+    <script src="design/assets/libs/list.js/list.min.js"></script>
+    <script src="design/assets/libs/list.pagination.js/list.pagination.min.js"></script>
+
+    <!-- listjs init -->
+    <script src="design/assets/js/pages/listjs.init.js"></script>
+
+    <!-- Sweet Alerts js -->
+    <script src="design/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+
+    <!-- App js -->
+    <script src="design/assets/js/app.js"></script>
+
+    <!--jquery cdn-->
+    <script src="../js/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <!--select2 cdn-->
+    <script src="../js/select2.min.js"></script>
+
+    <script src="design/assets/js/pages/select2.init.js"></script>
+
+    <!-- prismjs plugin -->
+    <script src="design/assets/libs/prismjs/prism.js"></script>
+    <script>
+        function sajiliHati(){
+
+            var name = document.getElementById('customername-field').value;
+            var jazaname = document.getElementById('jazaname');
+            var username = document.getElementById('username-field').value;
+            var phone = document.getElementById('phone-field').value;
+            var email = document.getElementById('username-field').value;
+            var status = document.getElementById('status-field').value;
+            var selectedFile = document.getElementById('sign-field').files;
+            var roleRMe = document.getElementById('roleRMe-field').value;
+            var cheo = status.split("-");
+            var password = document.getElementById('password-field').value;
+            var repassword = document.getElementById('repassword-field').value;
+            var strength = document.getElementById('strength').value;
+            var strengthhidden = document.getElementById('strengthhidden').value;
+            var lgas = document.getElementById('lga-field').value;
+            var kanda = document.getElementById('kanda-field').value;
+            var rankLevel = document.getElementById('status-field').value;
+            var cheo = rankLevel.split("-");
+        if(lblError.innerHTML == "Invalid email address."){
+            alert('Tafadhali hakiki barua pepe')
+        }else{
+
+            if(password == repassword){
+                if(name.length <= 0){
+                    $("#jazaname").show();
+                    
+                }
+                if(username.length <= 0){
+                    $("#jazausername").show();
+                }
+                if(phone.length <= 0){
+                    $("#jazasimu").show();
+                }
+                // if(cheo[0] = '#'){
+                //     $("#jazacheo").show();
+                // }
+                if(name.length > 0 && username.length > 0 && phone.length > 0){
+                    $("#sajilbtn").hide();
+                    $("#pakiabtn").show();
+                    if(strengthhidden == 'Strong!'){
+                    
+                    if (selectedFile.length > 0) {
+                    // Select the very first file from list
+                    var fileToLoad = selectedFile[0];
+                    // FileReader function for read the file.
+                    var fileReader = new FileReader();
+                    // var base64;
+                    // Onload of file read the file content
+                    fileReader.onload = function(fileLoadedEvent) {
+                        base64 = fileLoadedEvent.target.result;
+                        // Print data in console
+                    //alert(base64);
+                    var taachedFile = base64.split(",")
+
+                    $.ajax({
+                        url: "/SajiliWatumiaji",
+                        type: 'POST',
+                        data: JSON.stringify({"name": name, "username": username, "lgas": lgas, "kanda": kanda,
+                        "phone": phone, "email": email, "status": cheo[0], 
+                        "password": password, "cheo": cheo[1], "selectedFile": taachedFile[1], "roleRMe": roleRMe}),
+                        contentType: 'application/json',
+                        success: function(response) {
+                            // console.log(response)
+                            // alert(response.statusCode)
+                            if(response.statusCode == 300){
+                            $("#sajilbtn").show();
+                            $("#pakiabtn").hide();
+                            $("#alertsuccess").show();
+                        }if(response.statusCode == 306){
+                            $("#sajilbtn").show();
+                            $("#pakiabtn").hide();
+                            $("#alertexist").show();
+                        }if(response.statusCode == 400 || response.statusCode == 500){
+                            $("#sajilbtn").show();
+                            $("#pakiabtn").hide();
+                            $("#alertmtandao").show();
+                        }
+                        }
+                    });
+                    };
+                    // Convert data to base64
+                    fileReader.readAsDataURL(fileToLoad);
+                }else{
+                    $.ajax({
+                        url: "/SajiliWatumiaji",
+                        type: 'POST',
+                        data: JSON.stringify({"name": name, "username": username, "lgas": lgas, "kanda": kanda,
+                        "phone": phone, "email": email, "status": cheo[0], 
+                        "password": password, "cheo": cheo[1], "selectedFile": "", "roleRMe": roleRMe}),
+                        contentType: 'application/json',
+                        success: function(response) {
+                            // console.log(response)
+                            // alert(response.statusCode)
+                        if(response.statusCode == 300){
+                            $("#sajilbtn").show();
+                            $("#pakiabtn").hide();
+                            $("#alertsuccess").show();
+                        }if(response.statusCode == 306){
+                            $("#sajilbtn").show();
+                            $("#pakiabtn").hide();
+                            $("#alertexist").show();
+                        }if(response.statusCode == 400 || response.statusCode == 500){
+                            $("#sajilbtn").show();
+                            $("#pakiabtn").hide();
+                            $("#alertmtandao").show();
+                        }
+                        }
+                    });
+                }
+                    }else{
+                        alert("Nenosiri sio Salama")
+                    }
+                }
+            }else{
+                alert("Nenosiri hazifanani")
+            }
+        }
+
+        }
+        function funga(){
+            window.location.href = "/Watumiaji"
+        }
+    </script>
+    <script>
+        function EditUser(){
+            var name = document.getElementById('customername1-field').value;
+            var username = document.getElementById('username1-field').value;
+            var phone = document.getElementById('phone1-field').value;
+            var email = document.getElementById('username1-field').value;
+            var roleRMe = document.getElementById('roleRMe-field').value;
+            var status = document.getElementById('status1-field').value;
+            var selectedFile = document.getElementById('sign1-field').files;
+            var cheo = status.split("-");
+            var password = document.getElementById('password1-field').value;
+            var repassword = document.getElementById('repassword1-field').value;
+            var strength = document.getElementById('strength1').value;
+            var strengthhidden = document.getElementById('strengthhidden').value;
+            var lgas = document.getElementById('lga1-field').value;
+            var kanda = document.getElementById('kanda1-field').value;
+            // var rankLevel = document.getElementById('status1-field').value;
+            var userId = document.getElementById('id1-field').value;
+            // var cheo = rankLevel.split("-");
+            if(password.length > 0){
+                if(password == repassword){
+                    
+                    if(strengthhidden == 'Strong!'){
+                    
+                    if (selectedFile.length > 0) {
+                    // Select the very first file from list
+                    var fileToLoad = selectedFile[0];
+                    // FileReader function for read the file.
+                    var fileReader = new FileReader();
+                    // var base64;
+                    // Onload of file read the file content
+                    fileReader.onload = function(fileLoadedEvent) {
+                        base64 = fileLoadedEvent.target.result;
+                        // Print data in console
+                    //alert(base64);
+                    var taachedFile = base64.split(",")
+
+                    $.ajax({
+                        url: "/UpdateWatumiaji",
+                        type: 'POST',
+                        data: JSON.stringify({"name": name, "username": username, "lgas": lgas, "kanda": kanda,
+                        "phone": phone, "email": email, "status": cheo[0], 
+                        "password": password, "cheo": cheo[1], 
+                        "selectedFile": taachedFile[1], "userId": userId, "roleRMe": roleRMe}),
+                        contentType: 'application/json',
+                        success: function(response) {
+                        if(response.statusCode == 300){
+                            $("#alertsuccess1").show();
+                        }if(response.statusCode == 306){
+                            $("#alertexist1").show();
+                        }if(response.statusCode == 400 || response.statusCode == 500){
+                            $("#alertmtandao1").show();
+                        }
+                        }
+                    });
+                    };
+                    // Convert data to base64
+                    fileReader.readAsDataURL(fileToLoad);
+                }
+                else{
+                    $.ajax({
+                        url: "/UpdateWatumiaji",
+                        type: 'POST',
+                        data: JSON.stringify({"name": name, "username": username, "lgas": lgas, "kanda": kanda,
+                        "phone": phone, "email": email, "status": cheo[0], 
+                        "password": password, "cheo": cheo[1], "selectedFile": "", "userId": userId}),
+                        contentType: 'application/json',
+                        success: function(response) {
+                        if(response.statusCode == 300){
+                            $("#alertsuccess1").show();
+                        }if(response.statusCode == 306){
+                            $("#alertexist1").show();
+                        }if(response.statusCode == 400 || response.statusCode == 500){
+                            $("#alertmtandao1").show();
+                        }
+                        }
+                    });
+                }
+                    }else{
+                        alert("Nenosiri sio Salama")
+                    }
+                }
+                else{
+                    alert("Nenosiri hazifanani")
+                }
+            }
+            else{
+                if (selectedFile.length > 0) {
+                    // Select the very first file from list
+                    var fileToLoad = selectedFile[0];
+                    // FileReader function for read the file.
+                    var fileReader = new FileReader();
+                    // var base64;
+                    // Onload of file read the file content
+                    fileReader.onload = function(fileLoadedEvent) {
+                        base64 = fileLoadedEvent.target.result;
+                        // Print data in console
+                    //alert(base64);
+                    var taachedFile = base64.split(",")
+
+                    $.ajax({
+                        url: "/UpdateWatumiaji",
+                        type: 'POST',
+                        data: JSON.stringify({"name": name, "username": username, "lgas": lgas, "kanda": kanda,
+                        "phone": phone, "email": email, "status": cheo[0], 
+                        "password": "0", "cheo": cheo[1], "selectedFile": taachedFile[1], "userId": userId}),
+                        contentType: 'application/json',
+                        success: function(response) {
+                        if(response.statusCode == 300){
+                            $("#alertsuccess1").show();
+                        }if(response.statusCode == 306){
+                            $("#alertexist1").show();
+                        }if(response.statusCode == 400 || response.statusCode == 500){
+                            $("#alertmtandao1").show();
+                        }
+                        }
+                    });
+                    };
+                    // Convert data to base64
+                    fileReader.readAsDataURL(fileToLoad);
+                }
+                else{
+                    $.ajax({
+                        url: "/UpdateWatumiaji",
+                        type: 'POST',
+                        data: JSON.stringify({"name": name, "username": username, "lgas": lgas, "kanda": kanda,
+                        "phone": phone, "email": email, "status": cheo[0], 
+                        "password": "0", "cheo": cheo[1], "selectedFile": "", "userId": userId}),
+                        contentType: 'application/json',
+                        success: function(response) {
+                        if(response.statusCode == 300){
+                            $("#alertsuccess1").show();
+                        }if(response.statusCode == 306){
+                            $("#alertexist1").show();
+                        }if(response.statusCode == 400 || response.statusCode == 500){
+                            $("#alertmtandao1").show();
+                        }
+                        }
+                    });
+                }
+            }
+
+        }
+    </script>
+    <script language="javascript">
+        function passwordChanged() {
+            var strength = document.getElementById('strength');
+            var strongRegex = new RegExp("^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$", "g");
+            var mediumRegex = new RegExp("^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$", "g");
+            var enoughRegex = new RegExp("(?=.{6,}).*", "g");
+            var pwd = document.getElementById("password-field");
+            if (pwd.value.length == 0) {
+                strength.innerHTML = 'Type Password';
+                strengthhidden.value = 'Type Password';
+            } else if (false == enoughRegex.test(pwd.value)) {
+                strength.innerHTML = 'More Characters';
+                strengthhidden.value = 'More Characters';
+            } else if (strongRegex.test(pwd.value)) {
+                strength.innerHTML = '<span style="color:green">Strong!</span>';
+                strengthhidden.value = 'Strong!';
+            } else if (mediumRegex.test(pwd.value)) {
+                strength.innerHTML = '<span style="color:orange">Medium!</span>';
+                strengthhidden.value = 'Medium!';
+            } else {
+                strength.innerHTML = '<span style="color:red">Weak!</span>';
+                strengthhidden.value = 'Weak!';
+            }
+        }
+    </script>
+    <script language="javascript">
+        function passwordChanged1() {
+            var strength = document.getElementById('strength1');
+            var strongRegex = new RegExp("^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$", "g");
+            var mediumRegex = new RegExp("^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$", "g");
+            var enoughRegex = new RegExp("(?=.{6,}).*", "g");
+            var pwd = document.getElementById("password1-field");
+            if (pwd.value.length == 0) {
+                strength.innerHTML = 'Type Password';
+                strengthhidden.value = 'Type Password';
+            } else if (false == enoughRegex.test(pwd.value)) {
+                strength.innerHTML = 'More Characters';
+                strengthhidden.value = 'More Characters';
+            } else if (strongRegex.test(pwd.value)) {
+                strength.innerHTML = '<span style="color:green">Strong!</span>';
+                strengthhidden.value = 'Strong!';
+            } else if (mediumRegex.test(pwd.value)) {
+                strength.innerHTML = '<span style="color:orange">Medium!</span>';
+                strengthhidden.value = 'Medium!';
+            } else {
+                strength.innerHTML = '<span style="color:red">Weak!</span>';
+                strengthhidden.value = 'Weak!';
+            }
+        }
+    </script>
+    <script>
+        function vyeo(){
+            var rankLevel = document.getElementById('status-field').value;
+            var cheo = rankLevel.split("-");
+            var lgas = document.getElementById('lga-div');
+            var kandas = document.getElementById('kanda-div');
+            if(cheo[1] == 3){
+                $(".lga-div").show();
+                $(".kanda-div").hide();
+            }
+            if(cheo[1] == 2){
+                $(".kanda-div").show();
+                $(".lga-div").hide();
+            }
+            if(cheo[1] == 4){
+                $(".kanda-div").show();
+                $(".lga-div").hide();
+            }
+            if(cheo[1] == 1){
+                $(".kanda-div").hide();
+                $(".lga-div").hide();
+            }
+        }
+    </script>
+    <script>
+        function vyeo1(){
+            var rankLevel = document.getElementById('status1-field').value;
+            var cheo = rankLevel.split("-");
+            var lgas = document.getElementById('lga1-div');
+            var kandas = document.getElementById('kanda1-div');
+            if(cheo[1] == 3){
+                $(".lga1-div").show();
+                $(".kanda1-div").hide();
+            }
+            if(cheo[1] == 2){
+                $(".kanda1-div").show();
+                $(".lga1-div").hide();
+            }
+            if(cheo[1] == 4){
+                $(".kanda1-div").show();
+                $(".lga1-div").hide();
+            }
+            if(cheo[1] == 1){
+                $(".kanda1-div").hide();
+                $(".lga1-div").hide();
+            }
+        }
+    </script>
+    <script type="text/javascript">
+    function ValidateEmail() {
+        var email = document.getElementById("username-field").value;
+        var lblError = document.getElementById("lblError");
+        lblError.innerHTML = "";
+        var expr = /^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+        if (!expr.test(email)) {
+            lblError.innerHTML = "Invalid email address.";
+        }
+    }
+</script>
+</body>
+
+</html>

@@ -165,7 +165,7 @@
                                                             <input class="form-check-input" type="checkbox" id="checkAll" value="option">
                                                         </div>
                                                     </th>
-                                                    <% if(useLev == 10){ %>
+                                                    <% if(req.session.useLev == 10){ %>
                                                     <!-- <th class="sort" data-sort="id">Action</th> -->
                                                     <% } %>
                                                     <th class="sort" data-sort="project_name">Namba ya Usajili</th>
@@ -194,7 +194,7 @@
                                                             <input class="form-check-input" type="checkbox" name="chk_child" value="option1">
                                                         </div>
                                                     </th>
-                                                    <% if(useLev == 10){ %>
+                                                    <% if(req.session.useLev == 10){ %>
                                                     <!-- <td class="project_name"><a href="#showModal" data-ward="<%= list[i].WardName %>" 
                                                         data-lga="<%= list[i].LgaName %>" data-region="<%= list[i].RegionName %>" 
                                                         data-date="<%= list[i].approved_at %>" data-name="<%= list[i].school_name %>" 
@@ -249,18 +249,7 @@
                                     </div>
                                     <!-- Pagination and page length -->
                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <form action="" method="GET">
-                                                    <select class="form-control" name="per_page" style="width: 80px;" id="page-size">
-                                                        <option value="5"   <%-req.query.per_page ==  5  ? 'selected' : '' %> >5</option>
-                                                        <option value="10"  <%-req.query.per_page == 10 || !req.query.per_page   ? 'selected' : '' %> >10</option>
-                                                        <option value="20"  <%-req.query.per_page == 20  ? 'selected' : '' %> >20</option>
-                                                        <option value="50"  <%-req.query.per_page == 50  ? 'selected' : '' %> >50</option>
-                                                        <option value="100" <%-req.query.per_page == 100 ? 'selected' : '' %> >100</option>
-                                                    </select>
-                                            </form>
-                                        </div>
-                                        <%- include('paginations/paginate.ejs'); %>
+                                        <%- include('paginations/html_pagination.ejs'); %>
                                     </div>
                                     <!-- End pagination and page length -->
                                 </div>
@@ -398,9 +387,9 @@
     <script src="design/assets/js/app.js"></script>
 
     <!--jquery cdn-->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="../js/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <!--select2 cdn-->
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="../js/select2.min.js"></script>
 
     <!-- <script src="design/assets/js/pages/select2.init.js"></script> -->
 
