@@ -67,7 +67,17 @@
                             <div class="card-body p-4">
                                 <div class="text-center mt-2">
                                     <h5 class="text-primary">Mfumo wa Uanzishaji na usajili  wa shule</h5>
-                                    <p class="<%= typeof message !== 'undefined' ? 'text-danger alert alert-danger' : 'text-muted'%>"><%= typeof message !== 'undefined' ? message : 'Ingia Kuendelea' %></p>
+                                    <% var error = req.flash('error') %>
+                                    <% var warning  = req.flash('warning') %>
+                                        <% if(warning != '' || error != ''){%>
+                                                <div class="alert alert-<%= error != '' ? 'danger' : 'warning' %>">
+                                                    <%= warning != '' ? warning : error %>
+                                                </div>
+                                        <% } else{%>
+                                           <div class="alert alert-light" role="alert">
+                                                <strong> INGIA KUENDELEA </strong>
+                                            </div>                                                                           
+                                    <% } %>
                                 </div>
                                 <div class="p-2 mt-4">
                                     <form action="/auth" method="POST">

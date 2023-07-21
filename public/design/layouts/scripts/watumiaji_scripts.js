@@ -47,6 +47,7 @@ function getUsers() {
             ? "ri-check-double-fill text-success"
             : "ri-close-fill text-danger"
         }'></span>`,
+        status : user.user_status,
       }));
 
       // render table
@@ -77,9 +78,13 @@ function getUsers() {
 $("#btn-create-user").on("click", function () {
   resetAllFields();
   getLookUpData();
+  $("#id-field").remove();
 });
+// Edit User
 function editUser(e) {
   var userId = e.getAttribute("data-id");
+  $("#id-field").remove();
+  $("#user-form").prepend(`<input type='hidden' id='id-field' />`);
   resetAllFields();
   getUser(userId);
 }
@@ -92,11 +97,12 @@ function getUser(userId) {
     (userResponse) => {
       if (userResponse.statusCode == 300) {
         var user = userResponse.data[0];
-        document.getElementById("id-field").value = user.userId;
-        document.getElementById("customername-field").value = user.name;
+        document.getElementById("id-field").value = userId;
+        document.getElementById("name-field").value = user.name;
         document.getElementById("phone-field").value = user.phone_no;
         document.getElementById("username-field").value = user.email;
         document.getElementById("password-field").value = "";
+        document.getElementById("repassword-field").value = "";
         getLookUpData(user);
       }
     },
@@ -114,16 +120,16 @@ function getLookUpData(user){
       if (rolesResponse.statusCode == 300) {
         var roles = rolesResponse.data;
         appendSelectionOption(
-          "role-field",
+          "jukumu-field",
           roles.map((role, index) => ({
             name: role.role_name,
             id: role.role_id,
           })),
-          [Number(user ? user.role_id : null)],
+          [Number(user ? user.jukumu : null)],
           "Chagua Role"
         );
 
-        // Load levels
+        // Load Ranks
         ajaxRequest(
           "/ranks",
           "GET",
@@ -131,54 +137,18 @@ function getLookUpData(user){
             if (ranksResponse.statusCode == 300) {
               var ranks = ranksResponse.data;
               appendSelectionOption(
-                "level-field",
+                "ngazi-field",
                 ranks.map((rank, index) => ({
-                  name: rank.rank_name,
+                  name: rank.name,
                   id: rank.id,
                 })),
-                [user ? user.vyeoId : null],
-                "Chagua Level"
+                [user ? user.ngazi : null],
+                "Chagua Ngazi"
               );
-              var selectedLevel = $("#level-field")
-                .find("option:selected")
-                .text();
-              showHiddenFieldBasedOnSelectedLevel(selectedLevel);
-              // Load zones
-              ajaxRequest(
-                "/zones",
-                "GET",
-                (zonesResponse) => {
-                  if (zonesResponse.statusCode == 300) {
-                    var zones = zonesResponse.data;
-                    appendSelectionOption(
-                      "zone-field",
-                      zones.map((zone, index) => ({
-                        name: zone.zone_name,
-                        id: zone.id,
-                      })),
-                      [user ? user.zone_id : null],
-                      "Chagua Kanda"
-                    );
-                    //show modal after all lookup data loaded
-                    modal("showModal", true);
-                    if (user && user.zone_id) {
-                      $("#region-field").prop(
-                        "disabled",
-                        user.zone_id ? false : true
-                      );
-                      getAllRegions(user ? user.zone_id : null, user ? user.region_code : null);
-                    }
-                    if (user && user.region_code) {
-                      $("#lga-field").prop(
-                        "disabled",
-                        user && user.region_code ? false : true
-                      );
-                      getAllDistricts(user ? user.region_code : null, user ? user.district_code : null);
-                    }
-                  }
-                },
-                { is_paginated: false }
-              ); // end of zones ajax request
+
+              getAllHierarchies(user ? user.ngazi : null , user , user ? user.uongozi : null);
+                // getAllDesignations()
+                modal("showModal", true);
             }
           },
           { is_paginated: false },
@@ -191,45 +161,67 @@ function getLookUpData(user){
   ); // end of roles ajax request
 }
 
-$("#level-field").on("change", function () {
-  var selectLevel = $(this).find("option:selected").text();
-  showHiddenFieldBasedOnSelectedLevel(selectLevel);
+
+//on change Ngazi
+$("#ngazi-field").on("change", function () {
+  var rankId = $(this).val();
+      rankId ? getAllHierarchies(rankId) : emptyUongoziField();
+      hideAllSelectField();
+      emptyVyeoField();
+});
+//on change Ngazi
+$("#uongozi-field").on("change", function () {
+  var hierarchyId = $(this).val();
+      hierarchyId ? getAllDesignations(hierarchyId) : emptyVyeoField();
+});
+$("#uongozi-field").on("change", function () {
+  var selectText = $(this).find("option:selected").text();
+  showHiddenFieldBasedOnSelectedHierarchy(selectText);
 });
 // On change zone
-$("#zone-field").on("change", function () {
+$("#kanda-field").on("change", function () {
   var zoneId = $(this).val();
-  if ($("#region-field").is(":visible")) {
+  if ($("#mkoa-field").is(":visible")) {
     // Load regions
-    $("#region-field").prop("disabled", zoneId ? false : true);
+    $("#mkoa-field").prop("disabled", zoneId ? false : true);
     emptyLgaField();
     zoneId ? getAllRegions(zoneId) : emptyRegionField();
   }
 });
 
-$("#region-field").on("change", function () {
+$("#mkoa-field").on("change", function () {
   var regionCode = $(this).val();
   regionCode ? getAllDistricts(regionCode) : emptyLgaField();
 });
 
-function showHiddenFieldBasedOnSelectedLevel(selectLevel) {
-  var selectedValue = selectLevel.toLocaleLowerCase().trim();
-  var zoneDiv = $("#zone-field").closest("div");
-  var regionDiv = $("#region-field").closest("div");
-  var lgaDiv = $("#lga-field").closest("div");
-  var levelDiv = $("#level-field").closest("div");
-  hideAllSelectField();
-  if (selectedValue == "k1" || selectedValue.includes("k1")) {
-    zoneDiv.removeClass("d-none");
-  } else if (selectedValue == "w1" || selectedValue.includes("w1")) {
-    zoneDiv.removeClass("d-none");
-    regionDiv.removeClass("d-none");
-    lgaDiv.removeClass("d-none");
+function showHiddenFieldBasedOnSelectedHierarchy(selectText) {
+  if(selectText){
+    var selectedValue = selectText.toLowerCase().trim();
+    var zoneDiv = $("#kanda-field").closest("div");
+    var regionDiv = $("#mkoa-field").closest("div");
+    var lgaDiv = $("#lga-field").closest("div");
+    var levelDiv = $("#cheo-field").closest("div");
+    hideAllSelectField();
+    if (selectedValue == "k1" || selectedValue.includes("k1")) {
+      zoneDiv.removeClass("d-none");
+      getAllZones();
+    } else if (selectedValue == "w1" || selectedValue.includes("w1")) {
+      getAllZones();
+      zoneDiv.removeClass("d-none");
+      regionDiv.removeClass("d-none");
+      lgaDiv.removeClass("d-none");
+    }
   }
 }
 
 function hideAllSelectField() {
-  $("#zone-field").closest("div").addClass("d-none").find("select").val("");
-  $("#region-field")
+  $("#kanda-field")
+    .closest("div")
+    .addClass("d-none")
+    .find("select")
+    .val("")
+    .html("<option value=''>Chagua Kanda</option>");
+  $("#mkoa-field")
     .closest("div")
     .addClass("d-none")
     .find("select")
@@ -245,6 +237,16 @@ function hideAllSelectField() {
     .html("<option value=''>Chagua Mkoa kwanza</option>");
 }
 
+function emptyUongoziField() {
+  $("#uongozi-field")
+    .prop("disabled", true)
+    .html("<option value=''>Chagua Ngazi kwanza</option>");
+}
+function emptyVyeoField() {
+  $("#cheo-field")
+    .prop("disabled", true)
+    .html("<option value=''>Chagua Sehemu</option>");
+}
 function emptyLgaField() {
   $("#lga-field")
     .prop("disabled", true)
@@ -252,30 +254,40 @@ function emptyLgaField() {
 }
 
 function emptyRegionField() {
-  $("#region-field")
+  $("#mkoa-field")
     .prop("disabled", true)
     .html("<option value=''>Chagua Kanda kwanza</option>");
 }
 
 function resetAllFields() {
   $("#showModal").find("input,file").val("");
-  $("select").html("").select2({ data: [{ id: "", text: "" }] });
-  $("#level-field").select2({
-    placeholder: "Chagua Cheo",
+  $("#showModal").find("select").html("").select2({ data: [{ id: "", text: "" }] });
+  $("#jukumu-field").select2({
+    placeholder: "Chagua Jukumu",
     dropdownParent: $("#showModal"),
     //   theme: "classic",
   });
-  $("#role-field").select2({
-    placeholder: "Chagua Role",
-    dropdownParent: $("#showModal"),
-    //   theme: "classic",
-  });
-  $("#zone-field").select2({
+   $("#ngazi-field").select2({
+     placeholder: "Chagua Ngazi",
+     dropdownParent: $("#showModal"),
+     //   theme: "classic",
+   });
+    $("#uongozi-field").select2({
+      placeholder: "Chagua",
+      dropdownParent: $("#showModal"),
+      //   theme: "classic",
+    });
+   $("#cheo-field").select2({
+     placeholder: "Chagua Cheo",
+     dropdownParent: $("#showModal"),
+     //   theme: "classic",
+   });
+  $("#kanda-field").select2({
     placeholder: "Chagua Kanda",
     dropdownParent: $("#showModal"),
     //   theme: "classic",
   });
-  $("#region-field").select2({
+  $("#mkoa-field").select2({
     placeholder: "Chagua Kanda kwanza",
     dropdownParent: $("#showModal"),
     //   theme: "classic",
@@ -310,26 +322,23 @@ function showPasswordFields() {
     document.getElementById("repassword-field").value = "";
   }
 }
-
-function updateUser() {
-  var name = document.getElementById("customername-field").value;
+// Validate form
+function validateUserForm(){
+  var name = document.getElementById("name-field").value;
   var username = document.getElementById("username-field").value;
   var phone = document.getElementById("phone-field").value;
   var email = document.getElementById("username-field").value;
-  var roleId = document.getElementById("role-field").value;
-  var userLevel = document.getElementById("level-field").value;
-  var selectedFile = document.getElementById("sign-field").files;
-  var levelId = userLevel;
+  var roleId = document.getElementById("jukumu-field").value;
+  var userLevel = document.getElementById("cheo-field").value;
   var password = document.getElementById("password-field").value;
   var repassword = document.getElementById("repassword-field").value;
   var strength = document.getElementById("strength").value;
   var strengthhidden = document.getElementById("strengthhidden").value;
   var lgas = document.getElementById("lga-field").value;
-  var region = document.getElementById("region-field").value;
-  var zone = document.getElementById("zone-field").value;
-  var base64image = [];
+  var region = document.getElementById("mkoa-field").value;
+  var zone = document.getElementById("kanda-field").value;
   // var rankLevel = document.getElementById('status1-field').value;
-  var userId = document.getElementById("id-field").value;
+
   // var cheo = rankLevel.split("-");
   var data = {
     name: name,
@@ -341,9 +350,12 @@ function updateUser() {
     email: email,
     roleId: roleId,
     password: "",
-    levelId: levelId,
-    userId: userId,
+    levelId: userLevel,
   };
+   
+  var zoneField = $("#kanda-field");
+  var lgaField = $("#lga-field");
+
   if ($("#password-field").is(":visible")) {
     if (password == "" || repassword == "") {
       alertMessage(
@@ -353,29 +365,56 @@ function updateUser() {
       );
       return;
     }
-  }
-  if (password.length > 0) {
-    if (password == repassword) {
-      if (strengthhidden == "Strong!") {
-        data["password"] = password;
+    if (password.length > 0) {
+      if (password == repassword) {
+        if (strengthhidden == "Strong!") {
+          data["password"] = password;
+        } else {
+          alertMessage(
+            "Ooooops",
+            "Umeweka neno siri lisilo salama (Weak). Hakikisha neno siri linakuwa na  angalau herufi kubwa 1, herufi ndogo 1, namba 1, special character 1 na linatakiwa kuwa na jumla ya characters kuanzia 8",
+            "warning"
+          );
+          return;
+        }
       } else {
         alertMessage(
-          "Ooooops",
-          "Umeweka neno siri lisilo salama (Weak). Hakikisha neno siri linakuwa na  angalau herufi kubwa 1, herufi ndogo 1, namba 1, special character 1 na linatakiwa kuwa na jumla ya characters kuanzia 8",
+          "Oooops",
+          "Nenosiri hazifanani (Password does not match)",
           "warning"
         );
         return;
       }
-    } else {
-      alertMessage(
-        "Oooops",
-        "Nenosiri hazifanani (Password does not match)",
-        "warning"
-      );
-      return;
     }
   }
 
+  if (
+    roleId.length <= 0 ||
+    userLevel.length <= 0 ||
+    (zoneField.is(":visible") && zone.length <= 0) ||
+    (lgaField.is(":visible") && lgas.length <= 0)
+  ) {
+    alertMessage(
+      "Oooops",
+      "Sehemu zote zilizowekwa alama ya * lazima zijazwe.",
+      "warning"
+    );
+    return;
+  }
+  return data;
+}
+// Create or Update user account
+function saveUser() {
+  var selectedFile = document.getElementById("sign-field").files;
+  var base64image = [];
+  var data = validateUserForm()
+  var elementId = document.getElementById("id-field");
+    if (elementId !== null) {
+      data["userId"] = elementId.value;
+      var url = `UpdateUser/${elementId.value}`;
+    }else{
+      var url = `CreateUser`;
+    }
   if (selectedFile.length > 0) {
     // Select the very first file from list
     var fileToLoad = selectedFile[0];
@@ -387,28 +426,32 @@ function updateUser() {
       var taachedFile = base64.split(",");
       base64image.push(taachedFile[1]);
       data["selectedFile"] = base64image;
-      ajaxUpdateUser(data);
+      ajaxSaveUser(url ,data);
     };
-
     // Convert data to base64
     fileReader.readAsDataURL(fileToLoad);
   } else {
-    ajaxUpdateUser(data);
+    ajaxSaveUser(url , data);
   }
 }
 
-function ajaxUpdateUser(data) {
+function ajaxSaveUser(url , data) {
   ajaxRequest(
-    "/UpdateWatumiaji",
+    url,
     "POST",
-    (updateResponse) => {
-      var code = updateResponse.statusCode;
-      var message = updateResponse.message;
-      var userId = data.userId;
+    (response) => {
+      var code = response.statusCode;
+      var message = response.message;
       if (code == 300) {
         getUsers();
         alertMessage("Umefanikiwa", message, "success", () => {
           $("#sign-field").val("");
+          var elementId = document.getElementById("id-field");
+          if (elementId == null) {
+            modal("showModal" , false);
+            resetAllFields();
+            getLookUpData();
+          }
         });
       }
       if (code == 306) {
@@ -422,7 +465,7 @@ function ajaxUpdateUser(data) {
 // *************************************END - BY MAPE ******************************
 
 function sajiliHati() {
-  var name = document.getElementById("customername-field").value;
+  var name = document.getElementById("name-field").value;
 
   // var jazaname = document.getElementById('jazaname');
 
@@ -462,9 +505,12 @@ function sajiliHati() {
       if (phone.length <= 0) {
         $("#jazasimu").show();
       }
+      if (phone.length <= 0) {
+        $("#jazasimu").show();
+      }
       if (name.length > 0 && username.length > 0 && phone.length > 0) {
-        $("#sajilbtn").hide();
-        $("#pakiabtn").show();
+        // $("#sajilbtn").hide();
+        // $("#pakiabtn").show();
         if (strengthhidden == "Strong!") {
           // alert(isnum)
           // alert(specialChars.test(name))
@@ -575,9 +621,6 @@ function sajiliHati() {
       alert("Nenosiri hazifanani");
     }
   }
-}
-function funga() {
-  window.location.href = "/Watumiaji";
 }
 
 function passwordChanged() {
@@ -715,7 +758,7 @@ function TumaEmail() {
 }
 
 function checkOnlyNo() {
-  var email = document.getElementById("customername-field").value;
+  var email = document.getElementById("name-field").value;
   let isnum = /^\d+$/.test(email);
   if (isnum) {
     // $("#sajilbtn").hide();

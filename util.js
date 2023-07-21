@@ -28,7 +28,7 @@ module.exports = {
           if (body !== undefined && response.statusCode == 200) {
             callback(body);
           } else {
-            if (typeof response.statusCode == 'undefined' &&  response.statusCode == 403) {
+            if (typeof response.statusCode == undefined &&  response.statusCode == 403) {
               res.status(response.statusCode).redirect("/403");
             }
           }
@@ -91,4 +91,29 @@ module.exports = {
     //Title Case
     return lowerCase(text);
   },
+
+  sumAssociativeArray : (array) => {
+      const sum = Object.values(array).reduce((accumulator , item) => accumulator + item.total , 0);
+      return sum;
+  },
+
+  arraySum : (array) => {
+       let sum = 0;
+       if(array.length > 0){
+         sum = array.reduce((sum , number) => sum + number);
+       }
+       return sum;
+  },
+  greating : (name) => {
+    const date = new Date().getHours();
+    var majira = '';
+        if (date < 12) {
+          majira = "Habari ya Asubuhi";
+        } else if (date < 18) {
+          majira = "Habari ya Mchana";
+        } else if (date > 18) {
+          majira = "Habari ya Jioni";
+        }
+    return majira +", "+ name +"!";
+  }
 };

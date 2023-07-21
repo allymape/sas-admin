@@ -1,0 +1,232 @@
+<% var card_title = '' %> 
+<%- include('../layouts/partials/header.ejs' , {
+    title : 'Shule',
+    page_title : 'Orodha ya Shule',
+    card_title : 'Shule zilizopo'
+}) %>
+    <div class="card-body">
+        <div id="customerList">
+            <div class="row g-4 mb-3">
+                <div class="col-sm-auto">
+                    <div>
+                        <div id="firstbtn">
+                            <button type="button" class="btn btn-outline-danger add-btn"  id="btn-migrate-schools">
+                                <i class="ri-download-2-line align-bottom me-1"></i> Vuta Shule (Existing Schools - Migration)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+              <div class="col-sm">
+                <div class="d-flex justify-content-sm-end">
+                    <form class="d-flex" action="/Shule" method="GET">
+                        <div class="search-box ms-2">
+                            <input type="text" name="tafuta" value="<%= req.query.tafuta || '' %>" class="form-control search" placeholder="Tafuta...">
+                        </div>
+                        <div>&nbsp;</div>
+                        <div class="" style="width: 200px;">
+                                <select class="form-control" name="aina"  >
+                                    <option value="">Chagua Aina ya Shule ...</option>
+                                    <% for (let index = 0; index < categories.length; index++) { %>
+                                    <% const element = categories[index];%>
+                                        <option value="<%=element.id%>"
+                                            <%=req.query.aina == element.id ? 'selected' : ''%>
+                                            ><%= element.name %></option>
+                                    <%  } %>
+                                </select>
+                        </div>
+                        <div>&nbsp;</div>
+                        <div class="" style="width: 200px;">
+                            <select class="form-control" name="umiliki">
+                                    <option value="">Chagua Umiliki wa Shule ...</option>
+                                    <% for (let index = 0; index < ownerships.length; index++) { %>
+                                    <% const item = ownerships[index];%>
+                                        <option value="<%=item.id%>"
+                                        <%=req.query.umiliki == item.id ? 'selected' : ''%>
+                                            ><%= item.name %></option>
+                                    <%  } %>
+                            </select>
+                        </div>
+                        <div>&nbsp;</div>
+                        <div class="">
+                            <button type="submit" class="btn btn-outline-info"> 
+                                <i class="ri-search-line search-icon"></i>  Search
+                            </button>
+                        </div>
+                         <% if(req.query.aina || req.query.umiliki || req.query.tafuta) {%>
+                         <div>&nbsp;</div>
+                         <div>
+                            <a href="/Shule" class="btn btn-outline-danger"> 
+                            <i class="ri-close-line"></i> Clear
+                           </a>
+                          </div>
+                            <% } %>
+                    </form>
+                </div>
+            </div>
+            </div>
+            <div class="table-responsive table-card mt-3 mb-1">
+                <table class="table align-middle table-nowrap" id="schoolsTable" width="100%">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 10px;">Na.</th>
+                            <th>Jina la Shule</th>
+                            <th class=" text-wrap">Namba ya Usajili</th>
+                            <th>Umiliki</th>
+                            <th>Aina</th>
+                            <th>Tarehe Usajil</th>
+                            <th>Mkoa</th>
+                            <th>Halmashauri</th>
+                            <th>Kata</th>
+                            <th>Mtaa</th>
+                            <th>Imeingizwa</th>
+                            <th>Imesasishwa</th>
+                            <th>Hali</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="list form-check-all">
+                    </tbody>
+                </table>
+            </div>
+            <%- include('../paginations/ajax_pagination.ejs')%>
+        </div>
+    </div>
+    <!-- end card -->
+    <div class="modal fade" id="schoolModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title h5">BADILI TAARIFA - <span id="tracking-number" class="text-primary"></span></h4>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="search-school">Tafuta Shule </label>
+                                <div class="form-group">
+                                    <select  id="search-school" class="form-control" onchange="edit(this); return false;" data-bs-placeholder="Tafuta Shule">
+                                    </select>
+                                </div>
+                        </div>
+                    </div>
+                    <hr/>
+                    <form method="POST" id="school-form">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="name-field">Jina la Shule</label>
+                                <div class="form-group">
+                                    <input type="hidden" id="id-field">
+                                    <input type="text" name="school_name" id="name-field" placeholder="Jina la Shule ..." class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="mkoa-field">Mkoa</label>
+                                <div class="form-group">
+                                    <select name="mkoa" id="mkoa-field" class="form-control">
+                                        <option value="">Chagua  Mkoa</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="lga-field">Halmashauri</label>
+                                <div class="form-group">
+                                    <select name="lga" disabled id="lga-field" class="form-control">
+                                        <option value="">Chagua  Halmashauri</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="kata-field">Kata</label>
+                                <div class="form-group">
+                                    <select name="kata" disabled id="kata-field" class="form-control">
+                                        <option value="">Chagua  Kata</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                             <div class="col-md-3">
+                                <label for="mtaa-field">Mtaa</label>
+                                <div class="form-group">
+                                    <select name="mtaa" disabled id="mtaa-field" class="form-control">
+                                        <option value="">Chagua  Mtaa</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="opening-date-field">Tarehe ya Usajili</label>
+                                <div class="form-group">
+                                    <input 
+                                    type="text" name="opening_date" id="opening-date-field"
+                                    class="form-control border-0 dash-filter-picker shadow"
+                                    readonly
+                                    placeholder="yyyy-mm-dd" class="form-control">
+                                </div>
+                            </div>
+                             <div class="col-md-4">
+                                <label for="registration-number-field">Namba ya Usajili</label>
+                                <div class="form-group">
+                                    <input type="text" name="registration_number" id="registration-number-field" placeholder="Namba ya Usajili" class="form-control">
+                                </div>
+                            </div>
+                            <!-- <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="form-check mt-3">
+                                      <label for="payment-field" class="form-check-label mt-4 ml-4">
+                                        <input type="checkbox" class="form-check-input" name="payment" id="payment-field">
+                                        Paid
+                                      </label>
+                                    </div>
+                                </div>
+                            </div> -->
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="category-field">Aina ya Shule</label>
+                                <div class="form-group">
+                                    <select type="text" name="category" id="category-field" class="form-control">
+                                        <option value="">Chagua Aina ya Shule</option>
+                                            <% for (let index = 0; index < categories.length; index++) { %>
+                                            <% const element = categories[index];%>
+                                                <option value="<%=element.id%>"
+                                                    ><%= element.name %></option>
+                                            <%  } %>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="ownership-field">Umiliki</label>
+                                <div class="form-group">
+                                    <select type="text" name="ownership" id="ownership-field" class="form-control">
+                                        <option value="">Chagua Umiliki</option>
+                                         <% for (let index = 0; index < ownerships.length; index++) { %>
+                                         <% const item = ownerships[index];%>
+                                            <option value="<%=item.id%>"
+                                                ><%= item.name %></option>
+                                         <%  } %>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                              <button type="submit" class="btn btn-soft-primary">Update</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                </div>
+        </div>
+  </div>
+<%- include('../layouts/partials/footer.ejs' , {card_title :  card_title}) %>
+<script type="text/javascript" src="/design/layouts/scripts/shule_scripts.js"></script>
+</body>
+</html>

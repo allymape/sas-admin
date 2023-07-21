@@ -24,7 +24,7 @@ const menuItems = [
                 url  : "MaombiKuanzishaShule",
                 icon : "",
                 counterId : "kuanzacounti",
-                pattern : "",
+                pattern : "MaombiKuanzishaShule",
                 menuId : "",
                 hasPermissionTo : permission(req , 'view-initiate-schools'),
             },
@@ -33,7 +33,7 @@ const menuItems = [
                 url  : "MaombiMmilikiShule",
                 icon : "",
                 counterId : "",
-                pattern : "",
+                pattern : "MaombiMmilikiShule",
                 menuId : "",
                 hasPermissionTo : permission(req , 'view-school-owners-and-managers'),
             },
@@ -42,7 +42,7 @@ const menuItems = [
                 url  : "MaombiKusajiliShule",
                 icon : "",
                 counterId : "",
-                pattern : "",
+                pattern : "MaombiKusajiliShule",
                 menuId : "",
                 hasPermissionTo : permission(req , 'view-school-registration-private'),
             },
@@ -51,7 +51,7 @@ const menuItems = [
                 url  : "MaombiKusajiliShuleSerikali",
                 icon : "",
                 counterId : "",
-                pattern : "",
+                pattern : "MaombiKusajiliShuleSerikali",
                 menuId : "",
                 hasPermissionTo : permission(req , 'view-school-registration-government'),
             },
@@ -60,7 +60,7 @@ const menuItems = [
                 url  : "KuongezaMikondo",
                 icon : "",
                 counterId : "",
-                pattern : "",
+                pattern : "KuongezaMikondo",
                 menuId : "",
                 hasPermissionTo : permission(req , 'view-change-of-streams'),
             },
@@ -69,7 +69,7 @@ const menuItems = [
                 url  : "BadiliJina",
                 icon : "",
                 counterId : "",
-                pattern : "",
+                pattern : "BadiliJina",
                 menuId : "",
                 hasPermissionTo : permission(req , 'view-change-school-name'),
             },
@@ -78,7 +78,7 @@ const menuItems = [
                 url  : "KuongezaTahasusi",
                 icon : "",
                 counterId : "",
-                pattern : "",
+                pattern : "KuongezaTahasusi",
                 menuId : "",
                 hasPermissionTo : permission(req , 'view-change-of-bias'),
             },
@@ -87,7 +87,7 @@ const menuItems = [
                 url  : "KuongezaBweni",
                 icon : "",
                 counterId : "",
-                pattern : "",
+                pattern : "KuongezaBweni",
                 menuId : "",
                 hasPermissionTo : permission(req , 'view-addition-of-domitory'),
             },
@@ -96,7 +96,7 @@ const menuItems = [
                 url  : "KuongezaDahalia",
                 icon : "",
                 counterId : "",
-                pattern : "",
+                pattern : "KuongezaDahalia",
                 menuId : "",
                 hasPermissionTo : permission(req , 'view-change-of-combinations'),
             },
@@ -105,7 +105,7 @@ const menuItems = [
                 url  : "BadiliUsajili",
                 icon : "",
                 counterId : "",
-                pattern : "",
+                pattern : "BadiliUsajili",
                 menuId : "",
                 hasPermissionTo : permission(req , 'view-change-registration-type'),
             },
@@ -114,7 +114,7 @@ const menuItems = [
                 url  : "Hamisha",
                 icon : "",
                 counterId : "",
-                pattern : "",
+                pattern : "Hamisha",
                 menuId : "",
                 hasPermissionTo : permission(req , 'view-change-school-location'),
             },
@@ -123,7 +123,7 @@ const menuItems = [
                 url  : "BadiliMmiliki",
                 icon : "",
                 counterId : "",
-                pattern : "",
+                pattern : "BadiliMmiliki",
                 menuId : "",
                 hasPermissionTo : permission(req , 'view-change-of-school-owner'),
             },
@@ -132,7 +132,7 @@ const menuItems = [
                 url  : "BadiliMeneja",
                 icon : "",
                 counterId : "",
-                pattern : "",
+                pattern : "BadiliMeneja",
                 menuId : "",
                 hasPermissionTo : permission(req , 'view-change-of-school-manager'),
             },
@@ -141,9 +141,9 @@ const menuItems = [
                 url  : "FutaShule",
                 icon : "",
                 counterId : "",
-                pattern : "",
+                pattern : "FutaShule",
                 menuId : "",
-                hasPermissionTo : permission(req , 'view-deregistration'),
+                hasPermissionTo : permission(req , 'view-deregistration-of-schools'),
             },
         ]
    },
@@ -309,6 +309,14 @@ const menuItems = [
                 counterId : "",
                 pattern : "Waombaji|Mwombaji/*|Mwombaji/*/badili",
                 hasPermissionTo : permission(req , 'view-applicants'),
+            },
+            {
+                label : "Shule",
+                url  : "Shule",
+                icon : "",
+                counterId : "",
+                pattern : "Shule",
+                hasPermissionTo : permission(req , 'view-schools'),
             },
               {
                 label : "Roles & Permissions",
@@ -525,16 +533,16 @@ const menuItems = [
                         <%
                     }
                     %>
-                            <li class="nav-item">
-                                <a href="<%= item.url %>" 
-                                    <%= typeof item.menuId !== 'undefined' && item.menuId ? `id=${item.menuId}` : ''%>
-                                    class="nav-link menu-link <%= routeIs(item.patten , getCurrentUrl(req)) ? 'active' : '' %>"
-                                >
-                                    <i class="ri <%=item.icon%>"></i> 
-                                    <span data-key="t-widgets"><%=item.label%></span>
-                                </a>
-                            </li>
-                        <% }
+                    <li class="nav-item">
+                        <a href="<%= item.url %>" 
+                            <%= typeof item.menuId !== 'undefined' && item.menuId ? `id=${item.menuId}` : ''%>
+                            class="nav-link menu-link <%= routeIs(item.patten , getCurrentUrl(req)) ? 'active' : '' %>"
+                        >
+                            <i class="ri <%=item.icon%>"></i> 
+                            <span data-key="t-widgets"><%=item.label%></span>
+                        </a>
+                    </li>
+                <% }
                 }
             })
            %>   

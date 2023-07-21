@@ -155,7 +155,7 @@ $.ajax({
 });
 
 }
-window.onload = sajiliGraph;
+// window.onload = sajiliGraph;
        
 var options,
         chart,

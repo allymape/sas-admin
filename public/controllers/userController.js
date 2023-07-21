@@ -1,25 +1,91 @@
 require("dotenv").config();
 const express = require("express");
 const request = require("request");
-const userController = express.Router();
 var session = require("express-session");
+const userController = express.Router();
+const requestIp = require("request-ip");
 var path = require("path");
-const { sendRequest, isAuthenticated, redirectIfAuthenticated, can } = require("../../util");
+const {
+  sendRequest,
+  isAuthenticated,
+  redirectIfAuthenticated,
+  can,
+} = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
+var loginAPI = API_BASE_URL + "login";
 var watumiajiAPI = API_BASE_URL + "users";
-var updateWatumiajiAPI = API_BASE_URL + "update-user";
+var createUserAPI = API_BASE_URL + "create-user";
+var updateUserAPI = API_BASE_URL + "update-user";
 var sendMailAPI = API_BASE_URL + "reset-user-password";
-
 
 // Login Page
 userController.get("/", redirectIfAuthenticated, function (req, res) {
   res.render(path.join(__dirname + "/../design/login"), {
     req: req,
-    message: "Ingia Kuendelea",
+    message: "",
   });
 });
 
-userController.get("/Watumiaji", isAuthenticated, can('view-users'), function (req, res) {
+userController.post("/auth", function (req, res) {
+  var username = req.body.username;
+  var password = req.body.password;
+  request(
+    {
+      url: loginAPI,
+      method: "POST",
+      json: { username: username, password: password },
+    },
+    (error, response, body) => {
+      if (error) {
+        req.flash("error", "Kuna tatizo wasiliana na Msimamizi wa Mfumo");
+        res.redirect("/");
+      } else {
+        var message = body.message;
+        var statusCode = body.statusCode;
+        if (body == "Too many requests, please try again later.") {
+          req.flash("warning", 'Too many requests, please try again after 10 minutes.');
+          res.redirect("/");
+        } else {
+          if (statusCode == 302) {
+            req.session.loginAttempt = req.session.loginAttempt + 1;
+            req.flash("warning", message);
+            res.redirect("/");
+          } else if (statusCode == 300) {
+                const ip_address = requestIp.getClientIp(req);
+                const browser_used = req.headers["user-agent"];
+                const { user, RoleManage , token } = body;
+                req.session.UserLevel = user.user_level;
+                req.session.office = user.office;
+                req.session.twofa = user.twofa;
+                req.session.Token = token;
+                req.session.userID = user.id;
+                req.session.userName = user.name;
+                req.session.cheoName = user.rank_name;
+                req.session.email = user.email;
+                req.session.ip_address = ip_address;
+                req.session.browser_used = browser_used;
+                req.session.RoleManage = RoleManage;
+            if (user.twofa == 0) {
+              if (Number(user.user_level) == 10) {
+                res.redirect("/RipotiZilizosajiliwa");
+              } else {
+                res.redirect("/Dashboard");
+              }
+            } else {
+              res.redirect("/Dashboard");
+            }
+          }
+        }
+      }
+    }
+  );
+});
+
+userController.get(
+  "/Watumiaji",
+  isAuthenticated,
+  can("view-users"),
+  function (req, res) {
     res.render(path.join(__dirname + "/../design/watumiaji"), {
       req: req,
       useLev: req.session.UserLevel,
@@ -28,149 +94,134 @@ userController.get("/Watumiaji", isAuthenticated, can('view-users'), function (r
       userID: req.session.userID,
       cheoName: req.session.cheoName,
     });
-});
+  }
+);
 // get list of users
-userController.get("/users", isAuthenticated, can('view-users') , function (req, res) {
-  var per_page = Number(req.query.per_page || 10);
-  var page = Number(req.query.page || 1);
-  sendRequest(
-    req,
-    res,
-    watumiajiAPI + "?page=" + page + "&per_page=" + per_page,
-    "GET",
-    {},
-    (jsonData) => {
-      var data = jsonData.data;
-      var numRows = jsonData.numRows;
+userController.get(
+  "/Users",
+  isAuthenticated,
+  can("view-users"),
+  function (req, res) {
+    var per_page = Number(req.query.per_page || 10);
+    var page = Number(req.query.page || 1);
+    var query = req.query;
+    sendRequest(
+      req,
+      res,
+      watumiajiAPI + "?page=" + page + "&per_page=" + per_page,
+      "GET",
+      query,
+      (jsonData) => {
+        var data = jsonData.data;
+        var numRows = jsonData.numRows;
+        res.send({
+          statusCode: jsonData.statusCode,
+          data: data,
+          pagination: {
+            total: numRows,
+            current: page,
+            per_page: per_page,
+            pages: Math.ceil(numRows / per_page),
+          },
+        });
+      }
+    );
+  }
+);
+// Create User Account
+userController.post(
+  "/CreateUser",
+  isAuthenticated,
+  can("create-users"),
+  function (req, res) {
+    sendRequest(req, res, createUserAPI, "POST", req.body, (jsonData) => {
       res.send({
         statusCode: jsonData.statusCode,
-        data: data,
-        pagination: {
-          total: numRows,
-          current: page,
-          per_page: per_page,
-          pages: Math.ceil(numRows / per_page),
-        },
+        data: jsonData.data,
+        message: jsonData.message,
       });
-    }
-  );
-});
+    });
+  }
+);
 
-userController.get("/findUser/:id", isAuthenticated, can('update-users'), function (req, res) {
+// Find a User
+userController.get(
+  "/FindUser/:id",
+  isAuthenticated,
+  can("update-users"),
+  function (req, res) {
     var userId = req.params.id;
-    sendRequest(req, res, watumiajiAPI+"/"+userId, "GET", {}, (jsonData) => {
-        // console.log(jsonData)
+    sendRequest(
+      req,
+      res,
+      watumiajiAPI + "/" + userId,
+      "GET",
+      {},
+      (jsonData) => {
+        // console.log(jsonData.data)
         res.send({
-            statusCode: jsonData.statusCode,
-            data : jsonData.data,
-            message: jsonData.message,
+          statusCode: jsonData.statusCode,
+          data: jsonData.data,
+          message: jsonData.message,
         });
+      }
+    );
+  }
+);
+
+// Update User Account
+userController.post(
+  "/UpdateUser/:id",
+  isAuthenticated,
+  can("update-users"),
+  function (req, res) {
+    var userId = req.params.id;
+    sendRequest(
+      req,
+      res,
+      updateUserAPI + "/" + userId,
+      "PUT",
+      req.body,
+      (jsonData) => {
+        res.send({
+          statusCode: jsonData.statusCode,
+          data: jsonData.data,
+          message: jsonData.message,
+        });
+      }
+    );
+  }
+);
+// Reset user password from Admin
+userController.post(
+  "/TumaEmail",
+  isAuthenticated,
+  can("update-users"),
+  function (req, res) {
+    var userData = {
+      browser_used: req.session.browser_used,
+      ip_address: req.session.ip_address,
+      email: req.body.email,
+    };
+    sendRequest(req, res, sendMailAPI, "POST", userData, (jsonData) => {
+      res.send({
+        statusCode: jsonData.statusCode,
+        data: jsonData.data,
+        message: jsonData.message,
+      });
+    });
+  }
+);
+// Logout User
+userController.post("/Logout", isAuthenticated, function (req, res) {
+  req.session.destroy((error) => {
+    if (error) {
+      console.log(error);
+    }
+    res.redirect("/");
   });
 });
-
-userController.post("/UpdateWatumiaji", isAuthenticated, can('update-users'), function (req, res) {
-       var userId = req.body.userId;
-        var userData = {
-          fullname: req.body.name,
-          username: req.body.username,
-          phoneNumber: req.body.phone,
-          email: req.body.email,
-          roleId: req.body.roleId,
-          password: req.body.password,
-          levelId: req.body.levelId,
-          lgas: req.body.lgas,
-          zone: req.body.zone,
-          region: req.body.region,
-          sign: req.body.selectedFile,
-        };
-        sendRequest(req, res, updateWatumiajiAPI+"/"+userId , "PUT", userData, (jsonData) => {
-                res.send({
-                        statusCode: jsonData.statusCode,
-                        data: jsonData.data,
-                        message: jsonData.message,
-                });
-        });
-});
-// Reset user password from Admin
-userController.post("/TumaEmail", isAuthenticated, can('update-users'), function (req, res) {
- 
-  var userData = {
-                browser_used: req.session.browser_used,
-                ip_address: req.session.ip_address,
-                email: req.body.email,
-   }
-  sendRequest(req, res, sendMailAPI , 'POST' , userData , (jsonData) => {
-         res.send({
-                statusCode: jsonData.statusCode,
-                data: jsonData.data,
-                message: jsonData.message,
-         });
-  } );
-//   request(
-//     {
-//       url: sendMailAPI,
-//       method: "POST",
-//       json: {
-//         browser_used: req.session.browser_used,
-//         ip_address: req.session.ip_address,
-//         email: email,
-//       },
-//     },
-//     function (error, response, body) {
-//       if (error) {
-//         console.error(
-//           new Date() +
-//             ": " +
-//             email +
-//             " with IP: " +
-//             requestIp.getClientIp(req) +
-//             " fail to access /TumaEmail " +
-//             error
-//         );
-//         res.send("failed");
-//       }
-//       if (body !== undefined) {
-//         // console.log(body)
-//         var message = body.message;
-//         var statusCode = body.statusCode;
-//         var msg = body.msg;
-//         if (statusCode == 302) {
-//           res.render(path.join(__dirname + "/public/design/login"), {
-//             req: req,
-//             message: message,
-//           });
-//         } else if (statusCode == 300) {
-//           // console.log("2FA: " + req.session.twofa);
-//           // console.log(new Date() +  ": Successful verified")
-//           console.info(
-//             new Date() +
-//               ": " +
-//               email +
-//               " with IP: " +
-//               requestIp.getClientIp(req) +
-//               " able to access  /TumaEmail "
-//           );
-
-//           res.send({ msg: msg });
-//         }
-//         else {
-//           res.redirect("/");
-//         }
-//       }
-//     }
-//   );
-});
-// Logout User
-userController.post("/Logout" , isAuthenticated, function(req,res){
-     req.session.destroy( error => {
-        if(error){
-          console.log(error);
-        }
-        res.redirect('/');
-     });
-});
 module.exports = userController;
-
 
 // if (
 //   typeof req.session.userName !== "undefined" ||
@@ -178,7 +229,7 @@ module.exports = userController;
 // ) {
 //   request(
 //     {
-//       url: updateWatumiajiAPI,
+//       url: updateUserAPI,
 //       method: "POST",
 //       headers: {
 //         Authorization: "Bearer" + " " + req.session.Token,

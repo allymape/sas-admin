@@ -52,15 +52,17 @@ designationController.get("/Vyeo", isAuthenticated, can('view-designations'), fu
 
 // Get all designations (Vyeo)
 designationController.get("/designations",  isAuthenticated, can('view-designations'), function (req, res) {
-    var formData = {
-         is_paginated: req.query.is_paginated,
+  var per_page = Number(req.query.per_page || 10);
+  var page = Number(req.query.page || 1);  
+  var formData = {
+      is_paginated: req.query.is_paginated,
+      hierarchy_id: req.query.hierarchy_id,
     };
-    sendRequest(req, res, allDesignationsAPI, "GET", formData, (jsonData) => {
-            // console.log(jsonData);
+    sendRequest(req, res, allDesignationsAPI+ "?page=" + page + "&per_page=" + per_page, "GET", formData, (jsonData) => {
             res.send({
-              statusCode: jsonData.statusCode,
-              data: jsonData.data,
-              message: jsonData.message,
+                  statusCode: jsonData.statusCode,
+                  data: jsonData.designations,
+                  message: jsonData.message,
             });
     });
 //   getAllDesignations(req, res);

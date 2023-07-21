@@ -10,6 +10,10 @@
     <link rel="shortcut icon" href="/design/assets/images/favicon.ico">
     <!-- Sweet Alert css-->
     <link href="/design/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+     <!-- jsvectormap css -->
+    <link href="/design/assets/libs/jsvectormap/css/jsvectormap.min.css" rel="stylesheet" type="text/css" />
+    <!--Swiper slider css-->
+    <link href="/design/assets/libs/swiper/swiper-bundle.min.css" rel="stylesheet" type="text/css" />
     <!-- Layout config Js -->
     <script src="/design/assets/js/layout.js"></script>
     <!-- Bootstrap Css -->
@@ -24,7 +28,7 @@
     <link href="../css/select2.min.css" rel="stylesheet" />
     <!-- custom Css-->
     <link href="/design/assets/css/custom.min.css" rel="stylesheet" type="text/css" />
-    <link href="/design/assets/css/custom.css" rel="stylesheet" type="text/css" />
+    <!-- <link href="/design/assets/css/custom.css" rel="stylesheet" type="text/css" /> -->
     
 </head>
 
@@ -41,10 +45,13 @@
         <div class="main-content">
             <div class="page-content">
                 <div class="container-fluid">
-                    <% if(typeof page_title !== 'undefine' && page_title) {%>
+                    <% if(typeof page_title !== 'undefined' && page_title) {%>
                         <!-- start page title -->
                         <%- include('page_title.ejs') %>
                         <!-- end page title -->
+                    <% } %>
+                    <% if(typeof top_header !== 'undefined') {%>
+                        <%- include(top_header) %>
                     <% } %>
                     <div class="row">
                         <div class="col-lg-12">

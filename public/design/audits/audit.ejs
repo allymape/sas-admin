@@ -1,0 +1,221 @@
+<% var card_title = '' %> 
+<%- include('../layouts/partials/header.ejs' , {
+    title : 'Audit Trail',
+    page_title : 'Audit Trail',
+    card_title : 'Audit Trail',
+    breadcrumb_main : 'Audit',
+}) %>
+  <div class="card-body">
+    <div id="customerList">
+        <div class="row g-4 mb-3">
+            <div class="col-sm">
+                <div class="d-flex justify-content-sm-end">
+                    <div class="search-box ms-2">
+                        <input type="text" class="form-control search" placeholder="Tafuta...">
+                        <i class="ri-search-line search-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive table-card mt-3 mb-1">
+            <table class="table align-middle table-nowrap" id="customerTable">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" style="width: 50px;">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="checkAll" value="option">
+                            </div>
+                        </th>
+                        <th class="sort" data-sort="customer_name">#</th>
+                        <th class="sort" data-sort="email">Staffs</th>
+                        <th class="sort" data-sort="email">Event Type</th>
+                        <th class="sort" data-sort="email">IP Address</th>
+                        <!-- <th class="sort" data-sort="email">Browser Used</th> -->
+                        <th class="sort" data-sort="email">API Route</th>
+                        <th class="sort" data-sort="email">Message</th>
+                        <th class="sort" data-sort="email">Created at</th>
+                        <th class="sort" data-sort="action">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="list form-check-all">
+                    <% for(var i = 0; i < data.length; i++){ %>
+                    <tr>
+                        <th scope="row">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="chk_child" value="option1">
+                            </div>
+                        </th>
+                        <td class="id"><a href="javascript:void(0);" class="fw-medium link-primary">#<%= i+1 %></a></td>
+                        <td class="phone"><span class="badge badge-soft-primary badge-border"><%= data[i].user_id %></span></td>
+                        <td class="phone">
+                            <% if(data[i].event_type == 'created'){ %>
+                            <span class="badge badge-outline-secondary"><%= data[i].event_type %></span>
+                            <% } else { %>
+                                <span class="badge badge-outline-danger"><%= data[i].event_type %></span>
+                            <% } %>
+                        </td>
+                        <td class="phone"><%= data[i].ip_address %></td>
+                        <!-- <td class="phone"><%= data[i].browser_used %></td> -->
+                        <td class="phone"><span class="badge bg-secondary"><%= data[i].api_router %></span></td>
+                        <td class="phone"><%= data[i].message %></td>
+                        <td class="phone"><%= data[i].created_at %></td>
+
+                        <td>
+                            <button type="button" class="btn btn-link btn-sm text-success add-btn" 
+                            data-bs-toggle="modal" data-id="<%= data[i].trail_id %>" 
+                            data-name="<%= data[i].browser_used %>" data-staffname="<%= data[i].user_id %>" 
+                            id="create-btn" data-event="<%= data[i].event_type %>" data-created="<%= data[i].created_at %>"
+                            data-rollId="<%= data[i].rollId %>" data-tableName="<%= data[i].tableName %>" 
+                            data-ipaddress="<%= data[i].ip_address %>" data-apirouter="<%= data[i].api_router %>" 
+                            data-old="<%= data[i].old_body %>" data-new="<%= data[i].new_body %>"
+                            data-msg="<%= data[i].message %>"  
+                            onclick="BadiliData(this); return false;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                            <!-- <button type="button" class="btn btn-success add-btn" 
+                            data-bs-toggle="modal" data-id="<%= data[i].trail_id %>" 
+                            data-name="<%= data[i].event_type %>" id="create-btn" 
+                            >View</button> -->
+                        </td>
+                    </tr>
+                    <% } %>
+                </tbody>
+            </table>
+            <div class="noresult" style="display: none">
+                <div class="text-center">
+                    <lord-icon src="" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                    <h5 class="mt-2">Sorry! No Result Found</h5>
+                    <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end">
+            <div class="pagination-wrap hstack gap-2">
+                <a class="page-item pagination-prev disabled" href="#">
+                    Previous
+                </a>
+                <ul class="pagination listjs-pagination mb-0"></ul>
+                <a class="page-item pagination-next" href="#">
+                    Next
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end card -->
+ <div class="modal fade bs-example-modal-xl" id="modal" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-xl">
+                            <div class="modal-content">
+                                <div class="modal-header bg-light p-3">
+                                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+                                </div>
+                                <form>
+                                    <div class="modal-body">
+
+                                        <div class="mb-3" id="modal-id" style="display: none;">
+                                            <label for="id-field" class="form-label">ID</label>
+                                            <input type="text" id="id-field" class="form-control" placeholder="ID" readonly />
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="customername-field" class="form-label">Staff Name</label>
+                                            <input type="text" id="staffname-field" class="form-control" disabled />
+                                            <input type="hidden" id="id1-field3" class="form-control" placeholder="ID" />
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="customername-field" class="form-label">Browser Used</label>
+                                            <input type="text" id="customername1-field" class="form-control" disabled />
+                                            <input type="hidden" id="id1-field3" class="form-control" placeholder="ID" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="customername-field" class="form-label">Event Type</label>
+                                            <input type="text" id="event-field" class="form-control" disabled />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="customername-field" class="form-label">Table Name</label>
+                                            <input type="text" id="table-field" class="form-control" disabled />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="customername-field" class="form-label">Roll ID</label>
+                                            <input type="text" id="roll-field" class="form-control" disabled />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="customername-field" class="form-label">IP Address</label>
+                                            <input type="text" id="ipaddress-field" class="form-control" disabled />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="customername-field" class="form-label">API Router</label>
+                                            <input type="text" id="apirouter-field" class="form-control" disabled />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="customername-field" class="form-label">Date Created</label>
+                                            <input type="text" id="created-field" class="form-control" disabled />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="customername-field" class="form-label">Old Body</label>
+                                            <textarea class="form-control" id="old-field" rows="4" disabled></textarea>
+                                            <!-- <input type="textarea" id="old-field" class="form-control" disabled /> -->
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="customername-field" class="form-label">New Body</label>
+                                            <textarea class="form-control" id="new-field" rows="4" disabled></textarea>
+                                            <!-- <input type="textarea" id="new-field" class="form-control" disabled /> -->
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="customername-field" class="form-label">Message</label>
+                                            <input type="textarea" id="msg-field" class="form-control" disabled />
+                                        </div>
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <div class="hstack gap-2 justify-content-end">
+                                            <button type="button" class="btn btn-success" data-bs-dismiss="modal">Funga</button>
+                                            <!-- <button type="button" class="btn btn-success" onclick="sasishaHati()" id="add-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></button> -->
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /.modal-dialog -->
+                    </div><!-- /.modal -->
+<!--end card-body-->
+<%- include('../layouts/partials/footer.ejs' , {
+     card_title :  '' , 
+     pagination_script : true,
+    }) %>
+<!-- <script type="text/javascript" src="/design/layouts/scripts/anzishashule_scripts.js"></script> -->
+ <script>
+    function BadiliData(e){
+    var nameId = e.getAttribute('data-id');
+    var name = e.getAttribute('data-name');
+    var event = e.getAttribute('data-event');
+    var rollId = e.getAttribute('data-rollId');
+    var staffname = e.getAttribute('data-staffname');
+    var tableName = e.getAttribute('data-tableName');
+    var ipaddress = e.getAttribute('data-ipaddress');
+    var apirouter = e.getAttribute('data-apirouter');
+    var oldbody = e.getAttribute('data-old');
+    var newbody = e.getAttribute('data-new');
+    var created = e.getAttribute('data-created');
+    var message = e.getAttribute('data-msg');
+    document.getElementById("id1-field3").value = nameId;
+    document.getElementById("customername1-field").value = name;
+    document.getElementById("staffname-field").value = staffname;
+    document.getElementById("event-field").value = event;
+    document.getElementById("roll-field").value = rollId;
+    document.getElementById("table-field").value = tableName;
+    document.getElementById("ipaddress-field").value = ipaddress;
+    document.getElementById("apirouter-field").value = apirouter;
+    document.getElementById("created-field").value = created;
+    document.getElementById("old-field").value = oldbody;
+    document.getElementById("new-field").value = newbody;
+    document.getElementById("msg-field").value = message;
+    $('#modal').modal('show');
+}
+
+</script>
+</body>
+</html>

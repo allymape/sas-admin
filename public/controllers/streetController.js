@@ -17,11 +17,11 @@ streetController.get("/MitaaList", isAuthenticated, can('view-streets'), functio
     res,
     streetListAPI + "?page=" + page + "&per_page=" + per_page,
     "GET",
-    {},
+    req.query,
     (jsonData) => {
-      var data = jsonData.data;
-      var numRows = jsonData.numRows;
+      const {data , numRows , statusCode} = jsonData;
       res.send({
+        statusCode : statusCode,
         streets: data,
         pagination: {
           total: numRows,

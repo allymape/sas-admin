@@ -29,7 +29,6 @@ zoneController.get("/Zones",  isAuthenticated, can('view-zones'),function (req, 
     sendRequest(req, res, allZonesAPI+ "?page=" + page + "&per_page=" + per_page, "GET", formData, (jsonData) => {
             // console.log(jsonData);
             var numRows = jsonData.numRows;
-            console.log(jsonData.data)
             res.send({
               statusCode: jsonData.statusCode,
               data: jsonData.data,

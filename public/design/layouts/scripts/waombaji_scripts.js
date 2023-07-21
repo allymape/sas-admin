@@ -3,7 +3,7 @@ $(".transfer-school").on("click" , function(){
     const school_name = school.data('school_name');
     const reg_number = school.data('registration_number');
     const tracking_number = school.data('tracking_number');
-    const applicant_email = school.data("current_applicant_email");
+    const search = school.data("current_applicant_email");
           $('#school-name').val(school_name)
           $('#registration-number').val(reg_number)
           $('#tracking-number').val(tracking_number)
@@ -14,7 +14,7 @@ $(".transfer-school").on("click" , function(){
       "Type Name or Email",
       "varyingcontentModal",
       null,
-      applicant_email
+      search
     );
 });
 

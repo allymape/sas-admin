@@ -40,7 +40,7 @@ const attachmentTypeController = require("./public/controllers/attachmentTypeCon
 const applicationCategoryController = require("./public/controllers/applicationCategoryController");
 const registrationTypeController = require("./public/controllers/registrationTypeController");
 const errorController = require("./public/controllers/errorController");
-const { can, isAuthenticated, titleCase, lowerCase } = require("./util");
+const { can, isAuthenticated, titleCase, lowerCase, sumAssociativeArray } = require("./util");
 const dashboardController = require("./public/controllers/dashboardController");
 const designationController = require("./public/controllers/designationController");
 const applicantController = require("./public/controllers/applicantController");
@@ -59,7 +59,6 @@ app.use(cookieParser())
 app.use(flash());
 // Create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
-
 app.use(
   session({
     secret: "secret",
@@ -94,6 +93,12 @@ app.use(bodyParser.json());
 app.locals.getCurrentUrl = function (req) {
   return req.originalUrl;
 };
+
+
+global.sumAssociativeArray = (array) => {
+  return sumAssociativeArray(array);
+}
+
 global.routeIs =  (url_segments, currentUrl) => {
     if(url_segments){
         var urls = url_segments.split("|");
@@ -171,7 +176,7 @@ var simulateAPI = BASEURL + "simulatepay";
 var sajiliGrahpAPI = BASEURL + "usajiligraph";
 var VutaKataListAPI = BASEURL + "usajiliKata";
 var VutaMitaaListAPI = BASEURL + "usajiliMitaa";
-var VutaShuleListAPI = BASEURL + "existingSchools"; 
+// var VutaShuleListAPI = BASEURL + "existingSchools"; 
 var activeUserAPI = BASEURL + "active-user";
 var activeMenuAPI = BASEURL + "active-menu";
 var kandaListAPI = BASEURL + "zonilist";
@@ -299,7 +304,7 @@ var pandishaHatiAPI = BASEURL + "upload-attachment";
 var verify = BASEURL + "verify";
 var changepassAPI = BASEURL + "changepass";
 
-app.post("/auth", function (req, res) {
+app.post("/authOLD", function (req, res) {
   // console.log("url " + req.url);
   var username = req.body.username;
   var password = req.body.password;
@@ -378,7 +383,7 @@ app.post("/auth", function (req, res) {
             if (req.session.UserLevel == 10) {
               res.redirect("/RipotiZilizosajiliwa");
             } else {
-              res.redirect("/Michepuo");
+              res.redirect("/Dashboard");
             }
           } else {
             res.redirect("/TwoFA");
@@ -816,44 +821,44 @@ app.post("/SimulatePayment", function (req, res) {
   );
 });
 
-app.get("/UsajiliGraph", function (req, res) {
-  // var trackingNo = req.body.trackno;
-  request(
-    {
-      url: sajiliGrahpAPI,
-      method: "GET",
-      headers: {
-        Authorization: "Bearer" + " " + req.session.Token,
-        "Content-Type": "application/json",
-      },
-      //json: {"browser_used": req.session.browser_used, "ip_address": req.session.ip_address, trackingNo: trackingNo}
-    },
-    function (error, response, body) {
-      if (error) {
-        console.error(new Date() + ": fail to access /UsajiliGraph " + error);
-        res.send("failed");
-      }
-      if (body !== undefined) {
-        // console.log(body)
-        var jsonData = JSON.parse(body);
-        var message = jsonData.message;
-        var statusCode = jsonData.statusCode;
-        var data = jsonData.data;
-        var name = jsonData.name;
-        var type = jsonData.type;
-        if (statusCode == 300) {
-          // console.log(data)
-          console.info(new Date() + ": Successful UsajiliGraph");
+// app.get("/UsajiliGraph", function (req, res) {
+//   // var trackingNo = req.body.trackno;
+//   request(
+//     {
+//       url: sajiliGrahpAPI,
+//       method: "GET",
+//       headers: {
+//         Authorization: "Bearer" + " " + req.session.Token,
+//         "Content-Type": "application/json",
+//       },
+//       //json: {"browser_used": req.session.browser_used, "ip_address": req.session.ip_address, trackingNo: trackingNo}
+//     },
+//     function (error, response, body) {
+//       if (error) {
+//         console.error(new Date() + ": fail to access /UsajiliGraph " + error);
+//         res.send("failed");
+//       }
+//       if (body !== undefined) {
+//         // console.log(body)
+//         var jsonData = JSON.parse(body);
+//         var message = jsonData.message;
+//         var statusCode = jsonData.statusCode;
+//         var data = jsonData.data;
+//         var name = jsonData.name;
+//         var type = jsonData.type;
+//         if (statusCode == 300) {
+//           // console.log(data)
+//           console.info(new Date() + ": Successful UsajiliGraph");
 
-          res.send({ data: data, name: name, type: type });
-        }
-        if (statusCode == 209) {
-          res.redirect("/");
-        }
-      }
-    }
-  );
-});
+//           res.send({ data: data, name: name, type: type });
+//         }
+//         if (statusCode == 209) {
+//           res.redirect("/");
+//         }
+//       }
+//     }
+//   );
+// });
 
 app.get("/CreateRole", function (req, res) {
 
@@ -1015,46 +1020,6 @@ app.get("/Kata", function (req, res) {
         res.redirect("/");
       }
 });
-
-app.get("/VutaShule", function (req, res) {
-  request(
-    {
-      url: VutaShuleListAPI,
-      method: "GET",
-      headers: {
-        Authorization: "Bearer" + " " + req.session.Token,
-        "Content-Type": "application/json",
-      },
-    },
-    function (error, response, body) {
-      if (error) {
-        console.error(
-          new Date() +
-            ": " +
-            req.session.userName +
-            " fail to pull shule via /VutaShule Endpoint " +
-            error
-        );
-        res.send("failed");
-      }
-      console.log(body);
-      if (body !== undefined) {
-        var jsonData = JSON.parse(body);
-        var message = jsonData.message;
-        var statusCode = jsonData.statusCode;
-        console.info(
-          new Date() +
-            ": " +
-            req.session.userName +
-            " Successful to pull VutaShule EndPoint"
-        );
-        res.send({ statusCode: statusCode, message: message });
-      }
-    }
-  );
-});
-
-
 
 app.get("/BadiliTahasusi/:id", function (req, res) {
   var obj = [];
@@ -1987,7 +1952,7 @@ app.get("/MaombiMmilikiShule", function (req, res) {
                         ": /MaombiMmilikiShule"
                     );
                     res.render(
-                      path.join(__dirname + "/public/design/mmiliki"),
+                      path.join(__dirname + "/public/design/maombi/mmiliki"),
                       {
                         req: req,
                         total_month: data1,
@@ -2222,7 +2187,7 @@ app.get("/BadiliMmiliki", function (req, res) {
                         ": /BadiliMmiliki"
                     );
                     res.render(
-                      path.join(__dirname + "/public/design/badili_mmiliki"),
+                      path.join(__dirname + "/public/design/maombi/badili_mmiliki"),
                       {
                         req: req,
                         total_month: data1,
@@ -2341,7 +2306,7 @@ app.get("/BadiliMeneja", function (req, res) {
                         ": /BadiliMmiliki"
                     );
                     res.render(
-                      path.join(__dirname + "/public/design/badili_meneja"),
+                      path.join(__dirname + "/public/design/maombi/badili_meneja"),
                       {
                         req: req,
                         total_month: data1,
@@ -2699,7 +2664,7 @@ app.get("/MaombiKusajiliShule", function (req, res) {
                         ": /MaombiKusajiliShule"
                     );
                     res.render(
-                      path.join(__dirname + "/public/design/usajili"),
+                      path.join(__dirname + "/public/design/maombi/usajili"),
                       {
                         req: req,
                         total_month: data1,
@@ -2815,7 +2780,7 @@ app.get("/MaombiKusajiliShuleSerikali", function (req, res) {
                         ": /MaombiKusajiliShuleSerikali"
                     );
                     res.render(
-                      path.join(__dirname + "/public/design/usajili_serikali"),
+                      path.join(__dirname + "/public/design/maombi/usajili_serikali"),
                       {
                         req: req,
                         total_month: data1,
@@ -2934,7 +2899,7 @@ app.get("/KuongezaMikondo", function (req, res) {
                         ": /KuongezaMikondo"
                     );
                     res.render(
-                      path.join(__dirname + "/public/design/mikondo"),
+                      path.join(__dirname + "/public/design/maombi/mikondo"),
                       {
                         req: req,
                         total_month: data1,
@@ -3172,7 +3137,7 @@ app.get("/KuongezaDahalia", function (req, res) {
                         ": /KuongezaMikondo"
                     );
                     res.render(
-                      path.join(__dirname + "/public/design/dahalia"),
+                      path.join(__dirname + "/public/design/maombi/dahalia"),
                       {
                         req: req,
                         total_month: data1,
@@ -3406,7 +3371,7 @@ app.get("/KuongezaTahasusi", function (req, res) {
                         ": /KuongezaTahasusi"
                     );
                     res.render(
-                      path.join(__dirname + "/public/design/tahasusi"),
+                      path.join(__dirname + "/public/design/maombi/tahasusi"),
                       {
                         req: req,
                         total_month: data1,
@@ -3635,7 +3600,7 @@ app.get("/KuongezaBweni", function (req, res) {
                         req.session.userName +
                         ": /KuongezaBweni"
                     );
-                    res.render(path.join(__dirname + "/public/design/bweni"), {
+                    res.render(path.join(__dirname + "/public/design/maombi/bweni"), {
                       req: req,
                       total_month: data1,
                       maombi: obj,
@@ -3864,7 +3829,7 @@ app.get("/BadiliJina", function (req, res) {
                       new Date() + " " + req.session.userName + ": /BadiliJina"
                     );
                     res.render(
-                      path.join(__dirname + "/public/design/jina_shule"),
+                      path.join(__dirname + "/public/design/maombi/jina_shule"),
                       {
                         req: req,
                         total_month: data1,
@@ -3980,7 +3945,7 @@ app.get("/Hamisha", function (req, res) {
                       new Date() + " " + req.session.userName + ": /BadiliJina"
                     );
                     res.render(
-                      path.join(__dirname + "/public/design/hamisha_shule"),
+                      path.join(__dirname + "/public/design/maombi/hamisha_shule"),
                       {
                         req: req,
                         total_month: data1,
@@ -4098,7 +4063,7 @@ app.get("/FutaShule", function (req, res) {
                       new Date() + " " + req.session.userName + ": /BadiliJina"
                     );
                     res.render(
-                      path.join(__dirname + "/public/design/futa_shule"),
+                      path.join(__dirname + "/public/design/maombi/futa_shule"),
                       {
                         req: req,
                         total_month: data1,
@@ -4333,7 +4298,7 @@ app.get("/BadiliUsajili", function (req, res) {
                         ": /BadiliUsajili"
                     );
                     res.render(
-                      path.join(__dirname + "/public/design/aina_usajili"),
+                      path.join(__dirname + "/public/design/maombi/aina_usajili"),
                       {
                         req: req,
                         total_month: data1,
@@ -4405,7 +4370,7 @@ app.get("/MaombiKuanzishaShule", function (req, res) {
                 req.session.userName +
                 ": /MaombiKuanzishaShule"
             );
-            res.render(path.join(__dirname + "/public/design/kuanzishashule"), {
+            res.render(path.join(__dirname + "/public/design/maombi/kuanzishashule"), {
               req: req,
               total_month: data,
              
@@ -14171,7 +14136,7 @@ app.get("/AuditTrail", function (req, res) {
           // var objAttachment = jsonData.objAttachment;
           if (statusCode == 300) {
             console.log(new Date() + " " + req.session.userName + ": /Vyeo");
-            res.render(path.join(__dirname + "/public/design/audit_file"), {
+            res.render(path.join(__dirname + "/public/design/audits/audit"), {
               req: req,
               data: data,
               vyeo: vyeo,

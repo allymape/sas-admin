@@ -16,17 +16,17 @@ function ajaxRequest(url, method, callback, formData = {}, loading = true) {
       }
       callback(response);
     },
-    error: function (xhr, exception) {
+    error: function (xhr, exception , text) {
       if (loading) {
         hideLoadingSpinner();
       }
       var msg = "";
       if (xhr.status === 0) {
-        msg = "Not connect.\n Verify Network." + xhr.responseText;
+        msg = "Not connect.\n Verify Network.";
       } else if (xhr.status == 404) {
-        msg = "Requested page not found. [404]" + xhr.responseText;
+        msg = "Requested page not found. [404]";
       } else if (xhr.status == 500) {
-        msg = "Internal Server Error [500]." + xhr.responseText;
+        msg = "Internal Server Error [500].";
       } else if (exception === "parsererror") {
         //   alertMessage('Session Expired' ,'Session Expired you will be redirected to login page.' , 'warning' , () => {
         //   window.location.href="/";
@@ -34,13 +34,14 @@ function ajaxRequest(url, method, callback, formData = {}, loading = true) {
         window.location.href = "/";
         msg = "Requested JSON parse failed.";
       } else if (exception === "timeout") {
-        msg = "Time out error." + xhr.responseText;
+        msg = "Time out error.";
       } else if (exception === "abort") {
         msg = "Ajax request aborted.";
       } else {
-        msg = "Error:" + xhr.status + " " + xhr.responseText;
+        msg = "Error:" + xhr.status + " ";
       }
-      console.log(msg);
+      alertMessage(text , msg , 'error' , () => {
+      })
     },
   });
 }
@@ -166,10 +167,12 @@ var dataTable = (
       }
     });
     if (actionBtn !== null && typeof actionBtn !== "undefined") {
-      rowData = rowData + `<td class="text-center">`;
+      rowData = rowData + `<td class="text-right">`;
+      // Show Button
       if (typeof actionBtn.showBtn !== "undefined" && actionBtn.showBtn.show) {
         rowData = rowData + `Show`;
       }
+      // Edit Button
       if (typeof actionBtn.editBtn !== "undefined" && actionBtn.editBtn.show) {
         rowData =
           rowData +
@@ -179,10 +182,8 @@ var dataTable = (
                             onclick="${
                               typeof actionBtn.editBtn.callback !== "undefined"
                                 ? actionBtn.editBtn.callback
-                                : ""
-                            }"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" 
+                                : ""}"
+                            ><svg xmlns="http://www.w3.org/2000/svg" 
                                   width="24" height="24" viewBox="0 0 24 24" 
                                   fill="none" stroke="currentColor" stroke-width="2" 
                                   stroke-linecap="round" stroke-linejoin="round" 
@@ -194,9 +195,15 @@ var dataTable = (
                           </svg>
                         </a>`;
       }
+    //  Delete Button
       if (
-        typeof actionBtn.deleteBtn !== "undefined" &&
+        typeof actionBtn.deleteBtn !== "undefined" 
+        &&
         actionBtn.deleteBtn.show
+        &&
+       (
+        typeof dataValue.status == 'undefined' || (typeof dataValue.status != 'undefined' && dataValue.status == 1)
+        )
       ) {
         rowData =
           rowData +
@@ -215,9 +222,14 @@ var dataTable = (
                           </svg>
                           </button>`;
       }
+      // Other Button
       if (
         typeof actionBtn.otherBtn !== "undefined" &&
         actionBtn.otherBtn.show
+         &&
+        (
+          typeof dataValue.status == 'undefined' || (typeof dataValue.status != 'undefined' && dataValue.status == 1)
+        )
       ) {
         rowData =
           rowData +
@@ -336,9 +348,102 @@ function appendSelectionOption(
         selected.includes(id) ? "selected" : ""
       } > ${name} </option>`;
   }
-  fieldSelect.html(options);
+  fieldSelect.html(options).prop('disabled' , false);
 }
 
+function getAllHierarchies(rankId, user = null , selectedHierarchy = null) {
+  if (rankId) {
+    ajaxRequest(
+      "/hierarchies",
+      "GET",
+      (response) => {
+        if (response.statusCode == 300) {
+          var data = response.data;
+          appendSelectionOption(
+            "uongozi-field",
+            data.map((item, index) => ({
+              name: item.name,
+              id: item.id,
+            })),
+            [selectedHierarchy],
+            "Chagua yupo chini ya "
+          );
+          var selectedUongozi = $("#uongozi-field")
+            .find("option:selected")
+            .text();
+          getAllDesignations(user ? user.uongozi : null , user ? user.cheo : null);
+          showHiddenFieldBasedOnSelectedHierarchy(selectedUongozi);
+          getAllZones(user, user ? user.zone_id : null);
+        }
+      },
+      { is_paginated: false, rank_id: rankId }
+    );
+  }
+}
+function getAllDesignations(hierarchyId, selectedDesignation = null) {
+  if (hierarchyId) {
+    ajaxRequest(
+      "/designations",
+      "GET",
+      (response) => {
+        if (response.statusCode == 300) {
+          var data = response.data;
+          // console.log(response)
+          appendSelectionOption(
+            "cheo-field",
+            data.map((item, index) => ({
+              name: item.name,
+              id: item.id,
+            })),
+            [selectedDesignation],
+            "Chagua cheo "
+          );
+        }
+      },
+      { is_paginated: false, hierarchy_id: hierarchyId }
+    );
+  }
+}
+// Get Zones
+function getAllZones(user = null , selectedZone = null){
+  // Load zones
+  ajaxRequest(
+    "/zones",
+    "GET",
+    (zonesResponse) => {
+      if (zonesResponse.statusCode == 300) {
+        var zones = zonesResponse.data;
+        appendSelectionOption(
+          "kanda-field",
+          zones.map((zone, index) => ({
+            name: zone.zone_name,
+            id: zone.id,
+          })),
+          [selectedZone],
+          "Chagua Kanda"
+        ); 
+        if (user && user.zone_id) {
+          $("#mkoa-field").prop("disabled", user.zone_id ? false : true);
+          getAllRegions(
+            user ? user.zone_id : null,
+            user ? user.region_code : null
+          );
+        }
+        if (user && user.region_code) {
+          $("#lga-field").prop(
+            "disabled",
+            user && user.region_code ? false : true
+          );
+          getAllDistricts(
+            user ? user.region_code : null,
+            user ? user.district_code : null
+          );
+        }
+      }
+    },
+    { is_paginated: false }
+  ); // end of zones ajax request
+}
 function getAllRegions(zoneId, selectedRegion = null) {
   if (zoneId) {
     ajaxRequest(
@@ -348,7 +453,7 @@ function getAllRegions(zoneId, selectedRegion = null) {
         if (regionsResponse.statusCode == 300) {
           var regions = regionsResponse.regions;
           appendSelectionOption(
-            "region-field",
+            "mkoa-field",
             regions.map((region, index) => ({
               name: region.regionName,
               id: region.regionCode,
@@ -383,6 +488,53 @@ function getAllDistricts(regionCode, selectedDistrict = null) {
       }
     },
     { is_paginated: false, region_code: regionCode }
+  );
+}
+
+function getAllWards(lgaCode, selectedWard = null) {
+  ajaxRequest(
+    "/WardList",
+    "GET",
+    (wardsResponse) => {
+      if (wardsResponse.statusCode == 300) {
+        const { wards } = wardsResponse;
+        $("#kata-field").prop("disabled", lgaCode ? false : true);
+        appendSelectionOption(
+          "kata-field",
+          wards.map((ward, index) => ({
+            name: ward.WardName,
+            id: ward.WardCode,
+          })),
+          [selectedWard],
+          "Chagua Kata"
+        );
+      }
+    },
+    { is_paginated: false, lga_code: lgaCode }
+  );
+}
+
+function getAllStreets(wardCode, selectedStreet = null) {
+  ajaxRequest(
+    "/MitaaList",
+    "GET",
+    (streetsResponse) => {
+      const { streets , statusCode } = streetsResponse;
+      // console.log(statusCode)
+      if (statusCode == 300) {
+        $("#mtaa-field").prop("disabled", wardCode ? false : true);
+        appendSelectionOption(
+          "mtaa-field",
+          streets.map((street, index) => ({
+            name: street.StreetName,
+            id: street.StreetCode,
+          })),
+          [selectedStreet],
+          "Chagua Mtaa"
+        );
+      }
+    },
+    { is_paginated: false, ward_code: wardCode }
   );
 }
 
@@ -449,7 +601,7 @@ $("#search-close").on("click", function () {
   }
 });
 
-const updateUrl = (param, value) => {
+var updateUrl = (param, value) => {
   const searchParams = new URLSearchParams(window.location.search);
   const hasPageParam = searchParams.has("page");
   let refreshed = false;
@@ -577,3 +729,74 @@ function badliPass() {
     alert("Nenosiri hazifanani");
   }
 }
+
+var setUrlSearchParams = (url_segment = null) => {
+  const url = new URL(window.location.href);
+  const searchParams = new URLSearchParams(url.search);
+  const entries = [];
+  // Iterate over the query string parameters
+  for (const [key, value] of searchParams.entries()) {
+    entries.push({ key, value });
+  }
+  // Check if any key has an empty value
+  const emptyKeys = url.search
+                       .substring(1)
+                       .split("&")
+                       .map((param) => param.split("=")[0])
+                       .filter((key) => !searchParams.has(key));
+      // Add empty keys to the entries array
+      emptyKeys.forEach((key) => {
+        entries.push({key , value : null});
+      });
+ 
+      entries.forEach((params) => {
+        const {key , value} = params;
+          if (value) {
+            searchParams.set(key, value);
+          } else {
+            searchParams.delete(key);
+          }
+      });
+      // Delete Page from search params if present.
+     if(searchParams.has('page')){
+         searchParams.delete('page');
+     }else{
+           let newUrl = window.location.pathname + "?" + searchParams.toString();
+           history.pushState({}, document.title, searchParams.toString() ? newUrl : newUrl.replace('?' , '')); //Modify url and make sure it does not include empty params
+     }
+    let params = searchParams.toString();
+    if (url_segment) {
+      return `/${url_segment}?` + params;
+    }
+  return params;
+}
+
+
+function parseQueryString(queryString){
+    const params = new URLSearchParams(queryString);
+    const result = {};
+       for(const param of params.entries()){
+          const [key , value] = param
+          result[key] = value
+       }
+    return result;
+}
+
+setTimeout(() =>  {
+    var kuanzacounti = document.getElementById("kuanzacounti");
+    ajaxRequest(`/ActiveMenu` , 'GET' , (response) => {
+
+              if (typeof response === "string") {
+                response = JSON.parse(response);
+              }
+              txt = document.createTextNode(response.kauntikuanza);
+              kuanzacounti.appendChild(txt);
+              if (response.TwoFA == 0) {
+                document.getElementById("controls-slide").checked = false;
+              }
+
+              if (response.TwoFA == 1) {
+                document.getElementById("controls-slide").checked = true;
+              }
+    } , {} , false);
+  }, 1000);

@@ -69,33 +69,19 @@
                 <h5 class="modal-title" id="exampleModalLabel"></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
             </div>
-            <form>
-                <div class="alert alert-success shadow" role="alert" id="alertsuccess" style="display: none;">
-                    <strong> Hongera! </strong> Mtumiaji <b>amesajiliwa</b> kikamilifu!
-                </div>
-                <div class="alert alert-danger shadow mb-xl-0" role="alert" id="alertexist" style="display: none;">
-                    <strong> Imeshindwa Kusajili! </strong> Mtumiaji <b>alishasajiliwa</b> kwenye mfumo tayari!
-                    </div>
-                    <div class="alert alert-warning shadow shadow" role="alert" id="alertmtandao" style="display: none;">
-                    <strong> Uh oh, kuna tatizo </strong> la <b>mtandao,</b> tafadhali jaribu tena badae!
-                </div>
+            <form id="user-form">
+                <!-- <input type="text" id="id-field" /> -->
                 <div class="modal-body">
-
-                    <div class="mb-3" id="modal-id" style="display: none;">
-                        <label for="id-field" class="form-label">ID</label>
-                        <input type="text" id="id-field" class="form-control" placeholder="ID" readonly />
-                    </div>
-
                     <div class="row">
                     <div class="mb-3 col-xxl-4">
-                        <label for="customername-field" class="form-label">Jina Kamili(<span style="color: red;">*</span>)</label>
-                        <input type="text" id="customername-field" class="form-control" placeholder="Mfano: Olivia Samwel" onkeyup="checkOnlyNo()" required />
+                        <label for="name-field" class="form-label">Jina Kamili (<span style="color: red;">*</span>)</label>
+                        <input type="text" id="name-field" class="form-control" placeholder="Mfano: Olivia Samwel" onkeyup="checkOnlyNo()" required />
                         <span style="color: red;display: none;" id="jazanamba">Tafadhali jina haliwezi kuwa namba pekee</span>
                         <span style="color: red;display: none;" id="jazanalama">Tafadhali jina haliwezi kuwa na alama</span>
                         <span style="color: red;display: none;" id="jazaname">Tafadhali jaza Jina Kamili</span>
                     </div>
                     <div class="mb-3 col-xxl-4">
-                        <label for="email-field" class="form-label">Barua Pepe(<span style="color: red;">*</span>)</label>
+                        <label for="email-field" class="form-label">Barua Pepe (<span style="color: red;">*</span>)</label>
                         <input type="email" autocomplete="off" id="username-field" class="form-control" placeholder="Mfano: olivia@gmail.com" onkeyup="ValidateEmail();" required />
                         <span style="color: red;display: none;" id="jazausername">Tafadhali jaza Barua Pepe</span>
                         <span id="lblError" style="color: red"></span>
@@ -141,38 +127,52 @@
                     </div>
                     <!-- <hr/> -->
                     <div class="row">
-                        <div class="col-xxl-8 mb-3">
-                            <label for="role-field" class="form-label">User Role(<span style="color: red;">*</span>)</label>
-                                <select class="form-control select2-hidden-accessible" data-trigger name="role" id="role-field" >
+                        <div class="col-xxl-6 mb-3">
+                            <label for="jukumu-field" class="form-label">Jukumu (Role) (<span style="color: red;">*</span>)</label>
+                                <select class="form-control select2-hidden-accessible" data-trigger name="role" id="jukumu-field" >
                                 </select>
-                            <span style="color: red;display: none;" id="jazacheo">Tafadhali Chagua Cheo</span>
+                            <span style="color: red;display: none;" id="jazajukumu">Tafadhali Chagua Jukumu</span>
                         </div>
+                        <div class="col-xxl-6 mb-3">
+                            <label for="ngazi-field" class="form-label">Ngazi (<span style="color: red;">*</span>)</label>
+                                <select class="form-control select2-hidden-accessible" data-trigger name="ngazi" id="ngazi-field" >
+                                </select>
+                            <span style="color: red;display: none;" id="jazangazi">Tafadhali Chagua Ngazi</span>
+                        </div>  
                     </div>
                         <div class="row">
-                        <div class="col-xxl-8 mb-3">
-                            <label for="status-field" class="form-label">User Level(<span style="color: red;">*</span>)</label>
-                                <select class="form-control select2-hidden-accessible" data-trigger name="level" id="level-field" >
+                        <div class="col-xxl-6 mb-3">
+                            <label for="uongozi-field" class="form-label">Sehemu (<span style="color: red;">*</span>)</label>
+                                <select class="form-control select2-hidden-accessible" disabled data-trigger name="uongozi" id="uongozi-field" >
+                                <option value="">Chagua Kituo kwanza</option>
+                                </select>
+                            <span style="color: red;display: none;" id="jazasehemu">Tafadhali Chagua Sehemu</span>
+                        </div>     
+                         <div class="col-xxl-6 mb-3">
+                            <label for="cheo-field" class="form-label">Cheo (<span style="color: red;">*</span>)</label>
+                                <select class="form-control select2-hidden-accessible" disabled data-trigger name="cheo" id="cheo-field" >
+                                <option value="">Chagua sehemu kwanza</option>
                                 </select>
                             <span style="color: red;display: none;" id="jazacheo">Tafadhali Chagua Cheo</span>
-                        </div>            
+                        </div>         
                     </div>
                     <div class="row">
                         <!-- Zones -->
                             <div  class="kanda-div col-xxl-4 mb-3 d-none">
-                            <label for="zone-field" class="form-label">Kanda</label>
-                            <select class="form-control select2-hidden-accessible" data-trigger name="zone" id="zone-field">
+                            <label for="kanda-field" class="form-label">Kanda (<span style="color: red;">*</span>)</label>
+                            <select class="form-control select2-hidden-accessible" data-trigger name="zone" id="kanda-field">
                             </select>
                         </div>
                         <!-- Regions -->
                         <div   class="region-div col-xxl-4 mb-3 d-none">
-                            <label for="region-field" class="form-label">Mkoa</label>
-                                <select class="form-control select2-hidden-accessible" data-trigger name="region" id="region-field" disabled>
+                            <label for="mkoa-field" class="form-label">Mkoa (<span style="color: red;">*</span>)</label>
+                                <select class="form-control select2-hidden-accessible" data-trigger name="region" id="mkoa-field" disabled>
                                     <option value="">Chagua Kanda kwanza</option>
                                 </select>
                         </div>
                         <!-- Concils -->
                         <div   class="lga-div col-xxl-4 mb-3 d-none">
-                            <label for="lga-field" class="form-label">Halmashauri</label>
+                            <label for="lga-field" class="form-label">Halmashauri (<span style="color: red;">*</span>)</label>
                             <select class="form-control select2-hidden-accessible" data-trigger name="lga" id="lga-field" disabled>
                                 <option value="">Chagua Mkoa kwanza</option>
                             </select>
@@ -187,9 +187,9 @@
                 </div>
                 <div class="modal-footer">
                     <div class="hstack gap-2 justify-content-end">
-                        <button type="button" class="btn btn-light" onclick="funga()" data-bs-dismiss="modal">Funga</button>
+                        <button type="button" class="btn btn-light"  data-bs-dismiss="modal">Funga</button>
                         <div id="sajilbtn">
-                        <button type="button" class="btn btn-success" onclick="updateUser()" id="add-btnmwox">Sajili</button>
+                        <button type="button" class="btn btn-success" onclick="saveUser()" id="add-btnmwox">Sajili</button>
                         </div>
                         <div id="pakiabtn" style="display: none;">
                             <button type="button" class="btn btn-success btn-load">
@@ -226,11 +226,11 @@
                         <p class="text-muted mx-4 mb-0">Una uhakika unataka kumfuta mtumiaji huyu?</p>
                     </div>
                     <!-- <div class="mb-3"> -->
-                        <!-- <label for="customername-field" class="form-label">Je, unataka kumfuta mtumiaji kwenye mfumo</label> -->
+                        <!-- <label for="name-field" class="form-label">Je, unataka kumfuta mtumiaji kwenye mfumo</label> -->
                         <input type="hidden" id="ada-field-edit" class="form-control" placeholder="Mfano: Ada ya usajili"/>
                     <!-- </div> -->
                     <!-- <div class="mb-3">
-                        <label for="customername-field" class="form-label">Code ya Ada</label> -->
+                        <label for="name-field" class="form-label">Code ya Ada</label> -->
                         <input type="hidden" id="code-field-edit" class="form-control" placeholder="Mfano: RF01"/>
                     <!-- </div> -->
                 </div>
