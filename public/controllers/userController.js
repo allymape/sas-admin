@@ -35,13 +35,12 @@ userController.post("/auth", function (req, res) {
       method: "POST",
       json: { username: username, password: password },
     },
-    (error, response, body) => {
+    (error ,response ,  body) => {
       if (error) {
         req.flash("error", "Kuna tatizo wasiliana na Msimamizi wa Mfumo");
         res.redirect("/");
       } else {
-        var message = body.message;
-        var statusCode = body.statusCode;
+        const { statusCode , message} = body;
         if (body == "Too many requests, please try again later.") {
           req.flash("warning", 'Too many requests, please try again after 10 minutes.');
           res.redirect("/");
@@ -51,6 +50,7 @@ userController.post("/auth", function (req, res) {
             req.flash("warning", message);
             res.redirect("/");
           } else if (statusCode == 300) {
+           
                 const ip_address = requestIp.getClientIp(req);
                 const browser_used = req.headers["user-agent"];
                 const { user, RoleManage , token } = body;
@@ -65,6 +65,7 @@ userController.post("/auth", function (req, res) {
                 req.session.ip_address = ip_address;
                 req.session.browser_used = browser_used;
                 req.session.RoleManage = RoleManage;
+           
             if (user.twofa == 0) {
               if (Number(user.user_level) == 10) {
                 res.redirect("/RipotiZilizosajiliwa");
@@ -74,6 +75,9 @@ userController.post("/auth", function (req, res) {
             } else {
               res.redirect("/Dashboard");
             }
+          }else{
+             req.flash("error", "Kuna tatizo wasiliana na Msimamizi wa Mfumo");
+             res.redirect("/");
           }
         }
       }

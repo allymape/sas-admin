@@ -527,7 +527,7 @@ function getAllStreets(wardCode, selectedStreet = null) {
           "mtaa-field",
           streets.map((street, index) => ({
             name: street.StreetName,
-            id: street.StreetCode,
+            id: street.id,
           })),
           [selectedStreet],
           "Chagua Mtaa"

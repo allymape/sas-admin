@@ -257,19 +257,19 @@ const createChart = (labels, series, selector , dataLabelEnabled = true , toolti
                                     </li>
                                     <li class='list-group-item p-2'>
                                       <span class="mdi mdi-chart-arc" style='color: ${w.globals.colors[1]}!important'></span>
-                                    ${w.globals.seriesNames[1]}: ${series[1][dataPointIndex]}
+                                    ${w.globals.seriesNames[1]}: ${typeof series[1][dataPointIndex] !== 'undefined' ? series[1][dataPointIndex] : 0}
                                     </li>
                                     <li class='list-group-item p-2'>
                                       <span class="mdi mdi-chart-arc" style='color: ${w.globals.colors[2]}!important'></span>
-                                    ${w.globals.seriesNames[2]}: ${series[2][dataPointIndex]}
+                                    ${w.globals.seriesNames[2]}: ${typeof series[2][dataPointIndex] !== 'undefined' ? series[2][dataPointIndex] : 0}
                                     </li>
                                     <li class='list-group-item p-2'>
                                       <span class="mdi mdi-chart-arc" style='color: ${w.globals.colors[3]}!important'></span>
-                                    ${w.globals.seriesNames[3]}: ${series[3][dataPointIndex]}
+                                    ${w.globals.seriesNames[3]}: ${typeof series[3][dataPointIndex] !== 'undefined' ? series[3][dataPointIndex] : 0}
                                     </li>
                                     <li class='list-group-item p-2'>
                                       <span class="mdi mdi-chart-arc" style='color: ${w.globals.colors[4]}!important'></span>
-                                    ${w.globals.seriesNames[4]}: ${series[4][dataPointIndex]}
+                                    ${w.globals.seriesNames[4]}: ${typeof series[4][dataPointIndex] !== 'undefined' ? series[4][dataPointIndex] : 0}
                                     </li>
                                     `;
               return tooltipContent + "</ul>";

@@ -12,17 +12,17 @@ function renderDataTableWards(){
   ajaxRequest("/SchoolList", "GET", (response) => {
     // render table
     var fields = {
-      id : {hidden : true},
+      id: { hidden: true },
       name: {},
       reg_no: {},
       ownership: {},
       category: {},
       reg_date: {},
+      opening_date: {},
       region: {},
       lga: {},
       ward: {},
       street: {},
-      created_at: {},
       updated_at: {},
       status: {},
     };
@@ -79,7 +79,7 @@ function edit(e){
              const selectedLga = data.lga;
              const selectedWard = data.ward;
              const selectedStreet = data.street;
-             const opening_date = data.opening_date;
+             const registration_date = data.registration_date;
              const category = data.category;
              const ownership = data.ownership;
              const registration_number = data.registration_number;
@@ -92,7 +92,7 @@ function edit(e){
              document.getElementById('category-field').value = category
              document.getElementById('ownership-field').value = ownership
              document.getElementById('tracking-number').innerText = tracking_number
-             setDatePicker("opening-date-field", opening_date);
+             setDatePicker("registration-date-field", registration_date);
              ajaxRequest(
                   "/MikoaList",
                   "GET",
@@ -117,7 +117,7 @@ function edit(e){
               if(selectedLga){
                 getAllWards(selectedLga , selectedWard);
                 if(selectedWard){
-                   getAllStreets(selectedWard , selectedStreet);
+                   getAllStreets(selectedWard, parseInt(selectedStreet));
                 }
               }
             }

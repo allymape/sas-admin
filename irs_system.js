@@ -40,7 +40,7 @@ const attachmentTypeController = require("./public/controllers/attachmentTypeCon
 const applicationCategoryController = require("./public/controllers/applicationCategoryController");
 const registrationTypeController = require("./public/controllers/registrationTypeController");
 const errorController = require("./public/controllers/errorController");
-const { can, isAuthenticated, titleCase, lowerCase, sumAssociativeArray } = require("./util");
+const { can, isAuthenticated, titleCase, lowerCase, sumAssociativeArray, formatDate } = require("./util");
 const dashboardController = require("./public/controllers/dashboardController");
 const designationController = require("./public/controllers/designationController");
 const applicantController = require("./public/controllers/applicantController");
@@ -121,6 +121,7 @@ global.permission = (req , permission_name) => {
         const permissions = req.session.RoleManage;
             if(permissions.length > 0){
               const user_permissions = pluck(permissions , 'permission_name');
+              // {{id : 1 , name : 'view-users'} , {id : 2 , name : 'create-users'} }  =>  ['view-users','create-user'];
               // Check permission name has separated by | and loop through to 
               // check if user has at least one permission,
               // | is conjuction or
@@ -160,6 +161,10 @@ global.nameCase = (text) => {
 
 global.numberFormat = (number , format = `0,0`) => {
     return numeral(number).format(format);
+}
+
+global.dateFormat = (date , format = "DD/MM/YYYY hh:mm:ss") => {
+    return formatDate(date , format);
 }
 
 
@@ -12664,7 +12669,7 @@ app.get("/RipotiZilizosajiliwa", function (req, res) {
             // Saving the pdf file in root directory.
 
             res.render(
-              path.join(__dirname + "/public/design/ripotizilizosajiliwa"),
+              path.join(__dirname + "/public/design/reports/ripotizilizosajiliwa"),
               {
                 req: req,
                 objtotal: objtotal,
