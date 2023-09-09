@@ -2073,7 +2073,7 @@ app.get("/RipotiUthibitisho", function (req, res) {
                     );
 
                     res.render(
-                      path.join(__dirname + "/public/design/thibitishammiliki"),
+                      path.join(__dirname + "/public/design/reports/thibitishammiliki"),
                       {
                         req: req,
                         total_month: data1,
@@ -2431,16 +2431,16 @@ app.get("/ViewBadilimeneja", function (req, res) {
                     );
                     res.render(
                       path.join(
-                        __dirname + "/public/design/ripoti_badili_meneja"
+                        __dirname + "/public/design/reports/ripoti_badili_meneja"
                       ),
                       {
                         req: req,
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                                          userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
+                        userName: req.session.userName,
+                        RoleManage: req.session.RoleManage,
+                        userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -2552,7 +2552,7 @@ app.get("/RipotiBadiliMmiliki", function (req, res) {
                     );
                     res.render(
                       path.join(
-                        __dirname + "/public/design/ripoti_badili_mmiliki"
+                        __dirname + "/public/design/reports/ripoti_badili_mmiliki"
                       ),
                       {
                         req: req,
@@ -3023,15 +3023,15 @@ app.get("/RipotiKuongezaMikondo", function (req, res) {
                         ": /KuongezaMikondo"
                     );
                     res.render(
-                      path.join(__dirname + "/public/design/ripoti_mikondo"),
+                      path.join(__dirname + "/public/design/reports/ripoti_mikondo"),
                       {
                         req: req,
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                                          userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
+                        userName: req.session.userName,
+                        RoleManage: req.session.RoleManage,
+                        userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -3261,7 +3261,7 @@ app.get("/RipotiDahalia", function (req, res) {
                         ": /KuongezaMikondo"
                     );
                     res.render(
-                      path.join(__dirname + "/public/design/ripoti_dahalia"),
+                      path.join(__dirname + "/public/design/reports/ripoti_dahalia"),
                       {
                         req: req,
                         total_month: data1,
@@ -3718,7 +3718,7 @@ app.get("/RipotiKuongezaBweni", function (req, res) {
                         ": /KuongezaBweni"
                     );
                     res.render(
-                      path.join(__dirname + "/public/design/ripoti_bweni"),
+                      path.join(__dirname + "/public/design/reports/ripoti_bweni"),
                       {
                         req: req,
                         total_month: data1,
@@ -4184,7 +4184,7 @@ app.get("/RipotiKubadiliJina", function (req, res) {
                       new Date() + " " + req.session.userName + ": /BadiliJina"
                     );
                     res.render(
-                      path.join(__dirname + "/public/design/ripoti_jina_shule"),
+                      path.join(__dirname + "/public/design/reports/ripoti_jina_shule"),
                       {
                         req: req,
                         total_month: data1,
@@ -12796,7 +12796,7 @@ app.get("/SajiliwaZilizokataliwa", function (req, res) {
             // Saving the pdf file in root directory.
 
             res.render(
-              path.join(__dirname + "/public/design/ripotizilizosajiliwa"),
+              path.join(__dirname + "/public/design/reports/ripotizilizosajiliwa"),
               {
                 req: req,
                 objtotal: objtotal,
@@ -13033,15 +13033,15 @@ app.get("/RipotiZilizofutiwa", function (req, res) {
                       new Date() + " " + req.session.userName + ": /BadiliJina"
                     );
                     res.render(
-                      path.join(__dirname + "/public/design/ripoti_futa_shule"),
+                      path.join(__dirname + "/public/design/reports/ripoti_futa_shule"),
                       {
                         req: req,
                         total_month: data1,
                         maombi: obj,
                         useLev: req.session.UserLevel,
-                                          userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
+                        userName: req.session.userName,
+                        RoleManage: req.session.RoleManage,
+                        userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -13151,7 +13151,7 @@ app.get("/RipotiAnzishaBilaMajengo", function (req, res) {
                 ": /MaombiKuanzishaShuleList"
             );
             res.render(
-              path.join(__dirname + "/public/design/ripotianzishabilamajengo"),
+              path.join(__dirname + "/public/design/reports/ripotianzishabilamajengo"),
               {
                 req: req,
                 total_month: data,
@@ -13263,7 +13263,7 @@ app.get("/RipotiAnzishaBilaMajengoKataliwa", function (req, res) {
             );
             res.render(
               path.join(
-                __dirname + "/public/design/ripotianzishabilamajengokat"
+                __dirname + "/public/design/reports/ripotianzishabilamajengokat"
               ),
               {
                 req: req,
@@ -13375,7 +13375,7 @@ app.get("/RipotiAnzishaMajengo", function (req, res) {
                 ": /MaombiKuanzishaShuleList"
             );
             res.render(
-              path.join(__dirname + "/public/design/ripotianzishamajengo"),
+              path.join(__dirname + "/public/design/reports/ripotianzishamajengo"),
               {
                 req: req,
                 total_month: data,
@@ -13486,7 +13486,7 @@ app.get("/RipotiAnzishaMajengoKataliwa", function (req, res) {
                 ": /MaombiKuanzishaShuleList"
             );
             res.render(
-              path.join(__dirname + "/public/design/ripotianzishamajengokat"),
+              path.join(__dirname + "/public/design/reports/ripotianzishamajengokat"),
               {
                 req: req,
                 total_month: data,

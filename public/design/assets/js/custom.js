@@ -1,6 +1,6 @@
 function ajaxRequest(url, method, callback, formData = {}, loading = true) {
-  var curretntUrl = window.location.href;
-  var parameters = curretntUrl.split("?")[1] || "";
+  var currentUrl = window.location.href;
+  var parameters = currentUrl.split("?")[1] || "";
   if (loading) {
     showLoadingSpinner();
   }
