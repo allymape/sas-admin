@@ -50,7 +50,7 @@
                         <%- include('page_title.ejs') %>
                         <!-- end page title -->
                     <% } %>
-                    <% if(typeof top_header !== 'undefined') {%>
+                    <% if(typeof top_header !== 'undefined' && top_header !== null) {%>
                         <%- include(top_header) %>
                     <% } %>
                     <div class="row">

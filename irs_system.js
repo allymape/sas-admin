@@ -4686,7 +4686,7 @@ app.get("/TaarifaOmbi/:id", function (req, res) {
               new Date() + " " + req.session.userName + ": /TaarifaOmbi"
             );
             res.render(
-              path.join(__dirname + "/public/design/view-ombi-details"),
+              path.join(__dirname + "/public/design/maombi/details/view-ombi-details"),
               {
                 req: req,
                 muda_ombi: remain_days,
@@ -6954,7 +6954,7 @@ app.get("/ViewOmbi/:id", function (req, res) {
               new Date() + " " + req.session.userName + ": /ViewOmbi"
             );
             res.render(
-              path.join(__dirname + "/public/design/view-ombi-mmiliki-details"),
+              path.join(__dirname + "/public/design/maombi/details/view-ombi-mmiliki-details"),
               {
                 req: req,
                 muda_ombi: remain_days,
