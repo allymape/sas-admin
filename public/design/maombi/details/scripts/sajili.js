@@ -49,7 +49,7 @@ for (var i=0; i < response.length; i++) {
 }
 });
 }
-window.onload = nata;
+// window.onload = nata;
 
 function tuma(){
     var coments = document.getElementById('exampleFormControlTextarea1').value;

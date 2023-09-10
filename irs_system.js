@@ -1120,14 +1120,14 @@ app.get("/BadiliTahasusi/:id", function (req, res) {
                 TrackingNumber
             );
             res.render(
-              path.join(__dirname + "/public/design/view_ongeza_tahasusi"),
+              path.join(__dirname + "/public/design/maombi/details/view_ongeza_tahasusi"),
               {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
                                   userName: req.session.userName,
               RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
+              userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -5077,7 +5077,7 @@ app.get("/BadiliMkondo/:id", function (req, res) {
               new Date() + " " + req.session.userName + ": /BadiliMkondo"
             );
             res.render(
-              path.join(__dirname + "/public/design/view-badili-ombi"),
+              path.join(__dirname + "/public/design/maombi/details/view-badili-ombi"),
               {
                 req: req,
                 muda_ombi: remain_days,
@@ -5559,7 +5559,7 @@ app.get("/BadiliDahalia/:id", function (req, res) {
               new Date() + " " + req.session.userName + ": /BadiliMkondo"
             );
             res.render(
-              path.join(__dirname + "/public/design/view-badili-dahalia"),
+              path.join(__dirname + "/public/design/maombi/details/view-badili-dahalia"),
               {
                 req: req,
                 muda_ombi: remain_days,
@@ -6097,7 +6097,7 @@ app.get("/BadiliShule/:id", function (req, res) {
               new Date() + " " + req.session.userName + ": /BadiliShule"
             );
             res.render(
-              path.join(__dirname + "/public/design/view-badili-shule"),
+              path.join(__dirname + "/public/design/maombi/details/view-badili-shule"),
               {
                 req: req,
                 muda_ombi: remain_days,
@@ -9149,7 +9149,7 @@ app.get("/SajiliOmbi/:id", function (req, res) {
               new Date() + " " + req.session.userName + ": /SajiliOmbi"
             );
             res.render(
-              path.join(__dirname + "/public/design/view-ombi-sajili-details"),
+              path.join(__dirname + "/public/design/maombi/details/view-ombi-sajili-details"),
               {
                 req: req,
                 muda_ombi: remain_days,
@@ -9317,7 +9317,7 @@ app.get("/SajiliOmbiSerikali/:id", function (req, res) {
             );
             res.render(
               path.join(
-                __dirname + "/public/design/view-ombi-sajili-serikali-details"
+                __dirname + "/public/design/maombi/details/view-ombi-sajili-serikali-details"
               ),
               {
                 req: req,
