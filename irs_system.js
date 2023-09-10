@@ -4814,7 +4814,7 @@ app.get("/FutaShuleTaarifa/:id", function (req, res) {
               new Date() + " " + req.session.userName + ": /TaarifaOmbi"
             );
             res.render(
-              path.join(__dirname + "/public/design/view-ombi-futa-details"),
+              path.join(__dirname + "/public/design/maombi/details/view-ombi-futa-details"),
               {
                 req: req,
                 muda_ombi: remain_days,
@@ -5959,7 +5959,7 @@ app.get("/HamishaShuleDetails/:id", function (req, res) {
               new Date() + " " + req.session.userName + ": /BadiliShule"
             );
             res.render(
-              path.join(__dirname + "/public/design/view-hamisha-shule"),
+              path.join(__dirname + "/public/design/maombi/details/view-hamisha-shule"),
               {
                 req: req,
                 muda_ombi: remain_days,
@@ -6616,7 +6616,7 @@ app.get("/BadiliAinaUsajili/:id", function (req, res) {
               new Date() + " " + req.session.userName + ": /BadiliAinaUsajili"
             );
             res.render(
-              path.join(__dirname + "/public/design/view-badili-aina-usajili"),
+              path.join(__dirname + "/public/design/maombi/details/view-badili-aina-usajili"),
               {
                 req: req,
                 muda_ombi: remain_days,
@@ -7731,7 +7731,7 @@ app.get("/ViewOmbiMmiliki/:id", function (req, res) {
             );
             res.render(
               path.join(
-                __dirname + "/public/design/view-ombi-badili-mmiliki-details"
+                __dirname + "/public/design/maombi/details/view-ombi-badili-mmiliki-details"
               ),
               {
                 req: req,
@@ -7902,7 +7902,7 @@ app.get("/ViewOmbiMeneja/:id", function (req, res) {
             );
             res.render(
               path.join(
-                __dirname + "/public/design/view-ombi-badili-meneja-details"
+                __dirname + "/public/design/maombi/details/view-ombi-badili-meneja-details"
               ),
               {
                 req: req,
