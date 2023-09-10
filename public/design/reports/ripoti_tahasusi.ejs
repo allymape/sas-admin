@@ -1,0 +1,133 @@
+<% var card_title = '' %> 
+<%- include('../layouts/partials/header.ejs' , {
+    title : 'Kubadili Tahasusi',
+    page_title : 'Kubadili Tahasusi',
+    card_title : 'Orodha ya Ripoti ya Kubadili Tahasusi',
+    breadcrumb_main : 'Ripoti',
+    top_header : '../../reports/top_headers/tahasusi_top_header.ejs',
+}) %>
+ <div class="card-body border border-dashed border-end-0 border-start-0">
+    <form>
+        <div class="row g-3">
+            <div class="col-xxl-5 col-sm-12">
+                <div class="search-box">
+                    <input type="text" class="form-control search bg-light border-light" placeholder="Tafuta ombi kuendelea nalo...">
+                    <i class="ri-search-line search-icon"></i>
+                </div>
+            </div>
+            <!--end col-->
+
+            <div class="col-xxl-3 col-sm-4">
+                <input type="date" class="form-control bg-light border-light" id="demo-datepicker" data-provider="flatpickr" data-date-format="d M, Y" data-range-date="true" placeholder="Chagua Tarehe ya Ombi">
+            </div>
+            <!--end col-->
+
+            <div class="col-xxl-3 col-sm-4">
+                <div class="input-light">
+                    <select class="form-control" data-choices data-choices-search-false name="choices-single-default" id="idStatus">
+                        <option value="">Status</option>
+                        <option value="all" selected>All</option>
+                        <option value="New">New</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Inprogress">Inprogress</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+            </div>
+            <!--end col-->
+            <div class="col-xxl-1 col-sm-4">
+                <button title="Angalia kwa tarehe na Hali ulizochagua" type="button" class="btn btn-primary w-100" onclick="SearchData();"> <i class="ri-equalizer-fill me-1 align-bottom"></i>
+                    Angalia
+                </button>
+            </div>
+            <!--end col-->
+        </div>
+        <!--end row-->
+    </form>
+</div>
+<!--end card-body-->
+<div class="card-body">
+    <div class="table-responsive table-card mb-4">
+        <table class="table align-middle table-nowrap mb-0" id="tasksTable">
+            <thead class="table-light text-muted">
+                <tr>
+                    <th scope="col" style="width: 40px;">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="checkAll" value="option">
+                        </div>
+                    </th>
+                    <th class="sort" data-sort="id">Namba ya Ombi</th>
+                    <th class="sort" data-sort="project_name">Jina la Shule</th>
+                    <th class="sort" data-sort="tasks_name">Halmashauri</th>
+                    <th class="sort" data-sort="assignedto">Mkoa</th>
+                    <th class="sort" data-sort="due_date">Muda wa Ombi</th>
+                    <th class="sort" data-sort="status">Hali</th>
+                    <!--<th class="sort" data-sort="priority">Walioshughulikia</th>-->
+                </tr>
+            </thead>
+            <tbody class="list form-check-all">
+                <% for(var i = 0; i < maombi.length; i++){ %>
+                <tr>
+                    <th scope="row">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="chk_child" value="option1">
+                        </div>
+                    </th>
+                    <td class="id"><a href="/RipotiBadiliTahasusi/<%= maombi[i].tracking_number %>" class="fw-medium link-primary">#<%= maombi[i].tracking_number %></a></td>
+                    <td class="project_name"><a href="#" class="fw-medium link-primary"><%= maombi[i].school_name %></a></td>
+                    <td>
+                        <div class="d-flex">
+                            <div class="flex-grow-1 tasks_name"><%= maombi[i].LgaName %></div>
+                            <div class="flex-shrink-0 ms-4">
+                                <ul class="list-inline tasks-list-menu mb-0">
+                                    <li class="list-inline-item"><a href="/RipotiBadiliTahasusi<%= maombi[i].tracking_number %>"><i class="ri-eye-fill align-bottom me-2 text-muted"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="client_name"><%= maombi[i].RegionName %></td>
+                    <td class="due_date badge badge-soft-secondary text-uppercase"  title=" <%= maombi[i].created_at %>"> <%= maombi[i].remain_days %></td>
+                    <td class="priority"><span class="badge bg-danger text-uppercase"></span>Jipya</td>
+<!--                                                    <td class="assignedto">
+                        <div class="avatar-group">
+                            <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Frank">
+                                <img src="design/assets/images/users/avatar-3.jpg" alt="" class="rounded-circle avatar-xxs" />
+                            </a>
+                            <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Anna">
+                                <img src="design/assets/images/users/avatar-1.jpg" alt="" class="rounded-circle avatar-xxs" />
+                            </a>
+                        </div>
+                    </td>-->
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+        <!--end table-->
+        <div class="noresult" style="display: none">
+            <div class="text-center">
+                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                <h5 class="mt-2">Sorry! No Result Found</h5>
+                <p class="text-muted mb-0">We've searched more than 200k+ tasks We did not find any tasks for you search.</p>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end mt-2">
+        <div class="pagination-wrap hstack gap-2">
+            <a class="page-item pagination-prev disabled" href="#">
+                Previous
+            </a>
+            <ul class="pagination listjs-pagination mb-0"></ul>
+            <a class="page-item pagination-next" href="#">
+                Next
+            </a>
+        </div>
+    </div>
+</div>
+<!--end card-body-->
+<%- include('../layouts/partials/footer.ejs' , {
+     card_title :  '' , 
+     pagination_script : true,
+    }) %>
+<!-- <script type="text/javascript" src="/design/layouts/scripts/anzishashule_scripts.js"></script> -->
+</body>
+</html>

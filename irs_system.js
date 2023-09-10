@@ -3491,7 +3491,7 @@ app.get("/RipotiTahasusi", function (req, res) {
                         ": /KuongezaTahasusi"
                     );
                     res.render(
-                      path.join(__dirname + "/public/design/ripoti_tahasusi"),
+                      path.join(__dirname + "/public/design/reports/ripoti_tahasusi"),
                       {
                         req: req,
                         total_month: data1,
