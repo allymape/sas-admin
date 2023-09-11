@@ -3498,8 +3498,8 @@ app.get("/RipotiTahasusi", function (req, res) {
                         maombi: obj,
                         useLev: req.session.UserLevel,
                                           userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
+                        RoleManage: req.session.RoleManage,
+                        userID: req.session.userID,
                         cheoName: req.session.cheoName,
                       }
                     );
@@ -5821,7 +5821,7 @@ app.get("/BadiliBweni/:id", function (req, res) {
               new Date() + " " + req.session.userName + ": /BadiliBweni"
             );
             res.render(
-              path.join(__dirname + "/public/design/view-badili-bweni"),
+              path.join(__dirname + "/public/design/maombi/details/view-badili-bweni"),
               {
                 req: req,
                 muda_ombi: remain_days,
