@@ -10809,7 +10809,7 @@ app.get("/TaarifaSajili/:id", function (req, res) {
               new Date() + " " + req.session.userName + ": /SajiliOmbi"
             );
             res.render(
-              path.join(__dirname + "/public/design/view-ripoti-sajili"),
+              path.join(__dirname + "/public/design/reports/details/view-ripoti-sajili"),
               {
                 req: req,
                 muda_ombi: remain_days,
