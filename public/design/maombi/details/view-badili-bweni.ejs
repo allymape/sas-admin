@@ -1,0 +1,545 @@
+<% var card_title = '' %> 
+<%- include('../../layouts/partials/header.ejs' , {
+    title : 'Ombi la Kubadili Bweni',
+    page_title : 'Ombi la Kubadili Bweni',
+    card_title : '',
+    breadcrumb_main : 'Maombi',
+    top_header : null,
+}) %>
+ <div class="row">
+                        <div class="col-xxl-3">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title mb-3 flex-grow-1 text-start">Muda wa Ombi</h6>
+                                    <div class="mb-2">
+                                        <lord-icon src="https://cdn.lordicon.com/kbtmbyzy.json" trigger="loop" colors="primary:#405189,secondary:#02a8b5" style="width:90px;height:90px"></lord-icon>
+                                    </div>
+                                    <h3 class="mb-1"><%= muda_ombi %></h3>
+                                    <h5 class="fs-14 mb-4">Toka ombi limetumwa</h5>
+                                    <div class="hstack gap-2 justify-content-center">
+                                        <button class="btn btn-danger btn-sm" title="Tarehe ya kuanzishwa kwa ombi: <%= created_at %>"><i class="ri-stop-circle-line align-bottom me-1"></i> Mwanzo</button>
+                                        <button class="btn btn-success btn-sm" title="Tarehe ya mwisho kushughulikiwa kwa ombi: <%= created_at %>"><i class="ri-play-circle-line align-bottom me-1"></i> Mwisho</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end card-->
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <div class="mb-4">
+                                        <select class="form-control" name="choices-single-default" data-choices data-choices-search-false disabled>
+                                            <option value="">Taarifa Fupi</option>
+                                            <!-- <option value="Unassigned">Unassigned</option>
+                                            <option value="To Do">To Do</option>
+                                            <option value="Inprogress">Inprogress</option>
+                                            <option value="In Reviews" selected>In Reviews</option>
+                                            <option value="Completed">Completed</option> -->
+                                        </select>
+                                    </div>
+                                    <div class="table-card">
+                                        <table class="table mb-0">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="fw-medium">Namba ya Ombi</td>
+                                                    <td>#<%= tracking_number %></td>
+                                                    <input type="hidden" id="trackingId" value="<%= tracking_number %>"/>
+                                                </tr>
+                                                <!-- <tr>
+                                                    <td class="fw-medium">Mwombaji</td>
+                                                    <td>
+                                                        <h5 class="fs-13"><a href="#"><%= fullname %></a></h5>
+                                                    </td>
+                                                </tr> -->
+                                                <tr>
+                                                    <td class="fw-medium">Jina la Shule</td>
+                                                    <td><span class="badge badge-soft-danger"><%= school_name %></span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="fw-medium">Aina ya Shule</td>
+                                                    <td><%= subcategory %></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="fw-medium">Ngazi ya Shule</td>
+                                                    <td><%= schoolCategory %></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="fw-medium">Halmashauri</td>
+                                                    <td><%= LgaName %></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="fw-medium">Mkoa</td>
+                                                    <td><%= RegionName %></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <!--end table-->
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <!--end card-->
+                        </div>
+                        <!---end col-->
+                        <div class="col-xxl-9">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="text-muted">
+                                        <h6 class="mb-3 fw-semibold text-uppercase">Ombi la Kuongeza Bweni</h6>
+                                        <!-- <p><b>Ombi la kuanzisha shule ya <%= schoolCategory %> jina <%= school_name %> kutoka kwa <%= fullname %></b>.</p> -->
+
+                                        <!-- <h6 class="mb-3 fw-semibold text-uppercase">Sub-tasks</h6>
+                                        <ul class="ps-3 list-unstyled vstack gap-2">
+                                            <li>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="" id="productTask">
+                                                    <label class="form-check-label" for="productTask">
+                                                        Product Design, Figma (Software), Prototype
+                                                    </label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="" id="dashboardTask" checked>
+                                                    <label class="form-check-label" for="dashboardTask">
+                                                        Dashboards : Ecommerce, Analytics, Project,etc.
+                                                    </label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="" id="calenderTask">
+                                                    <label class="form-check-label" for="calenderTask">
+                                                        Create calendar, chat and email app pages
+                                                    </label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="" id="authenticationTask">
+                                                    <label class="form-check-label" for="authenticationTask">
+                                                        Add authentication pages
+                                                    </label>
+                                                </div>
+                                            </li>
+                                        </ul> -->
+
+                                        <!-- <div class="pt-3 border-top border-top-dashed mt-4">
+                                            <h6 class="mb-3 fw-semibold text-uppercase">RIPOTI YA TAALUMA ZINGINE </h6>
+                                            <div class="hstack flex-wrap gap-2 fs-15">
+                                                <div class="badge fw-medium badge-soft-info">MWANASHERIA</div>
+                                                <div class="badge fw-medium badge-soft-info">MHANDISI</div>
+                                                <div class="badge fw-medium badge-soft-info">AFYA</div>
+                                            </div>
+                                        </div> -->
+                                        <input type="text" id="trackerId" value="<%= tracking_number %>" hidden/>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end card-->
+                            <div class="card">
+                                <div class="card-header">
+                                    <div>
+                                        <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
+                                            <li class="nav-item">
+                                                <a class="nav-link active" data-bs-toggle="tab" href="#taarifa-badili-1" role="tab">
+                                                    Taarifa Badilishwa
+                                                </a>
+                                            </li>
+                                            <!-- <li class="nav-item">
+                                                <a class="nav-link" data-bs-toggle="tab" href="#taarifa-mwombaji-1" role="tab">
+                                                    Taarifa Za Mwombaji
+                                                </a>
+                                            </li> -->
+                                            <li class="nav-item">
+                                                <a class="nav-link" data-bs-toggle="tab" href="#taarifa-shule-taraji-1" role="tab">
+                                                    Taarifa Za Shule
+                                                </a>
+                                            </li>
+                                            <% if(registryTypeId == 2){ %>
+                                            <li class="nav-item">
+                                                <a class="nav-link" data-bs-toggle="tab" href="#messages-taasisi-1" role="tab">
+                                                    Viambatisho vya Taasisi
+                                                </a>
+                                            </li>
+                                            <% } %>
+                                            <li class="nav-item">
+                                                <a class="nav-link" data-bs-toggle="tab" href="#messages-1" role="tab">
+                                                    Viambatisho
+                                                </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" data-bs-toggle="tab" href="#home-1" role="tab">
+                                                    Maoni
+                                                </a>
+                                            </li>
+                                            <!-- <li class="nav-item">
+                                                <a class="nav-link" data-bs-toggle="tab" href="#profile-1" role="tab">
+                                                    Shule zinazomilikiwa na Mwombaji
+                                                </a>
+                                            </li> -->
+                                        </ul>
+                                        <!--end nav-->
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="tab-content">
+                                        <div class="tab-pane active" id="taarifa-badili-1" role="tabpanel">
+                                            <h6 class="card-title mb-4 pb-2">Taarifa za Shule badilishwa</h6>
+                                            <div class="table-responsive table-card">
+                                                <!--end table-->
+                                                <table class="table align-middle mb-0">
+                                                    <thead class="table-light text-muted">
+                                                        <tr>
+                                                            <th scope="col">Kutoka</th>
+                                                            <th scope="col">Kuwa</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><b><%= subcategory %></b></td>
+                                                            <td><b><%= Newsubcategory %></b></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <input type="hidden" id="newstream" value="<%= streamNew %>"/>
+                                                <input type="hidden" id="oldstream" value="<%= streamOld %>"/>
+                                                <input type="hidden" id="establishId" value="<%= establishId %>"/>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane" id="taarifa-mwombaji-1" role="tabpanel">
+                                            <h6 class="card-title mb-4 pb-2">SEHEMU A: Taarifa za Mwombaji</h6>
+                                            <div class="table-responsive table-card">
+                                                <table class="table align-middle mb-0">
+                                                    <thead class="table-light text-muted">
+                                                        <tr>
+                                                            <th scope="col">Aina ya Mwombaji</th>
+                                                            <th scope="col">Jina kamili la Mwombaji</th>
+                                                            <th scope="col">Kazi ya Mwombaji</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><b><%= registry %></b></td>
+                                                            <td><b><%= fullname %></b></td>
+                                                            <td><b><%= occupation %></b></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <!--end table-->
+                                                <table class="table align-middle mb-0">
+                                                    <thead class="table-light text-muted">
+                                                        <tr>
+                                                            <th scope="col">Anwani</th>
+                                                            <th scope="col">Namba ya Simu</th>
+                                                            <th scope="col">Barua pepe</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><b><%= mwombajiAddress %></b></td>
+                                                            <td><b><%= mwombajiPhoneNo %></b></td>
+                                                            <td><b><%= baruaPepe %></b></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <table class="table align-middle mb-0">
+                                                    <thead class="table-light text-muted">
+                                                        <tr>
+                                                            <th scope="col">Kata</th>
+                                                            <th scope="col">Halmashauri</th>
+                                                            <th scope="col">Mkoa</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><b><%= WardNameMtu %></b></td>
+                                                            <td><b><%= LgaNameMtu %></b></td>
+                                                            <td><b><%= RegionNameMtu %></b></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane" id="taarifa-shule-taraji-1" role="tabpanel">
+                                            <h6 class="card-title mb-4 pb-2">SEHEMU B: Taarifa za Shule Tarajiwa</h6>
+                                            <div class="table-responsive table-card">
+                                                <table class="table align-middle mb-0">
+                                                    <thead class="table-light text-muted">
+                                                        <tr>
+                                                            <th scope="col" title="Jina liwe fupi–mfano Azania">Jina la shule linalopendekezwa</th>
+                                                            <th scope="col">Ngazi ya Shule</th>
+                                                            <th scope="col">Lugha itakayotumika kufundishia</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <b><%= school_name %></b><br>
+                                                                <!-- <button class="btn btn-danger btn-sm" onclick="badili('<%= school_name %>')"
+                                                                title="Kama jina la shule haliko sawa badilisha hapa">
+                                                                    Badili 
+                                                                </button> -->
+                                                            </td>
+                                                            <td><b><%= schoolCategory %></b></td>
+                                                            <td><b><%= language %></b></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <!--end table-->
+                                                <table class="table align-middle mb-0">
+                                                    <thead class="table-light text-muted">
+                                                        <tr>
+                                                            <th scope="col">Ukubwa wa shule kwa idadi ya mikondo</th>
+                                                            <th scope="col">Ukubwa wa eneo (Mita za Mraba/Ekari)</th>
+                                                            <th scope="col" title="Mahali shule itakapojengwa">Kijiji/Mtaa</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><b><%= school_size %></b></td>
+                                                            <td><b><%= area %></b></td>
+                                                            <td><b><%= WardName %></b></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <table class="table align-middle mb-0">
+                                                    <thead class="table-light text-muted">
+                                                        <tr>
+                                                            <th scope="col">Kata</th>
+                                                            <th scope="col">Halmashauri</th>
+                                                            <th scope="col">Mkoa</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><b><%= WardName %></b></td>
+                                                            <td><b><%= LgaName %></b></td>
+                                                            <td><b><%= RegionName %></b></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane" id="home-1" role="tabpanel">
+                                            <h5 class="card-title mb-4">Maoni</h5>
+                                            <% for(var i = 0; i < Maoni.length; i++){ %>
+                                            <div data-simplebar class="px-3 mx-n3 mb-2">
+                                                
+                                                <div class="d-flex mb-4">
+                                                    <!-- <div class="flex-shrink-0">
+                                                        <img src="../design/assets/images/users/avatar-7.jpg" alt="" class="avatar-xs rounded-circle" />
+                                                    </div> -->
+                                                    <div class="flex-grow-1 ms-3">
+                                                        <h5 class="fs-13"><a href="#"><%= Maoni[i].name %> ( <%= Maoni[i].rank_name %> )</a> <small class="text-muted"><%= Maoni[i].created_at %></small></h5>
+                                                        <p class="text-muted"><%= Maoni[i].coments %></p>
+                                                        <a href="javascript: void(0);" class="badge text-muted bg-light"><i class="mdi mdi-reply"></i> Reply</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% } %>
+                                            
+
+                                            <%- include('includes/formchangerbadilibweni.ejs') %>
+                                        </div>
+                                        <!--end tab-pane-->
+                                        <div class="tab-pane" id="messages-1" role="tabpanel">
+                                            <div class="table-responsive table-card">
+                                                <table class="table table-borderless align-middle mb-0">
+                                                    <thead class="table-light text-muted">
+                                                        <tr>
+                                                            <th scope="col">Jina la Faili</th>
+                                                            <th scope="col">Aina</th>
+                                                            <th scope="col">Ukubwa</th>
+                                                            <th scope="col">Tarehe ya Kupakia</th>
+                                                            <th scope="col">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                       <% for(var i = 0; i < objAttachment1.length; i++){ %>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="d-flex align-items-center">
+                                                                    <div class="avatar-sm">
+                                                                        <div class="avatar-title bg-soft-primary text-primary rounded fs-20">
+                                                                            <i class="ri-file-zip-fill"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="ms-3 flex-grow-1">
+                                                                        <h6 class="fs-15 mb-0"><a href="#showModal" data-path="<%= objAttachment1[i].attachment_path %>" data-ward="<%= objAttachment1[i].attachment_path %>" data-lga="<%= objAttachment1[i].attachment_name %>" data-region="<%= objAttachment1[i].attachment_name %>" data-date="<%= objAttachment1[i].attachment_name %>" data-name="<%= objAttachment1[i].attachment_namee %>" data-id="<%= objAttachment1[i].attachment_name %>" data-category="<%= objAttachment1[i].attachment_name %>" data-bs-toggle="modal" class="fw-medium link-primary open-AddBookDialog"><%= objAttachment1[i].attachment_name %></a></h6>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td><%= objAttachment1[i].file_format %></td>
+                                                            <td><%= objAttachment1[i].file_size %> MB</td>
+                                                            <td><%= objAttachment1[i].created_at %></td>
+                                                            <td>
+                                                                <div class="dropdown">
+                                                                    <a href="javascript:void(0);" class="btn btn-light btn-icon" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="true">
+                                                                        <i class="ri-equalizer-fill"></i>
+                                                                    </a>
+                                                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink1" data-popper-placement="bottom-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 23px);">
+                                                                        <li><a class="dropdown-item" href="javascript:void(0);"><i class="ri-eye-fill me-2 align-middle text-muted"></i>View</a></li>
+                                                                        <li><a class="dropdown-item" href="javascript:void(0);"><i class="ri-download-2-fill me-2 align-middle text-muted"></i>Download</a></li>
+                                                                        <li class="dropdown-divider"></li>
+                                                                        <li><a class="dropdown-item" href="javascript:void(0);"><i class="ri-delete-bin-5-line me-2 align-middle text-muted"></i>Delete</a></li>
+                                                                    </ul>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <% } %>
+                                                    </tbody>
+                                                </table>
+                                                <!--end table-->
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane" id="messages-taasisi-1" role="tabpanel">
+                                            <div class="table-responsive table-card">
+                                                <table class="table table-borderless align-middle mb-0">
+                                                    <thead class="table-light text-muted">
+                                                        <tr>
+                                                            <th scope="col">Jina la Faili</th>
+                                                            <th scope="col">Aina</th>
+                                                            <th scope="col">Ukubwa</th>
+                                                            <th scope="col">Tarehe ya Kupakia</th>
+                                                            <th scope="col">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                       <% for(var i = 0; i < objAttachment2.length; i++){ %>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="d-flex align-items-center">
+                                                                    <div class="avatar-sm">
+                                                                        <div class="avatar-title bg-soft-primary text-primary rounded fs-20">
+                                                                            <i class="ri-file-zip-fill"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="ms-3 flex-grow-1">
+                                                                        <h6 class="fs-15 mb-0"><a href="#showModal"  
+                                                                            data-path="<%= objAttachment2[i].attachment_path %>" 
+                                                                            data-ward="<%= objAttachment2[i].attachment_path %>" 
+                                                                            data-lga="<%= objAttachment2[i].attachment_name %>" 
+                                                                            data-region="<%= objAttachment2[i].attachment_name %>" 
+                                                                            data-date="<%= objAttachment2[i].attachment_name %>" 
+                                                                            data-name="<%= objAttachment2[i].attachment_namee %>" 
+                                                                            data-id="<%= objAttachment2[i].attachment_name %>" 
+                                                                            data-category="<%= objAttachment2[i].attachment_name %>" 
+                                                                            data-bs-toggle="modal" 
+                                                                            class="fw-medium link-primary open-AddBookDialog">
+                                                                            <%= objAttachment2[i].attachment_name %></a></h6>
+
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td><%= objAttachment2[i].file_format %></td>
+                                                            <td><%= objAttachment2[i].file_size %> MB</td>
+                                                            <td><%= objAttachment2[i].created_at %></td>
+                                                            <td>
+                                                                <div class="dropdown">
+                                                                    <a href="javascript:void(0);" class="btn btn-light btn-icon" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="true">
+                                                                        <i class="ri-equalizer-fill"></i>
+                                                                    </a>
+                                                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink1" data-popper-placement="bottom-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 23px);">
+                                                                        <li><a class="dropdown-item" href="javascript:void(0);"><i class="ri-eye-fill me-2 align-middle text-muted"></i>View</a></li>
+                                                                        <li><a class="dropdown-item" href="javascript:void(0);"><i class="ri-download-2-fill me-2 align-middle text-muted"></i>Download</a></li>
+                                                                        <li class="dropdown-divider"></li>
+                                                                        <li><a class="dropdown-item" href="javascript:void(0);"><i class="ri-delete-bin-5-line me-2 align-middle text-muted"></i>Delete</a></li>
+                                                                    </ul>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <% } %>
+                                                    </tbody>
+                                                </table>
+                                                <!--end table-->
+                                            </div>
+                                        </div>
+                                        <!--end tab-pane-->
+                                        <div class="tab-pane" id="profile-1" role="tabpanel">
+                                            <h6 class="card-title mb-4 pb-2">Shule zilizosajiliwa kwa umiliki wa <%= fullname %></h6>
+                                            <div class="table-responsive table-card">
+                                                <table class="table align-middle mb-0">
+                                                    <thead class="table-light text-muted">
+                                                        <tr>
+                                                            <th scope="col">Namba ya Usajili</th>
+                                                            <th scope="col">Jina la Shule</th>
+                                                            <th scope="col">Ngazi</th>
+                                                            <th scope="col">Halmashauri</th>
+                                                            <th scope="col">Mkoa</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td title="Ni lazima" style="color: red;">S.9807</td>
+                                                            <td>KILIMANI</td>
+                                                            <td>AWALI</td>
+                                                            <td>KINONDONI</td>
+                                                            <td>DAR ES SALAAM</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td title="Ni lazima" style="color: red;">S.9807</td>
+                                                            <td>KILIMANI</td>
+                                                            <td>AWALI</td>
+                                                            <td>KINONDONI</td>
+                                                            <td>DAR ES SALAAM</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td title="Ni lazima" style="color: red;">S.9807</td>
+                                                            <td>KILIMANI</td>
+                                                            <td>AWALI</td>
+                                                            <td>KINONDONI</td>
+                                                            <td>DAR ES SALAAM</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <!--end table-->
+                                            </div>
+                                        </div>
+                                        <!--edn tab-pane-->
+
+                                    </div>
+                                    <!--end tab-content-->
+                                </div>
+                            </div>
+                            <!--end card-->
+                        </div>
+                        <!--end col-->
+                    </div>
+                    <!--end row-->
+                    <script>
+                        function opebT(){
+                            window.open('data:application/pdf;base64,' + myResponse.base64EncodedResponse);
+                        }
+                    </script>
+
+                    <div class="modal fade" id="inviteMembersModal" tabindex="-1" aria-labelledby="inviteMembersModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content border-0">
+                                <div class="modal-header p-3 ps-4 bg-soft-success">
+                                    <h5 class="modal-title"></h5>
+                                    <input type="text" id="inviteMembersModalLabel" class="form-control bg-light border-light" disabled>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body p-4">
+                                    <div class="search-box mb-3">
+                                        <input type="text" class="form-control bg-light border-light" id="newName" placeholder="Ingiza Jina...">
+                                        <i class="ri-search-line search-icon"></i>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-light w-xs" data-bs-dismiss="modal">Sitisha</button>
+                                    <button type="button" onclick="changeName()" class="btn btn-success w-xs"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></button>
+                                </div>
+                            </div>
+                            <!-- end modal-content -->
+                        </div>
+                        <!-- modal-dialog -->
+                    </div>
+
+<!--end card-body-->
+<%- include('../../layouts/partials/footer.ejs' , {
+     card_title :  '' , 
+     pagination_script : true,
+    }) %>
+<script type="text/javascript" src="/design/maombi/details/scripts/badiliombi.js"></script>
+</body>
+</html>
