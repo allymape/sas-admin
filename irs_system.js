@@ -52,6 +52,7 @@ const hierarchyController = require("./public/controllers/hierarchyController");
 const biasController = require("./public/controllers/combinationController");
 const combinationController = require("./public/controllers/biasController");
 const feeController = require("./public/controllers/feeController");
+const anzishaShuleRequestController = require("./public/controllers/maombi/anzishaShuleRequestController");
 
 var app = express();
 app.use(helmet.frameguard())
@@ -4334,70 +4335,71 @@ app.get("/BadiliUsajili", function (req, res) {
   }
 });
 
-app.get("/MaombiKuanzishaShule", function (req, res) {
-  var obj = [];
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    var hasMatch =false;
-    for (var index = 0; index < req.session.RoleManage.length; ++index) {
-        var animal = req.session.RoleManage[index]; 
-    if(animal.permission_id == 2){ 
-    request(
-      {
-        url: maoanzishaShuleJumlaAPI,
-        method: "GET",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-        // json: {"browser_used": req.session.browser_used, "ip_address": req.session.ip_address, "UserLevel": req.session.UserLevel, "Office": req.session.office}
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(
-            new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
-          );
-          res.send("failed");
-        }
-        // console.log(body)
-        if (body !== undefined) {
-          var jsonData = JSON.parse(body);
-          // var jsonData = body
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-          if (statusCode == 300) {
-            console.log(
-              new Date() +
-                " " +
-                req.session.userName +
-                ": /MaombiKuanzishaShule"
-            );
-            res.render(path.join(__dirname + "/public/design/maombi/kuanzishashule"), {
-              req: req,
-              total_month: data,
+// app.get("/MaombiKuanzishaShule", function (req, res) {
+//   var obj = [];
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//     var hasMatch =false;
+//     for (var index = 0; index < req.session.RoleManage.length; ++index) {
+//         var animal = req.session.RoleManage[index]; 
+//         console.log("cheki hii", animal.permission_id);
+//     if(animal.permission_id == 2){ 
+//     request(
+//       {
+//         url: maoanzishaShuleJumlaAPI,
+//         method: "GET",
+//         headers: {
+//           Authorization: "Bearer" + " " + req.session.Token,
+//           "Content-Type": "application/json",
+//         },
+//         // json: {"browser_used": req.session.browser_used, "ip_address": req.session.ip_address, "UserLevel": req.session.UserLevel, "Office": req.session.office}
+//       },
+//       function (error, response, body) {
+//         if (error) {
+//           console.log(
+//             new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
+//           );
+//           res.send("failed");
+//         }
+//         // console.log(body)
+//         if (body !== undefined) {
+//           var jsonData = JSON.parse(body);
+//           // var jsonData = body
+//           var message = jsonData.message;
+//           var statusCode = jsonData.statusCode;
+//           var data = jsonData.data;
+//           if (statusCode == 300) {
+//             console.log(
+//               new Date() +
+//                 " " +
+//                 req.session.userName +
+//                 ": /MaombiKuanzishaShule"
+//             );
+//             res.render(path.join(__dirname + "/public/design/maombi/kuanzishashule"), {
+//               req: req,
+//               total_month: data,
              
-            });
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-    }else{
-      // hasMatch == true
-      console.log("no access")
-      // res.redirect("/");
-    }
-  }
+//             });
+//           }
+//           if (statusCode == 209) {
+//             res.redirect("/");
+//           }
+//         }
+//       }
+//     );
+//     }else{
+//       // hasMatch == true
+//       console.log("no access")
+//       // res.redirect("/");
+//     }
+//   }
 
-  } else {
-    res.redirect("/");
-  }
-});
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
 app.get("/MaombiKuanzishaSerikali", function (req, res) {
   var obj = [];
@@ -10282,85 +10284,85 @@ app.post("/FutaComment", function (req, res) {
   }
 });
 
-app.get("/MaombiKuanzishaShuleList", function (req, res) {
-  var obj = [];
-  // console.log("jjdjdjd " + req.session.UserLevel)
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: maoanzishaShuleListAPI,
-        method: "POST",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-        json: {
-          browser_used: req.session.browser_used,
-          ip_address: req.session.ip_address,
-          UserLevel: req.session.UserLevel,
-          Office: req.session.office,
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(
-            new Date() + ": fail to MaombiKuanzishaShuleList " + error
-          );
-          res.send("failed");
-        }
+// app.get("/MaombiKuanzishaShuleList", function (req, res) {
+//   var obj = [];
+//   // console.log("jjdjdjd " + req.session.UserLevel)
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//     request(
+//       {
+//         url: maoanzishaShuleListAPI,
+//         method: "POST",
+//         headers: {
+//           Authorization: "Bearer" + " " + req.session.Token,
+//           "Content-Type": "application/json",
+//         },
+//         json: {
+//           browser_used: req.session.browser_used,
+//           ip_address: req.session.ip_address,
+//           UserLevel: req.session.UserLevel,
+//           Office: req.session.office,
+//         },
+//       },
+//       function (error, response, body) {
+//         if (error) {
+//           console.log(
+//             new Date() + ": fail to MaombiKuanzishaShuleList " + error
+//           );
+//           res.send("failed");
+//         }
 
-        if (body !== undefined) {
-          // var jsonData = JSON.parse(body)
-          var jsonData = body;
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-          if (statusCode == 300) {
-            for (var i = 0; i < data.length; i++) {
-              var tracking_number = data[i].tracking_number;
-              var user_id = data[i].user_id;
-              var LgaName = data[i].LgaName;
-              var RegionName = data[i].RegionName;
-              var school_name = data[i].school_name;
-              var created_at = data[i].created_at;
-              var remain_days = data[i].remain_days;
-              req.session.TrackingNumber = tracking_number;
-              obj.push({
-                tracking_number: tracking_number,
-                useLev: req.session.UserLevel,
-                                  userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
-                cheoName: req.session.cheoName,
-                user_id: user_id,
-                school_name: school_name,
-                LgaName: LgaName,
-                RegionName: RegionName,
-                created_at: created_at,
-                remain_days: remain_days,
-              });
-            }
-            console.log(
-              new Date() +
-                " " +
-                req.session.userName +
-                ": /MaombiKuanzishaShuleList"
-            );
-            res.send(obj);
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
+//         if (body !== undefined) {
+//           // var jsonData = JSON.parse(body)
+//           var jsonData = body;
+//           var message = jsonData.message;
+//           var statusCode = jsonData.statusCode;
+//           var data = jsonData.data;
+//           if (statusCode == 300) {
+//             for (var i = 0; i < data.length; i++) {
+//               var tracking_number = data[i].tracking_number;
+//               var user_id = data[i].user_id;
+//               var LgaName = data[i].LgaName;
+//               var RegionName = data[i].RegionName;
+//               var school_name = data[i].school_name;
+//               var created_at = data[i].created_at;
+//               var remain_days = data[i].remain_days;
+//               req.session.TrackingNumber = tracking_number;
+//               obj.push({
+//                 tracking_number: tracking_number,
+//                 useLev: req.session.UserLevel,
+//                                   userName: req.session.userName,
+//               RoleManage: req.session.RoleManage,
+//     userID: req.session.userID,
+//                 cheoName: req.session.cheoName,
+//                 user_id: user_id,
+//                 school_name: school_name,
+//                 LgaName: LgaName,
+//                 RegionName: RegionName,
+//                 created_at: created_at,
+//                 remain_days: remain_days,
+//               });
+//             }
+//             console.log(
+//               new Date() +
+//                 " " +
+//                 req.session.userName +
+//                 ": /MaombiKuanzishaShuleList"
+//             );
+//             res.send(obj);
+//           }
+//           if (statusCode == 209) {
+//             res.redirect("/");
+//           }
+//         }
+//       }
+//     );
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
 app.get("/TaarifaSajili/:id", function (req, res) {
   const doc2 = new PDFDocument();
@@ -14945,8 +14947,11 @@ app.post("/EditAda", function (req, res) {
 
 var port = process.env.PORT || 8087;
 var url = process.env.APP_URL || "http://localhost";
+
+app.use("/", dashboardController);
+// Maombi
+app.use("/" , anzishaShuleRequestController)
 app.use("/", userController)
-app.use("/", dashboardController)
 app.use("/", regionController)
 app.use("/", districtController)
 app.use("/", wardController)

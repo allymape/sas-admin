@@ -336,7 +336,7 @@ function appendSelectionOption(
   defaultText = "Chagua"
 ) {
   var fieldSelect = $("#" + selectId);
-  var options = `<option value="">${defaultText}</option>`;
+  var options = `<option value="">${defaultText} </option>`;
   var id = "";
   var name = "";
   for (var i = 0; i < data.length; i++) {
@@ -419,8 +419,8 @@ function getAllZones(user = null , selectedZone = null){
             name: zone.zone_name,
             id: zone.id,
           })),
-          [selectedZone],
-          "Chagua Kanda"
+          [Number(selectedZone)],
+          "Chagua Kanda ..."
         ); 
         if (user && user.zone_id) {
           $("#mkoa-field").prop("disabled", user.zone_id ? false : true);
@@ -800,3 +800,25 @@ setTimeout(() =>  {
               }
     } , {} , false);
   }, 1000);
+
+  const diffForHumans = (date) => {
+        if(date){
+          const dt = new Date(date);
+          // Make a fuzzy time
+          var delta = Math.round((+new Date() - dt) / 1000);
+          var minute = 60,
+            hour = minute * 60,
+            day = hour * 24;
+          var fuzzy = "";
+          if (delta < 60) {
+            fuzzy = "Sek " + delta;
+          } else if (delta < hour) {
+            fuzzy = "Dak "+ Math.floor(delta / minute);
+          } else if (Math.floor(delta / hour) < 24) {
+            fuzzy = "Saa " + Math.floor(delta / hour);
+          } else if (delta > day) {
+            fuzzy = "Siku "+ Math.floor(delta / day);
+          }
+          return fuzzy;
+        }
+  }
