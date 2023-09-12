@@ -114,12 +114,14 @@ module.exports = {
   greating: (name) => {
     const date = new Date().getHours();
     var majira = "";
-    if (date < 12) {
+    if (date >= 5 && date < 12) {
       majira = "Habari ya Asubuhi";
-    } else if (date < 18) {
+    } else if (date >= 12 && date < 16) {
       majira = "Habari ya Mchana";
-    } else if (date > 18) {
+    } else if (date >= 16) {
       majira = "Habari ya Jioni";
+    }else{
+      majira = "Habari"
     }
     return majira + ", " + name + "!";
   },

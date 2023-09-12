@@ -50,12 +50,14 @@ userController.post("/auth", function (req, res) {
             req.flash("warning", message);
             res.redirect("/");
           } else if (statusCode == 300) {
-           
+                
                 const ip_address = requestIp.getClientIp(req);
                 const browser_used = req.headers["user-agent"];
                 const { user, RoleManage , token } = body;
+                // console.log("Controller", user);
                 req.session.UserLevel = user.user_level;
                 req.session.office = user.office;
+                req.session.officeName = user.office_name;
                 req.session.twofa = user.twofa;
                 req.session.Token = token;
                 req.session.userID = user.id;
@@ -65,7 +67,6 @@ userController.post("/auth", function (req, res) {
                 req.session.ip_address = ip_address;
                 req.session.browser_used = browser_used;
                 req.session.RoleManage = RoleManage;
-           
             if (user.twofa == 0) {
               if (Number(user.user_level) == 10) {
                 res.redirect("/RipotiZilizosajiliwa");

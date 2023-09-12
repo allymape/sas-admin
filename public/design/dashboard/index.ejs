@@ -125,43 +125,95 @@
                     </div><!-- end col -->
                 <% colorIndex++  %>
                 <% } %>
-
-
-
+                <!-- APPLICATION BY STRUCTURE IF NO DATA -->
+                <% if(schoolSummaryByStructures.length == 0) {%>
+                        <div class="col-xl-3 col-md-6">
+                        <!-- card -->
+                        <div class="card card-animate" title="" data-bs-toggle="tooltip" data-bs-original-title="Kibali cha kuanzisha shule kwa majengo">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1 overflow-hidden">
+                                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0">
+                                            Kibali cha kuanzisha shule kwa majengo
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-end justify-content-between mt-4">
+                                    <div>
+                                        <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="0">0</span>
+                                        </h4>
+                                        <a href="" class="text-decoration-underline">Angalia Zaidi</a>
+                                    </div>
+                                    <div class="avatar-sm flex-shrink-0">
+                                        <span class="avatar-title bg-warning rounded fs-3">
+                                            <i class="bx bxs-user-circle"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div><!-- end card body -->
+                        </div><!-- end card -->
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                            <!-- card -->
+                            <div class="card card-animate" title="" data-bs-toggle="tooltip" data-bs-original-title="Uthibitisho wa umiliki na meneja wa shule">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">
+                                                Uthibitisho wa umiliki na meneja wa shule
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-end justify-content-between mt-4">
+                                        <div>
+                                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="0">0</span>
+                                            </h4>
+                                            <a href="" class="text-decoration-underline">Angalia Zaidi</a>
+                                        </div>
+                                        <div class="avatar-sm flex-shrink-0">
+                                            <span class="avatar-title bg-success rounded fs-3">
+                                                <i class="bx bxs-school"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div><!-- end card body -->
+                            </div><!-- end card -->
+                        </div>
+                <% } %>
                 <!-- APPLICATION CATEGORIES EXCEPT KUANZISHA -->
                 <% var colors = ['success' , 'warning' , 'info' , 'danger']; %>
                 <% var icons = ['bxs-school' , 'bxs-user-circle' , 'bxs-school' , 'bxs-school']; %>
                 <% var  colorIndex = 0 %>
                 <%  for (let index = 0; index < 1 && schoolSummaryByApplications.length > 0; index++) { %>
                 <% const element = schoolSummaryByApplications[index] %>
-                <div class="col-xl-3 col-md-6">
-                    <!-- card -->
-                    <div class="card card-animate" title="<%= element.label %>" data-bs-toggle="tooltip">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-grow-1 overflow-hidden">
-                                    <p
-                                        class="text-uppercase fw-medium text-muted text-truncate mb-0">
-                                        <%= element.label %>
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-end justify-content-between mt-4">
-                                <div>
-                                    <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span
-                                            class="counter-value" data-target="<%= element.total %>">0</span>
-                                    </h4>
-                                    <a href="" class="text-decoration-underline">Angalia Zaidi</a>
-                                </div>
-                                <div class="avatar-sm flex-shrink-0">
-                                    <span class="avatar-title bg-<%= colors[colorIndex] %> rounded fs-3">
-                                        <i class="bx <%= icons[colorIndex] %>"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        </div><!-- end card body -->
-                    </div><!-- end card -->
-                </div><!-- end col -->
+                        <div class="col-xl-3 col-md-6">
+                            <!-- card -->
+                            <div class="card card-animate" title="<%= element.label %>" data-bs-toggle="tooltip">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <p
+                                                class="text-uppercase fw-medium text-muted text-truncate mb-0">
+                                                <%= element.label %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-end justify-content-between mt-4">
+                                        <div>
+                                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span
+                                                    class="counter-value" data-target="<%= element.total %>">0</span>
+                                            </h4>
+                                            <a href="" class="text-decoration-underline">Angalia Zaidi</a>
+                                        </div>
+                                        <div class="avatar-sm flex-shrink-0">
+                                            <span class="avatar-title bg-<%= colors[colorIndex] %> rounded fs-3">
+                                                <i class="bx <%= icons[colorIndex] %>"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div><!-- end card body -->
+                            </div><!-- end card -->
+                        </div><!-- end col -->
                 <% colorIndex++  %>
                 <% } %>
             </div> <!-- end row-->
@@ -170,7 +222,11 @@
                 <div class="col-xl-8">
                     <div class="card">
                         <div class="card-header border-0 align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1" id="chart-summary-title"> Idadi ya Shule Zilizosajiliwa kwa Mikoa na Aina (Awali , Msingi , Sekondari na Vyuo vya Ualimu)</h4>
+                            <% const office = req.session.office
+                               const label1 = (office == 1 ? 'Mikoa' : (office == 2 ? 'Wilaya' : (office == 3 ? 'Kata' : ' ...')))
+                            %>
+                            <h4 class="card-title mb-0 flex-grow-1" id="chart-summary-title"> 
+                                Idadi ya Shule Zilizosajiliwa kwa <%= label1 %> na Aina (Awali , Msingi , Sekondari na Vyuo vya Ualimu)</h4>
                             <div>
                                 <!-- <button type="button"
                                     class="btn btn-soft-secondary btn-sm shadow-none">
