@@ -4,7 +4,7 @@ const request = require("request");
 const anzishaShuleRequestController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { isAuthenticated, sendRequest } = require("../../../util");
+const { isAuthenticated, sendRequest, can } = require("../../../util");
 // const { sendRequest, isAuthenticated, can } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var maoanzishaShuleJumlaAPI = API_BASE_URL + "jumla-maombi-kuanzisha-shule";
@@ -16,22 +16,38 @@ var maoanzishaShuleListAPI = API_BASE_URL +"maombi-kuanzisha-shule";
 // var deleteZoneAPI = API_BASE_URL + "deleteZone";
 
 // Display
-anzishaShuleRequestController.get("/MaombiKuanzishaShule", isAuthenticated, function (req, res) {
-   var formData = {
-              //  is_paginated: req.query.is_paginated,
-              //  search: req.query.tafuta,
-   };
-  sendRequest(req, res, maoanzishaShuleJumlaAPI, "GET", formData, (jsonData) => {
-            const {  data } = jsonData;
-            res.render(path.join(__dirname + "/../../design/maombi/kuanzishashule"), {
-              req: req,
-              total_month: data,
-            });
-  })
-});
+anzishaShuleRequestController.get(
+  "/MaombiKuanzishaShule",
+  isAuthenticated,
+  can("view-initiate-schools"),
+  function (req, res) {
+    var formData = {
+      //  is_paginated: req.query.is_paginated,
+      //  search: req.query.tafuta,
+    };
+    sendRequest(
+      req,
+      res,
+      maoanzishaShuleJumlaAPI,
+      "GET",
+      formData,
+      (jsonData) => {
+        const { data } = jsonData;
+        res.render(
+          path.join(__dirname + "/../../design/maombi/kuanzishashule"),
+          {
+            req: req,
+            total_month: data,
+          }
+        );
+      }
+    );
+  }
+);
 
 // List
-anzishaShuleRequestController.get("/MaombiKuanzishaShuleList", isAuthenticated ,  (req, res) => {
+anzishaShuleRequestController.get("/MaombiKuanzishaShuleList", isAuthenticated , 
+(req, res) => {
    sendRequest(req, res, maoanzishaShuleListAPI , 'POST' , {} , (jsonData) => {
      const {message , statusCode , data} = jsonData
      console.log(data);
