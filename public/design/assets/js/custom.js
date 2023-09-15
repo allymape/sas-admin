@@ -801,7 +801,7 @@ setTimeout(() =>  {
     } , {} , false);
   }, 1000);
 
-  const diffForHumans = (date) => {
+   function diffForHumans(date){
         if(date){
           const dt = new Date(date);
           // Make a fuzzy time

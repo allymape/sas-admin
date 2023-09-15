@@ -19,6 +19,13 @@
               <div class="col-sm">
                 <div class="d-flex justify-content-sm-end">
                     <form class="d-flex" action="/Shule" method="GET">
+                         <div class="" style="width: 100px;">
+                                <select class="form-control" name="sign"  >
+                                    <option value="=" <%= req.query.sign == '=' ? 'selected' : ''%> >=</option>
+                                    <option value="LIKE" <%= !req.query.sign || req.query.sign == 'LIKE' ? 'selected' : ''%>>Like</option>
+                                </select>
+                        </div>
+                        <div>&nbsp;</div>
                         <div class="search-box ms-2">
                             <input type="text" name="tafuta" value="<%= req.query.tafuta || '' %>" class="form-control search" placeholder="Tafuta...">
                         </div>
