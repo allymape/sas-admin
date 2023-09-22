@@ -29,12 +29,13 @@ module.exports = {
           }
           //  console.log(body)
           if (body !== undefined && response.statusCode == 200) {
-            callback(body);
+              callback(body);
           } else {
-            // console.log(response)
-            if (typeof response !== undefined && response.statusCode == 403) {
-              res.status(response.statusCode).redirect("/403");
-            }
+              if (response && typeof response !== 'undefined' && response.statusCode == 403) {
+                  res.status(response.statusCode).redirect("/403");
+              }else{
+                  console.log(body, response);
+              }
           }
         }
       );
