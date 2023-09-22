@@ -13608,7 +13608,6 @@ app.get("/Viambatisho", function (req, res) {
 // });
 
 
-
 app.get("/Roles", isAuthenticated ,can('view-roles'), function (req, res) {
   var per_page = Number(req.query.per_page || 10);
   var page = Number(req.query.page || 1);
