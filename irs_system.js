@@ -54,6 +54,18 @@ const combinationController = require("./public/controllers/biasController");
 const feeController = require("./public/controllers/feeController");
 const anzishaShuleRequestController = require("./public/controllers/maombi/anzishaShuleRequestController");
 const umilikinaumenejaRequestController = require("./public/controllers/maombi/umilikinaumenejaRequestController");
+const kusajiliBinafsiRequestController = require("./public/controllers/maombi/kusajiliBinafsiRequestController");
+const kusajiliSerikaliRequestController = require("./public/controllers/maombi/kusajiliSerikaliRequestController");
+const kubadiliJinaRequestController = require("./public/controllers/maombi/kubadiliJinaRequestController");
+const kuongezaMikondoRequestController = require("./public/controllers/maombi/kuongezaMikondoRequestController");
+const kuongezaTahasusiRequestController = require("./public/controllers/maombi/kuongezaTahasusiRequestController");
+const kubadiliUsajiliRequestController = require("./public/controllers/maombi/kubadiliUsajiliRequestController");
+const hamishaRequestController = require("./public/controllers/maombi/hamishaRequestController");
+const badiliMmilikiRequestController = require("./public/controllers/maombi/badiliMmilikiRequestController");
+const badiliMenejaRequestController = require("./public/controllers/maombi/badiliMenejaRequestController");
+const kuongezaBweniRequestController = require("./public/controllers/maombi/kuongezaBweniRequestController");
+const kuongezaDahaliaRequestController = require("./public/controllers/maombi/kuongezaDahaliaRequestController");
+const futaShuleRequestController = require("./public/controllers/maombi/futaShuleRequestController");
 
 var app = express();
 app.use(helmet.frameguard())
@@ -2699,124 +2711,124 @@ app.get("/RipotiBadiliMmiliki", function (req, res) {
 //   }
 // });
 
-app.get("/MaombiKusajiliShuleSerikali", function (req, res) {
-  var obj = [];
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: maokusajiliShuleJumlaAPI,
-        method: "GET",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(
-            new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
-          );
-          res.send("failed");
-        }
-        if (body !== undefined) {
-          var jsonData = JSON.parse(body);
-          // var jsonData = body
-          var message1 = jsonData.message;
-          var statusCode1 = jsonData.statusCode;
-          var data1 = jsonData.data;
-          if (statusCode1 == 300) {
-            console.log(
-              req.session.office + " jjdjdjd " + req.session.UserLevel
-            );
-            request(
-              {
-                url: maousajiliShuleSerListAPI,
-                method: "POST",
-                headers: {
-                  Authorization: "Bearer" + " " + req.session.Token,
-                  "Content-Type": "application/json",
-                },
-                json: {
-                  browser_used: req.session.browser_used,
-                  ip_address: req.session.ip_address,
-                  UserLevel: req.session.UserLevel,
-                  Office: req.session.office,
-                },
-              },
-              function (error, response, body) {
-                if (error) {
-                  console.log(
-                    new Date() + ": fail to MaombiKuanzishaShuleList " + error
-                  );
-                  res.send("failed");
-                }
-                console.log(body);
-                if (body !== undefined) {
-                  // var jsonData = JSON.parse(body)
-                  var jsonData = body;
-                  var message = jsonData.message;
-                  var statusCode = jsonData.statusCode;
-                  var data = jsonData.data;
-                  if (statusCode == 300) {
-                    for (var i = 0; i < data.length; i++) {
-                      var tracking_number = data[i].tracking_number;
-                      var user_id = data[i].user_id;
-                      var LgaName = data[i].LgaName;
-                      var RegionName = data[i].RegionName;
-                      var school_name = data[i].school_name;
-                      var created_at = data[i].created_at;
-                      var remain_days = data[i].remain_days;
-                      req.session.TrackingNumber = tracking_number;
-                      obj.push({
-                        tracking_number: tracking_number,
-                        user_id: user_id,
-                        school_name: school_name,
-                        LgaName: LgaName,
-                        RegionName: RegionName,
-                        created_at: created_at,
-                        remain_days: remain_days,
-                      });
-                    }
-                    console.log(
-                      new Date() +
-                        " " +
-                        req.session.userName +
-                        ": /MaombiKusajiliShuleSerikali"
-                    );
-                    res.render(
-                      path.join(__dirname + "/public/design/maombi/usajili_serikali"),
-                      {
-                        req: req,
-                        total_month: data1,
-                        maombi: obj,
-                        useLev: req.session.UserLevel,
-                                          userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
-                        cheoName: req.session.cheoName,
-                      }
-                    );
-                  }
-                  if (statusCode == 209) {
-                    res.redirect("/");
-                  }
-                }
-              }
-            );
-          }
-          if (statusCode1 == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
+// app.get("/MaombiKusajiliShuleSerikali", function (req, res) {
+//   var obj = [];
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//     request(
+//       {
+//         url: maokusajiliShuleJumlaAPI,
+//         method: "GET",
+//         headers: {
+//           Authorization: "Bearer" + " " + req.session.Token,
+//           "Content-Type": "application/json",
+//         },
+//       },
+//       function (error, response, body) {
+//         if (error) {
+//           console.log(
+//             new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
+//           );
+//           res.send("failed");
+//         }
+//         if (body !== undefined) {
+//           var jsonData = JSON.parse(body);
+//           // var jsonData = body
+//           var message1 = jsonData.message;
+//           var statusCode1 = jsonData.statusCode;
+//           var data1 = jsonData.data;
+//           if (statusCode1 == 300) {
+//             console.log(
+//               req.session.office + " jjdjdjd " + req.session.UserLevel
+//             );
+//             request(
+//               {
+//                 url: maousajiliShuleSerListAPI,
+//                 method: "POST",
+//                 headers: {
+//                   Authorization: "Bearer" + " " + req.session.Token,
+//                   "Content-Type": "application/json",
+//                 },
+//                 json: {
+//                   browser_used: req.session.browser_used,
+//                   ip_address: req.session.ip_address,
+//                   UserLevel: req.session.UserLevel,
+//                   Office: req.session.office,
+//                 },
+//               },
+//               function (error, response, body) {
+//                 if (error) {
+//                   console.log(
+//                     new Date() + ": fail to MaombiKuanzishaShuleList " + error
+//                   );
+//                   res.send("failed");
+//                 }
+//                 console.log(body);
+//                 if (body !== undefined) {
+//                   // var jsonData = JSON.parse(body)
+//                   var jsonData = body;
+//                   var message = jsonData.message;
+//                   var statusCode = jsonData.statusCode;
+//                   var data = jsonData.data;
+//                   if (statusCode == 300) {
+//                     for (var i = 0; i < data.length; i++) {
+//                       var tracking_number = data[i].tracking_number;
+//                       var user_id = data[i].user_id;
+//                       var LgaName = data[i].LgaName;
+//                       var RegionName = data[i].RegionName;
+//                       var school_name = data[i].school_name;
+//                       var created_at = data[i].created_at;
+//                       var remain_days = data[i].remain_days;
+//                       req.session.TrackingNumber = tracking_number;
+//                       obj.push({
+//                         tracking_number: tracking_number,
+//                         user_id: user_id,
+//                         school_name: school_name,
+//                         LgaName: LgaName,
+//                         RegionName: RegionName,
+//                         created_at: created_at,
+//                         remain_days: remain_days,
+//                       });
+//                     }
+//                     console.log(
+//                       new Date() +
+//                         " " +
+//                         req.session.userName +
+//                         ": /MaombiKusajiliShuleSerikali"
+//                     );
+//                     res.render(
+//                       path.join(__dirname + "/public/design/maombi/usajili_serikali"),
+//                       {
+//                         req: req,
+//                         total_month: data1,
+//                         maombi: obj,
+//                         useLev: req.session.UserLevel,
+//                                           userName: req.session.userName,
+//               RoleManage: req.session.RoleManage,
+//     userID: req.session.userID,
+//                         cheoName: req.session.cheoName,
+//                       }
+//                     );
+//                   }
+//                   if (statusCode == 209) {
+//                     res.redirect("/");
+//                   }
+//                 }
+//               }
+//             );
+//           }
+//           if (statusCode1 == 209) {
+//             res.redirect("/");
+//           }
+//         }
+//       }
+//     );
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
 app.get("/KuongezaMikondo", function (req, res) {
   var obj = [];
@@ -9062,340 +9074,340 @@ app.get("/WamilikiSajiliwa/:id", function (req, res) {
   }
 });
 
-app.get("/SajiliOmbi/:id", function (req, res) {
-  var obj = [];
-  var TrackingNumber = req.params.id;
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: ombiKusajiliDetails,
-        method: "POST",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-        json: {
-          browser_used: req.session.browser_used,
-          ip_address: req.session.ip_address,
-          TrackingNumber: TrackingNumber,
-          userLevel: req.session.UserLevel,
-          office: req.session.office,
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(
-            new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
-          );
-          res.send("failed");
-        }
+// app.get("/SajiliOmbi/:id", function (req, res) {
+//   var obj = [];
+//   var TrackingNumber = req.params.id;
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//     request(
+//       {
+//         url: ombiKusajiliDetails,
+//         method: "POST",
+//         headers: {
+//           Authorization: "Bearer" + " " + req.session.Token,
+//           "Content-Type": "application/json",
+//         },
+//         json: {
+//           browser_used: req.session.browser_used,
+//           ip_address: req.session.ip_address,
+//           TrackingNumber: TrackingNumber,
+//           userLevel: req.session.UserLevel,
+//           office: req.session.office,
+//         },
+//       },
+//       function (error, response, body) {
+//         if (error) {
+//           console.log(
+//             new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
+//           );
+//           res.send("failed");
+//         }
 
-        if (body !== undefined) {
-          // var jsonData = JSON.parse(body)
-          var jsonData = body;
+//         if (body !== undefined) {
+//           // var jsonData = JSON.parse(body)
+//           var jsonData = body;
 
-          // console.log(jsonData)
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-          if (statusCode == 300) {
-            var remain_days = data[0].remain_days;
-            var created_at = data[0].created_at;
-            var tracking_number = data[0].tracking_number;
-            var school_name = data[0].school_name;
-            var LgaName = data[0].LgaName;
-            var WardNameMtu = data[0].WardNameMtu;
-            var LgaNameMtu = data[0].LgaNameMtu;
-            var RegionName = data[0].RegionName;
-            var RegionNameMtu = data[0].RegionNameMtu;
-            var fullname = data[0].fullname;
-            var schoolCategory = data[0].schoolCategory;
-            var schoolCategoryId = data[0].schoolCategoryId;
-            var schoolPhone = data[0].school_phone;
-            var genderType = data[0].gender_type;
-            var registry = data[0].registry;
-            var occupation = data[0].occupation;
-            var mwombajiAddress = data[0].mwombajiAddress;
-            var mwombajiPhoneNo = data[0].mwombajiPhoneNo;
-            var isSeminary = data[0].isSeminary;
-            var Stream = data[0].Stream;
-            var lessons_and_courses = data[0].lessons_and_courses;
-            var numberOfStudents = data[0].numberOfStudents;
-            var SeminaryTitle = data[0].SeminaryTitle;
-            var SeminaryValue = data[0].SeminaryValue;
-            var baruaPepe = data[0].baruaPepe;
-            var language = data[0].language;
-            var school_size = data[0].school_size;
-            var schoolOpeningDate = data[0].schoolOpeningDate;
-            var schoolAddress = data[0].school_address;
-            var school_email = data[0].school_email;
-            var Website = data[0].Website;
-            var po_box = data[0].po_box;
-            var area = data[0].area;
-            var numberOfTeachers = data[0].numberOfTeachers;
-            var TeacherRatioStudent = data[0].TeacherRatioStudent;
-            var schoolCategoryID = data[0].schoolCategoryID;
-            var Certificate = data[0].Certificate;
-            var WardName = data[0].WardName;
-            var teacherInformation = data[0].teacherInformation;
-            var structure = data[0].structure;
-            var subcategory = data[0].subcategory;
-            var count = jsonData.maoni[0].count;
-            var objAttachment = jsonData.objAttachment;
-            var objAttachment1 = jsonData.objAttachment1;
-            var Maoni = jsonData.Maoni;
-            // var maoni = JSON.parse(jsonData.maoni)
-            console.log(
-              new Date() + " " + req.session.userName + ": /SajiliOmbi"
-            );
-            res.render(
-              path.join(__dirname + "/public/design/maombi/details/view-ombi-sajili-details"),
-              {
-                req: req,
-                muda_ombi: remain_days,
-                useLev: req.session.UserLevel,
-                                  userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
-                cheoName: req.session.cheoName,
-                created_at: created_at,
-                tracking_number: tracking_number,
-                schoolOpeningDate: schoolOpeningDate,
-                school_name: school_name,
-                LgaName: LgaName,
-                RegionName: RegionName,
-                RegionNameMtu: RegionNameMtu,
-                fullname: fullname,
-                schoolCategory: schoolCategory,
-                UserLevel: req.session.UserLevel,
-                genderType: genderType,
-                registry: registry,
-                schoolPhone: schoolPhone,
-                schoolCategoryID: schoolCategoryID,
-                schoolCategoryId: schoolCategoryId,
-                occupation: occupation,
-                mwombajiAddress: mwombajiAddress,
-                schoolAddress: schoolAddress,
-                Certificate: Certificate,
-                mwombajiPhoneNo: mwombajiPhoneNo,
-                baruaPepe: baruaPepe,
-                poBox: po_box,
-                teacherInformation: teacherInformation,
-                schoolEmail: school_email,
-                numberOfTeachers: numberOfTeachers,
-                TeacherRatioStudent: TeacherRatioStudent,
-                language: language,
-                school_size: school_size,
-                Website: Website,
-                isSeminary: isSeminary,
-                Certificate: Certificate,
-                area: area,
-                WardName: WardName,
-                structure: structure,
-                SeminaryValue: SeminaryValue,
-                lessonsAndCourses: lessons_and_courses,
-                LgaNameMtu: LgaNameMtu,
-                WardNameMtu: WardNameMtu,
-                SeminaryTitle: SeminaryTitle,
-                Stream: Stream,
-                subcategory: subcategory,
-                count: count,
-                staffs: jsonData.staffs,
-                numberOfStudents: numberOfStudents,
-                status: jsonData.status,
-                objAttachment: objAttachment,
-                objAttachment1: objAttachment1,
-                Maoni: Maoni,
-              }
-            );
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
+//           // console.log(jsonData)
+//           var message = jsonData.message;
+//           var statusCode = jsonData.statusCode;
+//           var data = jsonData.data;
+//           if (statusCode == 300) {
+//             var remain_days = data[0].remain_days;
+//             var created_at = data[0].created_at;
+//             var tracking_number = data[0].tracking_number;
+//             var school_name = data[0].school_name;
+//             var LgaName = data[0].LgaName;
+//             var WardNameMtu = data[0].WardNameMtu;
+//             var LgaNameMtu = data[0].LgaNameMtu;
+//             var RegionName = data[0].RegionName;
+//             var RegionNameMtu = data[0].RegionNameMtu;
+//             var fullname = data[0].fullname;
+//             var schoolCategory = data[0].schoolCategory;
+//             var schoolCategoryId = data[0].schoolCategoryId;
+//             var schoolPhone = data[0].school_phone;
+//             var genderType = data[0].gender_type;
+//             var registry = data[0].registry;
+//             var occupation = data[0].occupation;
+//             var mwombajiAddress = data[0].mwombajiAddress;
+//             var mwombajiPhoneNo = data[0].mwombajiPhoneNo;
+//             var isSeminary = data[0].isSeminary;
+//             var Stream = data[0].Stream;
+//             var lessons_and_courses = data[0].lessons_and_courses;
+//             var numberOfStudents = data[0].numberOfStudents;
+//             var SeminaryTitle = data[0].SeminaryTitle;
+//             var SeminaryValue = data[0].SeminaryValue;
+//             var baruaPepe = data[0].baruaPepe;
+//             var language = data[0].language;
+//             var school_size = data[0].school_size;
+//             var schoolOpeningDate = data[0].schoolOpeningDate;
+//             var schoolAddress = data[0].school_address;
+//             var school_email = data[0].school_email;
+//             var Website = data[0].Website;
+//             var po_box = data[0].po_box;
+//             var area = data[0].area;
+//             var numberOfTeachers = data[0].numberOfTeachers;
+//             var TeacherRatioStudent = data[0].TeacherRatioStudent;
+//             var schoolCategoryID = data[0].schoolCategoryID;
+//             var Certificate = data[0].Certificate;
+//             var WardName = data[0].WardName;
+//             var teacherInformation = data[0].teacherInformation;
+//             var structure = data[0].structure;
+//             var subcategory = data[0].subcategory;
+//             var count = jsonData.maoni[0].count;
+//             var objAttachment = jsonData.objAttachment;
+//             var objAttachment1 = jsonData.objAttachment1;
+//             var Maoni = jsonData.Maoni;
+//             // var maoni = JSON.parse(jsonData.maoni)
+//             console.log(
+//               new Date() + " " + req.session.userName + ": /SajiliOmbi"
+//             );
+//             res.render(
+//               path.join(__dirname + "/public/design/maombi/details/view-ombi-sajili-details"),
+//               {
+//                 req: req,
+//                 muda_ombi: remain_days,
+//                 useLev: req.session.UserLevel,
+//                                   userName: req.session.userName,
+//               RoleManage: req.session.RoleManage,
+//     userID: req.session.userID,
+//                 cheoName: req.session.cheoName,
+//                 created_at: created_at,
+//                 tracking_number: tracking_number,
+//                 schoolOpeningDate: schoolOpeningDate,
+//                 school_name: school_name,
+//                 LgaName: LgaName,
+//                 RegionName: RegionName,
+//                 RegionNameMtu: RegionNameMtu,
+//                 fullname: fullname,
+//                 schoolCategory: schoolCategory,
+//                 UserLevel: req.session.UserLevel,
+//                 genderType: genderType,
+//                 registry: registry,
+//                 schoolPhone: schoolPhone,
+//                 schoolCategoryID: schoolCategoryID,
+//                 schoolCategoryId: schoolCategoryId,
+//                 occupation: occupation,
+//                 mwombajiAddress: mwombajiAddress,
+//                 schoolAddress: schoolAddress,
+//                 Certificate: Certificate,
+//                 mwombajiPhoneNo: mwombajiPhoneNo,
+//                 baruaPepe: baruaPepe,
+//                 poBox: po_box,
+//                 teacherInformation: teacherInformation,
+//                 schoolEmail: school_email,
+//                 numberOfTeachers: numberOfTeachers,
+//                 TeacherRatioStudent: TeacherRatioStudent,
+//                 language: language,
+//                 school_size: school_size,
+//                 Website: Website,
+//                 isSeminary: isSeminary,
+//                 Certificate: Certificate,
+//                 area: area,
+//                 WardName: WardName,
+//                 structure: structure,
+//                 SeminaryValue: SeminaryValue,
+//                 lessonsAndCourses: lessons_and_courses,
+//                 LgaNameMtu: LgaNameMtu,
+//                 WardNameMtu: WardNameMtu,
+//                 SeminaryTitle: SeminaryTitle,
+//                 Stream: Stream,
+//                 subcategory: subcategory,
+//                 count: count,
+//                 staffs: jsonData.staffs,
+//                 numberOfStudents: numberOfStudents,
+//                 status: jsonData.status,
+//                 objAttachment: objAttachment,
+//                 objAttachment1: objAttachment1,
+//                 Maoni: Maoni,
+//               }
+//             );
+//           }
+//           if (statusCode == 209) {
+//             res.redirect("/");
+//           }
+//         }
+//       }
+//     );
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
-app.get("/SajiliOmbiSerikali/:id", function (req, res) {
-  var obj = [];
-  var TrackingNumber = req.params.id;
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: ombiKusajiliSerDetails,
-        method: "POST",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-        json: {
-          browser_used: req.session.browser_used,
-          ip_address: req.session.ip_address,
-          TrackingNumber: TrackingNumber,
-          userLevel: req.session.UserLevel,
-          office: req.session.office,
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(
-            new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
-          );
-          res.send("failed");
-        }
+// app.get("/SajiliOmbiSerikali/:id", function (req, res) {
+//   var obj = [];
+//   var TrackingNumber = req.params.id;
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//     request(
+//       {
+//         url: ombiKusajiliSerDetails,
+//         method: "POST",
+//         headers: {
+//           Authorization: "Bearer" + " " + req.session.Token,
+//           "Content-Type": "application/json",
+//         },
+//         json: {
+//           browser_used: req.session.browser_used,
+//           ip_address: req.session.ip_address,
+//           TrackingNumber: TrackingNumber,
+//           userLevel: req.session.UserLevel,
+//           office: req.session.office,
+//         },
+//       },
+//       function (error, response, body) {
+//         if (error) {
+//           console.log(
+//             new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
+//           );
+//           res.send("failed");
+//         }
 
-        if (body !== undefined) {
-          // var jsonData = JSON.parse(body)
-          var jsonData = body;
+//         if (body !== undefined) {
+//           // var jsonData = JSON.parse(body)
+//           var jsonData = body;
 
-          // console.log(jsonData)
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-          if (statusCode == 300) {
-            var remain_days = data[0].remain_days;
-            var created_at = data[0].created_at;
-            var tracking_number = data[0].tracking_number;
-            var school_name = data[0].school_name;
-            var LgaName = data[0].LgaName;
-            var WardNameMtu = data[0].WardNameMtu;
-            var LgaNameMtu = data[0].LgaNameMtu;
-            var RegionName = data[0].RegionName;
-            var RegionNameMtu = data[0].RegionNameMtu;
-            var fullname = data[0].fullname;
-            var schoolCategory = data[0].schoolCategory;
-            var schoolCategoryId = data[0].schoolCategoryId;
-            var schoolPhone = data[0].school_phone;
-            var genderType = data[0].gender_type;
-            var registry = data[0].registry;
-            var building = data[0].building;
-            var occupation = data[0].occupation;
-            var mwombajiAddress = data[0].mwombajiAddress;
-            var mwombajiPhoneNo = data[0].mwombajiPhoneNo;
-            var isSeminary = data[0].isSeminary;
-            var Stream = data[0].Stream;
-            var lessons_and_courses = data[0].lessons_and_courses;
-            var numberOfStudents = data[0].numberOfStudents;
-            var SeminaryTitle = data[0].SeminaryTitle;
-            var SeminaryValue = data[0].SeminaryValue;
-            var baruaPepe = data[0].baruaPepe;
-            var language = data[0].language;
-            var school_size = data[0].school_size;
-            var schoolOpeningDate = data[0].schoolOpeningDate;
-            var schoolAddress = data[0].school_address;
-            var school_email = data[0].school_email;
-            var Website = data[0].Website;
-            var po_box = data[0].po_box;
-            var area = data[0].area;
-            var specialization = data[0].specialization;
-            var numberOfTeachers = data[0].numberOfTeachers;
-            var TeacherRatioStudent = data[0].TeacherRatioStudent;
-            var schoolCategoryID = data[0].schoolCategoryID;
-            var Certificate = data[0].Certificate;
-            var WardName = data[0].WardName;
-            var managerName = data[0].managerName;
-            var owner_name = data[0].owner_name;
-            var DisabledTitle = data[0].DisabledTitle;
-            var teacherInformation = data[0].teacherInformation;
-            var structure = data[0].structure;
-            var subcategory = data[0].subcategory;
-            var count = jsonData.maoni[0].count;
-            var objAttachment = jsonData.objAttachment;
-            var objAttachment1 = jsonData.objAttachment1;
-            var Maoni = jsonData.Maoni;
-            // var maoni = JSON.parse(jsonData.maoni)
-            // console.log(teacherInformation)
-            console.log(
-              new Date() + " " + req.session.userName + ": /SajiliOmbiSerikali"
-            );
-            res.render(
-              path.join(
-                __dirname + "/public/design/maombi/details/view-ombi-sajili-serikali-details"
-              ),
-              {
-                req: req,
-                muda_ombi: remain_days,
-                useLev: req.session.UserLevel,
-                                  userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
-                specialization: specialization,
-                cheoName: req.session.cheoName,
-                created_at: created_at,
-                tracking_number: tracking_number,
-                schoolOpeningDate: schoolOpeningDate,
-                school_name: school_name,
-                LgaName: LgaName,
-                RegionName: RegionName,
-                RegionNameMtu: RegionNameMtu,
-                DisabledTitle: DisabledTitle,
-                fullname: fullname,
-                schoolCategory: schoolCategory,
-                UserLevel: req.session.UserLevel,
-                genderType: genderType,
-                ownerName: owner_name,
-                managerName: managerName,
-                registry: registry,
-                schoolPhone: schoolPhone,
-                schoolCategoryID: schoolCategoryID,
-                schoolCategoryId: schoolCategoryId,
-                occupation: occupation,
-                mwombajiAddress: mwombajiAddress,
-                schoolAddress: schoolAddress,
-                Certificate: Certificate,
-                mwombajiPhoneNo: mwombajiPhoneNo,
-                baruaPepe: baruaPepe,
-                poBox: po_box,
-                teacherInformation: teacherInformation,
-                schoolEmail: school_email,
-                numberOfTeachers: numberOfTeachers,
-                TeacherRatioStudent: TeacherRatioStudent,
-                language: language,
-                school_size: school_size,
-                Website: Website,
-                isSeminary: isSeminary,
-                Certificate: Certificate,
-                area: area,
-                WardName: WardName,
-                structure: structure,
-                SeminaryValue: SeminaryValue,
-                lessonsAndCourses: lessons_and_courses,
-                LgaNameMtu: LgaNameMtu,
-                WardNameMtu: WardNameMtu,
-                SeminaryTitle: SeminaryTitle,
-                Stream: Stream,
-                building: building,
-                subcategory: subcategory,
-                count: count,
-                staffs: jsonData.staffs,
-                numberOfStudents: numberOfStudents,
-                status: jsonData.status,
-                objAttachment: objAttachment,
-                objAttachment1: objAttachment1,
-                Maoni: Maoni,
-              }
-            );
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
+//           // console.log(jsonData)
+//           var message = jsonData.message;
+//           var statusCode = jsonData.statusCode;
+//           var data = jsonData.data;
+//           if (statusCode == 300) {
+//             var remain_days = data[0].remain_days;
+//             var created_at = data[0].created_at;
+//             var tracking_number = data[0].tracking_number;
+//             var school_name = data[0].school_name;
+//             var LgaName = data[0].LgaName;
+//             var WardNameMtu = data[0].WardNameMtu;
+//             var LgaNameMtu = data[0].LgaNameMtu;
+//             var RegionName = data[0].RegionName;
+//             var RegionNameMtu = data[0].RegionNameMtu;
+//             var fullname = data[0].fullname;
+//             var schoolCategory = data[0].schoolCategory;
+//             var schoolCategoryId = data[0].schoolCategoryId;
+//             var schoolPhone = data[0].school_phone;
+//             var genderType = data[0].gender_type;
+//             var registry = data[0].registry;
+//             var building = data[0].building;
+//             var occupation = data[0].occupation;
+//             var mwombajiAddress = data[0].mwombajiAddress;
+//             var mwombajiPhoneNo = data[0].mwombajiPhoneNo;
+//             var isSeminary = data[0].isSeminary;
+//             var Stream = data[0].Stream;
+//             var lessons_and_courses = data[0].lessons_and_courses;
+//             var numberOfStudents = data[0].numberOfStudents;
+//             var SeminaryTitle = data[0].SeminaryTitle;
+//             var SeminaryValue = data[0].SeminaryValue;
+//             var baruaPepe = data[0].baruaPepe;
+//             var language = data[0].language;
+//             var school_size = data[0].school_size;
+//             var schoolOpeningDate = data[0].schoolOpeningDate;
+//             var schoolAddress = data[0].school_address;
+//             var school_email = data[0].school_email;
+//             var Website = data[0].Website;
+//             var po_box = data[0].po_box;
+//             var area = data[0].area;
+//             var specialization = data[0].specialization;
+//             var numberOfTeachers = data[0].numberOfTeachers;
+//             var TeacherRatioStudent = data[0].TeacherRatioStudent;
+//             var schoolCategoryID = data[0].schoolCategoryID;
+//             var Certificate = data[0].Certificate;
+//             var WardName = data[0].WardName;
+//             var managerName = data[0].managerName;
+//             var owner_name = data[0].owner_name;
+//             var DisabledTitle = data[0].DisabledTitle;
+//             var teacherInformation = data[0].teacherInformation;
+//             var structure = data[0].structure;
+//             var subcategory = data[0].subcategory;
+//             var count = jsonData.maoni[0].count;
+//             var objAttachment = jsonData.objAttachment;
+//             var objAttachment1 = jsonData.objAttachment1;
+//             var Maoni = jsonData.Maoni;
+//             // var maoni = JSON.parse(jsonData.maoni)
+//             // console.log(teacherInformation)
+//             console.log(
+//               new Date() + " " + req.session.userName + ": /SajiliOmbiSerikali"
+//             );
+//             res.render(
+//               path.join(
+//                 __dirname + "/public/design/maombi/details/view-ombi-sajili-serikali-details"
+//               ),
+//               {
+//                 req: req,
+//                 muda_ombi: remain_days,
+//                 useLev: req.session.UserLevel,
+//                                   userName: req.session.userName,
+//               RoleManage: req.session.RoleManage,
+//     userID: req.session.userID,
+//                 specialization: specialization,
+//                 cheoName: req.session.cheoName,
+//                 created_at: created_at,
+//                 tracking_number: tracking_number,
+//                 schoolOpeningDate: schoolOpeningDate,
+//                 school_name: school_name,
+//                 LgaName: LgaName,
+//                 RegionName: RegionName,
+//                 RegionNameMtu: RegionNameMtu,
+//                 DisabledTitle: DisabledTitle,
+//                 fullname: fullname,
+//                 schoolCategory: schoolCategory,
+//                 UserLevel: req.session.UserLevel,
+//                 genderType: genderType,
+//                 ownerName: owner_name,
+//                 managerName: managerName,
+//                 registry: registry,
+//                 schoolPhone: schoolPhone,
+//                 schoolCategoryID: schoolCategoryID,
+//                 schoolCategoryId: schoolCategoryId,
+//                 occupation: occupation,
+//                 mwombajiAddress: mwombajiAddress,
+//                 schoolAddress: schoolAddress,
+//                 Certificate: Certificate,
+//                 mwombajiPhoneNo: mwombajiPhoneNo,
+//                 baruaPepe: baruaPepe,
+//                 poBox: po_box,
+//                 teacherInformation: teacherInformation,
+//                 schoolEmail: school_email,
+//                 numberOfTeachers: numberOfTeachers,
+//                 TeacherRatioStudent: TeacherRatioStudent,
+//                 language: language,
+//                 school_size: school_size,
+//                 Website: Website,
+//                 isSeminary: isSeminary,
+//                 Certificate: Certificate,
+//                 area: area,
+//                 WardName: WardName,
+//                 structure: structure,
+//                 SeminaryValue: SeminaryValue,
+//                 lessonsAndCourses: lessons_and_courses,
+//                 LgaNameMtu: LgaNameMtu,
+//                 WardNameMtu: WardNameMtu,
+//                 SeminaryTitle: SeminaryTitle,
+//                 Stream: Stream,
+//                 building: building,
+//                 subcategory: subcategory,
+//                 count: count,
+//                 staffs: jsonData.staffs,
+//                 numberOfStudents: numberOfStudents,
+//                 status: jsonData.status,
+//                 objAttachment: objAttachment,
+//                 objAttachment1: objAttachment1,
+//                 Maoni: Maoni,
+//               }
+//             );
+//           }
+//           if (statusCode == 209) {
+//             res.redirect("/");
+//           }
+//         }
+//       }
+//     );
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
 app.post("/TumaComment", function (req, res) {
   console.log(req.body);
@@ -14952,6 +14964,18 @@ app.use("/", dashboardController);
 // Maombi
 app.use("/" , anzishaShuleRequestController)
 app.use("/" , umilikinaumenejaRequestController)
+app.use("/" , kusajiliBinafsiRequestController)
+app.use("/" , kusajiliSerikaliRequestController)
+app.use("/" , kuongezaMikondoRequestController)
+app.use("/" , kubadiliJinaRequestController)
+app.use("/" , kuongezaTahasusiRequestController)
+app.use("/" , kuongezaBweniRequestController)
+app.use("/" , kuongezaDahaliaRequestController)
+app.use("/" , kubadiliUsajiliRequestController)
+app.use("/" , hamishaRequestController)
+app.use("/" , badiliMmilikiRequestController)
+app.use("/" , badiliMenejaRequestController)
+app.use("/" , futaShuleRequestController)
 app.use("/", userController)
 app.use("/", regionController)
 app.use("/", districtController)

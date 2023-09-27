@@ -54,7 +54,7 @@ for (var i=0; i < response.length; i++) {
 function tuma(){
     var coments = document.getElementById('exampleFormControlTextarea1').value;
     var staffs = document.getElementById('staffs').value;
-    var userLevel = document.getElementById('userLevel').value;
+    // // var userLevel = document.getElementById('userLevel').value;
     var haliombi = 1;
     var trackerId = document.getElementById('trackerId').value;
     var schoolCategoryID = document.getElementById('schoolCategoryID').value;
@@ -79,7 +79,7 @@ function tuma(){
 function wasilisha(){
     var coments = document.getElementById('exampleFormControlTextarea1').value;
     var staffs = '0-2';
-    // var userLevel = document.getElementById('userLevel').value;
+    // // var userLevel = document.getElementById('userLevel').value;
     var haliombi = 1;
     var trackerId = document.getElementById('trackerId').value;
     
@@ -113,7 +113,7 @@ function rudisha(){
     // if(document.getElementById("formFileMultiple").files.length <= 0){
     var coments = document.getElementById('exampleFormControlTextarea1').value;
     var staffs = '0-1';
-    var userLevel = document.getElementById('userLevel').value;
+    // var userLevel = document.getElementById('userLevel').value;
     var haliombi = 1;
     var trackerId = document.getElementById('trackerId').value;
     
@@ -147,7 +147,7 @@ function wasilishak1(){
     // if(document.getElementById("formFileMultiple").files.length <= 0){
     var coments = document.getElementById('exampleFormControlTextarea1').value;
     var staffs = '0-12';
-    var userLevel = document.getElementById('userLevel').value;
+    // var userLevel = document.getElementById('userLevel').value;
     var haliombi = 1;
     var trackerId = document.getElementById('trackerId').value;
     
@@ -179,7 +179,7 @@ function wasilishak1(){
 function wasilishaMus(){
     var coments = document.getElementById('exampleFormControlTextarea1').value;
     var staffs = '0-9';
-    var userLevel = document.getElementById('userLevel').value;
+    // var userLevel = document.getElementById('userLevel').value;
     var haliombi = 1;
     
     var trackerId = document.getElementById('trackerId').value;
@@ -215,7 +215,7 @@ function rudishaMus(){
     // if(document.getElementById("formFileMultiple").files.length <= 0){
     var coments = document.getElementById('exampleFormControlTextarea1').value;
     var staffs = '0-2';
-    var userLevel = document.getElementById('userLevel').value;
+    // var userLevel = document.getElementById('userLevel').value;
     var haliombi = 1;
     
     var trackerId = document.getElementById('trackerId').value;
@@ -249,7 +249,7 @@ function rudishaMus(){
 function wasilishaMmus(){
     var coments = document.getElementById('exampleFormControlTextarea1').value;
     var staffs = '0-12';
-    var userLevel = document.getElementById('userLevel').value;
+    // var userLevel = document.getElementById('userLevel').value;
     var haliombi = 1;
     var trackerId = document.getElementById('trackerId').value;
     
@@ -281,7 +281,7 @@ function wasilishaMmus(){
 function wasilishaKe(){
     var coments = document.getElementById('exampleFormControlTextarea1').value;
     var staffs = '0-10';
-    var userLevel = document.getElementById('userLevel').value;
+    // var userLevel = document.getElementById('userLevel').value;
     var haliombi = 2;
     
     var trackerId = document.getElementById('trackerId').value;
@@ -314,7 +314,7 @@ function wasilishaKe(){
 function kataaKe(){
     var coments = document.getElementById('exampleFormControlTextarea1').value;
     var staffs = '0-10';
-    var userLevel = document.getElementById('userLevel').value;
+    // var userLevel = document.getElementById('userLevel').value;
     var haliombi = 3;
     
     var trackerId = document.getElementById('trackerId').value;
@@ -407,7 +407,7 @@ function Pandisha(){
 function rudishaMteja(){
     var coments = document.getElementById('exampleFormControlTextarea1').value;
     var staffs = '0-0';
-    var userLevel = document.getElementById('userLevel').value;
+    // // var userLevel = document.getElementById('userLevel').value;
     var haliombi = 4;
     var trackerId = document.getElementById('trackerId').value;
     
