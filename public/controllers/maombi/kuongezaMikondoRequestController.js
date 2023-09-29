@@ -6,13 +6,15 @@ var session = require("express-session");
 var path = require("path");
 const { isAuthenticated, sendRequest, can } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
-var maousajiliShuleListAPI = API_BASE_URL + "maombi-usajili-shule";
+var badiliMkondo = API_BASE_URL + "maombi-badili-mkondo";
+var badiliDetails = API_BASE_URL + "view-badili-details";
 // Display
 kuongezaMikondoRequestController.get(
   "/KuongezaMikondo",
   isAuthenticated,
   can("view-school-registration-private"),
   function (req, res) {
+    var obj = []
     var formData = {
       //  is_paginated: req.query.is_paginated,
       //  search: req.query.tafuta,
@@ -20,13 +22,14 @@ kuongezaMikondoRequestController.get(
     sendRequest(
       req,
       res,
-      maousajiliShuleListAPI,
+      badiliMkondo,
       "POST",
       formData,
       (jsonData) => {
                   var message = jsonData.message;
                   var statusCode = jsonData.statusCode;
-                  var data = jsonData.data;
+                  var data = jsonData.dataList;
+                  var dataSummary = jsonData.dataSummary;
                     for (var i = 0; i < data.length; i++) {
                       var tracking_number = data[i].tracking_number;
                       var user_id = data[i].user_id;
@@ -53,10 +56,10 @@ kuongezaMikondoRequestController.get(
                         ": /MaombiKusajiliShule"
                     );
                     res.render(
-                      path.join(__dirname + "/../../design/maombi/usajili"),
+                      path.join(__dirname + "/../../design/maombi/mikondo"),
                       {
                         req: req,
-                        total_month: data1,
+                        total_month: dataSummary,
                         maombi: obj,
                       }
                     );
@@ -65,5 +68,134 @@ kuongezaMikondoRequestController.get(
     );
   }
 );
+
+kuongezaMikondoRequestController.get(
+  "/BadiliMkondo/:id", 
+  isAuthenticated,
+  can("view-school-registration-private"),
+  function (req, res) {
+  var obj = [];
+  var TrackingNumber = req.params.id;
+  sendRequest(
+      {
+        url: badiliDetails,
+        method: "POST",
+        headers: {
+          Authorization: "Bearer" + " " + req.session.Token,
+          "Content-Type": "application/json",
+        },
+        json: {
+          browser_used: req.session.browser_used,
+          ip_address: req.session.ip_address,
+          TrackingNumber: TrackingNumber,
+          userLevel: req.session.UserLevel,
+          office: req.session.office,
+        },
+      },
+      function (error, response, body) {
+        if (error) {
+          console.log(
+            new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
+          );
+          res.send("failed");
+        }
+
+        if (body !== undefined) {
+          // var jsonData = JSON.parse(body)
+          var jsonData = body;
+
+          console.log(jsonData);
+          var message = jsonData.message;
+          var statusCode = jsonData.statusCode;
+
+          if (statusCode == 300) {
+            var data = jsonData.data;
+            var remain_days = data[0].remain_days;
+            var created_at = data[0].created_at;
+            var tracking_number = data[0].tracking_number;
+            var school_name = data[0].school_name;
+            var LgaName = data[0].LgaName;
+            var registryTypeId = data[0].registry_type_id;
+            var WardNameMtu = data[0].WardNameMtu;
+            var LgaNameMtu = data[0].LgaNameMtu;
+            var RegionName = data[0].RegionName;
+            var RegionNameMtu = data[0].RegionNameMtu;
+            var fullname = data[0].fullname;
+            var schoolCategory = data[0].schoolCategory;
+            var registry = data[0].registry;
+            var occupation = data[0].occupation;
+            var mwombajiAddress = data[0].mwombajiAddress;
+            var mwombajiPhoneNo = data[0].mwombajiPhoneNo;
+            var baruaPepe = data[0].baruaPepe;
+            var language = data[0].language;
+            var school_size = data[0].school_size;
+            var area = data[0].area;
+            var streamOld = data[0].streamOld;
+            var streamNew = data[0].streamNew;
+            var establishId = data[0].establishId;
+            var WardName = data[0].WardName;
+            var structure = data[0].structure;
+            var subcategory = data[0].subcategory;
+            // var count = jsonData.maoni[0].count;
+            var objAttachment = jsonData.objAttachment;
+            var objAttachment1 = jsonData.objAttachment1;
+            // var objAttachment2 = jsonData.objAttachment2;
+            console.log(objAttachment);
+            var Maoni = jsonData.Maoni;
+            console.log(
+              new Date() + " " + req.session.userName + ": /BadiliMkondo"
+            );
+            res.render(
+              path.join(__dirname + "/../../design/maombi/details/view-badili-ombi"),
+              {
+                req: req,
+                muda_ombi: remain_days,
+                useLev: req.session.UserLevel,
+                userName: req.session.userName,
+                RoleManage: req.session.RoleManage,
+                userID: req.session.userID,
+                cheoName: req.session.cheoName,
+                created_at: created_at,
+                tracking_number: tracking_number,
+                school_name: school_name,
+                LgaName: LgaName,
+                RegionName: RegionName,
+                RegionNameMtu: RegionNameMtu,
+                fullname: fullname,
+                schoolCategory: schoolCategory,
+                registry: registry,
+                occupation: occupation,
+                mwombajiAddress: mwombajiAddress,
+                registryTypeId: registryTypeId,
+                mwombajiPhoneNo: mwombajiPhoneNo,
+                baruaPepe: baruaPepe,
+                streamNew: streamNew,
+                streamOld: streamOld,
+                language: language,
+                school_size: school_size,
+                userLevel: req.session.UserLevel,
+                area: area,
+                WardName: WardName,
+                structure: structure,
+                establishId: establishId,
+                LgaNameMtu: LgaNameMtu,
+                WardNameMtu: WardNameMtu,
+                subcategory: subcategory,
+                count: 0,
+                staffs: jsonData.staffs,
+                status: jsonData.status,
+                objAttachment: objAttachment,
+                objAttachment1: objAttachment1,
+                Maoni: Maoni,
+              }
+            );
+          }
+          if (statusCode == 209) {
+            res.redirect("/");
+          }
+        }
+      }
+    );
+});
 
 module.exports = kuongezaMikondoRequestController;
