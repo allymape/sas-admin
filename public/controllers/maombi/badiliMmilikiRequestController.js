@@ -28,6 +28,7 @@ badiliMmilikiRequestController.get(
         
           var data = jsonData.dataList;
             const obj = [];
+            console.log("gaiia",data)
             for (var i = 0; i < data.length; i++) {
               var tracking_number = data[i].tracking_number;
               var user_id = data[i].user_id;

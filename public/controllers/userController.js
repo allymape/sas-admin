@@ -71,7 +71,7 @@ userController.post("/auth", function (req, res) {
               if (Number(user.user_level) == 10) {
                 res.redirect("/RipotiZilizosajiliwa");
               } else {
-                res.redirect("/BadiliMmiliki");
+                res.redirect("/Dashboard");
               }
             } else {
               res.redirect("/Dashboard");

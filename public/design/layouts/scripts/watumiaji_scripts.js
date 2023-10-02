@@ -33,9 +33,10 @@ function getUsers() {
         username: user.username,
         role_name: user.role_name,
         level_name: user.level_name,
-        office: user.lga_name
+        office: !user.zone_name && !user.lga_name ? user.section_name : (user.lga_name
           ? user.lga_name
-          : `<span class='myTooltip' style='cursor:pointer' data-bs-toggle=tooltip title='Kanda ya ${user.zone_name}'>${user.zone_name}</span>`, //This is the reason for modification
+          : 
+          `<span class='myTooltip' style='cursor:pointer' data-bs-toggle=tooltip title='Kanda ya ${user.zone_name}'>${user.zone_name}</span>`), //This is the reason for modification
         last_login: user.last_login,
         has_signature: user.has_signature
           ? `<span title="Sahihi ya muhusika imeingizwa" data-bs-toggle=tooltip class="myTooltip las la-signature la-2x"></span>`
