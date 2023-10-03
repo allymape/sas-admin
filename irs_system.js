@@ -66,6 +66,7 @@ const badiliMenejaRequestController = require("./public/controllers/maombi/badil
 const kuongezaBweniRequestController = require("./public/controllers/maombi/kuongezaBweniRequestController");
 const kuongezaDahaliaRequestController = require("./public/controllers/maombi/kuongezaDahaliaRequestController");
 const futaShuleRequestController = require("./public/controllers/maombi/futaShuleRequestController");
+const ongezaDahaliaRequestController = require("./public/controllers/maombi/ongezaDahaliaRequestController");
 
 var app = express();
 app.use(helmet.frameguard())
@@ -14996,6 +14997,7 @@ app.use("/", schoolController)
 app.use("/", biasController)
 app.use("/", combinationController)
 app.use("/", feeController)
+app.use("/", ongezaDahaliaRequestController)
 
 app.use("/", errorController);
 app.listen(port, () => {

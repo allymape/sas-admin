@@ -71,10 +71,12 @@ userController.post("/auth", function (req, res) {
               if (Number(user.user_level) == 10) {
                 res.redirect("/RipotiZilizosajiliwa");
               } else {
-                res.redirect("/Dashboard");
+                // res.redirect("/Dashboard");
+                res.redirect("/MaombiKuanzishaShule");
               }
             } else {
-              res.redirect("/Dashboard");
+              // res.redirect("/Dashboard");
+              res.redirect("/MaombiKuanzishaShule");
             }
           }else{
              req.flash("error", "Kuna tatizo wasiliana na Msimamizi wa Mfumo");
