@@ -6,7 +6,7 @@ var session = require("express-session");
 var path = require("path");
 const { isAuthenticated, sendRequest, can } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
-var maousajiliShuleListAPI = API_BASE_URL + "maombi-usajili-shule";
+var maousajiliShuleListAPI = API_BASE_URL + "maombi-ongeza-dahalia";
 // Display
 kuongezaDahaliaRequestController.get(
   "/KuongezaDahalia",
@@ -26,7 +26,8 @@ kuongezaDahaliaRequestController.get(
       (jsonData) => {
                   var message = jsonData.message;
                   var statusCode = jsonData.statusCode;
-                  var data = jsonData.data;
+                  var data = jsonData.dataList;
+                  const obj = [];
                     for (var i = 0; i < data.length; i++) {
                       var tracking_number = data[i].tracking_number;
                       var user_id = data[i].user_id;
@@ -56,7 +57,7 @@ kuongezaDahaliaRequestController.get(
                       path.join(__dirname + "/../../design/maombi/usajili"),
                       {
                         req: req,
-                        total_month: data1,
+                        total_month: jsonData.dataSummary,
                         maombi: obj,
                       }
                     );
