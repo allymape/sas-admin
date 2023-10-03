@@ -63,6 +63,7 @@ userController.post("/auth", function (req, res) {
                 req.session.userID = user.id;
                 req.session.userName = user.name;
                 req.session.cheoName = user.rank_name;
+                req.session.jukumu = user.jukumu;
                 req.session.email = user.email;
                 req.session.ip_address = ip_address;
                 req.session.browser_used = browser_used;
