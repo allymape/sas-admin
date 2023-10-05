@@ -10,6 +10,7 @@ var API_BASE_URL = process.env.API_BASE_URL;
 var maoanzishaShuleJumlaAPI = API_BASE_URL + "jumla-maombi-kuanzisha-shule";
 var maoanzishaShuleListAPI = API_BASE_URL +"maombi-kuanzisha-shule";
 var ombiDetails = API_BASE_URL + "view-ombi-details";
+var ombiReply = API_BASE_URL + "tuma-ombi-majibu";
 // var allZonesAPI = API_BASE_URL + "allZones";
 // var tengenezaZoneAPI = API_BASE_URL + "addZone";
 // var editZoneAPI = API_BASE_URL + "editZone";
@@ -123,11 +124,11 @@ anzishaShuleRequestController.get("/TaarifaOmbi/:id", isAuthenticated, function 
                           {
                             req: req,
                             muda_ombi: remain_days,
-                            useLev: req.session.UserLevel,
-                            userName: req.session.userName,
-                            RoleManage: req.session.RoleManage,
-                            userID: req.session.userID,
-                            cheoName: req.session.cheoName,
+                            // useLev: req.session.UserLevel,
+                            // userName: req.session.userName,
+                            // RoleManage: req.session.RoleManage,
+                            // userID: req.session.userID,
+                            // cheoName: req.session.cheoName,
                             created_at: created_at,
                             tracking_number: tracking_number,
                             school_name: school_name,
@@ -144,7 +145,7 @@ anzishaShuleRequestController.get("/TaarifaOmbi/:id", isAuthenticated, function 
                             baruaPepe: baruaPepe,
                             language: language,
                             school_size: school_size,
-                            userLevel: req.session.UserLevel,
+                            userLevel: req.user.cheo,
                             area: area,
                             WardName: WardName,
                             structure: structure,
@@ -167,6 +168,51 @@ anzishaShuleRequestController.get("/TaarifaOmbi/:id", isAuthenticated, function 
                     }
                         
                   });
+});
+
+anzishaShuleRequestController.post("/TumaComment", isAuthenticated ,function (req, res) {
+  // console.log(req.body);
+  var trackerId = req.body.trackerId;
+  var from_user = req.session.userID;
+  var staff = req.body.staffs;
+  var coments = req.body.coments;
+  var haliombi = req.body.haliombi;
+  var attachment = req.body.attachment;
+  var kiambatisho = req.body.kiambatisho;
+  var attach_length = req.body.attach_length;
+  var schoolCategoryID = req.body.schoolCategoryID;
+  var ombitype = req.body.ombitype;
+  var staffDet = staff.split("-");
+  var department = staffDet[1];
+  var staffs = staffDet[0];
+  console.log(staffDet);
+  // return;
+  // console.log(department + " and " + staffs)
+        sendRequest(req , res , ombiReply , "POST" , 
+         {
+          trackerId: trackerId,
+          from_user: from_user,
+          staffs: staffs,
+          coments: coments,
+          ombitype: ombitype,
+          haliombi: haliombi,
+          replyType: 1,
+          department: department,
+          schoolCategoryID: schoolCategoryID
+        } , (jsonData) => {
+          const {error , statusCode , message } = jsonData;
+          // var data = jsonData.data;
+          if (statusCode == 300) {
+            console.log(
+              new Date() + " " + req.session.userName + ": /TumaComment"
+            );
+            res.send(message);
+          }else{
+            res.send(message);
+          }
+        
+      });
+  
 });
 
 module.exports = anzishaShuleRequestController;

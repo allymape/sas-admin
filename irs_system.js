@@ -9411,74 +9411,74 @@ app.get("/WamilikiSajiliwa/:id", function (req, res) {
 //   }
 // });
 
-app.post("/TumaComment", function (req, res) {
-  console.log(req.body);
-  var trackerId = req.body.trackerId;
-  var from_user = req.session.userID;
-  var staff = req.body.staffs;
-  var coments = req.body.coments;
-  var haliombi = req.body.haliombi;
-  var attachment = req.body.attachment;
-  var kiambatisho = req.body.kiambatisho;
-  var attach_length = req.body.attach_length;
-  var schoolCategoryID = req.body.schoolCategoryID;
-  var ombitype = req.body.ombitype;
-  var staffDet = staff.split("-");
-  var department = staffDet[1];
-  var staffs = staffDet[0];
-  // console.log(department + " and " + staffs)
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: ombiReply,
-        method: "POST",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-        json: {
-          browser_used: req.session.browser_used,
-          ip_address: req.session.ip_address,
-          trackerId: trackerId,
-          from_user: from_user,
-          staffs: staffs,
-          coments: coments,
-          ombitype: ombitype,
-          haliombi: haliombi,
-          replyType: 1,
-          department: department,
-          schoolCategoryID: schoolCategoryID,
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(new Date() + ": fail to TumaComment " + error);
-          res.send("failed");
-        }
+// app.post("/TumaComment", function (req, res) {
+//   console.log(req.body);
+//   var trackerId = req.body.trackerId;
+//   var from_user = req.session.userID;
+//   var staff = req.body.staffs;
+//   var coments = req.body.coments;
+//   var haliombi = req.body.haliombi;
+//   var attachment = req.body.attachment;
+//   var kiambatisho = req.body.kiambatisho;
+//   var attach_length = req.body.attach_length;
+//   var schoolCategoryID = req.body.schoolCategoryID;
+//   var ombitype = req.body.ombitype;
+//   var staffDet = staff.split("-");
+//   var department = staffDet[1];
+//   var staffs = staffDet[0];
+//   // console.log(department + " and " + staffs)
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//     request(
+//       {
+//         url: ombiReply,
+//         method: "POST",
+//         headers: {
+//           Authorization: "Bearer" + " " + req.session.Token,
+//           "Content-Type": "application/json",
+//         },
+//         json: {
+//           browser_used: req.session.browser_used,
+//           ip_address: req.session.ip_address,
+//           trackerId: trackerId,
+//           from_user: from_user,
+//           staffs: staffs,
+//           coments: coments,
+//           ombitype: ombitype,
+//           haliombi: haliombi,
+//           replyType: 1,
+//           department: department,
+//           schoolCategoryID: schoolCategoryID,
+//         },
+//       },
+//       function (error, response, body) {
+//         if (error) {
+//           console.log(new Date() + ": fail to TumaComment " + error);
+//           res.send("failed");
+//         }
 
-        if (body !== undefined) {
-          console.log(body);
-          var jsonData = body;
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          // var data = jsonData.data;
-          if (statusCode == 300) {
-            console.log(
-              new Date() + " " + req.session.userName + ": /TumaComment"
-            );
-            res.send("success");
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  }
-});
+//         if (body !== undefined) {
+//           console.log(body);
+//           var jsonData = body;
+//           var message = jsonData.message;
+//           var statusCode = jsonData.statusCode;
+//           // var data = jsonData.data;
+//           if (statusCode == 300) {
+//             console.log(
+//               new Date() + " " + req.session.userName + ": /TumaComment"
+//             );
+//             res.send("success");
+//           }
+//           if (statusCode == 209) {
+//             res.redirect("/");
+//           }
+//         }
+//       }
+//     );
+//   }
+// });
 
 app.post("/MmilikiComment", function (req, res) {
   // console.log(req.body)
