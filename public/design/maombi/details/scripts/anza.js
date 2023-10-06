@@ -128,17 +128,13 @@ function wasilishaKe(){
 
 function kataaKe(){
     var coments = document.getElementById('exampleFormControlTextarea1').value;
-    
     var staffs = '0-10';
     var userLevel = document.getElementById('userLevel').value;
-    
     var haliombi = 3;
     var staffsInput = document.getElementById('staffs').value;
     var trackerId = document.getElementById('trackerId').value;
     // alert(userLevel)
-    
     // var schoolCategoryID = document.getElementById('schoolCategoryID').value;
-
     if(coments.length > 0){
         if(staffsInput == '#'){
         $.ajax({
