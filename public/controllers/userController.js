@@ -70,12 +70,12 @@ userController.post("/auth", function (req, res) {
                 req.session.RoleManage = RoleManage;
             if (user.twofa == 0) {
               if (Number(user.user_level) == 10) {
-                res.redirect("/RipotiZilizosajiliwa");
+                res.redirect("/Dashboard");
               } else {
                 res.redirect("/Dashboard");
               }
             } else {
-              res.redirect("/MaombiKuanzishaShule");
+              res.redirect("/Dashboard");
             }
           }else{
              req.flash("error", "Kuna tatizo wasiliana na Msimamizi wa Mfumo");

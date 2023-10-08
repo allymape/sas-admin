@@ -345,7 +345,7 @@ function appendSelectionOption(
     options =
       options +
       `<option value='${id}'  ${
-        selected.includes(id) ? "selected" : ""
+        selected.includes(Number(id)) ? "selected" : ""
       } > ${name} </option>`;
   }
   fieldSelect.html(options).prop('disabled' , false);

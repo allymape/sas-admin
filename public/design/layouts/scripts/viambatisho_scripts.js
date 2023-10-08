@@ -103,6 +103,7 @@ function funga() {
 }
 
 function BadiliData(e) {
+  console.log(e.getAttribute("data-reg_type"));
   var nameId = e.getAttribute("data-id");
   var name = e.getAttribute("data-name");
   var size = e.getAttribute("data-size");
@@ -137,6 +138,7 @@ const addRegistrationTypesToSelectionInput = (
   elementId,
   selectedValue = null
 ) => {
+  console.log(selectedValue)
   ajaxRequest(
     "/RegistrationTypes",
     "GET",
