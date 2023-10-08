@@ -54,7 +54,7 @@
             title="ambatisha kiambatisho kwenye ombi hili"><i class="ri-attachment-line fs-16"></i></button>
             <button type="button" onclick="tuma()" 
             title="Unatuma ombi liendelee kushughulikiwa zaidi" class="btn btn-primary">Tuma</button>
-            <% if(UserLevel == 1){ %>
+            <% if(UserLevel == "w1"){ %>
             <button type="button" onclick="wasilisha()" 
             title="Kwa kubonyeza kifute hiki unalituma ombi hili kwenda ngazi ya juu kwa utekelezaji" 
             class="btn btn-success">Wasilisha</button>
@@ -62,7 +62,7 @@
             title="Kwa kubonyeza kifute hiki unalirudisha ombi kwa mwombaji" 
             class="btn btn-warning">Rudisha kwa Mwombaji</button> -->
             <% } %>
-            <% if(UserLevel == 2){ %>
+            <% if(UserLevel == "k1"){ %>
                 <button type="button" onclick="rudisha()" 
                 title="Kwa kubonyeza kifute hiki unalirudisha ombi hili kwenda ngazi ya chini kwa utekelezaji" 
                 class="btn btn-secondary">Rudisha kwa Ofisa</button>
@@ -73,7 +73,7 @@
             title="Kwa kubonyeza kifute hiki unalirudisha ombi kwa mwombaji" 
             class="btn btn-warning">Rudisha kwa Mwombaji</button> -->
             <% } %>
-            <% if(UserLevel == 12){ %>
+            <% if(UserLevel == "mus"){ %>
                 <button type="button" onclick="rudishaMus()" 
                 title="Kwa kubonyeza kifute hiki unalirudisha ombi hili kwenda ngazi ya chini kwa utekelezaji" 
                 class="btn btn-secondary">Rudisha kwa Ofisa</button>
@@ -84,7 +84,7 @@
             title="Kwa kubonyeza kifute hiki unalirudisha ombi kwa mwombaji" 
             class="btn btn-warning">Rudisha kwa Mwombaji</button> -->
             <% } %>
-            <% if(UserLevel == 13){ %>
+            <% if(UserLevel == "mmus"){ %>
             <button type="button" onclick="wasilishaMmus()" 
             title="Kwa kubonyeza kifute hiki unalituma ombi hili kwenda ngazi ya juu kwa utekelezaji" 
             class="btn btn-success">Wasilisha</button>
@@ -92,7 +92,7 @@
             title="Kwa kubonyeza kifute hiki unalirudisha ombi kwa mwombaji" 
             class="btn btn-warning">Rudisha kwa Mwombaji</button> -->
             <% } %>
-            <% if(UserLevel == 14){ %>
+            <% if(UserLevel == "mmus"){ %>
             <button type="button" onclick="wasilishaMmus()" 
             title="Kwa kubonyeza kifute hiki unalituma ombi hili kwenda ngazi ya juu kwa utekelezaji" 
             class="btn btn-success">Wasilisha</button>
@@ -100,7 +100,7 @@
             title="Kwa kubonyeza kifute hiki unalirudisha ombi kwa mwombaji" 
             class="btn btn-warning">Rudisha kwa Mwombaji</button> -->
             <% } %>
-            <% if(UserLevel == 15){ %>
+            <% if(UserLevel == "mmus"){ %>
                 <button type="button" onclick="wasilishaMmus()" 
                 title="Kwa kubonyeza kifute hiki unalituma ombi hili kwa utekelezaji" 
                 class="btn btn-success">Wasilisha</button>
@@ -108,7 +108,7 @@
                 title="Kwa kubonyeza kifute hiki unalirudisha ombi kwa mwombaji" 
                 class="btn btn-warning">Rudisha kwa Mwombaji</button> -->
             <% } %>
-            <% if(UserLevel == 9){ %>
+            <% if(UserLevel == "ke"){ %>
                 <button type="button" onclick="wasilishaKe()" 
                 title="Kwa kubonyeza kifute hiki unakubali usajili wa shule hii" 
                 class="btn btn-success">Sajili</button>

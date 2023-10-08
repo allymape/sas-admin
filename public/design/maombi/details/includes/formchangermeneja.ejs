@@ -49,7 +49,7 @@
             <button type="button" onclick="showViambata()" class="btn btn-ghost-secondary btn-icon waves-effect me-1" 
             title="ambatisha kiambatisho kwenye ombi hili"><i class="ri-attachment-line fs-16"></i></button>
             <button type="button" onclick="tuma()" title="Unatuma ombi liendelee kushughulikiwa zaidi" class="btn btn-primary">Tuma</button>
-            <% if(userLevel == 1){ %>
+            <% if(userLevel == "w1"){ %>
                 <button type="button" onclick="wasilisha()" 
                 title="Kwa kubonyeza kifute hiki unalituma ombi hili kwenda ngazi ya juu kwa utekelezaji" 
                 class="btn btn-success">Wasilisha</button>
@@ -57,7 +57,7 @@
                 title="Kwa kubonyeza kifute hiki unalirudisha ombi kwa mwombaji" 
                 class="btn btn-warning">Rudisha kwa Mwombaji</button>
                 <% } %>
-                <% if(userLevel == 2){ %>
+                <% if(userLevel == "k1"){ %>
                     <button type="button" onclick="rudisha()" 
                     title="Kwa kubonyeza kifute hiki unalirudisha ombi hili kwenda ngazi ya chini kwa utekelezaji" 
                     class="btn btn-secondary">Rudisha kwa Ofisa</button>
@@ -68,7 +68,7 @@
                     title="Kwa kubonyeza kifute hiki unalirudisha ombi kwa mwombaji" 
                     class="btn btn-warning">Rudisha kwa Mwombaji</button>
                     <% } %>
-                <% if(userLevel == 5){ %>
+                <% if(userLevel == "adsa"){ %>
                     <button type="button" onclick="rudisha()" 
                     title="Kwa kubonyeza kifute hiki unalirudisha ombi hili kwenda ngazi ya chini kwa utekelezaji" 
                     class="btn btn-secondary">Rudisha kwa Ofisa</button>
@@ -79,7 +79,7 @@
                 title="Kwa kubonyeza kifute hiki unalirudisha ombi kwa mwombaji" 
                 class="btn btn-warning">Rudisha kwa Mwombaji</button>
                 <% } %>
-                <% if(userLevel == 9){ %>
+                <% if(userLevel == "ke"){ %>
                     <button type="button" onclick="wasilishaKe()" 
                     title="Kwa kubonyeza kifute hiki unakubali kubadilisha mmiliki wa shule" 
                     class="btn btn-success">Thibitsha</button>
