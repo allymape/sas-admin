@@ -1,4 +1,4 @@
-<% const UserLevel = req.session.user_level %>
+
 <form class="mt-4">
     <div class="row g-3">
         <div class="col-lg-12">
@@ -67,8 +67,8 @@
             <button type="button" onclick="showViambata()" class="btn btn-ghost-secondary btn-icon waves-effect me-1" 
             title="ambatisha kiambatisho kwenye ombi hili"><i class="ri-attachment-line fs-16"></i></button>
             <button type="button" onclick="tuma()" 
-            title="Unatuma ombi liendelee kushughulikiwa zaidi" class="btn btn-primary">Tuma</button>
-            <% if(UserLevel == "w1"){ %>
+            title="Unatuma ombi liendelee kushughulikiwa zaidi" class="btn btn-primary">Tuma </button>
+            <% if(UserLevel == "w1" || UserLevel == 'adsa'){ %>
             <button type="button" onclick="wasilisha()" 
             title="Kwa kubonyeza kifute hiki unalituma ombi hili kwenda ngazi ya juu kwa utekelezaji" 
             class="btn btn-success">Wasilisha</button>

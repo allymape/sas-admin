@@ -8,6 +8,7 @@ const { isAuthenticated, sendRequest, can } = require("../../../util");
 const API_BASE_URL = process.env.API_BASE_URL;
 const maousajiliShuleListAPI = API_BASE_URL + "maombi-usajili-shule";
 const ombiKusajiliDetails = API_BASE_URL + "view-ombi-kusajili-details";
+const sajiliReply = API_BASE_URL + "tuma-sajili-majibu";
 // Display
 kusajiliBinafsiRequestController.get(
   "/MaombiKusajiliShule",
@@ -124,10 +125,15 @@ kusajiliBinafsiRequestController.get("/SajiliOmbi/:id",
             console.log(
               new Date() + " " + req.session.userName + ": /SajiliOmbi"
             );
+            
             res.render(
-              path.join(__dirname + "/../../design/maombi/details/view-ombi-sajili-details"),
+              path.join(
+                __dirname +
+                  "/../../design/maombi/details/view-ombi-sajili-details"
+              ),
               {
                 req: req,
+                UserLevel: req.user.cheo,
                 muda_ombi: remain_days,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -138,7 +144,6 @@ kusajiliBinafsiRequestController.get("/SajiliOmbi/:id",
                 RegionNameMtu: RegionNameMtu,
                 fullname: fullname,
                 schoolCategory: schoolCategory,
-                UserLevel: req.session.UserLevel,
                 genderType: genderType,
                 registry: registry,
                 schoolPhone: schoolPhone,
@@ -183,6 +188,55 @@ kusajiliBinafsiRequestController.get("/SajiliOmbi/:id",
       }
     );
 
+});
+
+
+// original
+kusajiliBinafsiRequestController.post("/SajiliComment", function (req, res) {
+  // console.log(req.body)
+  var trackerId = req.body.trackerId;
+  var from_user = req.session.userID;
+  var staff = req.body.staffs;
+  var coments = req.body.coments;
+  var haliombi = req.body.haliombi;
+  var attachment = req.body.attachment;
+  var kiambatisho = req.body.kiambatisho;
+  var schoolCategoryID = req.body.schoolCategoryID;
+  var ombitype = req.body.ombitype;
+  var staffDet = staff.split("-");
+  var department = staffDet[1];
+  var staffs = staffDet[0];
+  // console.log(department + " and " + staffs)
+     sendRequest(
+      req,
+      res,
+      sajiliReply,
+      "POST",
+      {
+          trackerId: trackerId,
+          from_user: from_user,
+          staffs: staffs,
+          coments: coments,
+          ombitype: ombitype,
+          haliombi: haliombi,
+          replyType: 1,
+          department: department,
+          schoolCategoryID: schoolCategoryID,
+      },
+      (jsonData) => {
+       const { error, statusCode, message } = jsonData;
+       // var data = jsonData.data;
+         console.log(
+           new Date() + " " + req.session.userName + ": /SajiliComment"
+         );
+         res.send({
+          statusCode : statusCode,
+          message : message
+         });
+      
+      }
+    );
+ 
 });
 
 module.exports = kusajiliBinafsiRequestController;

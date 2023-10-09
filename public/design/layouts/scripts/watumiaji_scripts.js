@@ -33,10 +33,15 @@ function getUsers() {
         username: user.username,
         role_name: user.role_name,
         level_name: user.level_name,
-        office: !user.zone_name && !user.lga_name ? user.section_name : (user.lga_name
-          ? user.lga_name
-          : 
-          `<span class='myTooltip' style='cursor:pointer' data-bs-toggle=tooltip title='Kanda ya ${user.zone_name}'>${user.zone_name}</span>`), //This is the reason for modification
+        office: user.lga_name
+          ? user.section_name + " " + user.lga_name
+          : user.zone_name
+          ? `<span class='myTooltip' style='cursor:pointer' data-bs-toggle=tooltip title='Kanda ya ${
+              user.zone_name
+            }'>
+          ${user.section_name + " " + user.zone_name}
+          </span>`
+          : user.section_name + " HQ",
         last_login: user.last_login,
         has_signature: user.has_signature
           ? `<span title="Sahihi ya muhusika imeingizwa" data-bs-toggle=tooltip class="myTooltip las la-signature la-2x"></span>`
@@ -48,7 +53,7 @@ function getUsers() {
             ? "ri-check-double-fill text-success"
             : "ri-close-fill text-danger"
         }'></span>`,
-        status : user.user_status,
+        status: user.user_status,
       }));
 
       // render table

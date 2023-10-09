@@ -110,11 +110,15 @@ kubadiliUsajiliRequestController.get(
               new Date() + " " + req.session.userName + ": /BadiliAinaUsajili"
             );
             res.render(
-              path.join(__dirname + "/../../design/maombi/details/view-badili-aina-usajili"),
+              path.join(
+                __dirname +
+                  "/../../design/maombi/details/view-badili-aina-usajili"
+              ),
               {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
+                UserLevel: req.user.cheo,
                 userName: req.session.userName,
                 RoleManage: req.session.RoleManage,
                 userID: req.session.userID,
@@ -140,7 +144,7 @@ kubadiliUsajiliRequestController.get(
                 streamOld: streamOld,
                 language: language,
                 school_size: school_size,
-                userLevel: req.session.UserLevel,
+                userLevel: req.user.cheo,
                 area: area,
                 WardName: WardName,
                 structure: structure,

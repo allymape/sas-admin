@@ -86,25 +86,29 @@ function wasilisha(){
     var schoolCategoryID = document.getElementById('schoolCategoryID').value;
     var staffsInput = document.getElementById('staffs').value;
     if(coments.length > 0){
-        if(staffsInput == '#'){
-    $.ajax({
-        url: "/SajiliComment",
-        type: 'POST',
-        data: JSON.stringify({"coments": coments, "staffs": staffs,
-        "haliombi": haliombi, "trackerId": trackerId, "schoolCategoryID": schoolCategoryID,
-        "attachment": "", "kiambatisho": "", 
-        "attach_length": 0, "ombitype": 1}),
-        contentType: 'application/json',
-        success: function(response) {
-            window.location.href = "/MaombiKusajiliShule";
-        }
-    });
-}else{
-    alert("Samahani huwezi kubonyeza kitufe hiki")
-}
-    }else{
-    alert("Tafadhali weka maoni yako")
-    }
+                if(staffsInput == '#'){
+                    $.ajax({
+                        url: "/SajiliComment",
+                        type: 'POST',
+                        data: JSON.stringify({"coments": coments, "staffs": staffs,
+                        "haliombi": haliombi, "trackerId": trackerId, "schoolCategoryID": schoolCategoryID,
+                        "attachment": "", "kiambatisho": "", 
+                        "attach_length": 0, "ombitype": 1}),
+                        contentType: 'application/json',
+                        success: function(response) {
+                            if(response.statusCode == 300){
+                                window.location.href = "/MaombiKusajiliShule";
+                            }else{
+                                alert('Kuna tatizo wasiliana na Msimamizi wa Mfumo.')
+                            }
+                        }
+                    });
+                }else{
+                    alert("Samahani huwezi kubonyeza kitufe hiki")
+                }
+            }else{
+            alert("Tafadhali weka maoni yako")
+            }
 
 }
 
