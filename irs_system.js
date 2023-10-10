@@ -9942,84 +9942,84 @@ app.post("/HamishaComment", function (req, res) {
   }
 });
 
-app.post("/BadiliJinaComment", function (req, res) {
-  // console.log(req.body)
-  var trackerId = req.body.trackerId;
-  var from_user = req.session.userID;
-  var staff = req.body.staffs;
-  var coments = req.body.coments;
-  var haliombi = req.body.haliombi;
-  var attachment = req.body.attachment;
-  var kiambatisho = req.body.kiambatisho;
-  var attach_length = req.body.attach_length;
-  var school_name_old = req.body.school_name_old;
-  var school_name_new = req.body.school_name_new;
-  var newstream = req.body.newstream;
-  var oldstream = req.body.oldstream;
-  var establishId = req.body.establishId;
-  var schoolCategoryID = req.body.schoolCategoryID;
-  var ombitype = req.body.ombitype;
-  var staffDet = staff.split("-");
-  var department = staffDet[1];
-  var staffs = staffDet[0];
-  // console.log(department + " and " + staffs)
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: badiliJinaReply,
-        method: "POST",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-        json: {
-          browser_used: req.session.browser_used,
-          ip_address: req.session.ip_address,
-          trackerId: trackerId,
-          from_user: from_user,
-          school_name_new: school_name_new,
-          staffs: staffs,
-          coments: coments,
-          ombitype: ombitype,
-          newstream: newstream,
-          haliombi: haliombi,
-          replyType: 1,
-          oldstream: oldstream,
-          school_name_old: school_name_old,
-          department: department,
-          schoolCategoryID: schoolCategoryID,
-          establishId: establishId,
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(new Date() + ": fail to TumaComment " + error);
-          res.send("failed");
-        }
+// app.post("/BadiliJinaComment", function (req, res) {
+//   // console.log(req.body)
+//   var trackerId = req.body.trackerId;
+//   var from_user = req.session.userID;
+//   var staff = req.body.staffs;
+//   var coments = req.body.coments;
+//   var haliombi = req.body.haliombi;
+//   var attachment = req.body.attachment;
+//   var kiambatisho = req.body.kiambatisho;
+//   var attach_length = req.body.attach_length;
+//   var school_name_old = req.body.school_name_old;
+//   var school_name_new = req.body.school_name_new;
+//   var newstream = req.body.newstream;
+//   var oldstream = req.body.oldstream;
+//   var establishId = req.body.establishId;
+//   var schoolCategoryID = req.body.schoolCategoryID;
+//   var ombitype = req.body.ombitype;
+//   var staffDet = staff.split("-");
+//   var department = staffDet[1];
+//   var staffs = staffDet[0];
+//   // console.log(department + " and " + staffs)
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//     request(
+//       {
+//         url: badiliJinaReply,
+//         method: "POST",
+//         headers: {
+//           Authorization: "Bearer" + " " + req.session.Token,
+//           "Content-Type": "application/json",
+//         },
+//         json: {
+//           browser_used: req.session.browser_used,
+//           ip_address: req.session.ip_address,
+//           trackerId: trackerId,
+//           from_user: from_user,
+//           school_name_new: school_name_new,
+//           staffs: staffs,
+//           coments: coments,
+//           ombitype: ombitype,
+//           newstream: newstream,
+//           haliombi: haliombi,
+//           replyType: 1,
+//           oldstream: oldstream,
+//           school_name_old: school_name_old,
+//           department: department,
+//           schoolCategoryID: schoolCategoryID,
+//           establishId: establishId,
+//         },
+//       },
+//       function (error, response, body) {
+//         if (error) {
+//           console.log(new Date() + ": fail to TumaComment " + error);
+//           res.send("failed");
+//         }
 
-        if (body !== undefined) {
-          console.log(body);
-          var jsonData = body;
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-          if (statusCode == 300) {
-            console.log(
-              new Date() + " " + req.session.userName + ": /BadiliJinaComment"
-            );
-            res.send("success");
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  }
-});
+//         if (body !== undefined) {
+//           console.log(body);
+//           var jsonData = body;
+//           var message = jsonData.message;
+//           var statusCode = jsonData.statusCode;
+//           var data = jsonData.data;
+//           if (statusCode == 300) {
+//             console.log(
+//               new Date() + " " + req.session.userName + ": /BadiliJinaComment"
+//             );
+//             res.send("success");
+//           }
+//           if (statusCode == 209) {
+//             res.redirect("/");
+//           }
+//         }
+//       }
+//     );
+//   }
+// });
 
 app.post("/BadiliAinaComment", function (req, res) {
   // console.log(req.body)

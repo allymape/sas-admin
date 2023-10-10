@@ -8,6 +8,7 @@ const { isAuthenticated, sendRequest, can } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var badiliAinaUsajili = API_BASE_URL + "maombi-badili-aina-usajili";
 var usajiliDetails = API_BASE_URL + "view-aina-usajili-details";
+var badiliainaReply = API_BASE_URL + "tuma-badili-aina-majibu";
 // Display
 kubadiliUsajiliRequestController.get(
   "/BadiliUsajili",
@@ -164,5 +165,7 @@ kubadiliUsajiliRequestController.get(
             );
             });
       });
+
+
 
 module.exports = kubadiliUsajiliRequestController;
