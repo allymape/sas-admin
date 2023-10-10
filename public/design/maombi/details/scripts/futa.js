@@ -17,7 +17,7 @@ function wasilisha(){
             "attach_length": ""}),
             contentType: 'application/json',
             success: function(response) {
-                window.location.href = "/MaombiKuanzishaShule";
+                window.location.href = "/FutaShule";
             }
         });
     }else{
@@ -50,7 +50,7 @@ function rudisha(){
             "attach_length": ""}),
             contentType: 'application/json',
             success: function(response) {
-                window.location.href = "/MaombiKuanzishaShule";
+                window.location.href = "/FutaShule";
             }
         });
     }else{
@@ -83,7 +83,7 @@ function wasilishak1(){
             "attach_length": ""}),
             contentType: 'application/json',
             success: function(response) {
-                window.location.href = "/MaombiKuanzishaShule";
+                window.location.href = "/FutaShule";
             }
         });
     }else{
@@ -116,7 +116,7 @@ function wasilishakAdsa(){
             "attach_length": ""}),
             contentType: 'application/json',
             success: function(response) {
-                window.location.href = "/MaombiKuanzishaShule";
+                window.location.href = "/FutaShule";
             }
         });
     }else{
@@ -148,7 +148,7 @@ function wasilishaKe(){
             "attach_length": ""}),
             contentType: 'application/json',
             success: function(response) {
-                window.location.href = "/MaombiKuanzishaShule";
+                window.location.href = "/FutaShule";
             }
         });
     }else{
@@ -181,7 +181,7 @@ function kataaKe(){
             "attach_length": ""}),
             contentType: 'application/json',
             success: function(response) {
-                window.location.href = "/MaombiKuanzishaShule";
+                window.location.href = "/FutaShule";
             }
         });
     }else{
@@ -210,7 +210,7 @@ function tuma(){
             "attach_length": ""}),
             contentType: 'application/json',
             success: function(response) {
-                window.location.href = "/MaombiKuanzishaShule";
+                window.location.href = "/FutaShule";
             }
         });
         }else{
@@ -331,7 +331,7 @@ function Pandisha(){
             success: function(response) {
                 // if(typeof(response) === "string"){response = JSON.parse(response)}
                 alert(response)
-                //window.location.href = "/MaombiKuanzishaShule";
+                //window.location.href = "/FutaShule";
             }
         });
     };
@@ -359,7 +359,7 @@ function rudishaMteja(){
             "attach_length": ""}),
             contentType: 'application/json',
             success: function(response) {
-                window.location.href = "/MaombiKuanzishaShule";
+                window.location.href = "/FutaShule";
             }
         });
     }else{

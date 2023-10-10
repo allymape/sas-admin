@@ -7,6 +7,7 @@ var path = require("path");
 const { isAuthenticated, sendRequest, can } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var maousajiliShuleListAPI = API_BASE_URL + "maombi-ongeza-dahalia";
+var badiliDahaliaDetalis = API_BASE_URL + "view-badili-dahalia";
 // Display
 kuongezaDahaliaRequestController.get(
   "/KuongezaDahalia",
