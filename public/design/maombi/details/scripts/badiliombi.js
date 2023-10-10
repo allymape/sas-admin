@@ -20,7 +20,7 @@ function wasilisha(){
             "attach_length": "", "establishId": establishId}),
             contentType: 'application/json',
             success: function(response) {
-                window.location.href = "/MaombiKuanzishaShule";
+                window.location.href = "/KuongezaMikondo";
             }
         });
     }else{
@@ -53,7 +53,7 @@ function rudisha(){
             "attach_length": ""}),
             contentType: 'application/json',
             success: function(response) {
-                window.location.href = "/MaombiKuanzishaShule";
+                window.location.href = "/KuongezaMikondo";
             }
         });
     }else{
@@ -86,7 +86,7 @@ function wasilishak1(){
             "attach_length": ""}),
             contentType: 'application/json',
             success: function(response) {
-                window.location.href = "/MaombiKuanzishaShule";
+                window.location.href = "/KuongezaMikondo";
             }
         });
     }else{
@@ -122,7 +122,7 @@ function wasilishaKe(){
             contentType: 'application/json',
             success: function(response) {
                 alert("Mkondo umebadilishwa kikamilifu")
-                window.location.href = "/MaombiKuanzishaShule";
+                window.location.href = "/KuongezaMikondo";
             }
         });
     }else{
@@ -155,7 +155,7 @@ function kataaKe(){
             contentType: 'application/json',
             success: function(response) {
                 alert("Ombi la kubadili Mkondo limekataliwa")
-                window.location.href = "/MaombiKuanzishaShule";
+                window.location.href = "/KuongezaMikondo";
             }
         });
     }else{
@@ -184,7 +184,7 @@ function tuma(){
             "attach_length": ""}),
             contentType: 'application/json',
             success: function(response) {
-                window.location.href = "/MaombiKuanzishaShule";
+                window.location.href = "/KuongezaMikondo";
             }
         });
         }else{
@@ -304,7 +304,7 @@ function Pandisha(){
             success: function(response) {
                 // if(typeof(response) === "string"){response = JSON.parse(response)}
                 alert(response)
-                //window.location.href = "/MaombiKuanzishaShule";
+                //window.location.href = "/KuongezaMikondo";
             }
         });
     };
@@ -332,7 +332,7 @@ function rudishaMteja(){
             "attach_length": ""}),
             contentType: 'application/json',
             success: function(response) {
-                window.location.href = "/MaombiKuanzishaShule";
+                window.location.href = "/KuongezaMikondo";
             }
         });
     }else{

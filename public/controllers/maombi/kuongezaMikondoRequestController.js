@@ -8,6 +8,7 @@ const { isAuthenticated, sendRequest, can } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var badiliMkondo = API_BASE_URL + "maombi-badili-mkondo";
 var badiliDetails = API_BASE_URL + "view-badili-details";
+var badiliReply = API_BASE_URL + "tuma-badili-majibu";
 // Display
 kuongezaMikondoRequestController.get(
   "/KuongezaMikondo",
@@ -76,39 +77,7 @@ kuongezaMikondoRequestController.get(
   function (req, res) {
   var obj = [];
   var TrackingNumber = req.params.id;
-  sendRequest(
-      {
-        url: badiliDetails,
-        method: "POST",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-        json: {
-          browser_used: req.session.browser_used,
-          ip_address: req.session.ip_address,
-          TrackingNumber: TrackingNumber,
-          userLevel: req.session.UserLevel,
-          office: req.session.office,
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(
-            new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
-          );
-          res.send("failed");
-        }
-
-        if (body !== undefined) {
-          // var jsonData = JSON.parse(body)
-          var jsonData = body;
-
-          console.log(jsonData);
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-
-          if (statusCode == 300) {
+  sendRequest(req , res , badiliDetails,"POST",{TrackingNumber: TrackingNumber}, (jsonData) => {
             var data = jsonData.data;
             var remain_days = data[0].remain_days;
             var created_at = data[0].created_at;
@@ -173,7 +142,7 @@ kuongezaMikondoRequestController.get(
                 streamOld: streamOld,
                 language: language,
                 school_size: school_size,
-                userLevel: req.session.UserLevel,
+                userLevel: req.user.cheo,
                 area: area,
                 WardName: WardName,
                 structure: structure,
@@ -187,15 +156,64 @@ kuongezaMikondoRequestController.get(
                 objAttachment: objAttachment,
                 objAttachment1: objAttachment1,
                 Maoni: Maoni,
-              }
-            );
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
+              });
+           });
 });
+
+kuongezaMikondoRequestController.post(
+  "/BadiliComment",
+  isAuthenticated,
+  can("view-school-registration-private"),
+  function (req, res) {
+    // console.log(req.body)
+    var trackerId = req.body.trackerId;
+    var from_user = req.session.userID;
+    var staff = req.body.staffs;
+    var coments = req.body.coments;
+    var haliombi = req.body.haliombi;
+    var attachment = req.body.attachment;
+    var kiambatisho = req.body.kiambatisho;
+    var attach_length = req.body.attach_length;
+    var newstream = req.body.newstream;
+    var oldstream = req.body.oldstream;
+    var establishId = req.body.establishId;
+    var schoolCategoryID = req.body.schoolCategoryID;
+    var ombitype = req.body.ombitype;
+    var staffDet = staff.split("-");
+    var department = staffDet[1];
+    var staffs = staffDet[0];
+    // console.log(department + " and " + staffs)
+    
+      sendRequest(req, res , badiliReply, "POST", {
+            trackerId: trackerId,
+            from_user: from_user,
+            staffs: staffs,
+            coments: coments,
+            ombitype: ombitype,
+            newstream: newstream,
+            haliombi: haliombi,
+            replyType: 1,
+            oldstream: oldstream,
+            department: department,
+            schoolCategoryID: schoolCategoryID,
+            establishId: establishId,
+        },
+        function (jsonData) {
+            var message = jsonData.message;
+            var statusCode = jsonData.statusCode;
+            var data = jsonData.data;
+            console.log(
+              new Date() + " " + req.session.userName + ": /BadiliComment"
+            );
+            res.send({
+              statusCode: statusCode,
+              message: message,
+              data : data
+            });
+        }
+      );
+    
+  }
+);
 
 module.exports = kuongezaMikondoRequestController;

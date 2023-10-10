@@ -139,6 +139,7 @@ kusajiliSerikaliRequestController.get("/SajiliOmbiSerikali/:id",
               ),
               {
                 req: req,
+                UserLevel: req.user.cheo,
                 muda_ombi: remain_days,
                 specialization: specialization,
                 created_at: created_at,
