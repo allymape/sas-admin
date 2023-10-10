@@ -9,6 +9,7 @@ const { isAuthenticated, sendRequest, can } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var badiliTahasusi = API_BASE_URL + "maombi-badili-tahasusi";
 var ongezatahasusiDetails = API_BASE_URL + "view-ongeza-tahasusi-details";
+var ongezaReply = API_BASE_URL + "tuma-ongeza-majibu";
 // Display
 
 
@@ -184,7 +185,7 @@ kuongezaTahasusiRequestController.get(
                 streamOld: streamOld,
                 language: language,
                 school_size: school_size,
-                userLevel: req.session.UserLevel,
+                userLevel: req.user.cheo,
                 area: area,
                 WardName: WardName,
                 structure: structure,
@@ -207,5 +208,56 @@ kuongezaTahasusiRequestController.get(
           }
         })
 });
+
+kuongezaTahasusiRequestController.post(
+  "/OngezaComment",
+  isAuthenticated,
+  function (req, res) {
+    // console.log(req.body)
+    var trackerId = req.body.trackerId;
+    var from_user = req.session.userID;
+    var staff = req.body.staffs;
+    var coments = req.body.coments;
+    var haliombi = req.body.haliombi;
+    var attachment = req.body.attachment;
+    var kiambatisho = req.body.kiambatisho;
+    var attach_length = req.body.attach_length;
+    var newstream = req.body.newstream;
+    var oldstream = req.body.oldstream;
+    var establishId = req.body.establishId;
+    var schoolCategoryID = req.body.schoolCategoryID;
+    var ombitype = req.body.ombitype;
+    var staffDet = staff.split("-");
+    var department = staffDet[1];
+    var staffs = staffDet[0];
+    // console.log(department + " and " + staffs)
+      sendRequest(req , res ,ongezaReply, "POST" , {
+            trackerId: trackerId,
+            from_user: from_user,
+            staffs: staffs,
+            coments: coments,
+            ombitype: ombitype,
+            newstream: newstream,
+            haliombi: haliombi,
+            replyType: 1,
+            oldstream: oldstream,
+            department: department,
+            schoolCategoryID: schoolCategoryID,
+            establishId: establishId,
+          },
+        function (jsonData) {
+           const { error, statusCode, message } = jsonData;
+           // var data = jsonData.data;
+           console.log(
+             new Date() + " " + req.session.userName + ": /OngezaComment"
+           );
+           res.send({
+             statusCode: statusCode,
+             message: message,
+           });
+        }
+      );
+  }
+);
 
 module.exports = kuongezaTahasusiRequestController;

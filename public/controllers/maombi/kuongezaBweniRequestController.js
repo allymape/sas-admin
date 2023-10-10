@@ -114,21 +114,8 @@ kuongezaBweniRequestController.get(
         office: req.session.office,
       },
     },
-    function (error, response, body) {
-      if (error) {
-        console.log(new Date() + ": fail to BadiliBweni " + error);
-        res.send("failed");
-      }
-      console.log(body)
-      if (body !== undefined) {
-        // var jsonData = JSON.parse(body)
-        var jsonData = body;
-
-        console.log(jsonData);
-        var message = jsonData.message;
-        var statusCode = jsonData.statusCode;
-
-        if (statusCode == 300) {
+    function (jsonData) {
+      
           var data = jsonData.data;
           var remain_days = data[0].remain_days;
           var created_at = data[0].created_at;
@@ -166,7 +153,7 @@ kuongezaBweniRequestController.get(
             new Date() + " " + req.session.userName + ": /BadiliBweni"
           );
           res.render(
-            path.join(__dirname + "/public/design/maombi/details/view-badili-bweni"),
+            path.join(__dirname + "/../../design/maombi/details/view-badili-bweni"),
             {
               req: req,
               muda_ombi: remain_days,
@@ -193,7 +180,7 @@ kuongezaBweniRequestController.get(
               streamOld: streamOld,
               language: language,
               school_size: school_size,
-              userLevel: req.session.UserLevel,
+              userLevel: req.user.cheo,
               area: area,
               WardName: WardName,
               structure: structure,
@@ -211,13 +198,13 @@ kuongezaBweniRequestController.get(
               objAttachment2: objAttachment2,
             }
           );
-        }
-        if (statusCode == 209) {
-          res.redirect("/");
-        }
-      }
+        
+        
+      
     }
   );
 });
+
+
 
 module.exports = kuongezaBweniRequestController;
