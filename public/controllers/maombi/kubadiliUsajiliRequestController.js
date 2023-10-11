@@ -164,8 +164,70 @@ kubadiliUsajiliRequestController.get(
               }
             );
             });
-      });
+});
 
 
+kubadiliUsajiliRequestController.post(
+  "/BadiliAinaComment",
+  isAuthenticated,
+  function (req, res) {
+    // console.log(req.body)
+    var trackerId = req.body.trackerId;
+    var from_user = req.session.userID;
+    var staff = req.body.staffs;
+    var coments = req.body.coments;
+    var haliombi = req.body.haliombi;
+    var attachment = req.body.attachment;
+    var kiambatisho = req.body.kiambatisho;
+    var attach_length = req.body.attach_length;
+    var newstream = req.body.newstream;
+    var oldstream = req.body.oldstream;
+    var establishId = req.body.establishId;
+    var schoolCategoryID = req.body.schoolCategoryID;
+    var ombitype = req.body.ombitype;
+    var registration_number = req.body.registration_number;
+    var school_category_id_old = req.body.school_category_id_old;
+    var school_category_id_new = req.body.school_category_id_new;
+    var staffDet = staff.split("-");
+    var department = staffDet[1];
+    var staffs = staffDet[0];
+    // console.log(department + " and " + staffs)
+
+    sendRequest(
+      req,
+      res,
+      badiliainaReply,
+      "POST",
+      {
+        trackerId: trackerId,
+        from_user: from_user,
+        school_category_id_new: school_category_id_new,
+        staffs: staffs,
+        coments: coments,
+        ombitype: ombitype,
+        newstream: newstream,
+        registration_number: registration_number,
+        haliombi: haliombi,
+        replyType: 1,
+        oldstream: oldstream,
+        school_category_id_old: school_category_id_old,
+        department: department,
+        schoolCategoryID: schoolCategoryID,
+        establishId: establishId,
+      },
+      function (jsonData) {
+        var message = jsonData.message;
+        var statusCode = jsonData.statusCode;
+        console.log(
+          new Date() + " " + req.session.userName + ": /BadiliAinaComment"
+        );
+        res.send({
+          statusCode: statusCode,
+          message: message,
+        });
+      }
+    );
+  }
+);
 
 module.exports = kubadiliUsajiliRequestController;

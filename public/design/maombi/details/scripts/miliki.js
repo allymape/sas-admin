@@ -123,7 +123,7 @@ function rudisha(){
             "attach_length": ""}),
             contentType: 'application/json',
             success: function(response) {
-                window.location.href = "/MaombiKuanzishaShule";
+                window.location.href = "/BadiliMmiliki";
             }
         });
     }else{

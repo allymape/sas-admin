@@ -205,7 +205,7 @@ badiliMmilikiRequestController.get(
             expertise_level: expertise_level,
             LgaNameMtu: LgaNameMtu,
             WardNameMtu: WardNameMtu,
-            userLevel: req.session.UserLevel,
+            userLevel: req.user.cheo,
             subcategory: subcategory,
             count: count,
             staffs: jsonData.staffs,

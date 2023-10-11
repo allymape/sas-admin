@@ -1,0 +1,88 @@
+<% var card_title = '' %> 
+<%- include('layouts/partials/header.ejs' , {
+    title : 'Namba za Usajili',
+    page_title : 'Namba za mwisho za Usajili',
+    card_title : 'Namba zilizopo',
+    breadcrumb_main : 'Mipangilio' 
+}) %>
+  <div class="card-body">
+    <div id="customerList">
+        <div class="row g-4 mb-3">
+            <div class="col-sm-auto">
+                <div>
+                <button type="button" class="btn btn-danger add-btn" 
+                    id="generate-btn"><i class="ri-add-line align-bottom me-1"></i>Generate from existing data</button>
+                    <!-- <button class="btn btn-soft-danger" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button> -->
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="d-flex justify-content-sm-end">
+                    <div class="search-box ms-2">
+                        <input type="text" class="form-control search" placeholder="Tafuta...">
+                        <i class="ri-search-line search-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive table-card mt-3 mb-1">
+            <table class="table align-middle table-nowrap" id="algorithmTable">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" width="5%">
+                            Na.
+                        </th>
+                        <th class="sort" data-sort="customer_name">Aina</th>
+                        <th class="sort" data-sort="customer_name">Kodi</th>
+                        <th class="sort" data-sort="email">Namba ya Mwisho</th>
+                        <th class="sort text-center" width="10%"  data-sort="action">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="list form-check-all">
+
+                </tbody>
+            </table>
+            <div class="noresult" style="display: none">
+                <div class="text-center">
+                    <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                    <h5 class="mt-2">Sorry! No Result Found</h5>
+                    <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
+                </div>
+            </div>
+        </div>
+        <%- include('paginations/ajax_pagination.ejs') %>
+    </div>
+    </div><!-- end card -->
+
+                    <div class="modal fade" id="showEditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header bg-light p-3">
+                                    <h5 class="modal-title" id="exampleModalLabel">Badili Namba ya Usajili</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+                                </div>
+                                <form>
+                                    
+                                    <div class="modal-body">
+                                           
+                                        <div class="mb-3">
+                                            <label for="lastnumber-field" class="form-label">Namba</label>
+                                             <input type="hidden" id="id-field" class="form-control" placeholder="ID"/>
+                                            <input type="number" id="lastnumber-field" class="form-control" placeholder="Ingiza Namba" required />
+                                            <span style="color: red;display: none;" id="lastnumber-error">Weka Namba</span>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <div class="hstack gap-2 justify-content-end">
+                                            <button type="button" class="btn btn-light" onclick="funga()" data-bs-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-success" onclick="updateAlgorithm()" id="edit-btn">Update</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+<%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
+<script type="text/javascript" src="/design/layouts/scripts/algorithm_scripts.js"></script>
+</body>
+</html>

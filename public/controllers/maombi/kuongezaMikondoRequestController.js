@@ -54,7 +54,7 @@ kuongezaMikondoRequestController.get(
                       new Date() +
                         " " +
                         req.session.userName +
-                        ": /MaombiKusajiliShule"
+                        ": /MaombiMikondo"
                     );
                     res.render(
                       path.join(__dirname + "/../../design/maombi/mikondo"),
