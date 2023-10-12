@@ -8,6 +8,7 @@ const { isAuthenticated, sendRequest, can } = require("../../../util");
 const API_BASE_URL = process.env.API_BASE_URL;
 const maobadilimenejaShuleListAPI = API_BASE_URL + "maombi-badili-meneja-shule";
 var badiliMenejaDetails = API_BASE_URL + "view-ombi-badili-meneja-details";
+var menejaReply = API_BASE_URL + "tuma-meneja-majibu";
 // Display
 badiliMenejaRequestController.get(
   "/BadiliMeneja",
@@ -149,12 +150,6 @@ badiliMenejaRequestController.get(
                 {
                   req: req,
                   muda_ombi: remain_days,
-                  useLev: req.session.UserLevel,
-                  phone_number_old: phone_number_old,
-                  userName: req.session.userName,
-                  RoleManage: req.session.RoleManage,
-                  userID: req.session.userID,
-                  cheoName: req.session.cheoName,
                   owner_email_old: owner_email_old,
                   authorized_person_old: authorized_person_old,
                   owner_name_old: owner_name_old,
@@ -195,8 +190,9 @@ badiliMenejaRequestController.get(
                   expertise_level: expertise_level,
                   LgaNameMtu: LgaNameMtu,
                   WardNameMtu: WardNameMtu,
-                  userLevel: req.session.UserLevel,
+                  userLevel: req.user.cheo,
                   subcategory: subcategory,
+                  phone_number_old : phone_number_old,
                   count: count,
                   staffs: jsonData.staffs,
                   attachment_path: attachment_path,
@@ -212,5 +208,54 @@ badiliMenejaRequestController.get(
    
   }
 );
+
+badiliMenejaRequestController.post("/MenejaComment", isAuthenticated, function (req, res) {
+  // console.log(req.body)
+  var trackerId = req.body.trackerId;
+  var from_user = req.session.userID;
+  var staff = req.body.staffs;
+  var owner_name = req.body.owner_name;
+  var authorized_person = req.body.authorized_person;
+  var owner_name_old = req.body.owner_name_old;
+  var coments = req.body.coments;
+  var authorized_person_old = req.body.authorized_person_old;
+  var haliombi = req.body.haliombi;
+  var attachment = req.body.attachment;
+  var kiambatisho = req.body.kiambatisho;
+  var attach_length = req.body.attach_length;
+  var schoolCategoryID = req.body.schoolCategoryID;
+  var ombitype = req.body.ombitype;
+  var staffDet = staff.split("-");
+  var department = staffDet[1];
+  var staffs = staffDet[0];
+  // console.log(department + " and " + staffs)
+
+    sendRequest(req , res , menejaReply , "POST" , {
+          trackerId: trackerId,
+          from_user: from_user,
+          owner_name: owner_name,
+          authorized_person: authorized_person,
+          staffs: staffs,
+          coments: coments,
+          ombitype: ombitype,
+          owner_name_old: owner_name_old,
+          authorized_person_old: authorized_person_old,
+          haliombi: haliombi,
+          replyType: 1,
+          department: department,
+          schoolCategoryID: schoolCategoryID,
+      },
+      function (jsonData) {
+        const { statusCode, message } = jsonData;
+        console.log(
+          new Date() + " " + req.session.userName + ": /MenejaComment ..."
+        );
+        res.send({
+          statusCode: statusCode,
+          message: message,
+        });
+      }
+    );
+});
 
 module.exports = badiliMenejaRequestController;

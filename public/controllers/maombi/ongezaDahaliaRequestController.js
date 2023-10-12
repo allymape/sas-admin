@@ -157,4 +157,7 @@ ongezaDahaliaRequestController.get(
     );
   }
 );
+
+// BadiliComment in KuongezaMikondoController is handling comments for this module that's why it's not here
+
 module.exports = ongezaDahaliaRequestController;

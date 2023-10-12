@@ -8,6 +8,7 @@ const { isAuthenticated, sendRequest, can } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var bweniDetails = API_BASE_URL + "view-bweni-details";
 var badiliBweni = API_BASE_URL + "maombi-badili-bweni";
+var badiliBReply = API_BASE_URL + "tuma-badili-bweni";
 // Display
 
 kuongezaBweniRequestController.get(
@@ -203,6 +204,53 @@ kuongezaBweniRequestController.get(
       
     }
   );
+});
+
+kuongezaBweniRequestController.post("/BadiliBweniComment", isAuthenticated, function (req, res) {
+  var trackerId = req.body.trackerId;
+  var from_user = req.session.userID;
+  var staff = req.body.staffs;
+  var coments = req.body.coments;
+  var haliombi = req.body.haliombi;
+  var attachment = req.body.attachment;
+  var kiambatisho = req.body.kiambatisho;
+  var attach_length = req.body.attach_length;
+  var newstream = req.body.newstream;
+  var oldstream = req.body.oldstream;
+  var establishId = req.body.establishId;
+  var schoolCategoryID = req.body.schoolCategoryID;
+  var ombitype = req.body.ombitype;
+  var staffDet = staff.split("-");
+  var department = staffDet[1];
+  var staffs = staffDet[0];
+  // console.log(department + " and " + staffs)
+ 
+    sendRequest(req , res , badiliBReply , "POST" ,{
+          trackerId: trackerId,
+          from_user: from_user,
+          staffs: staffs,
+          coments: coments,
+          ombitype: ombitype,
+          newstream: newstream,
+          haliombi: haliombi,
+          replyType: 1,
+          oldstream: oldstream,
+          department: department,
+          schoolCategoryID: schoolCategoryID,
+          establishId: establishId,
+      },
+      function (jsonData) {
+        const { statusCode, message } = jsonData;
+        console.log(
+          new Date() + " " + req.session.userName + ": /BadiliBweniComment ..."
+        );
+        res.send({
+          statusCode: statusCode,
+          message: message,
+        });
+      }
+    );
+ 
 });
 
 

@@ -9,6 +9,7 @@ var API_BASE_URL = process.env.API_BASE_URL;
 // var maousajiliShuleListAPI = API_BASE_URL + "maombi-usajili-shule";
 const HamishaShule = API_BASE_URL + "maombi-hamisha-shule";
 const hamishaShuleDetails = API_BASE_URL + "view-hamisha-shule-details";
+var badiliHReply = API_BASE_URL + "tuma-badili-hamisha";
 // Display
 hamishaRequestController.get(
   "/Hamisha",
@@ -113,11 +114,6 @@ hamishaRequestController.get(
                 {
                   req: req,
                   muda_ombi: remain_days,
-                  useLev: req.session.UserLevel,
-                  userName: req.session.userName,
-                  RoleManage: req.session.RoleManage,
-                  userID: req.session.userID,
-                  cheoName: req.session.cheoName,
                   created_at: created_at,
                   tracking_number: tracking_number,
                   school_name: school_name,
@@ -142,7 +138,7 @@ hamishaRequestController.get(
                   streamOld: streamOld,
                   language: language,
                   school_size: school_size,
-                  userLevel: req.session.UserLevel,
+                  userLevel: req.user.cheo,
                   area: area,
                   WardName: WardName,
                   structure: structure,
@@ -165,5 +161,50 @@ hamishaRequestController.get(
         }
       );
    
+});
+
+hamishaRequestController.post("/HamishaComment", function (req, res) {
+  console.log(req.body);
+  var trackerId = req.body.trackerId;
+  var from_user = req.session.userID;
+  var staff = req.body.staffs;
+  var coments = req.body.coments;
+  var haliombi = req.body.haliombi;
+  var attachment = req.body.attachment;
+  var kiambatisho = req.body.kiambatisho;
+  var attach_length = req.body.attach_length;
+  var newstream = req.body.newstream;
+  var oldstream = req.body.oldstream;
+  var establishId = req.body.establishId;
+  var schoolCategoryID = req.body.schoolCategoryID;
+  var ombitype = req.body.ombitype;
+  var staffDet = staff.split("-");
+  var department = staffDet[1];
+  var staffs = staffDet[0];
+  // console.log(department + " and " + staffs)
+    sendRequest(req, res , badiliHReply , "POST" , {
+          trackerId: trackerId,
+          from_user: from_user,
+          staffs: staffs,
+          coments: coments,
+          ombitype: ombitype,
+          newstream: newstream,
+          haliombi: haliombi,
+          replyType: 1,
+          oldstream: oldstream,
+          department: department,
+          schoolCategoryID: schoolCategoryID,
+          establishId: establishId,
+        },
+      function (jsonData) {
+        const {statusCode, message } = jsonData;
+          console.log(
+            new Date() + " " + req.session.userName + ": /HamishaComment ..."
+          );
+          res.send({
+            statusCode: statusCode,
+            message: message,
+          });
+      });    
 });
 module.exports = hamishaRequestController;
