@@ -14887,61 +14887,61 @@ app.post("/RecKumbNa", function (req, res) {
   }
 });
 
-app.post("/EditAda", function (req, res) {
-  var ada = req.body.ada;
-  var code = req.body.code;
-  var kiasi = req.body.kiasi;
-  var fee_id = req.body.fee_id;
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: editAdaAPI,
-        method: "POST",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-        json: {
-          browser_used: req.session.browser_used,
-          ip_address: req.session.ip_address,
-          ada: ada,
-          code: code,
-          kiasi: kiasi,
-          id: fee_id,
-          ip_address: req.session.ip_address,
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(new Date() + ": fail to TumaComment " + error);
-          res.send("failed");
-        }
+// app.post("/EditAda", function (req, res) {
+//   var ada = req.body.ada;
+//   var code = req.body.code;
+//   var kiasi = req.body.kiasi;
+//   var fee_id = req.body.fee_id;
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//     request(
+//       {
+//         url: editAdaAPI,
+//         method: "POST",
+//         headers: {
+//           Authorization: "Bearer" + " " + req.session.Token,
+//           "Content-Type": "application/json",
+//         },
+//         json: {
+//           browser_used: req.session.browser_used,
+//           ip_address: req.session.ip_address,
+//           ada: ada,
+//           code: code,
+//           kiasi: kiasi,
+//           id: fee_id,
+//           ip_address: req.session.ip_address,
+//         },
+//       },
+//       function (error, response, body) {
+//         if (error) {
+//           console.log(new Date() + ": fail to TumaComment " + error);
+//           res.send("failed");
+//         }
 
-        if (body !== undefined) {
-          var jsonData = body;
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          if (statusCode == 300) {
-            console.log(new Date() + " " + req.session.userName + ": /EditAda");
-            res.send({
-              message: message,
-              statusCode: statusCode,
+//         if (body !== undefined) {
+//           var jsonData = body;
+//           var message = jsonData.message;
+//           var statusCode = jsonData.statusCode;
+//           if (statusCode == 300) {
+//             console.log(new Date() + " " + req.session.userName + ": /EditAda");
+//             res.send({
+//               message: message,
+//               statusCode: statusCode,
              
-            });
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
+//             });
+//           }
+//           if (statusCode == 209) {
+//             res.redirect("/");
+//           }
+//         }
+//       }
+//     );
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
 
 // DELETE /api/auth/logout

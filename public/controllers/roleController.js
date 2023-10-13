@@ -7,6 +7,7 @@ var path = require("path");
 const { sendRequest, can, isAuthenticated } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var allRolesAPI = API_BASE_URL + "allRoles";
+var rolesApi = API_BASE_URL + "roles";
 var tengenezaRoleAPI = API_BASE_URL + "addRole";
 var editRoleAPI   = API_BASE_URL + "editRole";
 var updateRoleAPI = API_BASE_URL + "updateRole";
@@ -30,6 +31,16 @@ roleController.get("/allRoles",  isAuthenticated, can('view-roles'), function (r
     });
   });
   //   getAllRoles(req, res);
+});
+
+roleController.post("/LookupRoles", isAuthenticated, (req, res) => {
+  sendRequest(req, res, rolesApi, "GET", {}, (jsonData) => {
+    res.send({
+      statusCode: jsonData.statusCode,
+      data: jsonData.data,
+      message: jsonData.message,
+    });
+  });
 });
 
 // Store Role

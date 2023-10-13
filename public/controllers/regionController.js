@@ -7,6 +7,7 @@ var path = require("path");
 const { sendRequest, can, isAuthenticated } = require("../../util");
 var API_BASE_URL      = process.env.API_BASE_URL;
 var mikoaListAPI      = API_BASE_URL + "regions";
+var regionsAPI = API_BASE_URL + "lookup-regions";
 var VutaMikoaListAPI  = API_BASE_URL + "usajiliMikoa";
 var mkoaKandaAPI      = API_BASE_URL + "assign-region-zone";
 var zonesApi      = API_BASE_URL + "allZones";
@@ -45,6 +46,16 @@ regionController.get("/MikoaList", isAuthenticated, can('view-regions'), functio
             per_page: per_page,
             pages: Math.ceil(numRows / per_page),
         },
+        });
+  });
+});
+
+regionController.get("/LookupRegion", isAuthenticated, function (req, res) {
+    sendRequest(req, res, regionsAPI , "GET", req.query , (jsonData) => {
+        var data = jsonData.data;
+        res.send({
+            statusCode: jsonData.statusCode,
+            regions: data,
         });
   });
 });

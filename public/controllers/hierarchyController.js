@@ -7,6 +7,7 @@ var path = require("path");
 const { sendRequest, isAuthenticated, can } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var allHierarchiesAPI = API_BASE_URL + "all_hierarchies";
+var hierarchiesAPI = API_BASE_URL + "hierarchies_by_ranks";
 var tengenezaHierarchyAPI = API_BASE_URL + "add_hierarchy";
 var editHierarchyAPI   = API_BASE_URL + "edit_hierarchy";
 var updateHierarchyAPI = API_BASE_URL + "update_hierarchy";
@@ -48,15 +49,14 @@ hierarchyController.get("/Uongozi", isAuthenticated, can('view-hierarchies'), fu
   );
 });
 
+
+
 // Get all hierarchies (Vyeo)
-hierarchyController.get("/hierarchies",  isAuthenticated, can('view-hierarchies'), function (req, res) {
-   var per_page = Number(req.query.per_page || 10);
-   var page = Number(req.query.page || 1);  
+hierarchyController.get("/LookupHierarchies",  isAuthenticated, function (req, res) {
     var formData = {
-          is_paginated: req.query.is_paginated,
           rank_id : req.query.rank_id
       };
-    sendRequest(req, res, allHierarchiesAPI+ "?page=" + page + "&per_page=" + per_page, "GET", formData, (jsonData) => {
+    sendRequest(req, res, hierarchiesAPI, "GET", formData, (jsonData) => {
             res.send({
               statusCode: jsonData.statusCode,
               data: jsonData.hierarchies,

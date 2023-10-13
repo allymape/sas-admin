@@ -120,8 +120,8 @@ function getUser(userId) {
 function getLookUpData(user){
   // Load roles
   ajaxRequest(
-    "/allRoles",
-    "GET",
+    "/LookupRoles",
+    "POST",
     (rolesResponse) => {
       if (rolesResponse.statusCode == 300) {
         var roles = rolesResponse.data;
@@ -137,8 +137,8 @@ function getLookUpData(user){
 
         // Load Ranks
         ajaxRequest(
-          "/ranks",
-          "GET",
+          "/LookupRanks",
+          "POST",
           (ranksResponse) => {
             if (ranksResponse.statusCode == 300) {
               var ranks = ranksResponse.data;
@@ -152,17 +152,21 @@ function getLookUpData(user){
                 "Chagua Ngazi"
               );
 
-              getAllHierarchies(user ? user.ngazi : null , user , user ? user.uongozi : null);
-                // getAllDesignations()
-                modal("showModal", true);
+              getAllHierarchies(
+                user ? user.ngazi : null,
+                user,
+                user ? user.uongozi : null
+              );
+              // getAllDesignations()
+              modal("showModal", true);
             }
           },
-          { is_paginated: false },
+          {},
           false
         ); //end of levels ajax request
       }
     },
-    { is_paginated: false },
+    {},
     false
   ); // end of roles ajax request
 }

@@ -4,6 +4,7 @@ function ajaxRequest(url, method, callback, formData = {}, loading = true) {
   if (loading) {
     showLoadingSpinner();
   }
+  // alert(typeof formData == "string");
   $.ajax({
     url: url + (parameters ? "?" + parameters : ""),
     type: method,
@@ -16,7 +17,7 @@ function ajaxRequest(url, method, callback, formData = {}, loading = true) {
       }
       callback(response);
     },
-    error: function (xhr, exception , text) {
+    error: function (xhr, exception, text) {
       if (loading) {
         hideLoadingSpinner();
       }
@@ -40,8 +41,7 @@ function ajaxRequest(url, method, callback, formData = {}, loading = true) {
       } else {
         msg = "Error:" + xhr.status + " ";
       }
-      alertMessage(text , msg , 'error' , () => {
-      })
+      alertMessage(text, msg, "error", () => {});
     },
   });
 }
@@ -354,7 +354,7 @@ function appendSelectionOption(
 function getAllHierarchies(rankId, user = null , selectedHierarchy = null) {
   if (rankId) {
     ajaxRequest(
-      "/hierarchies",
+      "/LookupHierarchies",
       "GET",
       (response) => {
         if (response.statusCode == 300) {
@@ -371,7 +371,10 @@ function getAllHierarchies(rankId, user = null , selectedHierarchy = null) {
           var selectedUongozi = $("#uongozi-field")
             .find("option:selected")
             .text();
-          getAllDesignations(user ? user.uongozi : null , user ? user.cheo : null);
+          getAllDesignations(
+            user ? user.uongozi : null,
+            user ? user.cheo : null
+          );
           showHiddenFieldBasedOnSelectedHierarchy(selectedUongozi);
           getAllZones(user, user ? user.zone_id : null);
         }
@@ -383,7 +386,7 @@ function getAllHierarchies(rankId, user = null , selectedHierarchy = null) {
 function getAllDesignations(hierarchyId, selectedDesignation = null) {
   if (hierarchyId) {
     ajaxRequest(
-      "/designations",
+      "/LookupDesignations",
       "GET",
       (response) => {
         if (response.statusCode == 300) {
@@ -408,7 +411,7 @@ function getAllDesignations(hierarchyId, selectedDesignation = null) {
 function getAllZones(user = null , selectedZone = null){
   // Load zones
   ajaxRequest(
-    "/zones",
+    "/LookupZones",
     "GET",
     (zonesResponse) => {
       if (zonesResponse.statusCode == 300) {
@@ -421,7 +424,7 @@ function getAllZones(user = null , selectedZone = null){
           })),
           [Number(selectedZone)],
           "Chagua Kanda ..."
-        ); 
+        );
         if (user && user.zone_id) {
           $("#mkoa-field").prop("disabled", user.zone_id ? false : true);
           getAllRegions(
@@ -447,7 +450,7 @@ function getAllZones(user = null , selectedZone = null){
 function getAllRegions(zoneId, selectedRegion = null) {
   if (zoneId) {
     ajaxRequest(
-      "/MikoaList",
+      "/LookupRegion",
       "GET",
       (regionsResponse) => {
         if (regionsResponse.statusCode == 300) {
@@ -470,7 +473,7 @@ function getAllRegions(zoneId, selectedRegion = null) {
 
 function getAllDistricts(regionCode, selectedDistrict = null) {
   ajaxRequest(
-    "/HalmashauriList",
+    "/LookupHalmashauri",
     "GET",
     (councilsResponse) => {
       if (councilsResponse.statusCode == 300) {

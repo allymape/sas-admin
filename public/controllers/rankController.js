@@ -7,6 +7,7 @@ var path = require("path");
 const { sendRequest, isAuthenticated, can } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var allRanksAPI = API_BASE_URL + "allRanks";
+var ranksAPI = API_BASE_URL + "ranks";
 var tengenezaRankAPI = API_BASE_URL + "addRank";
 var editRankAPI   = API_BASE_URL + "editRank";
 var updateRankAPI = API_BASE_URL + "updateRank";
@@ -39,6 +40,19 @@ rankController.get("/Ranks",  isAuthenticated, can('view-ranks'),function (req, 
                 per_page: per_page,
                 pages: Math.ceil(numRows / per_page),
               },
+            });
+    });
+//   getAllRanks(req, res);
+});
+
+rankController.post("/LookupRanks",  isAuthenticated,function (req, res) {
+  
+    sendRequest(req, res, ranksAPI, "GET", {}, (jsonData) => {
+            // console.log(jsonData);
+            res.send({
+              statusCode: jsonData.statusCode,
+              data: jsonData.data,
+              message: jsonData.message,
             });
     });
 //   getAllRanks(req, res);

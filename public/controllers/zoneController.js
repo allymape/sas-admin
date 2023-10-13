@@ -7,6 +7,7 @@ var path = require("path");
 const { sendRequest, isAuthenticated, can } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var allZonesAPI = API_BASE_URL + "allZones";
+var zonesAPI = API_BASE_URL + "lookup-zones";
 var tengenezaZoneAPI = API_BASE_URL + "addZone";
 var editZoneAPI   = API_BASE_URL + "editZone";
 var updateZoneAPI = API_BASE_URL + "updateZone";
@@ -39,6 +40,18 @@ zoneController.get("/Zones",  isAuthenticated, can('view-zones'),function (req, 
                 per_page: per_page,
                 pages: Math.ceil(numRows / per_page),
               },
+            });
+    });
+//   getAllZones(req, res);
+});
+
+zoneController.get("/LookupZones",  isAuthenticated,function (req, res) {
+  
+    sendRequest(req, res, zonesAPI, "GET", {}, (jsonData) => {
+            res.send({
+              statusCode: jsonData.statusCode,
+              data: jsonData.data,
+              message: jsonData.message,
             });
     });
 //   getAllZones(req, res);

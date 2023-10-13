@@ -7,6 +7,7 @@ var path = require("path");
 const { sendRequest, isAuthenticated, can } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var allDesignationsAPI = API_BASE_URL + "all_designations";
+var designationsAPI = API_BASE_URL + "designations_by_section";
 var tengenezaDesignationAPI = API_BASE_URL + "add_designation";
 var editDesignationAPI   = API_BASE_URL + "edit_designation";
 var updateDesignationAPI = API_BASE_URL + "update_designation";
@@ -50,19 +51,18 @@ designationController.get("/Vyeo", isAuthenticated, can('view-designations'), fu
   );
 });
 
+
+
 // Get all designations (Vyeo)
-designationController.get("/designations",  isAuthenticated, can('view-designations'), function (req, res) {
-  var per_page = Number(req.query.per_page || 10);
-  var page = Number(req.query.page || 1);  
+designationController.get("/LookupDesignations",  isAuthenticated, function (req, res) {
   var formData = {
-      is_paginated: req.query.is_paginated,
       hierarchy_id: req.query.hierarchy_id,
     };
-    sendRequest(req, res, allDesignationsAPI+ "?page=" + page + "&per_page=" + per_page, "GET", formData, (jsonData) => {
+    sendRequest(req, res, designationsAPI, "GET", formData, (jsonData) => {
             res.send({
-                  statusCode: jsonData.statusCode,
-                  data: jsonData.designations,
-                  message: jsonData.message,
+                statusCode: jsonData.statusCode,
+                data: jsonData.designations,
+                message: jsonData.message,
             });
     });
 //   getAllDesignations(req, res);
