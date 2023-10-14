@@ -17,7 +17,7 @@
                         <h6 class="m-0 fs-16 fw-semibold text-white"> Notifications </h6>
                     </div>
                     <div class="col-auto dropdown-tabs">
-                        <span class="badge badge-soft-light fs-13"> 4 New</span>
+                        <span class="badge badge-soft-light fs-13" id="all-new-messages-count"></span>
                     </div>
                 </div>
             </div>
@@ -28,13 +28,13 @@
                     <li class="nav-item waves-effect waves-light">
                         <a class="nav-link active" data-bs-toggle="tab" href="#all-noti-tab" role="tab"
                             aria-selected="true">
-                            All (4)
+                            All <span id="all-noti-tab-count"></span>
                         </a>
                     </li>
                     <li class="nav-item waves-effect waves-light">
                         <a class="nav-link" data-bs-toggle="tab" href="#messages-tab" role="tab"
                             aria-selected="false">
-                            Messages
+                            Messages <span id="all-messages-tab-count"></span>
                         </a>
                     </li>
                     <li class="nav-item waves-effect waves-light">
@@ -171,7 +171,7 @@
             </div>
             <div class="tab-pane fade py-2 ps-2" id="messages-tab" role="tabpanel"
                 aria-labelledby="messages-tab">
-                <div data-simplebar style="max-height: 300px;" class="pe-2">
+                <!-- <div data-simplebar style="max-height: 300px;" class="pe-2">
                     <div class="text-reset notification-item d-block dropdown-item">
                         <div class="d-flex">
                             <img src="design/assets/images/users/avatar-3.jpg"
@@ -282,7 +282,7 @@
                         <button type="button" class="btn btn-soft-success waves-effect waves-light">View
                             All Messages <i class="ri-arrow-right-line align-middle"></i></button>
                     </div>
-                </div>
+                </div> -->
             </div>
             <div class="tab-pane fade p-4" id="alerts-tab" role="tabpanel" aria-labelledby="alerts-tab">
                 <div class="w-25 w-sm-50 pt-3 mx-auto">

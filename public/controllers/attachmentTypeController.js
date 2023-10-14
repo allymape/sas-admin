@@ -13,6 +13,12 @@ var updateAttachmentTypeAPI = API_BASE_URL + "update-attachment-type";
 var deleteAttachmentTypeAPI = API_BASE_URL + "delete-attachment-type";
 
 
+attachmentTypeController.get("/Viambatisho", isAuthenticated, can('view-attachments'), function (req, res) {
+    res.render(path.join(__dirname + "/../design/viambatisho"), {
+              req: req,
+            });
+});
+
 // Get all attachmentTypes
 attachmentTypeController.get("/AttachmentTypes",  isAuthenticated, can('view-attachments'), function (req, res) {
   var per_page = Number(req.query.per_page || 10);

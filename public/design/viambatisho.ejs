@@ -124,7 +124,7 @@
                                             <input type="text" id="size-field" class="form-control" placeholder="Mfano: 2" required />
                                             <span style="color: red;display: none;" id="jazaukubwa">Jaza ukubwa na hakikisha ni namba kubwa kuliko 0.</span>
                                         </div>
-                                        <div>
+                                        <div class="mb-2">
                                             <label for="format-field" class="form-label">Aina</label>
                                             <select class="form-control" data-trigger name="format_field" id="format-field" disabled>
                                                 <option value="PDF">PDF</option>
@@ -140,7 +140,7 @@
                                             <span style="color: red;display: none;" id="ainaombi">Tafadhali chagua aina ya ombi</span>
                                         </div>
 
-                                        <div id="majengo" style="display: none;">
+                                        <div id="majengo">
                                             <div class="mb-2">
                                                 <label for="application-category-field" class="form-label">Hali ya Majengo</label>
                                                 <select class="form-control" data-trigger name="application_category_majengo" id="application-category-majengo">
@@ -216,6 +216,17 @@
                                             <select class="form-control" data-trigger name="registration_type_id" id="registration-type-field2">
                                                 <option value="0"> Chagua </option>
                                             </select>
+                                        </div>
+                                         <div id="majengo">
+                                            <div class="mb-2">
+                                                <label for="application-category-field" class="form-label">Hali ya Majengo</label>
+                                                <select class="form-control" data-trigger name="application_category_majengo" id="application-category-majengo">
+                                                    <option value="#"> Chagua </option>
+                                                    <option value="1"> Hakuna majengo </option>
+                                                    <option value="2"> Kuna majengo </option>
+                                                </select>
+                                                <span style="color: red;display: none;" id="ainaombi">Tafadhali chagua aina ya ombi</span>
+                                            </div>
                                         </div>
                                         <div class="mb-2 mt-4">
                                             <label for="attachment-type-status" class="form-check">

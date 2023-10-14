@@ -13543,34 +13543,34 @@ app.get("/Baruameneja/:id", function (req, res) {
   res.download(filename + "meneja.pdf");
 });
 
-app.get("/Viambatisho", function (req, res) {
-  var obj = [];
+// app.get("/Viambatisho", function (req, res) {
+//   var obj = [];
   
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-          var hasMatch =false;
-          for (var index = 0; index < req.session.RoleManage.length; ++index) {
-              var animal = req.session.RoleManage[index]; 
-              if(animal.permission_id == 51){ 
-              res.render(path.join(__dirname + "/public/design/viambatisho"), {
-                        req: req,
-                        // data: data,
-                        useLev: req.session.UserLevel,
-                        userName: req.session.userName,
-                        RoleManage: req.session.RoleManage,
-                        userID: req.session.userID,
-                        cheoName: req.session.cheoName,
-                        // listWaombaji: listWaombaji,
-                        // objAttachment: objAttachment,
-                      });
-              }
-            }
-  } else {
-    res.redirect("/");
-  }
-});
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//           var hasMatch =false;
+//           for (var index = 0; index < req.session.RoleManage.length; ++index) {
+//               var animal = req.session.RoleManage[index]; 
+//               if(animal.permission_id == 51){ 
+//               res.render(path.join(__dirname + "/public/design/viambatisho"), {
+//                         req: req,
+//                         // data: data,
+//                         useLev: req.session.UserLevel,
+//                         userName: req.session.userName,
+//                         RoleManage: req.session.RoleManage,
+//                         userID: req.session.userID,
+//                         cheoName: req.session.cheoName,
+//                         // listWaombaji: listWaombaji,
+//                         // objAttachment: objAttachment,
+//                       });
+//               }
+//             }
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
 // app.get("/Malipo", function (req, res) {
 //   var obj = [];

@@ -77,7 +77,7 @@ function getUsers() {
         selector: ".myTooltip",
       });
     }
-  });
+  } , true);
   // end of table
 }
 
@@ -141,6 +141,7 @@ function getLookUpData(user){
           "POST",
           (ranksResponse) => {
             if (ranksResponse.statusCode == 300) {
+
               var ranks = ranksResponse.data;
               appendSelectionOption(
                 "ngazi-field",
