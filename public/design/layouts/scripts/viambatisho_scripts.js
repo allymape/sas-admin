@@ -2,6 +2,7 @@ const renderDataTableAttachmentTypes = () => {
   ajaxRequest("/AttachmentTypes", "GET", (response) => {
     if (response.statusCode == 300) {
       // render table
+       console.log(response.data)
       var fields = {
         checkbox: {},
         id: {
@@ -10,9 +11,11 @@ const renderDataTableAttachmentTypes = () => {
         name: {},
         registry: {},
         app_name: {},
+        structure: {},
         size: { tdClass: "text-center" },
         status: { tdClass: "text-center" },
         reg_type: { hidden: true },
+        structure_id: { hidden: true },
         app_cat: { hidden: true },
         status_id: { hidden: true },
       };
@@ -29,6 +32,8 @@ const renderDataTableAttachmentTypes = () => {
           ? `<span class="ri-check-double-fill text-success"></span>`
           : `<span class="ri-close-fill text-danger"></span>`,
         reg_type: type.registration_type_id,
+        structure: type.structure,
+        structure_id: type.structure_id,
         status_id: type.status,
         app_cat: type.application_category_id,
       }));
@@ -53,6 +58,7 @@ function sajiliHati() {
   var file_format = document.getElementById("format-field").value;
   var aina_ombi = document.getElementById("application-category-field").value;
   var aina_mwombaji = document.getElementById("registration-type-field").value;
+  var registration_structure_id = document.getElementById("registration-structure-field").value;
   $("#jazahati").hide();
   $("#jazaukubwa").hide();
   $("#ainaombi").hide();
@@ -79,6 +85,7 @@ function sajiliHati() {
       file_format: file_format,
       aina_ombi: aina_ombi,
       aina_mwombaji: aina_mwombaji,
+      structure: registration_structure_id,
     };
     ajaxRequest(
       "/tengenezaAttachmentType",
@@ -109,6 +116,7 @@ function BadiliData(e) {
   var size = e.getAttribute("data-size");
   var app_cat = e.getAttribute("data-app_cat");
   var reg_type = e.getAttribute("data-reg_type");
+  var structure_id = e.getAttribute("data-structure_id");
   var status_id = e.getAttribute("data-status_id");
   document.getElementById("id-field").value = nameId;
   document.getElementById("name-field2").value = name;
@@ -116,7 +124,6 @@ function BadiliData(e) {
   document.getElementById("attachment-type-status").checked = Number(status_id)
     ? true
     : false;
-
   addApplicationCategoriesToSelectionInput(
     "application-category-field2",
     Number(app_cat)
@@ -125,6 +132,11 @@ function BadiliData(e) {
     "registration-type-field2",
     Number(reg_type)
   );
+  if(structure_id){
+    document.getElementById("registration-structure-field2").value = Number(structure_id) 
+  }else{
+    document.getElementById("registration-structure-field2").value = structure_id
+  }
   modal("showEditModal", true);
 }
 
@@ -138,7 +150,7 @@ const addRegistrationTypesToSelectionInput = (
   elementId,
   selectedValue = null
 ) => {
-  console.log(selectedValue)
+  // console.log(selectedValue)
   ajaxRequest(
     "/RegistrationTypes",
     "GET",
@@ -186,6 +198,7 @@ function updateHati() {
   var file_format = document.getElementById("format-field2").value;
   var aina_ombi = document.getElementById("application-category-field2").value;
   var aina_mwombaji = document.getElementById("registration-type-field2").value;
+  var registration_structure_id = document.getElementById("registration-structure-field2").value;
   var fileId = document.getElementById("id-field").value;
   var status_id = document.getElementById("attachment-type-status").checked;
   var data = {
@@ -194,6 +207,7 @@ function updateHati() {
     file_format: file_format,
     aina_ombi: aina_ombi,
     aina_mwombaji: aina_mwombaji,
+    structure: registration_structure_id,
     hali: status_id ? 1 : 0,
   };
   if (jina_hati !== "" && aina_ombi != 0 && aina_mwombaji != "") {
@@ -219,24 +233,6 @@ function updateHati() {
     );
   }
 }
-function AddZone1(e) {
-  var nameId = e.getAttribute("data-id");
-  document.getElementById("code-field-edit").value = nameId;
-  $("#deleteRecordModal").modal("show");
-}
-function futaHati() {
-  var name = document.getElementById("code-field-edit").value;
-  $.ajax({
-    url: "/FutaKiambatisho",
-    type: "POST",
-    data: JSON.stringify({ kiambatishoId: name }),
-    contentType: "application/json",
-    success: function (response) {
-      alert("response");
-      $("#deleteRecordModal").modal("hide");
-      window.location.href = "/Viambatisho";
-    },
-  });
-}
+
 
 window.onload = renderDataTableAttachmentTypes;

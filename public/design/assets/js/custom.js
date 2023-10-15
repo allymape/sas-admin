@@ -785,24 +785,24 @@ function parseQueryString(queryString){
     return result;
 }
 
-setTimeout(() =>  {
-    var kuanzacounti = document.getElementById("kuanzacounti");
-    ajaxRequest(`/ActiveMenu` , 'GET' , (response) => {
+// setTimeout(() =>  {
+//     var kuanzacounti = document.getElementById("kuanzacounti");
+//     ajaxRequest(`/ActiveMenu` , 'GET' , (response) => {
 
-              if (typeof response === "string") {
-                response = JSON.parse(response);
-              }
-              txt = document.createTextNode(response.kauntikuanza);
-              kuanzacounti.appendChild(txt);
-              if (response.TwoFA == 0) {
-                document.getElementById("controls-slide").checked = false;
-              }
+//               if (typeof response === "string") {
+//                 response = JSON.parse(response);
+//               }
+//               txt = document.createTextNode(response.kauntikuanza);
+//               kuanzacounti.appendChild(txt);
+//               if (response.TwoFA == 0) {
+//                 document.getElementById("controls-slide").checked = false;
+//               }
 
-              if (response.TwoFA == 1) {
-                document.getElementById("controls-slide").checked = true;
-              }
-    } , {} , false);
-  }, 1000);
+//               if (response.TwoFA == 1) {
+//                 document.getElementById("controls-slide").checked = true;
+//               }
+//     } , {} , false);
+//   }, 1000);
 
    function diffForHumans(date){
         if(date){
@@ -824,4 +824,82 @@ setTimeout(() =>  {
           }
           return fuzzy;
         }
+  }
+
+  function tumaMaoniYako(urlComment, data, staffsInput , comments , btn, urlRedirection='') {
+    if (comments.length > 0) {
+      if (
+        (staffsInput == "#" && btn == "wasilisha") ||
+        (staffsInput != "#" && staffsInput != "" && btn == "tuma") ||
+        (staffsInput == "#" && staffsInput != "" && btn == "rudisha") ||
+        (staffsInput == "#" && staffsInput != "" && btn == "kataa")
+      ) {
+        confirmAction(
+          () => {
+            // $.ajax({
+            //     url: "/TumaComment",
+            //     type: 'POST',
+            //     data: data),
+            //     contentType: 'application/json',
+            //     success: function(response) {
+            //         window.location.href = "/MaombiKuanzishaShule";
+            //     }
+            // });
+
+            ajaxRequest(
+              `${urlComment}`,
+              "POST",
+              (response) => {
+                const { statusCode } = response;
+                if (statusCode == 300) {
+                  alertMessage(
+                    `Success`,
+                    `Hongera! Umefanikiwa`,
+                    "success",
+                    () => {
+                      if(urlRedirection){
+                        window.location.href = urlRedirection;
+                      }
+                    }
+                  );
+                } else {
+                  alertMessage(
+                    `Error`,
+                    `Samahani! Haujafanikiwa kuna tatizo Wasiliana na Msimamizi wa Mfumo.`,
+                    "warning",
+                    () => {
+                      window.location.href = urlRedirection;
+                    }
+                  );
+                }
+              },
+              JSON.stringify(data)
+            );
+          },
+          "Ndio!, Endelea",
+          "warning",
+          `Je, una uhakika ${
+            btn == "tuma"
+              ? "unataka kutuma kwenda kwa " +
+                $("#staffs option:selected").text()
+              : btn == "wasilisha"
+              ? "unataka kuwasilisha"
+              : btn == "rudidsha"
+              ? "unataka rudisha kwa Mwombaji."
+              : ""
+          }?`,
+          "Thibitisha"
+        );
+      } else {
+        alertMessage(
+          "Tahadhari",
+          "Samahani, huwezi kubonyeza kitufe hiki",
+          "warning",
+          () => {}
+        );
+      }
+    } else {
+       alertMessage("Tahadhari", "Tafadhali weka maoni yako kwanza.", "warning" , () => {});
+    }
+       
   }

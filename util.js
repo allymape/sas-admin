@@ -40,7 +40,8 @@ module.exports = {
         }
       );
     } else {
-      res.redirect("/500");
+      req.flash("error", "Your session has expired, Tafadhali ingia tena.");
+      res.redirect("/");
     }
   },
   // Check user permission

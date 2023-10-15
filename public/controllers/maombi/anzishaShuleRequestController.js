@@ -185,7 +185,7 @@ anzishaShuleRequestController.post("/TumaComment", isAuthenticated ,function (re
   var staffDet = staff.split("-");
   var department = staffDet[1];
   var staffs = staffDet[0];
-  console.log(staffDet);
+
   // return;
   // console.log(department + " and " + staffs)
         sendRequest(req , res , ombiReply , "POST" , 
@@ -200,17 +200,15 @@ anzishaShuleRequestController.post("/TumaComment", isAuthenticated ,function (re
           department: department,
           schoolCategoryID: schoolCategoryID
         } , (jsonData) => {
-          const {error , statusCode , message } = jsonData;
+          const {statusCode , message } = jsonData;
           // var data = jsonData.data;
-          if (statusCode == 300) {
-            console.log(
-              new Date() + " " + req.session.userName + ": /TumaComment"
-            );
-            res.send(message);
-          }else{
-            res.send(message);
-          }
-        
+          console.log(
+            new Date() + " " + req.session.userName + ": /TumaComment"
+          );
+          res.send({
+            statusCode : statusCode,
+            message : message
+          })
       });
   
 });
