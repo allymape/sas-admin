@@ -605,7 +605,7 @@ app.post("/BadiliNywira", function (req, res) {
             " fail to access  /BadiliNywira Endpoint" +
             error
         );
-        res.send("failed");
+        // res.send("failed");
       }
       if (body !== undefined) {
         // console.log(body)
@@ -626,7 +626,7 @@ app.post("/BadiliNywira", function (req, res) {
               requestIp.getClientIp(req) +
               " Successful to change password"
           );
-
+          req.flash("error", message);
           res.render(path.join(__dirname + "/public/design/login"), {
             req: req,
             message: message,
@@ -13773,127 +13773,127 @@ app.post("/SajiliWatumiaji", function (req, res) {
 
 
 
-app.post("/UpdateWaombaji", function (req, res) {
-  console.log(req.body);
-  var name = req.body.name;
-  var username = req.body.email;
-  var phoneNumber = req.body.phone;
-  var email = req.body.email;
-  var password = req.body.password;
-  var userId = req.body.userId;
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: updateWaombajiAPI,
-        method: "POST",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-        json: {
-          browser_used: req.session.browser_used,
-          ip_address: req.session.ip_address,
-          name: name,
-          username: username,
-          phoneNumber: phoneNumber,
-          email: email,
-          password: password,
-          userId: userId,
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(new Date() + ": fail to TumaComment " + error);
-          res.send("failed");
-        }
+// app.post("/UpdateWaombaji", function (req, res) {
+//   console.log(req.body);
+//   var name = req.body.name;
+//   var username = req.body.email;
+//   var phoneNumber = req.body.phone;
+//   var email = req.body.email;
+//   var password = req.body.password;
+//   var userId = req.body.userId;
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//     request(
+//       {
+//         url: updateWaombajiAPI,
+//         method: "POST",
+//         headers: {
+//           Authorization: "Bearer" + " " + req.session.Token,
+//           "Content-Type": "application/json",
+//         },
+//         json: {
+//           browser_used: req.session.browser_used,
+//           ip_address: req.session.ip_address,
+//           name: name,
+//           username: username,
+//           phoneNumber: phoneNumber,
+//           email: email,
+//           password: password,
+//           userId: userId,
+//         },
+//       },
+//       function (error, response, body) {
+//         if (error) {
+//           console.log(new Date() + ": fail to TumaComment " + error);
+//           res.send("failed");
+//         }
 
-        if (body !== undefined) {
-          var jsonData = body;
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          if (statusCode == 300) {
-            console.log(
-              new Date() + " " + req.session.userName + ": /UpdateWaombaji"
-            );
-            res.send({
-              message: message,
-              statusCode: statusCode,
-              useLev: req.session.UserLevel,
-                                userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
-              cheoName: req.session.cheoName,
-            });
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
+//         if (body !== undefined) {
+//           var jsonData = body;
+//           var message = jsonData.message;
+//           var statusCode = jsonData.statusCode;
+//           if (statusCode == 300) {
+//             console.log(
+//               new Date() + " " + req.session.userName + ": /UpdateWaombaji"
+//             );
+//             res.send({
+//               message: message,
+//               statusCode: statusCode,
+//               useLev: req.session.UserLevel,
+//                                 userName: req.session.userName,
+//               RoleManage: req.session.RoleManage,
+//     userID: req.session.userID,
+//               cheoName: req.session.cheoName,
+//             });
+//           }
+//           if (statusCode == 209) {
+//             res.redirect("/");
+//           }
+//         }
+//       }
+//     );
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
-app.post("/FutaWatumiaji", function (req, res) {
-  //console.log(req.body)
-  var name = req.body.name;
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: futaWatumiajiAPI,
-        method: "POST",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-        json: {
-          browser_used: req.session.browser_used,
-          ip_address: req.session.ip_address,
-          name: name,
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(new Date() + ": fail to TumaComment " + error);
-          res.send("failed");
-        }
+// app.post("/FutaWatumiaji", function (req, res) {
+//   //console.log(req.body)
+//   var name = req.body.name;
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//     request(
+//       {
+//         url: futaWatumiajiAPI,
+//         method: "POST",
+//         headers: {
+//           Authorization: "Bearer" + " " + req.session.Token,
+//           "Content-Type": "application/json",
+//         },
+//         json: {
+//           browser_used: req.session.browser_used,
+//           ip_address: req.session.ip_address,
+//           name: name,
+//         },
+//       },
+//       function (error, response, body) {
+//         if (error) {
+//           console.log(new Date() + ": fail to TumaComment " + error);
+//           res.send("failed");
+//         }
 
-        if (body !== undefined) {
-          var jsonData = body;
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          if (statusCode == 300) {
-            console.log(
-              new Date() + " " + req.session.userName + ": /SajiliWatumiaji"
-            );
-            res.send({
-              message: message,
-              statusCode: statusCode,
-              useLev: req.session.UserLevel,
-                                userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
-              cheoName: req.session.cheoName,
-            });
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
+//         if (body !== undefined) {
+//           var jsonData = body;
+//           var message = jsonData.message;
+//           var statusCode = jsonData.statusCode;
+//           if (statusCode == 300) {
+//             console.log(
+//               new Date() + " " + req.session.userName + ": /SajiliWatumiaji"
+//             );
+//             res.send({
+//               message: message,
+//               statusCode: statusCode,
+//               useLev: req.session.UserLevel,
+//                                 userName: req.session.userName,
+//               RoleManage: req.session.RoleManage,
+//     userID: req.session.userID,
+//               cheoName: req.session.cheoName,
+//             });
+//           }
+//           if (statusCode == 209) {
+//             res.redirect("/");
+//           }
+//         }
+//       }
+//     );
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
 app.post("/FutaRole", function (req, res) {
   //console.log(req.body)

@@ -16,6 +16,7 @@ var loginAPI = API_BASE_URL + "login";
 var watumiajiAPI = API_BASE_URL + "users";
 var createUserAPI = API_BASE_URL + "create-user";
 var updateUserAPI = API_BASE_URL + "update-user";
+var disableMtumiajiAPI = API_BASE_URL + "disable-user";
 var sendMailAPI = API_BASE_URL + "reset-user-password";
 
 // Login Page
@@ -35,14 +36,17 @@ userController.post("/auth", function (req, res) {
       method: "POST",
       json: { username: username, password: password },
     },
-    (error ,response ,  body) => {
+    (error, response, body) => {
       if (error) {
         req.flash("error", "Kuna tatizo wasiliana na Msimamizi wa Mfumo");
         res.redirect("/");
       } else {
-        const { statusCode , message} = body;
+        const { statusCode, message } = body;
         if (body == "Too many requests, please try again later.") {
-          req.flash("warning", 'Too many requests, please try again after 10 minutes.');
+          req.flash(
+            "warning",
+            "Too many requests, please try again after 10 minutes."
+          );
           res.redirect("/");
         } else {
           if (statusCode == 302) {
@@ -50,24 +54,23 @@ userController.post("/auth", function (req, res) {
             req.flash("warning", message);
             res.redirect("/");
           } else if (statusCode == 300) {
-                
-                const ip_address = requestIp.getClientIp(req);
-                const browser_used = req.headers["user-agent"];
-                const { user, RoleManage , token } = body;
-                // console.log("Controller", user);
-                req.session.UserLevel = user.user_level;
-                req.session.office = user.office;
-                req.session.officeName = user.office_name;
-                req.session.twofa = user.twofa;
-                req.session.Token = token;
-                req.session.userID = user.id;
-                req.session.userName = user.name;
-                req.session.cheoName = user.rank_name;
-                req.session.jukumu = user.jukumu;
-                req.session.email = user.email;
-                req.session.ip_address = ip_address;
-                req.session.browser_used = browser_used;
-                req.session.RoleManage = RoleManage;
+            const ip_address = requestIp.getClientIp(req);
+            const browser_used = req.headers["user-agent"];
+            const { user, RoleManage, token } = body;
+            // console.log("Controller", user);
+            req.session.UserLevel = user.user_level;
+            req.session.office = user.office;
+            req.session.officeName = user.office_name;
+            req.session.twofa = user.twofa;
+            req.session.Token = token;
+            req.session.userID = user.id;
+            req.session.userName = user.name;
+            req.session.cheoName = user.rank_name;
+            req.session.jukumu = user.jukumu;
+            req.session.email = user.email;
+            req.session.ip_address = ip_address;
+            req.session.browser_used = browser_used;
+            req.session.RoleManage = RoleManage;
             if (user.twofa == 0) {
               if (Number(user.user_level) == 10) {
                 res.redirect("/Dashboard");
@@ -77,9 +80,9 @@ userController.post("/auth", function (req, res) {
             } else {
               res.redirect("/Dashboard");
             }
-          }else{
-             req.flash("error", "Kuna tatizo wasiliana na Msimamizi wa Mfumo");
-             res.redirect("/");
+          } else {
+            req.flash("error", "Kuna tatizo wasiliana na Msimamizi wa Mfumo");
+            res.redirect("/");
           }
         }
       }
@@ -205,8 +208,6 @@ userController.post(
   can("update-users"),
   function (req, res) {
     var userData = {
-      browser_used: req.session.browser_used,
-      ip_address: req.session.ip_address,
       email: req.body.email,
     };
     sendRequest(req, res, sendMailAPI, "POST", userData, (jsonData) => {
@@ -218,6 +219,19 @@ userController.post(
     });
   }
 );
+// Disable account
+userController.post("/DisableUser/:id", isAuthenticated, can('delete-users'), function (req, res) { 
+    const id = req.params.id;
+    
+    sendRequest(req, res , disableMtumiajiAPI + `/${id}` , "PUT" , {} ,(jsonData) => {
+          const {statusCode , message} = jsonData;
+            res.send({
+              message: message,
+              statusCode: statusCode
+            });        
+      }
+    );
+});
 // Logout User
 userController.post("/Logout", isAuthenticated, function (req, res) {
   req.session.destroy((error) => {
@@ -228,66 +242,3 @@ userController.post("/Logout", isAuthenticated, function (req, res) {
   });
 });
 module.exports = userController;
-
-// if (
-//   typeof req.session.userName !== "undefined" ||
-//   req.session.userName === true
-// ) {
-//   request(
-//     {
-//       url: updateUserAPI,
-//       method: "POST",
-//       headers: {
-//         Authorization: "Bearer" + " " + req.session.Token,
-//         "Content-Type": "application/json",
-//       },
-//       json: {
-//         browser_used: req.session.browser_used,
-//         ip_address: req.session.ip_address,
-//         name: name,
-//         username: username,
-//         phoneNumber: phoneNumber,
-//         email: email,
-//         roleId: roleId,
-//         password: password,
-//         cheo: cheo,
-//         lgas: lgas,
-//         kanda: kanda,
-//         sign: sign,
-//         userId: userId,
-//         roleRMe: roleRMe,
-//       },
-//     },
-//     function (error, response, body) {
-//       if (error) {
-//         console.log(new Date() + ": fail to TumaComment " + error);
-//         res.send("failed");
-//       }
-
-//       if (body !== undefined) {
-//         var jsonData = body;
-//         var message = jsonData.message;
-//         var statusCode = jsonData.statusCode;
-//         if (statusCode == 300) {
-//           console.log(
-//             new Date() + " " + req.session.userName + ": /SajiliWatumiaji"
-//           );
-//           res.send({
-//             message: message,
-//             statusCode: statusCode,
-//             useLev: req.session.UserLevel,
-//             userName: req.session.userName,
-//             RoleManage: req.session.RoleManage,
-//             userID: req.session.userID,
-//             cheoName: req.session.cheoName,
-//           });
-//         }
-//         if (statusCode == 209) {
-//           res.redirect("/");
-//         }
-//       }
-//     }
-//   );
-// } else {
-//   res.redirect("/");
-// }

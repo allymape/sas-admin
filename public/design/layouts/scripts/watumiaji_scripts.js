@@ -735,21 +735,19 @@ function ResetPassword(e) {
   $("#resetPasswordModal").modal("show");
 }
 
-function futaHati() {
-  var name = document.getElementById("code-field-edit").value;
-
-  $.ajax({
-    url: "/FutaWatumiaji",
-    type: "POST",
-    data: JSON.stringify({ name: name }),
-    contentType: "application/json",
-    success: function (response) {
-      alert("Mdau amefutwa kikamilifu");
-      $("#kaimishaModal").modal("hide");
-      window.location.href = "/Watumiaji";
-    },
-  });
+function deleteUser() {
+  var id = document.getElementById("code-field-edit").value;
+     ajaxRequest(`/DisableUser/${id}` , "POST" , (response) => {
+         const {statusCode , message} = response;
+          alertMessage(statusCode == 300 ? "Umefanikiwa" : "Haujafanikiwa" , 
+                       message,
+                       statusCode == 300 ? 'success' : 'error' , () => {});
+            if(statusCode == 300){
+              getUsers()
+            }
+     } , {});
 }
+
 function TumaEmail() {
   var email_only = document.getElementById("ada1-field-edit").value;
   ajaxRequest(
@@ -761,7 +759,7 @@ function TumaEmail() {
       alertMessage(
         statusCode == 300 ? "Success" : "Error!",
         message,
-        statusCode == "300" ? "success" : "error"
+        statusCode == 300 ? "success" : "error"
       );
     },
     JSON.stringify({ email: email_only })

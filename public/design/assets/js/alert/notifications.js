@@ -3,7 +3,7 @@
 //     $("#notifications").removeClass('d-none');
 // } , 5000)
 
-let getMyNotifications = () => {
+var getMyNotifications = () => {
     // alert('x')
       ajaxRequest(`/MyNotifications` , 'POST' , (response) => {
            const {statusCode , data , counter , new_message_count} = response
@@ -22,7 +22,7 @@ let getMyNotifications = () => {
       } , {} , true)
 }
 
-let allNotTabs = (data) => {
+var allNotTabs = (data) => {
     let content = `<div data-simplebar style="max-height: 300px;" class="pe-2">`;
         data.forEach(item => {
             const { task, url, school_name , tracking_number ,remain_days ,created_at } = item;
@@ -56,7 +56,7 @@ let allNotTabs = (data) => {
     return content;
 }
 
-let allMessages = (data) => {
+var allMessages = (data) => {
     let content = `<div data-simplebar style="max-height: 300px;" class="pe-2">`;
     var hasMessage = false;
     var counter = 0;
