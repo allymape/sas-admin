@@ -57,19 +57,32 @@ function tuma(){
     var userLevel = document.getElementById('userLevel').value;
     var haliombi = 1;
     var trackerId = document.getElementById('trackerId').value;
-    if(coments.length > 0){
-    $.ajax({
-        url: "/MmilikiComment",
-        type: 'POST',
-        data: JSON.stringify({"coments": coments, "staffs": staffs, "haliombi": haliombi, "trackerId": trackerId}),
-        contentType: 'application/json',
-        success: function(response) {
-            window.location.href = "/MaombiMmilikiShule";
-        }
-    });
-    }else{
-        alert("Tafadhali weka maoni yako")
-    }
+      tumaMaoniYako(
+        "/MmilikiComment",
+        {
+          coments: coments,
+          staffs: staffs,
+          haliombi: haliombi,
+          trackerId: trackerId,
+        },
+        staffs,
+        coments,
+        "tuma",
+        "/MaombiMmilikiShule"
+      );
+    // if(coments.length > 0){
+    // $.ajax({
+    //     url: "/MmilikiComment",
+    //     type: 'POST',
+    //     data: JSON.stringify({"coments": coments, "staffs": staffs, "haliombi": haliombi, "trackerId": trackerId}),
+    //     contentType: 'application/json',
+    //     success: function(response) {
+    //         window.location.href = "/MaombiMmilikiShule";
+    //     }
+    // });
+    // }else{
+    //     alert("Tafadhali weka maoni yako")
+    // }
 }
 
 function wasilisha(){
@@ -79,26 +92,42 @@ function wasilisha(){
     var haliombi = 1;
     var trackerId = document.getElementById('trackerId').value;
     var staffsInput = document.getElementById('staffs').value;
-    if(coments.length > 0){
-        if(staffsInput == '#'){
-        $.ajax({
-            url: "/MmilikiComment",
-            type: 'POST',
-            data: JSON.stringify({"coments": coments, "staffs": staffs, 
-            "haliombi": haliombi, "trackerId": trackerId, 
-            "attachment": "", "kiambatisho": "", 
-            "attach_length": ""}),
-            contentType: 'application/json',
-            success: function(response) {
-                window.location.href = "/BadiliMmiliki";
-            }
-        });
-    }else{
-        alert("Samahani huwezi kubonyeza kitufe hiki")
-    }
-    }else{
-    alert("Tafadhali weka maoni yako")
-    }
+    tumaMaoniYako(
+      "/MmilikiComment",
+      {
+        coments: coments,
+        staffs: staffs,
+        haliombi: haliombi,
+        trackerId: trackerId,
+        attachment: "",
+        kiambatisho: "",
+        attach_length: "",
+      },
+      staffsInput,
+      coments,
+      "wasilisha",
+      "/MaombiMmilikiShule"
+    );
+    // if(coments.length > 0){
+    //     if(staffsInput == '#'){
+    //     $.ajax({
+    //         url: "/MmilikiComment",
+    //         type: 'POST',
+    //         data: JSON.stringify({"coments": coments, "staffs": staffs, 
+    //         "haliombi": haliombi, "trackerId": trackerId, 
+    //         "attachment": "", "kiambatisho": "", 
+    //         "attach_length": ""}),
+    //         contentType: 'application/json',
+    //         success: function(response) {
+    //             window.location.href = "/BadiliMmiliki";
+    //         }
+    //     });
+    // }else{
+    //     alert("Samahani huwezi kubonyeza kitufe hiki")
+    // }
+    // }else{
+    // alert("Tafadhali weka maoni yako")
+    // }
 
 }
 
@@ -112,26 +141,42 @@ function rudisha(){
     var trackerId = document.getElementById('trackerId').value;
 
     var staffsInput = document.getElementById('staffs').value;
-    if(coments.length > 0){
-        if(staffsInput == '#'){
-        $.ajax({
-            url: "/MmilikiComment",
-            type: 'POST',
-            data: JSON.stringify({"coments": coments, "staffs": staffs, 
-            "haliombi": haliombi, "trackerId": trackerId, 
-            "attachment": "", "kiambatisho": "", 
-            "attach_length": ""}),
-            contentType: 'application/json',
-            success: function(response) {
-                window.location.href = "/BadiliMmiliki";
-            }
-        });
-    }else{
-        alert("Samahani huwezi kubonyeza kitufe hiki")
-    }
-    }else{
-    alert("Tafadhali weka maoni yako")
-    }
+     tumaMaoniYako(
+       "/MmilikiComment",
+       {
+         coments: coments,
+         staffs: staffs,
+         haliombi: haliombi,
+         trackerId: trackerId,
+         attachment: "",
+         kiambatisho: "",
+         attach_length: "",
+       },
+       staffs,
+       coments,
+       "rudisha",
+       "/MaombiMmilikiShule"
+     );
+    // if(coments.length > 0){
+    //     if(staffsInput == '#'){
+    //     $.ajax({
+    //         url: "/MmilikiComment",
+    //         type: 'POST',
+    //         data: JSON.stringify({"coments": coments, "staffs": staffs, 
+    //         "haliombi": haliombi, "trackerId": trackerId, 
+    //         "attachment": "", "kiambatisho": "", 
+    //         "attach_length": ""}),
+    //         contentType: 'application/json',
+    //         success: function(response) {
+    //             window.location.href = "/BadiliMmiliki";
+    //         }
+    //     });
+    // }else{
+    //     alert("Samahani huwezi kubonyeza kitufe hiki")
+    // }
+    // }else{
+    // alert("Tafadhali weka maoni yako")
+    // }
 
 }
 
@@ -143,26 +188,42 @@ function wasilishak1(){
     var trackerId = document.getElementById('trackerId').value;
 
     var staffsInput = document.getElementById('staffs').value;
-    if(coments.length > 0){
-        if(staffsInput == '#'){
-        $.ajax({
-            url: "/MmilikiComment",
-            type: 'POST',
-            data: JSON.stringify({"coments": coments, "staffs": staffs, 
-            "haliombi": haliombi, "trackerId": trackerId, 
-            "attachment": "", "kiambatisho": "", 
-            "attach_length": ""}),
-            contentType: 'application/json',
-            success: function(response) {
-                window.location.href = "/MaombiKuanzishaShule";
-            }
-        });
-    }else{
-        alert("Samahani huwezi kubonyeza kitufe hiki")
-    }
-    }else{
-    alert("Tafadhali weka maoni yako")
-    }
+       tumaMaoniYako(
+         "/MmilikiComment",
+         {
+           coments: coments,
+           staffs: staffs,
+           haliombi: haliombi,
+           trackerId: trackerId,
+           attachment: "",
+           kiambatisho: "",
+           attach_length: "",
+         },
+         staffsInput,
+         coments,
+         "wasilisha",
+         "/MaombiMmilikiShule"
+       );
+    // if(coments.length > 0){
+    //     if(staffsInput == '#'){
+    //     $.ajax({
+    //         url: "/MmilikiComment",
+    //         type: 'POST',
+    //         data: JSON.stringify({"coments": coments, "staffs": staffs, 
+    //         "haliombi": haliombi, "trackerId": trackerId, 
+    //         "attachment": "", "kiambatisho": "", 
+    //         "attach_length": ""}),
+    //         contentType: 'application/json',
+    //         success: function(response) {
+    //             window.location.href = "/MaombiKuanzishaShule";
+    //         }
+    //     });
+    // }else{
+    //     alert("Samahani huwezi kubonyeza kitufe hiki")
+    // }
+    // }else{
+    // alert("Tafadhali weka maoni yako")
+    // }
 
 }
 
@@ -172,29 +233,48 @@ function wasilishaKe(){
     var staffs = '0-10';
     var userLevel = document.getElementById('userLevel').value;
     var haliombi = 2;
-    
     var trackerId = document.getElementById('trackerId').value;
     var staffsInput = document.getElementById('staffs').value;
-    if(coments.length > 0){
-        if(staffsInput == '#'){
-        $.ajax({
-            url: "/MmilikiComment",
-            type: 'POST',
-            data: JSON.stringify({"coments": coments, "staffs": staffs, "owner_name_old": "",
-            "haliombi": haliombi, "trackerId": trackerId, "authorized_person_old": "",
-            "attachment": "", "kiambatisho": "", "owner_name": "", "authorized_person": "",
-            "attach_length": ""}),
-            contentType: 'application/json',
-            success: function(response) {
-                window.location.href = "/BadiliMmiliki";
-            }
-        });
-    }else{
-        alert("Samahani huwezi kubonyeza kitufe hiki")
-    }
-    }else{
-    alert("Tafadhali weka maoni yako")
-    }
+    tumaMaoniYako(
+      "/MmilikiComment",
+      {
+        coments: coments,
+        staffs: staffs,
+        owner_name_old: "",
+        haliombi: haliombi,
+        trackerId: trackerId,
+        authorized_person_old: "",
+        attachment: "",
+        kiambatisho: "",
+        owner_name: "",
+        authorized_person: "",
+        attach_length: "",
+      },
+      staffsInput,
+      coments,
+      "wasilisha",
+      "/MaombiMmilikiShule"
+    );
+    // if(coments.length > 0){
+    //     if(staffsInput == '#'){
+    //     $.ajax({
+    //         url: "/MmilikiComment",
+    //         type: 'POST',
+    //         data: JSON.stringify({"coments": coments, "staffs": staffs, "owner_name_old": "",
+    //         "haliombi": haliombi, "trackerId": trackerId, "authorized_person_old": "",
+    //         "attachment": "", "kiambatisho": "", "owner_name": "", "authorized_person": "",
+    //         "attach_length": ""}),
+    //         contentType: 'application/json',
+    //         success: function(response) {
+    //             window.location.href = "/BadiliMmiliki";
+    //         }
+    //     });
+    // }else{
+    //     alert("Samahani huwezi kubonyeza kitufe hiki")
+    // }
+    // }else{
+    // alert("Tafadhali weka maoni yako")
+    // }
 
 }
 
@@ -211,26 +291,46 @@ function wasilishaKeBadili(){
     var owner_name = document.getElementById('owner_name').value;
     var authorized_person = document.getElementById('authorized_person').value;
     var staffsInput = document.getElementById('staffs').value;
-    if(coments.length > 0){
-        if(staffsInput == '#'){
-        $.ajax({
-            url: "/MmilikiComment",
-            type: 'POST',
-            data: JSON.stringify({"coments": coments, "staffs": staffs, "owner_name_old": owner_name_old,
-            "haliombi": haliombi, "trackerId": trackerId, "authorized_person_old": authorized_person_old,
-            "attachment": "", "kiambatisho": "", "owner_name": owner_name, "authorized_person": authorized_person,
-            "attach_length": ""}),
-            contentType: 'application/json',
-            success: function(response) {
-                window.location.href = "/BadiliMmiliki";
-            }
-        });
-    }else{
-        alert("Samahani huwezi kubonyeza kitufe hiki")
-    }
-    }else{
-    alert("Tafadhali weka maoni yako")
-    }
+      tumaMaoniYako(
+        "/MmilikiComment",
+        {
+          coments: coments,
+          staffs: staffs,
+          owner_name_old: owner_name_old,
+          haliombi: haliombi,
+          trackerId: trackerId,
+          authorized_person_old: authorized_person_old,
+          attachment: "",
+          kiambatisho: "",
+          owner_name: owner_name,
+          authorized_person: authorized_person,
+          attach_length: "",
+        },
+        staffsInput,
+        coments,
+        "wasilisha",
+        "/MaombiMmilikiShule"
+      );
+    // if(coments.length > 0){
+    //     if(staffsInput == '#'){
+    //     $.ajax({
+    //         url: "/MmilikiComment",
+    //         type: 'POST',
+    //         data: JSON.stringify({"coments": coments, "staffs": staffs, "owner_name_old": owner_name_old,
+    //         "haliombi": haliombi, "trackerId": trackerId, "authorized_person_old": authorized_person_old,
+    //         "attachment": "", "kiambatisho": "", "owner_name": owner_name, "authorized_person": authorized_person,
+    //         "attach_length": ""}),
+    //         contentType: 'application/json',
+    //         success: function(response) {
+    //             window.location.href = "/BadiliMmiliki";
+    //         }
+    //     });
+    // }else{
+    //     alert("Samahani huwezi kubonyeza kitufe hiki")
+    // }
+    // }else{
+    // alert("Tafadhali weka maoni yako")
+    // }
 
 }
 

@@ -85,30 +85,48 @@ function wasilisha(){
     
     var schoolCategoryID = document.getElementById('schoolCategoryID').value;
     var staffsInput = document.getElementById('staffs').value;
-    if(coments.length > 0){
-                if(staffsInput == '#'){
-                    $.ajax({
-                        url: "/SajiliComment",
-                        type: 'POST',
-                        data: JSON.stringify({"coments": coments, "staffs": staffs,
-                        "haliombi": haliombi, "trackerId": trackerId, "schoolCategoryID": schoolCategoryID,
-                        "attachment": "", "kiambatisho": "", 
-                        "attach_length": 0, "ombitype": 1}),
-                        contentType: 'application/json',
-                        success: function(response) {
-                            if(response.statusCode == 300){
-                                window.location.href = "/MaombiKusajiliShule";
-                            }else{
-                                alert('Kuna tatizo wasiliana na Msimamizi wa Mfumo.')
-                            }
-                        }
-                    });
-                }else{
-                    alert("Samahani huwezi kubonyeza kitufe hiki")
-                }
-            }else{
-            alert("Tafadhali weka maoni yako")
-            }
+     tumaMaoniYako(
+       "/BadiliBweniComment",
+       {
+         coments: coments,
+         staffs: staffs,
+         haliombi: haliombi,
+         trackerId: trackerId,
+         schoolCategoryID: schoolCategoryID,
+         attachment: "",
+         kiambatisho: "",
+         attach_length: 0,
+         ombitype: 1,
+       },
+       staffsInput,
+       coments,
+       "wasilisha",
+       "/KuongezaBweni"
+     );
+    // if(coments.length > 0){
+    //             if(staffsInput == '#'){
+    //                 $.ajax({
+    //                     url: "/SajiliComment",
+    //                     type: 'POST',
+    //                     data: JSON.stringify({"coments": coments, "staffs": staffs,
+    //                     "haliombi": haliombi, "trackerId": trackerId, "schoolCategoryID": schoolCategoryID,
+    //                     "attachment": "", "kiambatisho": "", 
+    //                     "attach_length": 0, "ombitype": 1}),
+    //                     contentType: 'application/json',
+    //                     success: function(response) {
+    //                         if(response.statusCode == 300){
+    //                             window.location.href = "/MaombiKusajiliShule";
+    //                         }else{
+    //                             alert('Kuna tatizo wasiliana na Msimamizi wa Mfumo.')
+    //                         }
+    //                     }
+    //                 });
+    //             }else{
+    //                 alert("Samahani huwezi kubonyeza kitufe hiki")
+    //             }
+    //         }else{
+    //         alert("Tafadhali weka maoni yako")
+    //         }
 
 }
 
@@ -123,26 +141,44 @@ function rudisha(){
     
     var schoolCategoryID = document.getElementById('schoolCategoryID').value;
     var staffsInput = document.getElementById('staffs').value;
-    if(coments.length > 0){
-        if(staffsInput == '#'){
-    $.ajax({
-        url: "/SajiliComment",
-        type: 'POST',
-        data: JSON.stringify({"coments": coments, "staffs": staffs,
-        "haliombi": haliombi, "trackerId": trackerId, "schoolCategoryID": schoolCategoryID,
-        "attachment": "", "kiambatisho": "", 
-        "attach_length": 0, "ombitype": 1}),
-        contentType: 'application/json',
-        success: function(response) {
-            window.location.href = "/MaombiKusajiliShule";
-        }
-    });
-}else{
-    alert("Samahani huwezi kubonyeza kitufe hiki")
-}
-    }else{
-    alert("Tafadhali weka maoni yako")
-    }
+      tumaMaoniYako(
+        "/BadiliBweniComment",
+        {
+          coments: coments,
+          staffs: staffs,
+          haliombi: haliombi,
+          trackerId: trackerId,
+          schoolCategoryID: schoolCategoryID,
+          attachment: "",
+          kiambatisho: "",
+          attach_length: 0,
+          ombitype: 1,
+        },
+        staffsInput,
+        coments,
+        "ruidisha",
+        "/KuongezaBweni"
+      );
+//     if(coments.length > 0){
+//         if(staffsInput == '#'){
+//     $.ajax({
+//         url: "/SajiliComment",
+//         type: 'POST',
+//         data: JSON.stringify({"coments": coments, "staffs": staffs,
+//         "haliombi": haliombi, "trackerId": trackerId, "schoolCategoryID": schoolCategoryID,
+//         "attachment": "", "kiambatisho": "", 
+//         "attach_length": 0, "ombitype": 1}),
+//         contentType: 'application/json',
+//         success: function(response) {
+//             window.location.href = "/MaombiKusajiliShule";
+//         }
+//     });
+// }else{
+//     alert("Samahani huwezi kubonyeza kitufe hiki")
+// }
+//     }else{
+//     alert("Tafadhali weka maoni yako")
+//     }
 
 }
 
@@ -157,26 +193,44 @@ function wasilishak1(){
     
     var schoolCategoryID = document.getElementById('schoolCategoryID').value;
     var staffsInput = document.getElementById('staffs').value;
-    if(coments.length > 0){
-        if(staffsInput == '#'){
-    $.ajax({
-        url: "/SajiliComment",
-        type: 'POST',
-        data: JSON.stringify({"coments": coments, "staffs": staffs,
-        "haliombi": haliombi, "trackerId": trackerId, "schoolCategoryID": schoolCategoryID,
-        "attachment": "", "kiambatisho": "", 
-        "attach_length": 0, "ombitype": 1}),
-        contentType: 'application/json',
-        success: function(response) {
-            window.location.href = "/MaombiKusajiliShule";
-        }
-    });
-}else{
-    alert("Samahani huwezi kubonyeza kitufe hiki")
-}
-    }else{
-    alert("Tafadhali weka maoni yako")
-    }
+    tumaMaoniYako(
+      "/BadiliBweniComment",
+      {
+        coments: coments,
+        staffs: staffs,
+        haliombi: haliombi,
+        trackerId: trackerId,
+        schoolCategoryID: schoolCategoryID,
+        attachment: "",
+        kiambatisho: "",
+        attach_length: 0,
+        ombitype: 1,
+      },
+      staffsInput,
+      coments,
+      "wasilisha",
+      "/KuongezaBweni"
+    );
+//     if(coments.length > 0){
+//         if(staffsInput == '#'){
+//     $.ajax({
+//         url: "/SajiliComment",
+//         type: 'POST',
+//         data: JSON.stringify({"coments": coments, "staffs": staffs,
+//         "haliombi": haliombi, "trackerId": trackerId, "schoolCategoryID": schoolCategoryID,
+//         "attachment": "", "kiambatisho": "", 
+//         "attach_length": 0, "ombitype": 1}),
+//         contentType: 'application/json',
+//         success: function(response) {
+//             window.location.href = "/MaombiKusajiliShule";
+//         }
+//     });
+// }else{
+//     alert("Samahani huwezi kubonyeza kitufe hiki")
+// }
+//     }else{
+//     alert("Tafadhali weka maoni yako")
+//     }
 
 }
 
@@ -191,26 +245,44 @@ function wasilishaMus(){
     var schoolCategoryID = document.getElementById('schoolCategoryID').value;
 
     var staffsInput = document.getElementById('staffs').value;
-    if(coments.length > 0){
-        if(staffsInput == '#'){
-    $.ajax({
-        url: "/SajiliComment",
-        type: 'POST',
-        data: JSON.stringify({"coments": coments, "staffs": staffs,
-        "haliombi": haliombi, "trackerId": trackerId, "schoolCategoryID": schoolCategoryID,
-        "attachment": "", "kiambatisho": "", 
-        "attach_length": 0, "ombitype": 1}),
-        contentType: 'application/json',
-        success: function(response) {
-            window.location.href = "/MaombiKusajiliShule";
-        }
-    });
-}else{
-    alert("Samahani huwezi kubonyeza kitufe hiki")
-}
-    }else{
-    alert("Tafadhali weka maoni yako")
-    }
+     tumaMaoniYako(
+       "/BadiliBweniComment",
+       {
+         coments: coments,
+         staffs: staffs,
+         haliombi: haliombi,
+         trackerId: trackerId,
+         schoolCategoryID: schoolCategoryID,
+         attachment: "",
+         kiambatisho: "",
+         attach_length: 0,
+         ombitype: 1,
+       },
+       staffsInput,
+       coments,
+       "wasilisha",
+       "/KuongezaBweni"
+     );
+//     if(coments.length > 0){
+//         if(staffsInput == '#'){
+//     $.ajax({
+//         url: "/SajiliComment",
+//         type: 'POST',
+//         data: JSON.stringify({"coments": coments, "staffs": staffs,
+//         "haliombi": haliombi, "trackerId": trackerId, "schoolCategoryID": schoolCategoryID,
+//         "attachment": "", "kiambatisho": "", 
+//         "attach_length": 0, "ombitype": 1}),
+//         contentType: 'application/json',
+//         success: function(response) {
+//             window.location.href = "/MaombiKusajiliShule";
+//         }
+//     });
+// }else{
+//     alert("Samahani huwezi kubonyeza kitufe hiki")
+// }
+//     }else{
+//     alert("Tafadhali weka maoni yako")
+//     }
 
 }
 
@@ -227,26 +299,44 @@ function rudishaMus(){
     var schoolCategoryID = document.getElementById('schoolCategoryID').value;
 
     var staffsInput = document.getElementById('staffs').value;
-    if(coments.length > 0){
-        if(staffsInput == '#'){
-    $.ajax({
-        url: "/SajiliComment",
-        type: 'POST',
-        data: JSON.stringify({"coments": coments, "staffs": staffs,
-        "haliombi": haliombi, "trackerId": trackerId, "schoolCategoryID": schoolCategoryID,
-        "attachment": "", "kiambatisho": "", 
-        "attach_length": 0, "ombitype": 1}),
-        contentType: 'application/json',
-        success: function(response) {
-            window.location.href = "/MaombiKusajiliShule";
-        }
-    });
-}else{
-    alert("Samahani huwezi kubonyeza kitufe hiki")
-}
-    }else{
-    alert("Tafadhali weka maoni yako")
-    }
+    tumaMaoniYako(
+      "/BadiliBweniComment",
+      {
+        coments: coments,
+        staffs: staffs,
+        haliombi: haliombi,
+        trackerId: trackerId,
+        schoolCategoryID: schoolCategoryID,
+        attachment: "",
+        kiambatisho: "",
+        attach_length: 0,
+        ombitype: 1,
+      },
+      staffsInput,
+      coments,
+      "rudisha",
+      "/KuongezaBweni"
+    );
+//     if(coments.length > 0){
+//         if(staffsInput == '#'){
+//     $.ajax({
+//         url: "/SajiliComment",
+//         type: 'POST',
+//         data: JSON.stringify({"coments": coments, "staffs": staffs,
+//         "haliombi": haliombi, "trackerId": trackerId, "schoolCategoryID": schoolCategoryID,
+//         "attachment": "", "kiambatisho": "", 
+//         "attach_length": 0, "ombitype": 1}),
+//         contentType: 'application/json',
+//         success: function(response) {
+//             window.location.href = "/MaombiKusajiliShule";
+//         }
+//     });
+// }else{
+//     alert("Samahani huwezi kubonyeza kitufe hiki")
+// }
+//     }else{
+//     alert("Tafadhali weka maoni yako")
+//     }
 
 }
 
@@ -259,26 +349,44 @@ function wasilishaMmus(){
     
     var schoolCategoryID = document.getElementById('schoolCategoryID').value;
     var staffsInput = document.getElementById('staffs').value;
-    if(coments.length > 0){
-        if(staffsInput == '#'){
-    $.ajax({
-        url: "/SajiliComment",
-        type: 'POST',
-        data: JSON.stringify({"coments": coments, "staffs": staffs,
-        "haliombi": haliombi, "trackerId": trackerId, "schoolCategoryID": schoolCategoryID,
-        "attachment": "", "kiambatisho": "", 
-        "attach_length": 0, "ombitype": 1}),
-        contentType: 'application/json',
-        success: function(response) {
-            window.location.href = "/MaombiKusajiliShule";
-        }
-    });
-}else{
-    alert("Samahani huwezi kubonyeza kitufe hiki")
-}
-    }else{
-    alert("Tafadhali weka maoni yako")
-    }
+      tumaMaoniYako(
+        "/BadiliBweniComment",
+        {
+          coments: coments,
+          staffs: staffs,
+          haliombi: haliombi,
+          trackerId: trackerId,
+          schoolCategoryID: schoolCategoryID,
+          attachment: "",
+          kiambatisho: "",
+          attach_length: 0,
+          ombitype: 1,
+        },
+        staffsInput,
+        coments,
+        "wasilisha",
+        "/KuongezaBweni"
+      );
+//     if(coments.length > 0){
+//         if(staffsInput == '#'){
+//     $.ajax({
+//         url: "/SajiliComment",
+//         type: 'POST',
+//         data: JSON.stringify({"coments": coments, "staffs": staffs,
+//         "haliombi": haliombi, "trackerId": trackerId, "schoolCategoryID": schoolCategoryID,
+//         "attachment": "", "kiambatisho": "", 
+//         "attach_length": 0, "ombitype": 1}),
+//         contentType: 'application/json',
+//         success: function(response) {
+//             window.location.href = "/MaombiKusajiliShule";
+//         }
+//     });
+// }else{
+//     alert("Samahani huwezi kubonyeza kitufe hiki")
+// }
+//     }else{
+//     alert("Tafadhali weka maoni yako")
+//     }
 
 }
 
@@ -292,26 +400,44 @@ function wasilishaKe(){
     
     var schoolCategoryID = document.getElementById('schoolCategoryID').value;
     var staffsInput = document.getElementById('staffs').value;
-    if(coments.length > 0){
-        if(staffsInput == '#'){
-    $.ajax({
-        url: "/SajiliComment",
-        type: 'POST',
-        data: JSON.stringify({"coments": coments, "staffs": staffs,
-        "haliombi": haliombi, "trackerId": trackerId, "schoolCategoryID": schoolCategoryID,
-        "attachment": "", "kiambatisho": "", 
-        "attach_length": 0, "ombitype": 1}),
-        contentType: 'application/json',
-        success: function(response) {
-            window.location.href = "/MaombiKusajiliShule";
-        }
-    });
-}else{
-    alert("Samahani huwezi kubonyeza kitufe hiki")
-}
-    }else{
-    alert("Tafadhali weka maoni yako")
-    }
+      tumaMaoniYako(
+        "/BadiliBweniComment",
+        {
+          coments: coments,
+          staffs: staffs,
+          haliombi: haliombi,
+          trackerId: trackerId,
+          schoolCategoryID: schoolCategoryID,
+          attachment: "",
+          kiambatisho: "",
+          attach_length: 0,
+          ombitype: 1,
+        },
+        staffsInput,
+        coments,
+        "wasilisha",
+        "/KuongezaBweni"
+      );
+//     if(coments.length > 0){
+//         if(staffsInput == '#'){
+//     $.ajax({
+//         url: "/SajiliComment",
+//         type: 'POST',
+//         data: JSON.stringify({"coments": coments, "staffs": staffs,
+//         "haliombi": haliombi, "trackerId": trackerId, "schoolCategoryID": schoolCategoryID,
+//         "attachment": "", "kiambatisho": "", 
+//         "attach_length": 0, "ombitype": 1}),
+//         contentType: 'application/json',
+//         success: function(response) {
+//             window.location.href = "/MaombiKusajiliShule";
+//         }
+//     });
+// }else{
+//     alert("Samahani huwezi kubonyeza kitufe hiki")
+// }
+//     }else{
+//     alert("Tafadhali weka maoni yako")
+//     }
 
 }
 
@@ -417,25 +543,43 @@ function rudishaMteja(){
     
     var schoolCategoryID = document.getElementById('schoolCategoryID').value;
     var staffsInput = document.getElementById('staffs').value;
-    if(coments.length > 0){
-        if(staffsInput == '#'){
-    $.ajax({
-        url: "/SajiliComment",
-        type: 'POST',
-        data: JSON.stringify({"coments": coments, "staffs": staffs,
-        "haliombi": haliombi, "trackerId": trackerId, "schoolCategoryID": schoolCategoryID,
-        "attachment": "", "kiambatisho": "", 
-        "attach_length": 0, "ombitype": 1}),
-        contentType: 'application/json',
-        success: function(response) {
-            window.location.href = "/MaombiKusajiliShule";
-        }
-    });
-}else{
-    alert("Samahani huwezi kubonyeza kitufe hiki")
-}
-    }else{
-    alert("Tafadhali weka maoni yako")
-    }
+     tumaMaoniYako(
+       "/BadiliBweniComment",
+       {
+         coments: coments,
+         staffs: staffs,
+         haliombi: haliombi,
+         trackerId: trackerId,
+         schoolCategoryID: schoolCategoryID,
+         attachment: "",
+         kiambatisho: "",
+         attach_length: 0,
+         ombitype: 1,
+       },
+       staffsInput,
+       coments,
+       "wasilisha",
+       "/KuongezaBweni"
+     );
+//     if(coments.length > 0){
+//         if(staffsInput == '#'){
+//     $.ajax({
+//         url: "/SajiliComment",
+//         type: 'POST',
+//         data: JSON.stringify({"coments": coments, "staffs": staffs,
+//         "haliombi": haliombi, "trackerId": trackerId, "schoolCategoryID": schoolCategoryID,
+//         "attachment": "", "kiambatisho": "", 
+//         "attach_length": 0, "ombitype": 1}),
+//         contentType: 'application/json',
+//         success: function(response) {
+//             window.location.href = "/MaombiKusajiliShule";
+//         }
+//     });
+// }else{
+//     alert("Samahani huwezi kubonyeza kitufe hiki")
+// }
+//     }else{
+//     alert("Tafadhali weka maoni yako")
+//     }
 
 }
