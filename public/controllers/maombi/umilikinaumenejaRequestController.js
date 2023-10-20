@@ -87,7 +87,7 @@ function (req, res) {
       var message = jsonData.message;
       var statusCode = jsonData.statusCode;
       var data = jsonData.data;
-      if (statusCode == 300) {
+   
         var remain_days = data[0].remain_days;
         var created_at = data[0].created_at;
         var tracking_number = data[0].tracking_number;
@@ -189,13 +189,13 @@ function (req, res) {
             staffs: jsonData.staffs,
             attachment_path: attachment_path,
             status: jsonData.status,
-            objAttachment: objAttachment,
-            objAttachment1: objAttachment1,
+            objAttachment1: objAttachment,
+            objAttachment: objAttachment1,
             Maoni: Maoni,
             Refferes: Refferes,
           }
         );
-      }
+      
     }
   );
 });

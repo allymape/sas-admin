@@ -345,7 +345,7 @@ function appendSelectionOption(
     options =
       options +
       `<option value='${id}'  ${
-        selected.includes(Number(id)) ? "selected" : ""
+        selected.includes(id) ? "selected" : ""
       } > ${name} </option>`;
   }
   fieldSelect.html(options).prop('disabled' , false);
@@ -836,16 +836,7 @@ function parseQueryString(queryString){
       ) {
         confirmAction(
           () => {
-            // $.ajax({
-            //     url: "/TumaComment",
-            //     type: 'POST',
-            //     data: data),
-            //     contentType: 'application/json',
-            //     success: function(response) {
-            //         window.location.href = "/MaombiKuanzishaShule";
-            //     }
-            // });
-
+            
             ajaxRequest(
               `${urlComment}`,
               "POST",
@@ -891,15 +882,24 @@ function parseQueryString(queryString){
           "Thibitisha"
         );
       } else {
-        alertMessage(
-          "Tahadhari",
-          "Samahani, huwezi kubonyeza kitufe hiki",
-          "warning",
-          () => {}
-        );
+          if(btn == "tuma"){
+              alertMessage(
+                "Tahadhari",
+                "Tafadhali, Chagua Afisa wa kumtumia.",
+                "warning",
+                () => {}
+              );
+          }else{
+              alertMessage(
+                "Tahadhari",
+                "Samahani, huwezi kubonyeza kitufe hiki",
+                "warning",
+                () => {}
+              );
+          }
       }
     } else {
-       alertMessage("Tahadhari", "Tafadhali weka maoni yako kwanza.", "warning" , () => {});
+       alertMessage("Tahadhari", "Weka maoni yako kwanza.", "warning" , () => {});
     }
        
   }
