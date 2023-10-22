@@ -294,22 +294,23 @@ const menuItems = [
             },
         ]
    },
+//    Track
+    {
+        label : "Track Ombi",
+        url  : "TrackOmbi",
+        icon : "ri-search-2-line",
+        counterId : "",
+        pattern : "Waombaji",
+        hasPermissionTo : permission(req , 'view-track-application'),
+    },
    //MPANGLIO
    {
         label : "Mipangilio",
         url  : "#sidebarUI",
-        menuTitle : 'UTHIBITISHO',
+        menuTitle : '',
         icon : "ri-list-settings-line",
         menuId : "sidebarUI",
         subMenus : [
-             {
-                label : "Track Ombi",
-                url  : "TrackOmbi",
-                icon : "",
-                counterId : "",
-                pattern : "Waombaji",
-                hasPermissionTo : permission(req , 'view-track-application'),
-            },
               {
                 label : "Waombaji",
                 url  : "Waombaji",

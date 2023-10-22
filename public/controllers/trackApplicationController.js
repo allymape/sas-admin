@@ -13,11 +13,15 @@ var trackAPI = API_BASE_URL + "track_applications";
 trackApplicationController.get("/TrackOmbi", isAuthenticated, can('view-track-application'), (req, res) => {
       var per_page = Number(req.query.per_page || 10);
       var page = Number(req.query.page || 1);
-      sendRequest(req , res , trackAPI + "?page=" + page + "&per_page=" + per_page , "GET" , {} , (jsonData) => {
-         const { data , numRows } = jsonData;
+      const searchQuery = req.query;
+      sendRequest(req , res , trackAPI + "?page=" + page + "&per_page=" + per_page , "GET" , searchQuery  , (jsonData) => {
+        const { numRows } = jsonData;
+        const { applications ,categories } = jsonData.data;
+        // console.log(jsonData)
         res.render(path.join(__dirname + "/../design/track"), {
           req: req,
-          applications: data,
+          applications: applications,
+          categories: categories,
           pagination: {
             total: numRows,
             current: page,

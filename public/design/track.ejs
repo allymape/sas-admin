@@ -3,7 +3,7 @@
         title : 'Fuatilia Maombi',
         page_title : 'Orodha ya Maombi',
         card_title : 'Maombi yaliyopo',
-        breadcrumb_main : 'Mipangilio' 
+        breadcrumb_main : 'Track' 
 }) %>
 <div class="card-body">
   <div class="ribbon-three ribbon-three-info">
@@ -11,18 +11,33 @@
   </div>
   <div id="customerList">
     <div class="row g-4 mb-3">
-      <div class="col-sm-auto">
-        <div>
-          <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn" data-bs-target="#showModal"><i class="ri-add-line align-bottom me-1"></i> Sajili</button>
-          <!-- <button class="btn btn-soft-danger" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button> -->
-        </div>
-      </div>
       <div class="col-sm">
-        <div class="d-flex justify-content-sm-end">
-          <div class="search-box ms-2">
-            <input type="text" class="form-control search" placeholder="Tafuta...">
-            <i class="ri-search-line search-icon"></i>
-          </div>
+        <div class="d-flex">
+          <form method="GET" action="/TrackOmbi" class="d-flex">
+                <div class="search-box ms-2">
+                    <input type="text" name="tafuta" value="<%= req.query.tafuta %>" class="form-control search" placeholder="Tafuta...">
+                    <i class="ri-search-line search-icon"></i>
+                </div>
+                <div class="ms-2">
+                    <select name="category" class="form-control">
+                        <option value="">Chagua Aina</option>
+                        <% for (let i = 0; i < categories.length; i++) { %>
+                        <% const item = categories[i]; %>
+                            <option value="<%= item.id %>" 
+                                <%= req.query.category == item.id ? 'selected' : '' %>
+                                ><%= item.name %></option>
+                        <% } %>
+                    </select>
+                </div>
+                <div class="ms-2">
+                    <button type="submit" class="btn btn-outline-primary">Tafuta</button>
+                </div>
+                <% if(req.query.tafuta || req.query.category){ %>
+                   <div class="ms-2">
+                     <a href="/TrackOmbi" class="btn btn-outline-danger">Clear</a>
+                   </div>
+                <% } %>
+          </form>
         </div>
       </div>
     </div>
@@ -39,19 +54,25 @@
             <th class="" data-sort="">Mahali lilipo</th>
             <th class="" data-sort="">Muda wa Kutumwa (Mtendaji)</th>
             <th class="" data-sort="">Hali ya Ombi</th>
+            <th class="" data-sort="">Malipo</th>
           </tr>
         </thead>
         <tbody class="list form-check-all">
           <% for(var i = 0; i < applications.length; i++){  %>
           <%  const item = applications[i]; %>
-          <%  const {status} = item; %>
+          <%  const {status , payment_status , payment_status_id , reg_status} = item; %>
           <tr>
             <td class="id"><%- include('paginations/numbering.ejs' , {
                 index : i
-            }) %></td>
-            <td class=""><%= item.tracking_number %></td>
-            <td class=""><%= item.application_category %></td>
-            <td class=""><%= item.applicant_name %></td>
+            }) %>
+        </td>
+            <td class="<%= reg_status == 2 ? 'text-success' : 'text-danger' %>"><%= item.tracking_number %></td>
+            <td class="">
+                <span title="<%= item.registration_number %>" data-bs-toggle="tooltip" class="<%= item.registration_number ? 'cursor-pointer' : '' %>">
+                    <%= item.application_category %>
+                </span>
+            </td>
+            <td class=""><%=item.applicant_name %></td>
             <td class=""><%= dateFormat(item.application_created_at , "DD/MM/YYYY HH:mm:ss") %></td>
             <td class="">
                 <% if(status == 1) {%>
@@ -61,7 +82,12 @@
             <td class=""><%= dateFormat(item.submitted_created_at , "DD/MM/YYYY HH:mm:ss") %></td>
             <td class="">
                 <span class="badge bg-<%= status == 1 ? `info` : ( status == 2 ? 'success' : 'danger')%>">
-                    <%= status == 1 ? `Linashughulikiwa` : ( status == 2 ? 'Limethibithishwa' : 'Limekatiliwa') %>
+                    <%= status == 1 ? `Linashughulikiwa` : ( status == 2 ? 'Limethibitishwa' : 'Limekatiliwa') %>
+                </span>
+            </td>
+            <td>
+                <span class="<%= payment_status_id == 1 ? 'badge bg-danger' : (payment_status_id == 2 ? 'badge bg-success' : '')%>">
+                    <%=payment_status%>
                 </span>
             </td>
           </tr>

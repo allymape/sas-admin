@@ -86,7 +86,7 @@ function wasilisha(){
     var schoolCategoryID = document.getElementById('schoolCategoryID').value;
     var staffsInput = document.getElementById('staffs').value;
      tumaMaoniYako(
-       "/BadiliBweniComment",
+       "/SajiliComment",
        {
          coments: coments,
          staffs: staffs,
@@ -101,7 +101,7 @@ function wasilisha(){
        staffsInput,
        coments,
        "wasilisha",
-       "/KuongezaBweni"
+       "/MaombiKusajiliShule"
      );
     // if(coments.length > 0){
     //             if(staffsInput == '#'){
@@ -142,7 +142,7 @@ function rudisha(){
     var schoolCategoryID = document.getElementById('schoolCategoryID').value;
     var staffsInput = document.getElementById('staffs').value;
       tumaMaoniYako(
-        "/BadiliBweniComment",
+        "/SajiliComment",
         {
           coments: coments,
           staffs: staffs,
@@ -157,7 +157,7 @@ function rudisha(){
         staffsInput,
         coments,
         "ruidisha",
-        "/KuongezaBweni"
+        "/MaombiKusajiliShule"
       );
 //     if(coments.length > 0){
 //         if(staffsInput == '#'){
@@ -194,7 +194,7 @@ function wasilishak1(){
     var schoolCategoryID = document.getElementById('schoolCategoryID').value;
     var staffsInput = document.getElementById('staffs').value;
     tumaMaoniYako(
-      "/BadiliBweniComment",
+      "/SajiliComment",
       {
         coments: coments,
         staffs: staffs,
@@ -209,7 +209,7 @@ function wasilishak1(){
       staffsInput,
       coments,
       "wasilisha",
-      "/KuongezaBweni"
+      "/MaombiKusajiliShule"
     );
 //     if(coments.length > 0){
 //         if(staffsInput == '#'){
@@ -246,7 +246,7 @@ function wasilishaMus(){
 
     var staffsInput = document.getElementById('staffs').value;
      tumaMaoniYako(
-       "/BadiliBweniComment",
+       "/SajiliComment",
        {
          coments: coments,
          staffs: staffs,
@@ -261,7 +261,7 @@ function wasilishaMus(){
        staffsInput,
        coments,
        "wasilisha",
-       "/KuongezaBweni"
+       "/MaombiKusajiliShule"
      );
 //     if(coments.length > 0){
 //         if(staffsInput == '#'){
@@ -300,7 +300,7 @@ function rudishaMus(){
 
     var staffsInput = document.getElementById('staffs').value;
     tumaMaoniYako(
-      "/BadiliBweniComment",
+      "/SajiliComment",
       {
         coments: coments,
         staffs: staffs,
@@ -315,7 +315,7 @@ function rudishaMus(){
       staffsInput,
       coments,
       "rudisha",
-      "/KuongezaBweni"
+      "/MaombiKusajiliShule"
     );
 //     if(coments.length > 0){
 //         if(staffsInput == '#'){
@@ -350,7 +350,7 @@ function wasilishaMmus(){
     var schoolCategoryID = document.getElementById('schoolCategoryID').value;
     var staffsInput = document.getElementById('staffs').value;
       tumaMaoniYako(
-        "/BadiliBweniComment",
+        "/SajiliComment",
         {
           coments: coments,
           staffs: staffs,
@@ -365,7 +365,7 @@ function wasilishaMmus(){
         staffsInput,
         coments,
         "wasilisha",
-        "/KuongezaBweni"
+        "/MaombiKusajiliShule"
       );
 //     if(coments.length > 0){
 //         if(staffsInput == '#'){
@@ -401,7 +401,7 @@ function wasilishaKe(){
     var schoolCategoryID = document.getElementById('schoolCategoryID').value;
     var staffsInput = document.getElementById('staffs').value;
       tumaMaoniYako(
-        "/BadiliBweniComment",
+        "/SajiliComment",
         {
           coments: coments,
           staffs: staffs,
@@ -416,7 +416,7 @@ function wasilishaKe(){
         staffsInput,
         coments,
         "wasilisha",
-        "/KuongezaBweni"
+        "/MaombiKusajiliShule"
       );
 //     if(coments.length > 0){
 //         if(staffsInput == '#'){
@@ -544,7 +544,7 @@ function rudishaMteja(){
     var schoolCategoryID = document.getElementById('schoolCategoryID').value;
     var staffsInput = document.getElementById('staffs').value;
      tumaMaoniYako(
-       "/BadiliBweniComment",
+       "/SajiliComment",
        {
          coments: coments,
          staffs: staffs,
@@ -559,7 +559,7 @@ function rudishaMteja(){
        staffsInput,
        coments,
        "wasilisha",
-       "/KuongezaBweni"
+       "/MaombiKusajiliShule"
      );
 //     if(coments.length > 0){
 //         if(staffsInput == '#'){
