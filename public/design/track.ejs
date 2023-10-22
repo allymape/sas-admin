@@ -31,14 +31,14 @@
       <table class="table align-middle table-nowrap" id="customerTable">
         <thead class="table-light">
           <tr>
-            <th class="sort" data-sort="">Na.</th>
-            <th class="sort" data-sort="">Namba ya Ombi</th>
-            <th class="sort" data-sort="">Aina ya Ombi</th>
-            <th class="sort" data-sort="">Mwombaji</th>
-            <th class="sort" data-sort="">Muda wa kutumwa (Mwombaji)</th>
-            <th class="sort" data-sort="">Mahali lilipo</th>
-            <th class="sort" data-sort="">Muda wa Kutumwa (Mtendaji)</th>
-            <th class="sort" data-sort="">Hali ya Ombi</th>
+            <th class="" data-sort="">Na.</th>
+            <th class="" data-sort="">Namba ya Ombi</th>
+            <th class="" data-sort="">Aina ya Ombi</th>
+            <th class="" data-sort="">Mwombaji</th>
+            <th class="" data-sort="">Muda wa kutumwa (Mwombaji)</th>
+            <th class="" data-sort="">Mahali lilipo</th>
+            <th class="" data-sort="">Muda wa Kutumwa (Mtendaji)</th>
+            <th class="" data-sort="">Hali ya Ombi</th>
           </tr>
         </thead>
         <tbody class="list form-check-all">
@@ -52,7 +52,7 @@
             <td class=""><%= item.tracking_number %></td>
             <td class=""><%= item.application_category %></td>
             <td class=""><%= item.applicant_name %></td>
-            <td class=""><%= item.application_created_at %></td>
+            <td class=""><%= dateFormat(item.application_created_at , "DD/MM/YYYY HH:mm:ss") %></td>
             <td class="">
                 <% if(status == 1) {%>
                 <%= item.title %>  <%= item.district_name %> <%= item.region_name %>
