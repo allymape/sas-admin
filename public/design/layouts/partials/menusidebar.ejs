@@ -302,6 +302,14 @@ const menuItems = [
         icon : "ri-list-settings-line",
         menuId : "sidebarUI",
         subMenus : [
+             {
+                label : "Track Ombi",
+                url  : "TrackOmbi",
+                icon : "",
+                counterId : "",
+                pattern : "Waombaji",
+                hasPermissionTo : permission(req , 'view-track-application'),
+            },
               {
                 label : "Waombaji",
                 url  : "Waombaji",

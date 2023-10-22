@@ -1,0 +1,102 @@
+<% var card_title = '' %>
+<%- include('layouts/partials/header.ejs' , {
+        title : 'Fuatilia Maombi',
+        page_title : 'Orodha ya Maombi',
+        card_title : 'Maombi yaliyopo',
+        breadcrumb_main : 'Mipangilio' 
+}) %>
+<div class="card-body">
+  <div class="ribbon-three ribbon-three-info">
+    <span class="badge"><%=`${pagination.total}`%></span>
+  </div>
+  <div id="customerList">
+    <div class="row g-4 mb-3">
+      <div class="col-sm-auto">
+        <div>
+          <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn" data-bs-target="#showModal"><i class="ri-add-line align-bottom me-1"></i> Sajili</button>
+          <!-- <button class="btn btn-soft-danger" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button> -->
+        </div>
+      </div>
+      <div class="col-sm">
+        <div class="d-flex justify-content-sm-end">
+          <div class="search-box ms-2">
+            <input type="text" class="form-control search" placeholder="Tafuta...">
+            <i class="ri-search-line search-icon"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-responsive table-card mt-3 mb-1">
+      <table class="table align-middle table-nowrap" id="customerTable">
+        <thead class="table-light">
+          <tr>
+            <th class="sort" data-sort="">Na.</th>
+            <th class="sort" data-sort="">Namba ya Ombi</th>
+            <th class="sort" data-sort="">Aina ya Ombi</th>
+            <th class="sort" data-sort="">Mwombaji</th>
+            <th class="sort" data-sort="">Muda wa kutumwa (Mwombaji)</th>
+            <th class="sort" data-sort="">Mahali lilipo</th>
+            <th class="sort" data-sort="">Muda wa Kutumwa (Mtendaji)</th>
+            <th class="sort" data-sort="">Hali ya Ombi</th>
+          </tr>
+        </thead>
+        <tbody class="list form-check-all">
+          <% for(var i = 0; i < applications.length; i++){  %>
+          <%  const item = applications[i]; %>
+          <%  const {status} = item; %>
+          <tr>
+            <td class="id"><%- include('paginations/numbering.ejs' , {
+                index : i
+            }) %></td>
+            <td class=""><%= item.tracking_number %></td>
+            <td class=""><%= item.application_category %></td>
+            <td class=""><%= item.applicant_name %></td>
+            <td class=""><%= item.application_created_at %></td>
+            <td class="">
+                <% if(status == 1) {%>
+                <%= item.title %>  <%= item.district_name %> <%= item.region_name %>
+                <% } %>
+            </td>
+            <td class=""><%= dateFormat(item.submitted_created_at , "DD/MM/YYYY HH:mm:ss") %></td>
+            <td class="">
+                <span class="badge bg-<%= status == 1 ? `info` : ( status == 2 ? 'success' : 'danger')%>">
+                    <%= status == 1 ? `Linashughulikiwa` : ( status == 2 ? 'Limethibithishwa' : 'Limekatiliwa') %>
+                </span>
+            </td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+    <%- include('paginations/html_pagination.ejs') %>
+  </div>
+</div><!-- end card -->
+<div class="modal fade" id="showModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-light p-3">
+        <h5 class="modal-title" id="exampleModalLabel"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="showEditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-light p-3">
+        <h5 class="modal-title" id="exampleModalLabel"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('layouts/partials/footer.ejs' , {
+                card_title :  card_title , 
+                pagination_script : false,
+}) %>
+<script type="text/javascript" src="design/layouts/scripts/Fuatilia Ombi_scripts.js"></script>
+</body>
+
+</html>

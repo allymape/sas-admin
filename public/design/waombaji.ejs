@@ -65,7 +65,7 @@
                         <td class="date"><%= applicants[i].created_at %></td>
                         <td class="date"><%= applicants[i].updated_at %></td>
                         <td class="text-right">
-                            <span class="badge badge-label bg-danger">
+                            <span class="badge badge-label bg-<%=applicants[i].total_applications > 0 ? 'success' : 'danger'%>">
                                 <%= numberFormat(applicants[i].total_applications) %>
                             </span>
                         </td>

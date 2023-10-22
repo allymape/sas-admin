@@ -127,7 +127,7 @@ module.exports = {
     }
     return majira + ", " + name + "!";
   },
-  formatDate: (date, format = "YYYY-MM-DD hh:mm:ss") => {
+  formatDate: (date, format = "YYYY-MM-DD HH:mm:ss") => {
     return dateAndTime.format(
       typeof date === "string" ? new Date(date) : date,
       format

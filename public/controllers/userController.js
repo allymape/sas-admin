@@ -97,11 +97,6 @@ userController.get(
   function (req, res) {
     res.render(path.join(__dirname + "/../design/watumiaji"), {
       req: req,
-      useLev: req.session.UserLevel,
-      userName: req.session.userName,
-      RoleManage: req.session.RoleManage,
-      userID: req.session.userID,
-      cheoName: req.session.cheoName,
     });
   }
 );
@@ -222,7 +217,7 @@ userController.post(
 // Disable account
 userController.post("/DisableUser/:id", isAuthenticated, can('delete-users'), function (req, res) { 
     const id = req.params.id;
-    
+
     sendRequest(req, res , disableMtumiajiAPI + `/${id}` , "PUT" , {} ,(jsonData) => {
           const {statusCode , message} = jsonData;
             res.send({
