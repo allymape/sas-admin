@@ -232,7 +232,7 @@ badiliMmilikiRequestController.post("/MmilikiBadiliComment", function (req, res)
   var department = staffDet[1];
   var staffs = staffDet[0];
   // console.log(department + " and " + staffs)
-  
+    // console.log("HIIIIIIIII");
     sendRequest(req , res , mmilikiReply , "POST" , 
       {
           trackerId: trackerId,
@@ -254,6 +254,7 @@ badiliMmilikiRequestController.post("/MmilikiBadiliComment", function (req, res)
         console.log(
           new Date() + " " + req.session.userName + ": /MmilikiBadiliComment ..."
         );
+        // console.log(statusCode , message)
         res.send({
           statusCode: statusCode,
           message: message,

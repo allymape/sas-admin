@@ -58,7 +58,7 @@ function tuma(){
     var haliombi = 1;
     var trackerId = document.getElementById('trackerId').value;
       tumaMaoniYako(
-        "/MmilikiComment",
+        "/MmilikiBadiliComment",
         {
           coments: coments,
           staffs: staffs,
@@ -68,16 +68,16 @@ function tuma(){
         staffs,
         coments,
         "tuma",
-        "/MaombiMmilikiShule"
+        "/BadiliMmiliki"
       );
     // if(coments.length > 0){
     // $.ajax({
-    //     url: "/MmilikiComment",
+    //     url: "/MmilikiBadiliComment",
     //     type: 'POST',
     //     data: JSON.stringify({"coments": coments, "staffs": staffs, "haliombi": haliombi, "trackerId": trackerId}),
     //     contentType: 'application/json',
     //     success: function(response) {
-    //         window.location.href = "/MaombiMmilikiShule";
+    //         window.location.href = "/BadiliMmiliki";
     //     }
     // });
     // }else{
@@ -93,7 +93,7 @@ function wasilisha(){
     var trackerId = document.getElementById('trackerId').value;
     var staffsInput = document.getElementById('staffs').value;
     tumaMaoniYako(
-      "/MmilikiComment",
+      "/MmilikiBadiliComment",
       {
         coments: coments,
         staffs: staffs,
@@ -106,12 +106,12 @@ function wasilisha(){
       staffsInput,
       coments,
       "wasilisha",
-      "/MaombiMmilikiShule"
+      "/BadiliMmiliki"
     );
     // if(coments.length > 0){
     //     if(staffsInput == '#'){
     //     $.ajax({
-    //         url: "/MmilikiComment",
+    //         url: "/MmilikiBadiliComment",
     //         type: 'POST',
     //         data: JSON.stringify({"coments": coments, "staffs": staffs, 
     //         "haliombi": haliombi, "trackerId": trackerId, 
@@ -142,7 +142,7 @@ function rudisha(){
 
     var staffsInput = document.getElementById('staffs').value;
      tumaMaoniYako(
-       "/MmilikiComment",
+       "/MmilikiBadiliComment",
        {
          coments: coments,
          staffs: staffs,
@@ -155,12 +155,12 @@ function rudisha(){
        staffs,
        coments,
        "rudisha",
-       "/MaombiMmilikiShule"
+       "/BadiliMmiliki"
      );
     // if(coments.length > 0){
     //     if(staffsInput == '#'){
     //     $.ajax({
-    //         url: "/MmilikiComment",
+    //         url: "/MmilikiBadiliComment",
     //         type: 'POST',
     //         data: JSON.stringify({"coments": coments, "staffs": staffs, 
     //         "haliombi": haliombi, "trackerId": trackerId, 
@@ -189,7 +189,7 @@ function wasilishak1(){
 
     var staffsInput = document.getElementById('staffs').value;
        tumaMaoniYako(
-         "/MmilikiComment",
+         "/MmilikiBadiliComment",
          {
            coments: coments,
            staffs: staffs,
@@ -202,12 +202,12 @@ function wasilishak1(){
          staffsInput,
          coments,
          "wasilisha",
-         "/MaombiMmilikiShule"
+         "/BadiliMmiliki"
        );
     // if(coments.length > 0){
     //     if(staffsInput == '#'){
     //     $.ajax({
-    //         url: "/MmilikiComment",
+    //         url: "/MmilikiBadiliComment",
     //         type: 'POST',
     //         data: JSON.stringify({"coments": coments, "staffs": staffs, 
     //         "haliombi": haliombi, "trackerId": trackerId, 
@@ -236,7 +236,7 @@ function wasilishaKe(){
     var trackerId = document.getElementById('trackerId').value;
     var staffsInput = document.getElementById('staffs').value;
     tumaMaoniYako(
-      "/MmilikiComment",
+      "/MmilikiBadiliComment",
       {
         coments: coments,
         staffs: staffs,
@@ -253,12 +253,12 @@ function wasilishaKe(){
       staffsInput,
       coments,
       "wasilisha",
-      "/MaombiMmilikiShule"
+      "/BadiliMmiliki"
     );
     // if(coments.length > 0){
     //     if(staffsInput == '#'){
     //     $.ajax({
-    //         url: "/MmilikiComment",
+    //         url: "/MmilikiBadiliComment",
     //         type: 'POST',
     //         data: JSON.stringify({"coments": coments, "staffs": staffs, "owner_name_old": "",
     //         "haliombi": haliombi, "trackerId": trackerId, "authorized_person_old": "",
@@ -292,7 +292,7 @@ function wasilishaKeBadili(){
     var authorized_person = document.getElementById('authorized_person').value;
     var staffsInput = document.getElementById('staffs').value;
       tumaMaoniYako(
-        "/MmilikiComment",
+        "/MmilikiBadiliComment",
         {
           coments: coments,
           staffs: staffs,
@@ -309,12 +309,12 @@ function wasilishaKeBadili(){
         staffsInput,
         coments,
         "wasilisha",
-        "/MaombiMmilikiShule"
+        "/BadiliMmiliki"
       );
     // if(coments.length > 0){
     //     if(staffsInput == '#'){
     //     $.ajax({
-    //         url: "/MmilikiComment",
+    //         url: "/MmilikiBadiliComment",
     //         type: 'POST',
     //         data: JSON.stringify({"coments": coments, "staffs": staffs, "owner_name_old": owner_name_old,
     //         "haliombi": haliombi, "trackerId": trackerId, "authorized_person_old": authorized_person_old,
@@ -348,7 +348,7 @@ function kataaKe(){
     if(coments.length > 0){
         if(staffsInput == '#'){
         $.ajax({
-            url: "/MmilikiComment",
+            url: "/MmilikiBadiliComment",
             type: 'POST',
             data: JSON.stringify({"coments": coments, "staffs": staffs, 
             "haliombi": haliombi, "trackerId": trackerId, 
@@ -436,7 +436,7 @@ function rudishaMteja(){
     if(coments.length > 0){
         if(staffsInput == '#'){
         $.ajax({
-            url: "/MmilikiComment",
+            url: "/MmilikiBadiliComment",
             type: 'POST',
             data: JSON.stringify({"coments": coments, "staffs": staffs,
             "haliombi": haliombi, "trackerId": trackerId, "schoolCategoryID": schoolCategoryID,

@@ -29,11 +29,9 @@ function ajaxRequest(url, method, callback, formData = {}, loading = true) {
       } else if (xhr.status == 500) {
         msg = "Internal Server Error [500].";
       } else if (exception === "parsererror") {
-        //   alertMessage('Session Expired' ,'Session Expired you will be redirected to login page.' , 'warning' , () => {
-        //   window.location.href="/";
-        // });
-        window.location.href = "/";
-        msg = "Requested JSON parse failed.";
+        window.location.reload();
+        // msg = "Requested JSON parse failed.";
+        msg = "Kuna shida tafadhali wasiliana na Msimamizi wa Mfumo";
       } else if (exception === "timeout") {
         msg = "Time out error.";
       } else if (exception === "abort") {
@@ -41,6 +39,8 @@ function ajaxRequest(url, method, callback, formData = {}, loading = true) {
       } else {
         msg = "Error:" + xhr.status + " ";
       }
+       console.log(text)
+       text = '';
       alertMessage(text, msg, "error", () => {});
     },
   });

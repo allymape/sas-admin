@@ -138,7 +138,7 @@ ongezaDahaliaRequestController.get(
           streamOld: streamOld,
           language: language,
           school_size: school_size,
-          userLevel: req.session.UserLevel,
+          userLevel: req.user.cheo,
           area: area,
           WardName: WardName,
           structure: structure,
