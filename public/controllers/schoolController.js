@@ -9,6 +9,7 @@ var API_BASE_URL = process.env.API_BASE_URL;
 var allSchoolListAPI = API_BASE_URL + "all-schools";
 var schoolListAPI = API_BASE_URL + "look_for_schools";
 var editSchoolAPI = API_BASE_URL + "edit-school";
+var addSchoolAPI = API_BASE_URL + "add-school";
 var updateSchoolAPI = API_BASE_URL + "update-school";
 var vutaExistingSchoolsAPI = API_BASE_URL + "existing_schools";
 var schoolFiltersAPI = API_BASE_URL + "school-filters";
@@ -93,6 +94,16 @@ schoolController.post("/VutaShule", function (req, res) {
             });
         }
       });
+});
+// Create School
+schoolController.post("/AddShule" , function(req , res){
+       sendRequest(req, res, addSchoolAPI  , 'POST', req.body , (body) => {
+               const {statusCode , message} = body;
+               res.send({
+                  statusCode : statusCode,
+                  message : message
+               });
+     });
 });
 // Edit School
 schoolController.get("/EditShule/:id" , function(req, res){

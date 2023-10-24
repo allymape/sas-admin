@@ -518,6 +518,7 @@ function getAllWards(lgaCode, selectedWard = null) {
 }
 
 function getAllStreets(wardCode, selectedStreet = null) {
+  
   ajaxRequest(
     "/MitaaList",
     "GET",
@@ -530,7 +531,7 @@ function getAllStreets(wardCode, selectedStreet = null) {
           "mtaa-field",
           streets.map((street, index) => ({
             name: street.StreetName,
-            id: street.id,
+            id: street.StreetCode,
           })),
           [selectedStreet],
           "Chagua Mtaa"
