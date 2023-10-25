@@ -11,15 +11,62 @@
                 <div class="col-sm-auto">
                     <div>
                         <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"><i class="ri-add-line align-bottom me-1"></i> Sajili</button>
-                        <button class="btn btn-soft-danger" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button>
+                        <a href="/Viambatisho?deleted=true" class="btn btn-soft-danger" ><i class="ri-delete-bin-2-line"></i></a>
                     </div>
                 </div>
                 <div class="col-sm">
                     <div class="d-flex justify-content-sm-end">
-                        <div class="search-box ms-2">
-                            <input type="text" class="form-control search" placeholder="Tafuta...">
-                            <i class="ri-search-line search-icon"></i>
-                        </div>
+                      <form action="/Viambatisho" method="GET" class="d-flex">
+                                <div class="search-box ms-2">
+                                    <input type="text" name="tafuta" value="<%= req.query.tafuta %>" class="form-control search" placeholder="Tafuta...">
+                                    <i class="ri-search-line search-icon"></i>
+                                </div>
+                                 <div class="ms-2">
+                                    <select name="aina_ombi" id="aina_ombi" class="form-control">
+                                        <option value=""> --- Chagua  --</option>
+                                        <% for (let index = 0; index < categories.length; index++) { %>
+                                        <% const category = categories[index]; %>
+                                            <option value="<%= category.id %>" <%= req.query.aina_ombi == category.id ? 'selected' : '' %> > 
+                                                <%= category.name %> 
+                                            </option>
+                                        <% } %>
+                                    </select>
+                                </div>
+                                <div class="ms-2">
+                                    <select name="umiliki" id="umiliki" class="form-control">
+                                        <option value=""> --- Chagua --</option>
+                                        <option value="0" <%=req.query.umiliki == "0" ? 'selected' : ''%> > Wote </option>
+                                        <% for (let index = 0; index < ownerships.length; index++) { %>
+                                        <% const owner = ownerships[index]; %>
+                                            <option value="<%= owner.id %>" <%= req.query.umiliki == owner.id ? 'selected' : '' %> > 
+                                                <%= owner.name %> 
+                                            </option>
+                                        <% } %>
+                                    </select>
+                                </div>
+                                <div class="ms-2">
+                                    <select name="structure" id="structure" class="form-control">
+                                        <option value=""> --- Chagua  --</option>
+                                        <% for (let index = 0; index < structures.length; index++) { %>
+                                        <% const structure = structures[index]; %>
+                                            <option value="<%= structure.id %>" <%= req.query.structure == structure.id ? 'selected' : '' %> > 
+                                                <%= structure.name %> 
+                                            </option>
+                                        <% } %>
+                                    </select>
+                                </div>
+                               
+                                <div class="ms-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        Tafuta
+                                    </button>
+                                </div>
+                                <% if(req.query.umiliki || req.query.aina_ombi || req.query.structure){%>
+                                    <div class="ms-2">
+                                        <a href="/Viambatisho" class="btn btn-danger"> Clear </a>
+                                    </div>
+                                <% } %>
+                      </form>
                     </div>
                 </div>
             </div>

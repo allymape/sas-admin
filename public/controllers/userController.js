@@ -75,7 +75,7 @@ userController.post("/auth", function (req, res) {
               if (Number(user.user_level) == 10) {
                 res.redirect("/Dashboard");
               } else {
-                res.redirect("/Dashboard");
+                res.redirect("/Viambatisho");
               }
             } else {
               res.redirect("/Dashboard");
