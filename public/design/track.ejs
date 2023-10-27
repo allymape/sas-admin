@@ -89,6 +89,9 @@
                 <span class="<%= payment_status_id == 1 ? 'badge bg-danger' : (payment_status_id == 2 ? 'badge bg-success' : '')%>">
                     <%=payment_status%>
                 </span>
+                <% if(!payment_status){ %>
+                  <button type="button" class="btn btn-sm btn-soft-primary btn-make-payment" onclick="makePayment(this)" data-tracking_number="<%= item.tracking_number %>" >Lipa</button>
+                <% } %>
             </td>
           </tr>
           <% } %>
@@ -122,7 +125,7 @@
                 card_title :  card_title , 
                 pagination_script : false,
 }) %>
-<script type="text/javascript" src="design/layouts/scripts/Fuatilia Ombi_scripts.js"></script>
+<script type="text/javascript" src="design/layouts/scripts/track_ombi_scripts.js"></script>
 </body>
 
 </html>

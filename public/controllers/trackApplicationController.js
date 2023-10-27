@@ -5,8 +5,9 @@ const trackApplicationController = express.Router();
 var session = require("express-session");
 var path = require("path");
 const { sendRequest, isAuthenticated, can } = require("../../util");
-var API_BASE_URL = process.env.API_BASE_URL;
-var trackAPI = API_BASE_URL + "track_applications";
+const API_BASE_URL = process.env.API_BASE_URL;
+const trackAPI = API_BASE_URL + "track_applications";
+const updatePaymentAPI = API_BASE_URL + "update_payment";
 
 
 // Display zones page
@@ -32,5 +33,16 @@ trackApplicationController.get("/TrackOmbi", isAuthenticated, can('view-track-ap
         });
       });
 });
+
+trackApplicationController.post("/ChangePayment/:tracking_number", isAuthenticated, can('view-track-application'), (req, res) => {
+        const tracking_number = req.params.tracking_number
+        sendRequest(req, res , updatePaymentAPI , "PUT" , {tracking_number : tracking_number} , (jsonData) => {
+                   const {statusCode , message} = jsonData
+                   res.send({
+                      statusCode : statusCode,
+                      message : message
+                   })
+        });
+})
 
 module.exports = trackApplicationController;

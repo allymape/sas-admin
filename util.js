@@ -28,7 +28,13 @@ module.exports = {
             console.log("error", error);
           }
           //  console.log(body)
-          if (body !== undefined && response.statusCode == 200) {
+          if (body == "Too many requests, please try again later.") {
+            req.flash(
+              "warning",
+              "Too many requests, please try again after 10 minutes."
+            );
+            res.redirect("/");
+          } else if (body !== undefined && response.statusCode == 200) {
               callback(body);
           } else {
               if (response && typeof response !== 'undefined' && response.statusCode == 403) {
