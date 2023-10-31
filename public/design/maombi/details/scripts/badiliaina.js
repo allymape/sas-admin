@@ -26,7 +26,7 @@ function wasilisha(){
       staffsInput,
       coments,
       "wasilisha",
-      "/BadiliAinaComment"
+      "/BadiliUsajili"
     );
     // if(coments.length > 0){
     //     if(staffsInput == '#'){
@@ -75,7 +75,7 @@ function rudisha(){
         staffsInput,
         coments,
         "rudisha",
-        "/BadiliAinaComment"
+        "/BadiliUsajili"
       );
     // if(coments.length > 0){
     //     if(staffsInput == '#'){
@@ -123,7 +123,7 @@ function wasilishak1(){
        staffsInput,
        coments,
        "wasilisha",
-       "/BadiliAinaComment"
+       "/BadiliUsajili"
      );
     // if(coments.length > 0){
     //     if(staffsInput == '#'){
@@ -180,7 +180,7 @@ function wasilishaKe(){
        staffsInput,
        coments,
        "wasilisha",
-       "/BadiliAinaComment"
+       "/BadiliUsajili"
      );
     // if(coments.length > 0){
     //     if(staffsInput == '#'){
@@ -260,7 +260,7 @@ function tuma(){
           staffs,
           coments,
           "tuma",
-          "/BadiliAinaComment"
+          "/BadiliUsajili"
         );
         // if(coments.length > 0){
         // $.ajax({
@@ -424,7 +424,7 @@ function rudishaMteja(){
        staffsInput,
        coments,
        "rudisha",
-       "/BadiliAinaComment"
+       "/BadiliUsajili"
      );
     // if(coments.length > 0){
     //     if(staffsInput == '#'){
@@ -472,7 +472,7 @@ function wasilishaMus(){
       staffsInput,
       coments,
       "wasilisha",
-      "/BadiliAinaComment"
+      "/BadiliUsajili"
     );
 //     if(coments.length > 0){
 //         if(staffsInput == '#'){
@@ -521,7 +521,7 @@ function wasilishaAdsa(){
        staffsInput,
        coments,
        "wasilisha",
-       "/BadiliAinaComment"
+       "/BadiliUsajili"
      );
 //     if(coments.length > 0){
 //         if(staffsInput == '#'){
@@ -572,7 +572,7 @@ function rudishaMus(){
        staffsInput,
        coments,
        "rudisha",
-       "/BadiliAinaComment"
+       "/BadiliUsajili"
      );
 //     if(coments.length > 0){
 //         if(staffsInput == '#'){
@@ -620,7 +620,7 @@ function wasilishaMmus(){
        staffsInput,
        coments,
        "wasilisha",
-       "/BadiliAinaComment"
+       "/BadiliUsajili"
      );
 //     if(coments.length > 0){
 //         if(staffsInput == '#'){
