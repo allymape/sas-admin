@@ -485,10 +485,11 @@ const menuItems = [
 <div id="scrollbar">
     <div class="container-fluid">
         <div id="two-column-menu">
+            &nbsp;
         </div>
         <ul class="navbar-nav" id="navbar-nav">
             <!-- <li class="menu-title"><span data-key="t-menu">Menu</span></li> -->
-
+            <li class="menu-title text-muted"><span><%= req.session.kanda ? `KANDA YA ${req.session.kanda}` : '' %></span></li>
             <% menuItems.forEach( function(item) { 
                
                 if(typeof item.subMenus !== 'undefined' && item.subMenus.length > 0 )

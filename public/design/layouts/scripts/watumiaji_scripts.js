@@ -34,7 +34,11 @@ function getUsers() {
         role_name: user.role_name,
         level_name: user.level_name,
         office: user.lga_name
-          ? user.section_name + " " + user.lga_name
+          ? `<span class='myTooltip' style='cursor:pointer' data-bs-toggle=tooltip title='Kanda ya ${
+              user.zone_name
+            }'>
+          ${user.section_name + " " + user.lga_name}
+          </span>`
           : user.zone_name
           ? `<span class='myTooltip' style='cursor:pointer' data-bs-toggle=tooltip title='Kanda ya ${
               user.zone_name

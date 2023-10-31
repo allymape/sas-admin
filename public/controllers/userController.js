@@ -69,6 +69,7 @@ userController.post("/auth", function (req, res) {
                     const { user, RoleManage, token } = body;
                     // console.log("Controller", user);
                     req.session.UserLevel = user.user_level;
+                    req.session.kanda = user.kanda;
                     req.session.office = user.office;
                     req.session.officeName = user.office_name;
                     req.session.twofa = user.twofa;
