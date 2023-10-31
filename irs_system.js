@@ -70,6 +70,7 @@ const kusajiliCommentController = require("./public/controllers/maombi/kusajiliC
 const algorithmController = require("./public/controllers/algorithmController");
 const notificationController = require("./public/controllers/notificationController");
 const trackApplicationController = require("./public/controllers/trackApplicationController");
+const attachmentController = require("./public/controllers/attachmentController");
 
 var app = express();
 app.use(helmet.frameguard())
@@ -15004,7 +15005,7 @@ app.use("/", feeController)
 app.use("/", algorithmController)
 app.use("/", ongezaDahaliaRequestController)
 app.use("/", trackApplicationController)
-
+app.use("/", attachmentController);
 app.use("/", notificationController)
 
 app.use("/", errorController);

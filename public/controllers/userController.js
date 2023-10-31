@@ -46,9 +46,8 @@ userController.post("/auth", function (req, res) {
         req.flash("error", "Kuna tatizo wasiliana na Msimamizi wa Mfumo");
         res.redirect("/");
       }else{
-            if (body !== undefined && response.statusCode == 200) {
+            if (body !== undefined && (response.statusCode == 200 || response.statusCode == 400)) {
               const { statusCode, message, error } = body;
-              // console.log("hahahhahahha", statusCode);
               if (error) {
                 req.flash("error", "Kuna tatizo wasiliana na Msimamizi wa Mfumo");
                 res.redirect("/");

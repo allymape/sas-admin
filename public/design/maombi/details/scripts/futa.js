@@ -314,12 +314,11 @@ function tuma(){
         // }
 }
 
-
-$('a').click(function(){
-    var base64doc = $(this).attr('data-path');
-    console.log(base64doc)
-    document.getElementById("pdfdoc").src = "data:application/pdf;base64,"+base64doc;
-});
+// $('a').click(function(){
+//     var base64doc = $(this).attr('data-path');
+//     console.log(base64doc)
+//     document.getElementById("pdfdoc").src = "data:application/pdf;base64,"+base64doc;
+// });
 
 function badili(school_name){
     var trackingId = document.getElementById('trackingId').value;

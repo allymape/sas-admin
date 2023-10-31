@@ -1,6 +1,3 @@
-$(".btn-make-payment").on("click" , function() {
- 
-})
 
 function makePayment(e){
       const tracking_number = e.getAttribute("data-tracking_number");
@@ -15,3 +12,7 @@ function makePayment(e){
         });
     } , 'Ndio! Endelea' , 'warning' , `Je, unataka kubadili hali ya malipo ya ombi hili lenye namba ya Ombi ${tracking_number}?` , 'Thibitisha')
 }
+
+$(".btn-reassign").on("click" , function(){
+     modal("reassign-modal" , true);
+});

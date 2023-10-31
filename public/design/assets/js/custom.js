@@ -1,3 +1,30 @@
+
+$(".read-attachment").click(function () {
+  const file_path = $(this).attr("data-path");
+  ajaxRequest(
+    `/View-Attachment`,
+    "POST",
+    (response) => {
+      const {statusCode , data} =  response
+        if(statusCode == 300){
+          document.getElementById("pdfdoc").src = `data:application/pdf;base64, ${data}`;
+        }else{
+         alertMessage(
+           `Alert`,
+           `Samahani! Kuna tatizo kwenye kusoma kiambata hiki. Wasiliana na Msimamizi wa Mfumo`,
+           "error",
+           () => {
+             window.location.href = urlRedirection;
+           }
+         );
+        }
+    },
+    JSON.stringify({
+      file_path: file_path,
+    })
+  );
+});
+
 function ajaxRequest(url, method, callback, formData = {}, loading = true) {
   var currentUrl = window.location.href;
   var parameters = currentUrl.split("?")[1] || "";

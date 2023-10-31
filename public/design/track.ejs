@@ -55,6 +55,7 @@
             <th class="" data-sort="">Muda wa Kutumwa (Mtendaji)</th>
             <th class="" data-sort="">Hali ya Ombi</th>
             <th class="" data-sort="">Malipo</th>
+            <th></th>
           </tr>
         </thead>
         <tbody class="list form-check-all">
@@ -66,7 +67,7 @@
                 index : i
             }) %>
         </td>
-            <td class="<%= reg_status == 2 ? 'text-success' : 'text-danger' %>"><%= item.tracking_number %></td>
+            <td class="<%= reg_status == 1 ? 'text-primary' : 'text-danger' %>"><%= item.tracking_number %></td>
             <td class="">
                 <span title="<%= item.registration_number %>" data-bs-toggle="tooltip" class="<%= item.registration_number ? 'cursor-pointer' : '' %>">
                     <%= item.application_category %>
@@ -93,6 +94,16 @@
                   <button type="button" class="btn btn-sm btn-soft-primary btn-make-payment" onclick="makePayment(this)" data-tracking_number="<%= item.tracking_number %>" >Lipa</button>
                 <% } %>
             </td>
+              <td class="text-center">
+                      <div class="dropdown">
+                          <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                              <i class="ri-more-2-fill"></i>
+                          </a>
+                          <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                              <li><a class="dropdown-item btn-reassign" href="#">Re Assign</a></li>
+                          </ul>
+                      </div>
+              </td>
           </tr>
           <% } %>
         </tbody>
@@ -101,26 +112,25 @@
     <%- include('paginations/html_pagination.ejs') %>
   </div>
 </div><!-- end card -->
-<div class="modal fade" id="showModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="reassign-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header bg-light p-3">
         <h5 class="modal-title" id="exampleModalLabel"></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
       </div>
-    </div>
-  </div>
-</div>
-<div class="modal fade" id="showEditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-light p-3">
-        <h5 class="modal-title" id="exampleModalLabel"></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+      <div class="modal-body">
+        <div class="form-group">
+             <div>
+                  <select name="staff" id="watumiaji" class="form-control">
+                  </select>
+             </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
 <%- include('layouts/partials/footer.ejs' , {
                 card_title :  card_title , 
                 pagination_script : false,
