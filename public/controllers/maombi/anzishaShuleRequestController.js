@@ -23,11 +23,10 @@ anzishaShuleRequestController.get(
       //  search: req.query.tafuta,
     };
     sendRequest(req, res, requestSummariesAPI+"/1", "GET", formData, (jsonData) => {
-      const { data } = jsonData;
-      console.log(data)
+      const { dataSummary } = jsonData;
       res.render(path.join(__dirname + "/../../design/maombi/kuanzishashule"), {
         req: req,
-        summary: data,
+        summary: dataSummary,
       });
     });
   }
