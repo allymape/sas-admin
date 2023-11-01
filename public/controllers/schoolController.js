@@ -72,7 +72,7 @@ schoolController.get("/LookForSchools", isAuthenticated, function (req, res) {
     {search : search},
     (jsonData) => {
       var data = jsonData.data;
-      console.log(data);
+      // console.log(data);
       res.send({
         statusCode: data.statusCode,
         message: data.message,

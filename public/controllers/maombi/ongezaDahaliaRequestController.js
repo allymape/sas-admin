@@ -54,7 +54,7 @@ ongezaDahaliaRequestController.get(
         );
         res.render(path.join(__dirname + "/../../design/maombi/dahalia"), {
           req: req,
-          total_month: jsonData.dataSummary,
+          summary: jsonData.dataSummary,
           maombi: obj,
         });
       }

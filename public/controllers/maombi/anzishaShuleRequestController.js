@@ -7,15 +7,10 @@ var path = require("path");
 const { isAuthenticated, sendRequest, can } = require("../../../util");
 // const { sendRequest, isAuthenticated, can } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
-var maoanzishaShuleJumlaAPI = API_BASE_URL + "jumla-maombi-kuanzisha-shule";
+const requestSummariesAPI = API_BASE_URL + "request_summaries";
 var maoanzishaShuleListAPI = API_BASE_URL +"maombi-kuanzisha-shule";
 var ombiDetails = API_BASE_URL + "view-ombi-details";
 var ombiReply = API_BASE_URL + "tuma-ombi-majibu";
-// var allZonesAPI = API_BASE_URL + "allZones";
-// var tengenezaZoneAPI = API_BASE_URL + "addZone";
-// var editZoneAPI = API_BASE_URL + "editZone";
-// var updateZoneAPI = API_BASE_URL + "updateZone";
-// var deleteZoneAPI = API_BASE_URL + "deleteZone";
 
 // Display
 anzishaShuleRequestController.get(
@@ -27,23 +22,14 @@ anzishaShuleRequestController.get(
       //  is_paginated: req.query.is_paginated,
       //  search: req.query.tafuta,
     };
-    sendRequest(
-      req,
-      res,
-      maoanzishaShuleJumlaAPI,
-      "GET",
-      formData,
-      (jsonData) => {
-        const { data } = jsonData;
-        res.render(
-          path.join(__dirname + "/../../design/maombi/kuanzishashule"),
-          {
-            req: req,
-            total_month: data,
-          }
-        );
-      }
-    );
+    sendRequest(req, res, requestSummariesAPI+"/1", "GET", formData, (jsonData) => {
+      const { data } = jsonData;
+      console.log(data)
+      res.render(path.join(__dirname + "/../../design/maombi/kuanzishashule"), {
+        req: req,
+        summary: data,
+      });
+    });
   }
 );
 

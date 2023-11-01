@@ -58,7 +58,7 @@ kusajiliBinafsiRequestController.get(
                       path.join(__dirname + "/../../design/maombi/usajili"),
                       {
                         req: req,
-                        total_month: jsonData.dataSummary,
+                        summary: jsonData.dataSummary,
                         maombi: obj,
                       }
                     );

@@ -58,7 +58,7 @@ badiliMenejaRequestController.get(
           path.join(__dirname + "/../../design/maombi/badili_meneja"),
           {
             req: req,
-            total_month: jsonData.dataSummary,
+            summary: jsonData.dataSummary,
             maombi: obj,
             //  useLev: req.session.UserLevel,
             //  userName: req.session.userName,

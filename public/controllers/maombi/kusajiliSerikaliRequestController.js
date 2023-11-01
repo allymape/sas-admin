@@ -48,13 +48,15 @@ kusajiliSerikaliRequestController.get(
                 }
                 
                 res.render(
-                        path.join(__dirname + "/../../design/maombi/usajili_serikali"),
-                        {
-                        req: req,
-                        total_month: jsonData.datSummary,
-                        maombi: obj,
-                        }
-                    );
+                  path.join(
+                    __dirname + "/../../design/maombi/usajili_serikali"
+                  ),
+                  {
+                    req: req,
+                    summary: jsonData.dataSummary,
+                    maombi: obj,
+                  }
+                );
                 });
         
       });

@@ -57,7 +57,7 @@ umilikinaumenejaRequestController.get(
           path.join(__dirname + "/../../design/maombi/mmiliki"),
           {
             req: req,
-            total_month: dataSummary,
+            summary: dataSummary,
             maombi: obj,
           }
         );

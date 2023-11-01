@@ -66,7 +66,7 @@ badiliMmilikiRequestController.get(
               ),
               {
                 req: req,
-                total_month: jsonData.dataSummary,
+                summary: jsonData.dataSummary,
                 maombi: obj,
               }
             );

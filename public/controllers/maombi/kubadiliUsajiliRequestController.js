@@ -45,7 +45,7 @@ kubadiliUsajiliRequestController.get(
 
       res.render(path.join(__dirname + "/../../design/maombi/aina_usajili"), {
         req: req,
-        total_month: jsonData.dataSummary,
+        summary: jsonData.dataSummary,
         maombi: obj,
         // useLev: req.session.UserLevel,
         // userName: req.session.userName,

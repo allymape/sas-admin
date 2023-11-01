@@ -76,7 +76,7 @@ kubadiliJinaRequestController.get(
             path.join(__dirname + "/../../design/maombi/jina_shule"),
             {
               req: req,
-              total_month: dataSummary,
+              summary: dataSummary,
               maombi: obj,
               useLev: req.session.UserLevel,
                                 userName: req.session.userName,

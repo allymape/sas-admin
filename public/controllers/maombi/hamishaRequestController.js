@@ -45,13 +45,8 @@ hamishaRequestController.get(
       console.log(new Date() + " " + req.session.userName + ": /BadiliJina");
       res.render(path.join(__dirname + "/../../design/maombi/hamisha_shule"), {
         req: req,
-        total_month: jsonData.dataSummary,
+        summary: jsonData.dataSummary,
         maombi: obj,
-        // useLev: req.session.UserLevel,
-        // userName: req.session.userName,
-        // RoleManage: req.session.RoleManage,
-        // userID: req.session.userID,
-        // cheoName: req.session.cheoName,
       });
     });
   }

@@ -46,7 +46,7 @@ futaShuleRequestController.get(
       console.log(new Date() + " " + req.session.userName + ": /BadiliJina");
       res.render(path.join(__dirname + "/../../design/maombi/futa_shule"), {
         req: req,
-        total_month: jsonData.dataSummary,
+        summary: jsonData.dataSummary,
         maombi: obj,
         // useLev: req.session.UserLevel,
         // userName: req.session.userName,

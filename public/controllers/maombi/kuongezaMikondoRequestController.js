@@ -60,7 +60,7 @@ kuongezaMikondoRequestController.get(
                       path.join(__dirname + "/../../design/maombi/mikondo"),
                       {
                         req: req,
-                        total_month: dataSummary,
+                        summary: dataSummary,
                         maombi: obj,
                       }
                     );

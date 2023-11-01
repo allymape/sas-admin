@@ -46,7 +46,7 @@ kuongezaBweniRequestController.get(
             );
             res.render(path.join(__dirname + "/../../design/maombi/bweni"), {
               req: req,
-              total_month: dataSummary,
+              summary: dataSummary,
               maombi: obj,
             });
           }
