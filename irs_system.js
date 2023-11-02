@@ -110,7 +110,8 @@ app.set("view engine", "ejs");
 app.use(bodyParser.json());
 
 app.locals.getCurrentUrl = function (req) {
-  return req.originalUrl;
+  const url = req.url.replace(/^\/+/, '')
+  return url;
 };
 
 
@@ -119,13 +120,14 @@ global.sumAssociativeArray = (array) => {
 }
 
 global.routeIs =  (url_segments, currentUrl) => {
+  console.log(currentUrl , url_segments)
     if(url_segments){
         var urls = url_segments.split("|");
         if (Array.isArray(urls) && urls.length > 0) {
-        
               for(var i=0; i< urls.length; i++){
-                // console.log(modifyUrl(currentUrl) , urls[i]);
-                if(modifyUrl(currentUrl) === urls[i].trim()){
+                // console.log('cehkakdka ',currentUrl , currentUrl.replace(/^\/+/, '') , urls[i].trim()))
+                // console.log(modifyUrl(currentUrl.) === urls[i].trim())
+                if(modifyUrl(currentUrl).toLowerCase() == urls[i].trim().toLowerCase()){
                     return true;
                 }
               }

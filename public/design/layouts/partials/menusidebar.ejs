@@ -300,7 +300,7 @@ const menuItems = [
         url  : "TrackOmbi",
         icon : "ri-search-2-line",
         counterId : "",
-        pattern : "Waombaji",
+        pattern : "TrackOmbi",
         hasPermissionTo : permission(req , 'view-track-application'),
     },
    //MPANGLIO
@@ -505,7 +505,7 @@ const menuItems = [
                             %>
                             <li class="nav-item">
                                 <a class="nav-link menu-link" 
-                                    href="<%= item.menuId ? item.url : '/'+item.url %>" 
+                                    href="<%= item.menuId ? '/'+item.url : '/'+item.url %>" 
                                     data-bs-toggle="collapse" 
                                     role="button" aria-expanded="false" 
                                     aria-controls="<%= item.menuId %>"
@@ -552,9 +552,9 @@ const menuItems = [
                     }
                     %>
                     <li class="nav-item">
-                        <a href="<%= item.url %>" 
+                        <a href="/<%=item.url %>" 
                             <%= typeof item.menuId !== 'undefined' && item.menuId ? `id=${item.menuId}` : ''%>
-                            class="nav-link menu-link <%= routeIs(item.patten , getCurrentUrl(req)) ? 'active' : '' %>"
+                            class="nav-link menu-link <%= routeIs(item.pattern , getCurrentUrl(req)) ? 'active' : '' %>"
                         >
                             <i class="ri <%=item.icon%>"></i> 
                             <span data-key="t-widgets"><%=item.label%></span>
