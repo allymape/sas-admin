@@ -101,7 +101,8 @@ schoolController.post("/AddShule" , function(req , res){
                const {statusCode , message} = body;
                res.send({
                   statusCode : statusCode,
-                  message : message
+                  message : message,
+                  action : 'create'
                });
      });
 });
@@ -126,8 +127,9 @@ schoolController.post("/UpdateShule/:id" , function(req , res){
            if(body !== 'undefined'){
                const {statusCode , message} = body;
                res.send({
-                  statusCode : statusCode,
-                  message : message
+                 statusCode: statusCode,
+                 message: message,
+                 action: "update",
                });
            }
      });

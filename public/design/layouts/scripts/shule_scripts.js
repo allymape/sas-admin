@@ -195,7 +195,7 @@ $("#school-form").on('submit' , function(e){
                   `${url}`,
                   "POST",
                   (response) => {
-                    const { statusCode, message } = response;
+                    const { statusCode, message , action } = response;
                     alertMessage(
                       statusCode == 300 ? "Umefanikiwa" : "Haujafanikiwa",
                       message,
@@ -203,6 +203,9 @@ $("#school-form").on('submit' , function(e){
                       () => {
                         if(statusCode == 300){
                           renderDataTableWards(); 
+                          if(action == 'create'){
+                            resetFields();
+                          }
                         }
                       }
                     );
