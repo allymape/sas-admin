@@ -11,7 +11,14 @@
                 <div class="col-sm-auto">
                     <div>
                         <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"><i class="ri-add-line align-bottom me-1"></i> Sajili</button>
-                        <a href="/Viambatisho?deleted=true" class="btn btn-soft-danger" ><i class="ri-delete-bin-2-line"></i></a>
+                        <% if(req.query.deleted == 'true') {%>
+                            <a href="/Viambatisho" class="btn btn-outline-success" >
+                                <i class="ri-check-double-fill"></i> Active Items
+                            </a>
+                        <% }else { %>
+                            <a href="/Viambatisho?deleted=true" class="btn btn-outline-danger" >
+                                <i class="ri-delete-bin-2-line"></i> Deleted Items</a> 
+                        <% } %>
                     </div>
                 </div>
                 <div class="col-sm">

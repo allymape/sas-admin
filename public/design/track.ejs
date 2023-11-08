@@ -76,8 +76,8 @@
             <td class=""><%=item.applicant_name %></td>
             <td class=""><%= dateFormat(item.application_created_at , "DD/MM/YYYY HH:mm:ss") %></td>
             <td class="">
-                <% if(status == 1) {%>
-                <%= item.title %>  <%= item.district_name %> <%= item.region_name %> <%= item.zone_name %>
+                <% if(status == 1 || status == 0) {%>
+                <%= item.title ? item.title : 'W1 - ' %>  <%= item.district_name %> <%= item.region_name %> <%= item.zone_name %>
                 <% } %>
             </td>
             <td class=""><%= dateFormat(item.submitted_created_at , "DD/MM/YYYY HH:mm:ss") %></td>

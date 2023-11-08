@@ -111,7 +111,7 @@ app.use(bodyParser.json());
 
 app.locals.getCurrentUrl = function (req) {
   const url = req.url.replace(/^\/+/, '')
-  return url;
+  return url.indexOf('?') > -1 ? url.split('?')[0] : url;
 };
 
 
@@ -120,7 +120,7 @@ global.sumAssociativeArray = (array) => {
 }
 
 global.routeIs =  (url_segments, currentUrl) => {
-  console.log(currentUrl , url_segments)
+  // console.log(currentUrl , url_segments)
     if(url_segments){
         var urls = url_segments.split("|");
         if (Array.isArray(urls) && urls.length > 0) {

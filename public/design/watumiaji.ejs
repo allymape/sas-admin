@@ -10,7 +10,14 @@
             <div class="col-sm-auto">
                 <div>
                     <button type="button" class="btn btn-info add-btn" id="btn-create-user" ><i class="ri-add-line align-bottom me-1"></i> Sajili</button>
-                    <!-- <button class="btn btn-soft-danger" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button> -->
+                    <% if(req.query.inactive == 'true') {%>
+                            <a href="/Watumiaji" class="btn btn-outline-success" >
+                                <i class="ri-check-double-fill"></i> Active Users
+                            </a>
+                        <% }else { %>
+                            <a href="/Watumiaji?inactive=true" class="btn btn-outline-danger" >
+                                <i class="ri-user-fill"></i> Inactive Users</a> 
+                        <% } %>
                 </div>
             </div>
             <div class="col-sm">

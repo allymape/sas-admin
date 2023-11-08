@@ -124,13 +124,14 @@ function BadiliData(e) {
   document.getElementById("attachment-type-status").checked = Number(status_id)
     ? true
     : false;
+
   addApplicationCategoriesToSelectionInput(
     "application-category-field2",
     Number(app_cat)
   );
   addRegistrationTypesToSelectionInput(
     "registration-type-field2",
-    Number(reg_type)
+    Number(reg_type) > 0 ?  Number(reg_type) : "0"
   );
   if(structure_id){
     document.getElementById("registration-structure-field2").value = Number(structure_id) 
