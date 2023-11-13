@@ -32,7 +32,9 @@ const renderDataTableAttachmentTypes = () => {
           ? `<span class="ri-check-double-fill text-success"></span>`
           : `<span class="ri-close-fill text-danger"></span>`,
         reg_type: type.registration_type_id,
-        structure: type.structure,
+        structure: type.structure
+          ? type.structure
+          : `<span class="badge badge-label bg-success"><i class="mdi mdi-circle-medium"></i> Wote <i class="mdi mdi-circle-medium"></i></span>`,
         structure_id: type.structure_id,
         status_id: type.status,
         app_cat: type.application_category_id,

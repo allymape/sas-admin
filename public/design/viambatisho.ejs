@@ -30,7 +30,7 @@
                                 </div>
                                  <div class="ms-2">
                                     <select name="aina_ombi" id="aina_ombi" class="form-control">
-                                        <option value=""> --- Chagua  --</option>
+                                        <option value=""> --- Chagua Aina ya Ombi  --</option>
                                         <% for (let index = 0; index < categories.length; index++) { %>
                                         <% const category = categories[index]; %>
                                             <option value="<%= category.id %>" <%= req.query.aina_ombi == category.id ? 'selected' : '' %> > 
@@ -41,7 +41,7 @@
                                 </div>
                                 <div class="ms-2">
                                     <select name="umiliki" id="umiliki" class="form-control">
-                                        <option value=""> --- Chagua --</option>
+                                        <option value=""> --- Chagua Umiliki --</option>
                                         <option value="0" <%=req.query.umiliki == "0" ? 'selected' : ''%> > Wote </option>
                                         <% for (let index = 0; index < ownerships.length; index++) { %>
                                         <% const owner = ownerships[index]; %>
@@ -53,7 +53,8 @@
                                 </div>
                                 <div class="ms-2">
                                     <select name="structure" id="structure" class="form-control">
-                                        <option value=""> --- Chagua  --</option>
+                                        <option value=""> --- Chagua Majengo -- </option>
+                                        <option value="0" <%= req.query.structure == '0' ? 'selected' : '' %>>Wote</option>
                                         <% for (let index = 0; index < structures.length; index++) { %>
                                         <% const structure = structures[index]; %>
                                             <option value="<%= structure.id %>" <%= req.query.structure == structure.id ? 'selected' : '' %> > 
