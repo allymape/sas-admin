@@ -13,7 +13,7 @@ attachmentController.post("/View-Attachment", isAuthenticated, function (req, re
     if(file_path){
         pdf2base64(FRONTEND_URL + file_path)
         .then( (response) => {
-                console.log(response);
+                // console.log(response);
                 res.send({
                   statusCode: 300,
                   data: response,

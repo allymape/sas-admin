@@ -1,6 +1,7 @@
 
 $(".read-attachment").click(function () {
   const file_path = $(this).attr("data-path");
+  if(file_path.includes(".pdf")){
   ajaxRequest(
     `/View-Attachment`,
     "POST",
@@ -23,6 +24,13 @@ $(".read-attachment").click(function () {
       file_path: file_path,
     })
   );
+  }else{
+     if(file_path){
+       document.getElementById(
+         "pdfdoc"
+       ).src = `data:application/pdf;base64, ${file_path}`;
+     }
+  }
 });
 
 function ajaxRequest(url, method, callback, formData = {}, loading = true) {
