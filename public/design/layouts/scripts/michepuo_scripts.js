@@ -1,32 +1,26 @@
 $("#create-btn").on("click", function () {
-  modal("showModal", true);
+    modal("showModal", true);
 });
+
 function BadiliData(e) {
   var id = e.getAttribute("data-id");
   var name = e.getAttribute("data-name");
-  var level = e.getAttribute("data-level");
-  var status = e.getAttribute("data-status");
   document.getElementById("id-field").value = id;
   document.getElementById("name2-field").value = name;
-  document.getElementById("uongozi2-field").value = level;
-  document.getElementById("status-field").checked = status == 1 ? true : false;
   modal("showEditModal" , true);
 }
 
 
-function sajiliHati() {
+function sajiliMchepuo() {
   var name = document.getElementById("name-field").value;
-  var level = document.getElementById("uongozi-field").value;
 
   if (name.length <= 0) {
     $("#jazasimu").show();
   }
-  if (level.length <=0 ) {
-    $("#jazacheo").show();
-  }
-  if (name.length > 0 && level.length > 0) {
+  
+  if (name.length > 0) {
     ajaxRequest(
-      `/tengenezaDesignation`,
+      `/TengenezaBias`,
       "POST",
       (response) => {
         const statusCode = response.statusCode;
@@ -43,7 +37,6 @@ function sajiliHati() {
       },
       JSON.stringify({
         name: name,
-        level: level,
       })
     );
   }
@@ -68,14 +61,12 @@ function sajiliHati() {
     // });
 //   }
 }
-function sasishaHati() {
+function sasishaMchepuo() {
   var name = document.getElementById("name2-field").value;
-  var level = document.getElementById("uongozi2-field").value;
   var id = document.getElementById("id-field").value;
-  var status = document.getElementById("status-field").checked;
-  if(name.length > 0 && level.length > 0){
+  if(name.length > 0){
     ajaxRequest(
-      `/badiliDesignation/${id}`,
+      `/BadiliBias/${id}`,
       "POST",
       (response) => {
         const statusCode = response.statusCode;
@@ -92,8 +83,6 @@ function sasishaHati() {
       },
       JSON.stringify({
         name: name,
-        level: level,
-        status: status ? 1 : 0,
       })
     );
   }

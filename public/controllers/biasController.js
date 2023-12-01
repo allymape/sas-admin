@@ -49,7 +49,7 @@ biasController.get("/Michepuo", isAuthenticated, function (req, res) {
 });
 
 // Get all biass
-biasController.get("/Bias",  isAuthenticated, can('view-biass'),function (req, res) {
+biasController.get("/Bias",  isAuthenticated, can('view-biases'),function (req, res) {
   var per_page = Number(req.query.per_page || 10);
   var page = Number(req.query.page || 1);
     var formData = {
@@ -75,7 +75,7 @@ biasController.get("/Bias",  isAuthenticated, can('view-biass'),function (req, r
 
 
 // Store Bias
-biasController.post("/TengenezaBias",  isAuthenticated, can('create-biass'), function (req, res) {
+biasController.post("/TengenezaBias",  isAuthenticated, can('create-biases'), function (req, res) {
   
   sendRequest(req, res, tengenezaBiasAPI, "POST", req.body, (body) => {
         var statusCode = body.statusCode;
@@ -88,7 +88,7 @@ biasController.post("/TengenezaBias",  isAuthenticated, can('create-biass'), fun
 });
 
 // Edit Bias
-biasController.get("/Bias/:id",  isAuthenticated, can('update-biass'), function (req, res) {
+biasController.get("/Bias/:id",  isAuthenticated, can('update-biases'), function (req, res) {
   var id = Number(req.params.id);
   sendRequest(req, res, editBiasAPI + "/" + id, "GET", {}, (jsonData) => {
       getAllBias(req, res, true, jsonData.data);
@@ -96,7 +96,7 @@ biasController.get("/Bias/:id",  isAuthenticated, can('update-biass'), function 
 });
 
 // Update Bias
-biasController.post("/BadiliBias/:id",  isAuthenticated, can('update-biass'), function (req, res) {
+biasController.post("/BadiliBias/:id",  isAuthenticated, can('update-biases'), function (req, res) {
   var id = Number(req.params.id);
   sendRequest(req, res, updateBiasAPI + "/" + id, "PUT", req.body , (jsonData) => {
         var statusCode = jsonData.statusCode;

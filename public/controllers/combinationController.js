@@ -76,7 +76,7 @@ combinationController.get("/Combination",  isAuthenticated, can('view-combinatio
 
 
 // Store Combination
-combinationController.post("/TengenezaCombination",  isAuthenticated, can('create-combination'), function (req, res) {
+combinationController.post("/TengenezaCombination",  isAuthenticated, can('create-combinations'), function (req, res) {
   
   sendRequest(req, res, tengenezaCombinationAPI, "POST", req.body, (body) => {
         var statusCode = body.statusCode;
@@ -97,7 +97,7 @@ combinationController.get("/Combination/:id",  isAuthenticated, can('update-comb
 });
 
 // Update Combination
-combinationController.post("/BadiliCombination/:id",  isAuthenticated, can('update-combination'), function (req, res) {
+combinationController.post("/BadiliCombination/:id",  isAuthenticated, can('update-combinations'), function (req, res) {
   var id = Number(req.params.id);
   sendRequest(req, res, updateCombinationAPI + "/" + id, "PUT", req.body , (jsonData) => {
         var statusCode = jsonData.statusCode;
