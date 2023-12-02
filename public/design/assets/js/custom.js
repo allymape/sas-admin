@@ -1,35 +1,40 @@
+$(".btn-close-modal").on("click", function () {
+  modal("showModal", false);
+});
 
 $(".read-attachment").click(function () {
   const file_path = $(this).attr("data-path");
-  if(file_path.includes(".pdf")){
-  ajaxRequest(
-    `/View-Attachment`,
-    "POST",
-    (response) => {
-      const {statusCode , data} =  response
-        if(statusCode == 300){
-          document.getElementById("pdfdoc").src = `data:application/pdf;base64, ${data}`;
-        }else{
-         alertMessage(
-           `Alert`,
-           `Samahani! Kuna tatizo kwenye kusoma kiambata hiki. Wasiliana na Msimamizi wa Mfumo`,
-           "error",
-           () => {
-             window.location.href = urlRedirection;
-           }
-         );
+  if (file_path.includes(".pdf")) {
+    ajaxRequest(
+      `/View-Attachment`,
+      "POST",
+      (response) => {
+        const { statusCode, data } = response;
+        if (statusCode == 300) {
+          document.getElementById(
+            "pdfdoc"
+          ).src = `data:application/pdf;base64, ${data}`;
+        } else {
+          alertMessage(
+            `Alert`,
+            `Samahani! Kuna tatizo kwenye kusoma kiambata hiki. Wasiliana na Msimamizi wa Mfumo`,
+            "error",
+            () => {
+              window.location.href = urlRedirection;
+            }
+          );
         }
-    },
-    JSON.stringify({
-      file_path: file_path,
-    })
-  );
-  }else{
-     if(file_path){
-       document.getElementById(
-         "pdfdoc"
-       ).src = `data:application/pdf;base64, ${file_path}`;
-     }
+      },
+      JSON.stringify({
+        file_path: file_path,
+      })
+    );
+  } else {
+    if (file_path) {
+      document.getElementById(
+        "pdfdoc"
+      ).src = `data:application/pdf;base64, ${file_path}`;
+    }
   }
 });
 
@@ -74,8 +79,8 @@ function ajaxRequest(url, method, callback, formData = {}, loading = true) {
       } else {
         msg = "Error:" + xhr.status + " ";
       }
-       console.log(text)
-       text = '';
+      console.log(text);
+      text = "";
       alertMessage(text, msg, "error", () => {});
     },
   });
@@ -217,7 +222,8 @@ var dataTable = (
                             onclick="${
                               typeof actionBtn.editBtn.callback !== "undefined"
                                 ? actionBtn.editBtn.callback
-                                : ""}"
+                                : ""
+                            }"
                             ><svg xmlns="http://www.w3.org/2000/svg" 
                                   width="24" height="24" viewBox="0 0 24 24" 
                                   fill="none" stroke="currentColor" stroke-width="2" 
@@ -230,15 +236,12 @@ var dataTable = (
                           </svg>
                         </a>`;
       }
-    //  Delete Button
+      //  Delete Button
       if (
-        typeof actionBtn.deleteBtn !== "undefined" 
-        &&
-        actionBtn.deleteBtn.show
-        &&
-       (
-        typeof dataValue.status == 'undefined' || (typeof dataValue.status != 'undefined' && dataValue.status == 1)
-        )
+        typeof actionBtn.deleteBtn !== "undefined" &&
+        actionBtn.deleteBtn.show &&
+        (typeof dataValue.status == "undefined" ||
+          (typeof dataValue.status != "undefined" && dataValue.status == 1))
       ) {
         rowData =
           rowData +
@@ -260,11 +263,9 @@ var dataTable = (
       // Other Button
       if (
         typeof actionBtn.otherBtn !== "undefined" &&
-        actionBtn.otherBtn.show
-         &&
-        (
-          typeof dataValue.status == 'undefined' || (typeof dataValue.status != 'undefined' && dataValue.status == 1)
-        )
+        actionBtn.otherBtn.show &&
+        (typeof dataValue.status == "undefined" ||
+          (typeof dataValue.status != "undefined" && dataValue.status == 1))
       ) {
         rowData =
           rowData +
@@ -383,10 +384,10 @@ function appendSelectionOption(
         selected.includes(id) ? "selected" : ""
       } > ${name} </option>`;
   }
-  fieldSelect.html(options).prop('disabled' , false);
+  fieldSelect.html(options).prop("disabled", false);
 }
 
-function getAllHierarchies(rankId, user = null , selectedHierarchy = null) {
+function getAllHierarchies(rankId, user = null, selectedHierarchy = null) {
   if (rankId) {
     ajaxRequest(
       "/LookupHierarchies",
@@ -443,7 +444,7 @@ function getAllDesignations(hierarchyId, selectedDesignation = null) {
   }
 }
 // Get Zones
-function getAllZones(user = null , selectedZone = null){
+function getAllZones(user = null, selectedZone = null) {
   // Load zones
   ajaxRequest(
     "/LookupZones",
@@ -553,12 +554,11 @@ function getAllWards(lgaCode, selectedWard = null) {
 }
 
 function getAllStreets(wardCode, selectedStreet = null) {
-  
   ajaxRequest(
     "/MitaaList",
     "GET",
     (streetsResponse) => {
-      const { streets , statusCode } = streetsResponse;
+      const { streets, statusCode } = streetsResponse;
       // console.log(statusCode)
       if (statusCode == 300) {
         $("#mtaa-field").prop("disabled", wardCode ? false : true);
@@ -779,46 +779,49 @@ var setUrlSearchParams = (url_segment = null) => {
   }
   // Check if any key has an empty value
   const emptyKeys = url.search
-                       .substring(1)
-                       .split("&")
-                       .map((param) => param.split("=")[0])
-                       .filter((key) => !searchParams.has(key));
-      // Add empty keys to the entries array
-      emptyKeys.forEach((key) => {
-        entries.push({key , value : null});
-      });
- 
-      entries.forEach((params) => {
-        const {key , value} = params;
-          if (value) {
-            searchParams.set(key, value);
-          } else {
-            searchParams.delete(key);
-          }
-      });
-      // Delete Page from search params if present.
-     if(searchParams.has('page')){
-         searchParams.delete('page');
-     }else{
-           let newUrl = window.location.pathname + "?" + searchParams.toString();
-           history.pushState({}, document.title, searchParams.toString() ? newUrl : newUrl.replace('?' , '')); //Modify url and make sure it does not include empty params
-     }
-    let params = searchParams.toString();
-    if (url_segment) {
-      return `/${url_segment}?` + params;
+    .substring(1)
+    .split("&")
+    .map((param) => param.split("=")[0])
+    .filter((key) => !searchParams.has(key));
+  // Add empty keys to the entries array
+  emptyKeys.forEach((key) => {
+    entries.push({ key, value: null });
+  });
+
+  entries.forEach((params) => {
+    const { key, value } = params;
+    if (value) {
+      searchParams.set(key, value);
+    } else {
+      searchParams.delete(key);
     }
+  });
+  // Delete Page from search params if present.
+  if (searchParams.has("page")) {
+    searchParams.delete("page");
+  } else {
+    let newUrl = window.location.pathname + "?" + searchParams.toString();
+    history.pushState(
+      {},
+      document.title,
+      searchParams.toString() ? newUrl : newUrl.replace("?", "")
+    ); //Modify url and make sure it does not include empty params
+  }
+  let params = searchParams.toString();
+  if (url_segment) {
+    return `/${url_segment}?` + params;
+  }
   return params;
-}
+};
 
-
-function parseQueryString(queryString){
-    const params = new URLSearchParams(queryString);
-    const result = {};
-       for(const param of params.entries()){
-          const [key , value] = param
-          result[key] = value
-       }
-    return result;
+function parseQueryString(queryString) {
+  const params = new URLSearchParams(queryString);
+  const result = {};
+  for (const param of params.entries()) {
+    const [key, value] = param;
+    result[key] = value;
+  }
+  return result;
 }
 
 // setTimeout(() =>  {
@@ -840,102 +843,106 @@ function parseQueryString(queryString){
 //     } , {} , false);
 //   }, 1000);
 
-   function diffForHumans(date){
-        if(date){
-          const dt = new Date(date);
-          // Make a fuzzy time
-          var delta = Math.round((+new Date() - dt) / 1000);
-          var minute = 60,
-            hour = minute * 60,
-            day = hour * 24;
-          var fuzzy = "";
-          if (delta < 60) {
-            fuzzy = "Sek " + delta;
-          } else if (delta < hour) {
-            fuzzy = "Dak "+ Math.floor(delta / minute);
-          } else if (Math.floor(delta / hour) < 24) {
-            fuzzy = "Saa " + Math.floor(delta / hour);
-          } else if (delta > day) {
-            fuzzy = "Siku "+ Math.floor(delta / day);
-          }
-          return fuzzy;
-        }
+function diffForHumans(date) {
+  if (date) {
+    const dt = new Date(date);
+    // Make a fuzzy time
+    var delta = Math.round((+new Date() - dt) / 1000);
+    var minute = 60,
+      hour = minute * 60,
+      day = hour * 24;
+    var fuzzy = "";
+    if (delta < 60) {
+      fuzzy = "Sek " + delta;
+    } else if (delta < hour) {
+      fuzzy = "Dak " + Math.floor(delta / minute);
+    } else if (Math.floor(delta / hour) < 24) {
+      fuzzy = "Saa " + Math.floor(delta / hour);
+    } else if (delta > day) {
+      fuzzy = "Siku " + Math.floor(delta / day);
+    }
+    return fuzzy;
   }
+}
 
-  function tumaMaoniYako(urlComment, data, staffsInput , comments , btn, urlRedirection='') {
-    if (comments.length > 0) {
-      if (
-        (staffsInput == "#" && btn == "wasilisha") ||
-        (staffsInput != "#" && staffsInput != "" && btn == "tuma") ||
-        (staffsInput == "#" && staffsInput != "" && btn == "rudisha") ||
-        (staffsInput == "#" && staffsInput != "" && btn == "kataa")
-      ) {
-        confirmAction(
-          () => {
-            
-            ajaxRequest(
-              `${urlComment}`,
-              "POST",
-              (response) => {
-                const { statusCode } = response;
-                if (statusCode == 300) {
-                  alertMessage(
-                    `Success`,
-                    `Hongera! Umefanikiwa`,
-                    "success",
-                    () => {
-                      if(urlRedirection){
-                        window.location.href = urlRedirection;
-                      }
-                    }
-                  );
-                } else {
-                  alertMessage(
-                    `Error`,
-                    `Samahani! Haujafanikiwa kuna tatizo Wasiliana na Msimamizi wa Mfumo.`,
-                    "warning",
-                    () => {
+function tumaMaoniYako(
+  urlComment,
+  data,
+  staffsInput,
+  comments,
+  btn,
+  urlRedirection = ""
+) {
+  if (comments.length > 0) {
+    if (
+      (staffsInput == "#" && btn == "wasilisha") ||
+      (staffsInput != "#" && staffsInput != "" && btn == "tuma") ||
+      (staffsInput == "#" && staffsInput != "" && btn == "rudisha") ||
+      (staffsInput == "#" && staffsInput != "" && btn == "kataa")
+    ) {
+      confirmAction(
+        () => {
+          ajaxRequest(
+            `${urlComment}`,
+            "POST",
+            (response) => {
+              const { statusCode } = response;
+              if (statusCode == 300) {
+                alertMessage(
+                  `Success`,
+                  `Hongera! Umefanikiwa`,
+                  "success",
+                  () => {
+                    if (urlRedirection) {
                       window.location.href = urlRedirection;
                     }
-                  );
-                }
-              },
-              JSON.stringify(data)
-            );
-          },
-          "Ndio!, Endelea",
+                  }
+                );
+              } else {
+                alertMessage(
+                  `Error`,
+                  `Samahani! Haujafanikiwa kuna tatizo Wasiliana na Msimamizi wa Mfumo.`,
+                  "warning",
+                  () => {
+                    window.location.href = urlRedirection;
+                  }
+                );
+              }
+            },
+            JSON.stringify(data)
+          );
+        },
+        "Ndio!, Endelea",
+        "warning",
+        `Je, una uhakika ${
+          btn == "tuma"
+            ? "unataka kutuma kwenda kwa " + $("#staffs option:selected").text()
+            : btn == "wasilisha"
+            ? "unataka kuwasilisha"
+            : btn == "rudidsha"
+            ? "unataka rudisha kwa Mwombaji."
+            : ""
+        }?`,
+        "Thibitisha"
+      );
+    } else {
+      if (btn == "tuma") {
+        alertMessage(
+          "Tahadhari",
+          "Tafadhali, Chagua Afisa wa kumtumia.",
           "warning",
-          `Je, una uhakika ${
-            btn == "tuma"
-              ? "unataka kutuma kwenda kwa " +
-                $("#staffs option:selected").text()
-              : btn == "wasilisha"
-              ? "unataka kuwasilisha"
-              : btn == "rudidsha"
-              ? "unataka rudisha kwa Mwombaji."
-              : ""
-          }?`,
-          "Thibitisha"
+          () => {}
         );
       } else {
-          if(btn == "tuma"){
-              alertMessage(
-                "Tahadhari",
-                "Tafadhali, Chagua Afisa wa kumtumia.",
-                "warning",
-                () => {}
-              );
-          }else{
-              alertMessage(
-                "Tahadhari",
-                "Samahani, huwezi kubonyeza kitufe hiki",
-                "warning",
-                () => {}
-              );
-          }
+        alertMessage(
+          "Tahadhari",
+          "Samahani, huwezi kubonyeza kitufe hiki",
+          "warning",
+          () => {}
+        );
       }
-    } else {
-       alertMessage("Tahadhari", "Weka maoni yako kwanza.", "warning" , () => {});
     }
-       
+  } else {
+    alertMessage("Tahadhari", "Weka maoni yako kwanza.", "warning", () => {});
   }
+}

@@ -4,29 +4,29 @@ $("#create-btn").on("click", function () {
 function BadiliData(e) {
   var id = e.getAttribute("data-id");
   var name = e.getAttribute("data-name");
-  var level = e.getAttribute("data-level");
-  var status = e.getAttribute("data-status");
+  var specialization = e.getAttribute("data-specialization_id");
+  // var status = e.getAttribute("data-status");
   document.getElementById("id-field").value = id;
   document.getElementById("name2-field").value = name;
-  document.getElementById("uongozi2-field").value = level;
-  document.getElementById("status-field").checked = status == 1 ? true : false;
+  document.getElementById("specialization2-field").value = specialization;
+  // document.getElementById("status2-field").checked = status == 1 ? true : false;
   modal("showEditModal" , true);
 }
 
 
-function sajiliHati() {
+function sajiliTahasusi() {
   var name = document.getElementById("name-field").value;
-  var level = document.getElementById("uongozi-field").value;
+  var specialization = document.getElementById("specialization-field").value;
 
   if (name.length <= 0) {
     $("#jazasimu").show();
   }
-  if (level.length <=0 ) {
+  if (specialization.length <= 0) {
     $("#jazacheo").show();
   }
-  if (name.length > 0 && level.length > 0) {
+  if (name.length > 0 && specialization.length > 0) {
     ajaxRequest(
-      `/tengenezaDesignation`,
+      `/TengenezaCombination`,
       "POST",
       (response) => {
         const statusCode = response.statusCode;
@@ -43,39 +43,38 @@ function sajiliHati() {
       },
       JSON.stringify({
         name: name,
-        level: level,
+        school_specialization_id: specialization,
       })
     );
   }
-//   if (name.length > 0 && location != "#") {
-    // $.ajax({
-    //   url: "/add_designation",
-    //   type: "POST",
-    //   data: JSON.stringify({ name: name, level: location }),
-    //   contentType: "application/json",
-    //   success: function (response) {
-    //     if (response.statusCode == 300) {
-    //       $("#alertsuccess").show();
-    //     }
-    //     if (response.statusCode == 306) {
-    //       $("#alertexist").show();
-    //     }
-    //     if (response.statusCode == 400 || response.statusCode == 500) {
-    //       $("#alertmtandao").show();
-    //     }
-    //     // if(typeof(response) === "string"){response = JSON.parse(response)}
-    //   },
-    // });
-//   }
+  //   if (name.length > 0 && location != "#") {
+  // $.ajax({
+  //   url: "/add_designation",
+  //   type: "POST",
+  //   data: JSON.stringify({ name: name, level: location }),
+  //   contentType: "application/json",
+  //   success: function (response) {
+  //     if (response.statusCode == 300) {
+  //       $("#alertsuccess").show();
+  //     }
+  //     if (response.statusCode == 306) {
+  //       $("#alertexist").show();
+  //     }
+  //     if (response.statusCode == 400 || response.statusCode == 500) {
+  //       $("#alertmtandao").show();
+  //     }
+  //     // if(typeof(response) === "string"){response = JSON.parse(response)}
+  //   },
+  // });
+  //   }
 }
-function sasishaHati() {
+function sasishaTahasusi() {
   var name = document.getElementById("name2-field").value;
-  var level = document.getElementById("uongozi2-field").value;
+  var school_specialization_id = document.getElementById("specialization2-field").value;
   var id = document.getElementById("id-field").value;
-  var status = document.getElementById("status-field").checked;
-  if(name.length > 0 && level.length > 0){
+  if (name.length > 0 && school_specialization_id.length > 0) {
     ajaxRequest(
-      `/badiliDesignation/${id}`,
+      `/BadiliCombination/${id}`,
       "POST",
       (response) => {
         const statusCode = response.statusCode;
@@ -92,8 +91,7 @@ function sasishaHati() {
       },
       JSON.stringify({
         name: name,
-        level: level,
-        status: status ? 1 : 0,
+        school_specialization_id: school_specialization_id,
       })
     );
   }
