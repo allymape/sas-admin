@@ -52,6 +52,7 @@ function rudisha() {
   var staffsInput = document.getElementById("staffs").value;
   var haliombi = 1;
   var trackerId = document.getElementById("trackerId").value;
+
   tumaMaoniYako(
     "/TumaComment",
     {
@@ -404,7 +405,7 @@ function rudishaMteja() {
   var trackerId = document.getElementById("trackerId").value;
   var staffsInput = document.getElementById("staffs").value;
   tumaMaoniYako(
-    "TumaComment",
+    "/TumaComment",
     {
       coments: coments,
       staffs: staffs,
