@@ -424,35 +424,52 @@ function Pandisha(){
 }
 
 function rudishaMteja(){
+   
     var coments = document.getElementById('exampleFormControlTextarea1').value;
     var staffs = '0-0';
     var userLevel = document.getElementById('userLevel').value;
     var haliombi = 4;
     var trackerId = document.getElementById('trackerId').value;
     
-    var schoolCategoryID = document.getElementById('schoolCategoryID').value;
+    // var schoolCategoryID = document.getElementById('schoolCategoryID').value;
 
     var staffsInput = document.getElementById('staffs').value;
-    if(coments.length > 0){
-        if(staffsInput == '#'){
-        $.ajax({
-            url: "/MmilikiBadiliComment",
-            type: 'POST',
-            data: JSON.stringify({"coments": coments, "staffs": staffs,
-            "haliombi": haliombi, "trackerId": trackerId, "schoolCategoryID": schoolCategoryID,
-            "attachment": "", "kiambatisho": "", 
-            "attach_length": 0, "ombitype": 1}),
-            contentType: 'application/json',
-            success: function(response) {
-                window.location.href = "/MaombiKusajiliShule";
-            }
-        });
-    }else{
-        alert("Samahani huwezi kubonyeza kitufe hiki")
-    }
-    }else{
-    alert("Tafadhali weka maoni yako")
-    }
+    tumaMaoniYako(
+      "/MmilikiBadiliComment",
+        {
+        "coments": coments, 
+        "staffs": staffs,
+        "haliombi": haliombi, 
+        "trackerId": trackerId, 
+        "attachment": "", "kiambatisho": "", 
+        "attach_length": 0, 
+        "ombitype": 1
+      },
+      staffsInput,
+      coments,
+      "rudisha",
+      "/MaombiMmilikiShule"
+    );
+    // if(coments.length > 0){
+    //     if(staffsInput == '#'){
+    //     $.ajax({
+    //         url: "/MmilikiBadiliComment",
+    //         type: 'POST',
+    //         data: JSON.stringify({"coments": coments, "staffs": staffs,
+    //         "haliombi": haliombi, "trackerId": trackerId, "schoolCategoryID": schoolCategoryID,
+    //         "attachment": "", "kiambatisho": "", 
+    //         "attach_length": 0, "ombitype": 1}),
+    //         contentType: 'application/json',
+    //         success: function(response) {
+    //             window.location.href = "/MaombiKusajiliShule";
+    //         }
+    //     });
+    // }else{
+    //     alert("Samahani huwezi kubonyeza kitufe hiki")
+    // }
+    // }else{
+    // alert("Tafadhali weka maoni yako")
+    // }
 
 }
 
