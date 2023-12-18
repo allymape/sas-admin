@@ -1,10 +1,10 @@
 <% var card_title = '' %> 
-<%- include('../layouts/partials/header.ejs' , {
-    title : 'Kuongeza Bweni',
-    page_title : 'Kuongeza Bweni',
-    card_title : 'Orodha ya Ripoti ya Kuongeza Bweni',
+<%- include('../../layouts/partials/header.ejs' , {
+    title : 'Kuanzisha Shule',
+    page_title : 'Taarifa ya Uanzishaji wa Shule',
+    card_title : 'Uanzisha wa Shule',
     breadcrumb_main : 'Ripoti',
-    // top_header : '../../reports/top_headers/kuongeza_bweni_top_header.ejs',
+    // top_header : '../../reports/top_headers/badili_dahalia_top_header.ejs',
 }) %>
   <div class="card-body border border-dashed border-end-0 border-start-0">
         <form>
@@ -66,40 +66,18 @@
                     </tr>
                 </thead>
                 <tbody class="list form-check-all">
-                    <% for(var i = 0; i < maombi.length; i++){ %>
+                   <% for (let i = 0; i < data.length; i++) { %>
+                   <% const item = data[i];%>
                     <tr>
-                        <th scope="row">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="chk_child" value="option1">
-                            </div>
-                        </th>
-                        <td class="id"><a href="/BadiliBweni/<%= maombi[i].tracking_number %>" class="fw-medium link-primary">#<%= maombi[i].tracking_number %></a></td>
-                        <td class="project_name"><a href="#" class="fw-medium link-primary"><%= maombi[i].school_name %></a></td>
-                        <td>
-                            <div class="d-flex">
-                                <div class="flex-grow-1 tasks_name"><%= maombi[i].LgaName %></div>
-                                <div class="flex-shrink-0 ms-4">
-                                    <ul class="list-inline tasks-list-menu mb-0">
-                                        <li class="list-inline-item"><a href="/TaarifaOmbi<%= maombi[i].tracking_number %>"><i class="ri-eye-fill align-bottom me-2 text-muted"></i></a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="client_name"><%= maombi[i].RegionName %></td>
-                        <td class="due_date badge badge-soft-secondary text-uppercase"  title=" <%= maombi[i].created_at %>"> <%= maombi[i].remain_days %></td>
-                        <td class="priority"><span class="badge bg-danger text-uppercase"></span>Jipya</td>
-<!--                                                    <td class="assignedto">
-                            <div class="avatar-group">
-                                <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Frank">
-                                    <img src="design/assets/images/users/avatar-3.jpg" alt="" class="rounded-circle avatar-xxs" />
-                                </a>
-                                <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Anna">
-                                    <img src="design/assets/images/users/avatar-1.jpg" alt="" class="rounded-circle avatar-xxs" />
-                                </a>
-                            </div>
-                        </td>-->
+                        <td> <%= item.tracking_number %> </td>
+                        <td> <%= item.status %> </td>
+                        <td> <%= item.tracking_number %> </td>
+                        <td> <%= item.tracking_number %> </td>
+                        <td> <%= item.tracking_number %> </td>
+                        <td> <%= item.tracking_number %> </td>
+                        <td> <%= item.tracking_number %> </td>
                     </tr>
-                    <% } %>
+                   <% } %>
                 </tbody>
             </table>
             <!--end table-->
@@ -111,20 +89,12 @@
                 </div>
             </div>
         </div>
-        <div class="d-flex justify-content-end mt-2">
-            <div class="pagination-wrap hstack gap-2">
-                <a class="page-item pagination-prev disabled" href="#">
-                    Previous
-                </a>
-                <ul class="pagination listjs-pagination mb-0"></ul>
-                <a class="page-item pagination-next" href="#">
-                    Next
-                </a>
+          <!-- Pagination and page length -->
+            <%- include('../../paginations/html_pagination.ejs'); %>
+               <!-- End pagination and page length -->
             </div>
-        </div>
-    </div>
     <!--end card-body-->
-<%- include('../layouts/partials/footer.ejs' , {
+<%- include('../../layouts/partials/footer.ejs' , {
      card_title :  '' , 
      pagination_script : true,
     }) %>

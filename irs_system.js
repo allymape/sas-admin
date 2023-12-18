@@ -71,6 +71,7 @@ const algorithmController = require("./public/controllers/algorithmController");
 const notificationController = require("./public/controllers/notificationController");
 const trackApplicationController = require("./public/controllers/trackApplicationController");
 const attachmentController = require("./public/controllers/attachmentController");
+const reportRequestController = require("./public/controllers/ripoti/RipotiRequestController");
 
 var app = express();
 app.use(helmet.frameguard())
@@ -2510,6 +2511,7 @@ app.get("/RipotiBadiliMmiliki", function (req, res) {
           var message1 = jsonData.message;
           var statusCode1 = jsonData.statusCode;
           var data1 = jsonData.data;
+          console.log("hahahahha" , jsonData)
           if (statusCode1 == 300) {
             // console.log("jjdjdjd " + req.session.UserLevel)
             request(
@@ -4127,6 +4129,7 @@ app.get("/RipotiKubadiliJina", function (req, res) {
     typeof req.session.userName !== "undefined" ||
     req.session.userName === true
   ) {
+   
     request(
       {
         url: maokusajiliShuleJumlaAPI,
@@ -4144,11 +4147,13 @@ app.get("/RipotiKubadiliJina", function (req, res) {
           res.send("failed");
         }
         if (body !== undefined) {
+          
           var jsonData = JSON.parse(body);
           // var jsonData = body
           var message1 = jsonData.message;
           var statusCode1 = jsonData.statusCode;
           var data1 = jsonData.data;
+          console.log(body)
           if (statusCode1 == 300) {
             console.log(
               req.session.office + " jjdjdjd " + req.session.UserLevel
@@ -4175,7 +4180,7 @@ app.get("/RipotiKubadiliJina", function (req, res) {
                   );
                   res.send("failed");
                 }
-                console.log(body);
+                
                 if (body !== undefined) {
                   // var jsonData = JSON.parse(body)
                   var jsonData = body;
@@ -4205,6 +4210,7 @@ app.get("/RipotiKubadiliJina", function (req, res) {
                     console.log(
                       new Date() + " " + req.session.userName + ": /BadiliJina"
                     );
+                    console.log("hiiiiiiii jina")
                     res.render(
                       path.join(__dirname + "/public/design/reports/ripoti_jina_shule"),
                       {
@@ -4974,9 +4980,9 @@ app.get("/RipotiFutaShuleTaarifa/:id", function (req, res) {
                 req: req,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
-                                  userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
+                userName: req.session.userName,
+                RoleManage: req.session.RoleManage,
+                userID: req.session.userID,
                 cheoName: req.session.cheoName,
                 created_at: created_at,
                 tracking_number: tracking_number,
@@ -5246,14 +5252,7 @@ app.get("/ViewBadiliMkondo/:id", function (req, res) {
                 .fontSize(12)
                 .font("Times-Bold")
                 .text("JAMHURI YA MUUNGANO WA TANZANIA", 220, 20, 100, 100);
-
-              doc.text(
-                "WIZARA YA ELIMU, SAYANSI NA TEKNOLOJIA",
-                210,
-                35,
-                100,
-                100
-              );
+              doc.text("WIZARA YA ELIMU, SAYANSI NA TEKNOLOJIA",210,35,100,100);
 
               // Adding an image in the pdf.
 
@@ -7137,7 +7136,7 @@ app.get("/RipotiThibitisho/:id", function (req, res) {
             // var maoni = JSON.parse(jsonData.maoni)
             // console.log(attachment_path)
             if (fs.existsSync(tracking_number + ".pdf")) {
-              console.log("file exists");
+              console.log("file exists ...");
             } else {
               console.log("file not found!");
               console.log(
@@ -7363,7 +7362,7 @@ app.get("/RipotiThibitisho/:id", function (req, res) {
             }
 
             if (fs.existsSync(tracking_number + "meneja.pdf")) {
-              console.log("file exists");
+              console.log("file exists ...");
             } else {
               console.log("file not found!");
               //barua meneja
@@ -12697,11 +12696,11 @@ app.get("/RipotiZilizosajiliwa", function (req, res) {
                 req: req,
                 objtotal: objtotal,
                 list: objlist,
-                useLev: req.session.UserLevel,
-                userName: req.session.userName,
-                RoleManage: req.session.RoleManage,
-                userID: req.session.userID,
-                cheoName: req.session.cheoName,
+                // useLev: req.session.UserLevel,
+                // userName: req.session.userName,
+                // RoleManage: req.session.RoleManage,
+                // userID: req.session.userID,
+                // cheoName: req.session.cheoName,
                 pagination : {
                               total : numRows , 
                               current : page , 
@@ -12728,6 +12727,8 @@ app.get("/SajiliwaZilizokataliwa", function (req, res) {
   var objlist = [];
   var objtotal = [];
   var today = new Date();
+  var per_page =  Number(req.query.per_page || 10);
+  var page = Number(req.query.page || 1);
   // today = dateFormat.format(today, "dd/mm/yyyy")
   if (
     typeof req.session.userName !== "undefined" ||
@@ -12735,7 +12736,7 @@ app.get("/SajiliwaZilizokataliwa", function (req, res) {
   ) {
     request(
       {
-        url: sajiliShuleJumlaKatAPI,
+        url: sajiliShuleJumlaKatAPI+`?page=${page}&per_page=${per_page}`,
         method: "POST",
         headers: {
           Authorization: "Bearer" + " " + req.session.Token,
@@ -12760,6 +12761,8 @@ app.get("/SajiliwaZilizokataliwa", function (req, res) {
           var message = jsonData.message;
           var statusCode = jsonData.statusCode;
           var data = jsonData.data;
+          var numRows = jsonData.numRows;
+
           for (var i = 0; i < data.length; i++) {
             var kaunti = data[i].kaunti;
             var category = data[i].category;
@@ -12824,11 +12827,18 @@ app.get("/SajiliwaZilizokataliwa", function (req, res) {
                 req: req,
                 objtotal: objtotal,
                 list: objlist,
-                useLev: req.session.UserLevel,
-                                  userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
-                cheoName: req.session.cheoName,
+                // useLev: req.session.UserLevel,
+                // userName: req.session.userName,
+                // RoleManage: req.session.RoleManage,
+                // userID: req.session.userID,
+                // cheoName: req.session.cheoName,
+                 pagination : {
+                              total : numRows , 
+                              current : page , 
+                              per_page : per_page , 
+                              url : 'RipotiZilizosajiliwa',
+                              pages : Math.ceil( numRows / per_page)
+                }
               }
             );
           }
@@ -15009,6 +15019,7 @@ app.use("/", ongezaDahaliaRequestController)
 app.use("/", trackApplicationController)
 app.use("/", attachmentController);
 app.use("/", notificationController)
+// app.use("/", reportRequestController);
 
 app.use("/", errorController);
 app.listen(port, () => {
