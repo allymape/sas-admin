@@ -78,7 +78,10 @@ dashboardController.get(
 );
 
 // Comprehensive dashboard
-dashboardController.get("/Dashboard" , isAuthenticated , can('view-dashboard') , (req, res) => {
+dashboardController.get("/Dashboard" , 
+    isAuthenticated , 
+    can('view-dashboard') , 
+    (req, res) => {
     sendRequest(req, res, schoolSummariesAPI , "GET" , {} , (jsonData) => {
           const {registrations , owners , categories , applications , structures} = jsonData.data;
           // console.log(jsonData);

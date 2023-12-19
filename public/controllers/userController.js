@@ -67,7 +67,8 @@ userController.post("/auth", function (req, res) {
                     const ip_address = requestIp.getClientIp(req);
                     const browser_used = req.headers["user-agent"];
                     const { user, RoleManage, token } = body;
-                    // console.log("Controller", user);
+                    console.log("Controller");
+                    console.log(body);
                     req.session.UserLevel = user.user_level;
                     req.session.kanda = user.kanda;
                     req.session.office = user.office;
