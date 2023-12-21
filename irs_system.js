@@ -71,12 +71,9 @@ const algorithmController = require("./public/controllers/algorithmController");
 const notificationController = require("./public/controllers/notificationController");
 const trackApplicationController = require("./public/controllers/trackApplicationController");
 const attachmentController = require("./public/controllers/attachmentController");
-<<<<<<< HEAD
 const anzishaShuleBilaMajengoReportController = require("./public/controllers/ripoti/anzishaShuleBilaMajengoReportController");
 const usajiliShuleReportController = require("./public/controllers/ripoti/usajiliShuleReportController");
-=======
 const reportRequestController = require("./public/controllers/ripoti/RipotiRequestController");
->>>>>>> 220dba3ac34ae8f3571ff12e3cc19acc0c7cdc46
 
 var app = express();
 app.use(helmet.frameguard())
@@ -12695,7 +12692,6 @@ app.get("/ShuleZilizosajiliwa", function (req, res) {
 //             XLSX.writeFile(workBook, "sample.xlsx");
 //             // Saving the pdf file in root directory.
 
-<<<<<<< HEAD
 //             res.render(
 //               path.join(__dirname + "/public/design/reports/ripotizilizosajiliwa"),
 //               {
@@ -12727,39 +12723,6 @@ app.get("/ShuleZilizosajiliwa", function (req, res) {
 //     res.redirect("/");
 //   }
 // });
-=======
-            res.render(
-              path.join(__dirname + "/public/design/reports/ripotizilizosajiliwa"),
-              {
-                req: req,
-                objtotal: objtotal,
-                list: objlist,
-                // useLev: req.session.UserLevel,
-                // userName: req.session.userName,
-                // RoleManage: req.session.RoleManage,
-                // userID: req.session.userID,
-                // cheoName: req.session.cheoName,
-                pagination : {
-                              total : numRows , 
-                              current : page , 
-                              per_page : per_page , 
-                              url : 'RipotiZilizosajiliwa',
-                              pages : Math.ceil( numRows / per_page)
-                }
-              }
-            );
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
->>>>>>> 220dba3ac34ae8f3571ff12e3cc19acc0c7cdc46
 
 app.get("/SajiliwaZilizokataliwa", function (req, res) {
   var obj = [];
@@ -15058,12 +15021,9 @@ app.use("/", ongezaDahaliaRequestController)
 app.use("/", trackApplicationController)
 app.use("/", attachmentController);
 app.use("/", notificationController)
-<<<<<<< HEAD
 app.use("/", anzishaShuleBilaMajengoReportController)
 app.use("/", usajiliShuleReportController)
-=======
 // app.use("/", reportRequestController);
->>>>>>> 220dba3ac34ae8f3571ff12e3cc19acc0c7cdc46
 
 app.use("/", errorController);
 app.listen(port, () => {
