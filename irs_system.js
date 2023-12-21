@@ -71,7 +71,11 @@ const algorithmController = require("./public/controllers/algorithmController");
 const notificationController = require("./public/controllers/notificationController");
 const trackApplicationController = require("./public/controllers/trackApplicationController");
 const attachmentController = require("./public/controllers/attachmentController");
-const reportRequestController = require("./public/controllers/ripoti/RipotiRequestController");
+const reportKuanzishaRequestController = require("./public/controllers/ripoti/RipotiRequestKuanzishaController");
+const reportUsajiliRequestController = require("./public/controllers/ripoti/RipotiRequestUsajiliController");
+const reportWamilikiRequestController = require("./public/controllers/ripoti/RipotiRequestWamilikiController");
+const reportMenejaRequestController = require("./public/controllers/ripoti/RipotiRequestMenejaController");
+// const reportRequestController = require("./public/controllers/ripoti/RipotiRequestController");
 
 var app = express();
 app.use(helmet.frameguard())
@@ -12690,37 +12694,37 @@ app.get("/ShuleZilizosajiliwa", function (req, res) {
 //             XLSX.writeFile(workBook, "sample.xlsx");
 //             // Saving the pdf file in root directory.
 
-            res.render(
-              path.join(__dirname + "/public/design/reports/ripotizilizosajiliwa"),
-              {
-                req: req,
-                objtotal: objtotal,
-                list: objlist,
-                // useLev: req.session.UserLevel,
-                // userName: req.session.userName,
-                // RoleManage: req.session.RoleManage,
-                // userID: req.session.userID,
-                // cheoName: req.session.cheoName,
-                pagination : {
-                              total : numRows , 
-                              current : page , 
-                              per_page : per_page , 
-                              url : 'RipotiZilizosajiliwa',
-                              pages : Math.ceil( numRows / per_page)
-                }
-              }
-            );
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
+//             res.render(
+//               path.join(__dirname + "/public/design/reports/ripotizilizosajiliwa"),
+//               {
+//                 req: req,
+//                 objtotal: objtotal,
+//                 list: objlist,
+//                 // useLev: req.session.UserLevel,
+//                 // userName: req.session.userName,
+//                 // RoleManage: req.session.RoleManage,
+//                 // userID: req.session.userID,
+//                 // cheoName: req.session.cheoName,
+//                 pagination : {
+//                               total : numRows , 
+//                               current : page , 
+//                               per_page : per_page , 
+//                               url : 'RipotiZilizosajiliwa',
+//                               pages : Math.ceil( numRows / per_page)
+//                 }
+//               }
+//             );
+//           }
+//           if (statusCode == 209) {
+//             res.redirect("/");
+//           }
+//         }
+//       }
+//     );
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
 app.get("/SajiliwaZilizokataliwa", function (req, res) {
   var obj = [];
@@ -15019,7 +15023,10 @@ app.use("/", ongezaDahaliaRequestController)
 app.use("/", trackApplicationController)
 app.use("/", attachmentController);
 app.use("/", notificationController)
-// app.use("/", reportRequestController);
+app.use("/", reportKuanzishaRequestController);
+app.use("/", reportUsajiliRequestController);
+app.use("/", reportWamilikiRequestController);
+app.use("/", reportMenejaRequestController);
 
 app.use("/", errorController);
 app.listen(port, () => {
