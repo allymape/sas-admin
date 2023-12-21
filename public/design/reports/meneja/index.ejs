@@ -1,8 +1,8 @@
 <% var card_title = '' %> 
 <%- include('../../layouts/partials/header.ejs' , {
-    title : 'Kuanzisha Shule',
-    page_title : 'Taarifa ya Uanzishaji wa Shule',
-    card_title : 'Uanzisha wa Shule',
+    title : 'Meneja wa Shule',
+    page_title : 'Taarifa ya Mameneja wa Shule',
+    card_title : 'Mameneja wa Shule',
     breadcrumb_main : 'Ripoti',
     // top_header : '../../reports/top_headers/badili_dahalia_top_header.ejs',
 }) %>
@@ -139,8 +139,8 @@
                 <% if(pagination.total > 0){ %>
                     <div class="col-xxl-2 col-sm-2">
                       <%- include('../../includes/export_excel_link.ejs' , {
-                        btn_color : 'success' 
-                }) %>
+                            btn_color : 'info'
+                        }) %>
                     </div>
                 <% } %>
                 <!--end col-->
@@ -150,28 +150,29 @@
     </div>
     <!--end card-body-->
     <div class="card-body">
-         <div class="ribbon-three ribbon-three-success">
+         <div class="ribbon-three ribbon-three-info">
             <span class="badge"><%=`${pagination.total}`%></span>
         </div>
         <div class="table-responsive table-card mb-4">
-             <div class="alert alert-success">
+             <div class="alert alert-info">
                     <h6 class="text-primary text-uppercase">Jumla <%= pagination.total %></h6>
                 </div>
             <table class="table align-middle table-nowrap mb-0" id="tasksTable">
                 <thead class="table-light text-muted">
                     <tr>
-                        <th class="sort" data-sort="id">Namba ya Ombi</th>
-                        <th class="sort" data-sort="project_name">Jina la Shule</th>
-                        <th class="sort" data-sort="project_name">Aina</th>
-                        <th class="sort" data-sort="project_name">Majengo</th>
-                        <th class="sort" data-sort="project_name">Umiliki</th>
-                        <th class="sort" data-sort="assignedto">Mkoa</th>
-                        <th class="sort" data-sort="due_date">Halmashauri</th>
-                        <th class="sort" data-sort="due_date">Kata</th>
-                        <th class="sort" data-sort="due_date">Mtaa</th>
-                        <th class="sort" data-sort="due_date">Tarehe</th>
-                        <th class="sort" data-sort="status">Hali</th>
-                        <!--<th class="sort" data-sort="priority">Walioshughulikia</th>-->
+                        <th>Namba ya Ombi</th>
+                        <th>Jina</th>
+                        <th>Jina la Shule</th>
+                        <th>Aina</th>
+                        <th>Majengo</th>
+                        <th>Umiliki</th>
+                        <th>Mkoa</th>
+                        <th>Halmashauri</th>
+                        <th>Kata</th>
+                        <th>Mtaa</th>
+                        <th>Tarehe</th>
+                        <th>Hali</th>
+                        <!--<thdata-sort="priority">Walioshughulikia</th>-->
                     </tr>
                 </thead>
                 <tbody class="list form-check-all">
@@ -179,6 +180,7 @@
                    <% const item = data[i];%>
                     <tr>
                         <td> <%= item.tracking_number %> </td>
+                        <td> <%= item.manager_name %> </td>
                         <td> <%= item.school_name %> </td>
                         <td> <%= item.category %> </td>
                         <td> <%= item.structure %> </td>

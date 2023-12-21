@@ -219,23 +219,3 @@ $("#school-form").on('submit' , function(e){
 
 ajaxSelect2("search-school", "LookForSchools", "Tafuta Shule", "schoolModal");
 
-$('#mkoa-field').on('change' , function(){
-  const regionCode = $(this).val();
-        $("#lga-field").html("<option>Chagua Halmashauri</option>").prop('disabled' , true);
-        $("#kata-field").html("<option>Chagua Kata</option>").prop("disabled", true);
-        $("#mtaa-field").html("<option>Chagua Mtaa</option>").prop("disabled", true);
-        getAllDistricts(regionCode)
-})
-
-$("#lga-field").on("change", function () {
-  const lgaCode = $(this).val();
-  $("#kata-field").html("<option>Chagua Kata</option>").prop("disabled", true);
-   $("#mtaa-field").html("<option>Chagua Mtaa</option>").prop("disabled", true);
-  getAllWards(lgaCode);
-});
-
-$("#kata-field").on("change", function () {
-  const wardCode = $(this).val();
-  $("#mtaa-field").html("<option>Chagua Mtaa</option>").prop("disabled", true);
-  getAllStreets(wardCode);
-});

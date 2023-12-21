@@ -2,6 +2,29 @@ $(".btn-close-modal").on("click", function () {
   modal("showModal", false);
 });
 
+$("#mkoa-field").on("change", function () {
+  const regionCode = $(this).val();
+  $("#lga-field")
+    .html("<option>Chagua Halmashauri</option>")
+    .prop("disabled", true);
+  $("#kata-field").html("<option>Chagua Kata</option>").prop("disabled", true);
+  $("#mtaa-field").html("<option>Chagua Mtaa</option>").prop("disabled", true);
+  getAllDistricts(regionCode);
+});
+
+$("#lga-field").on("change", function () {
+  const lgaCode = $(this).val();
+  $("#kata-field").html("<option>Chagua Kata</option>").prop("disabled", true);
+  $("#mtaa-field").html("<option>Chagua Mtaa</option>").prop("disabled", true);
+  getAllWards(lgaCode);
+});
+
+$("#kata-field").on("change", function () {
+  const wardCode = $(this).val();
+  $("#mtaa-field").html("<option>Chagua Mtaa</option>").prop("disabled", true);
+  getAllStreets(wardCode);
+});
+
 $(".read-attachment").click(function () {
   const file_path = $(this).attr("data-path");
   if (file_path.includes(".pdf")) {

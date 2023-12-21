@@ -8,6 +8,7 @@ const {
 const fs = require("fs");
 const PDFDocument = require("pdfkit");
 const doc = new PDFDocument();
+const  json2xls = require("json2xls");
 
 module.exports = {
   sendRequest: (req, res, url, method, formData, callback) => {
@@ -267,4 +268,17 @@ module.exports = {
       doc.end();
     }
   },
+  exportJSONToExcel : (res , jsonData , report_name = '') => {
+    const xls = json2xls(jsonData);
+    // fs.writeFileSync('data.xlsx' , xls , 'binary')
+    // Set response headers for file download
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader("Content-Disposition", "attachment; filename="+report_name ? report_name+"_report.xlsx" : "report.xlsx");
+
+    // Send the Excel file as a binary stream
+    res.send(Buffer.from(xls, "binary"));
+  }
 };
