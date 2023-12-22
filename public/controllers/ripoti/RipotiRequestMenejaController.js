@@ -52,24 +52,21 @@ reportMenejaRequestController.get("/RipotiMeneja",isAuthenticated,can("view-init
            data.forEach( (item) => { delete item.status })
            exportJSONToExcel(res, data);
         }else{
-           res.render(
-             path.join(__dirname + "/../../design/reports/meneja"),
-             {
-               req: req,
-               data: data,
-               categories,
-               structures,
-               ownerships,
-               regions,
-               pagination: {
-                 total: numRows,
-                 current: page,
-                 per_page: per_page,
-                 url: "RipotiKuanzisha",
-                 pages: Math.ceil(numRows / per_page),
-               },
-             }
-           );
+           res.render(path.join(__dirname + "/../../design/reports/meneja"), {
+             req: req,
+             data: data,
+             categories,
+             structures,
+             ownerships,
+             regions,
+             pagination: {
+               total: numRows,
+               current: page,
+               per_page: per_page,
+               url: "RipotiMeneja",
+               pages: Math.ceil(numRows / per_page),
+             },
+           });
         }
        
       }

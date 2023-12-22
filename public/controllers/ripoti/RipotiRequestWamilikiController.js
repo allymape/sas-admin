@@ -50,24 +50,21 @@ reportWamilikiRequestController.get("/RipotiWamiliki",isAuthenticated,can("view-
            data.forEach( (item) => { delete item.status })
            exportJSONToExcel(res, data);
         }else{
-           res.render(
-             path.join(__dirname + "/../../design/reports/wamiliki"),
-             {
-               req: req,
-               data: data,
-               categories,
-               structures,
-               ownerships,
-               regions,
-               pagination: {
-                 total: numRows,
-                 current: page,
-                 per_page: per_page,
-                 url: "RipotiKuanzisha",
-                 pages: Math.ceil(numRows / per_page),
-               },
-             }
-           );
+           res.render(path.join(__dirname + "/../../design/reports/wamiliki"), {
+             req: req,
+             data: data,
+             categories,
+             structures,
+             ownerships,
+             regions,
+             pagination: {
+               total: numRows,
+               current: page,
+               per_page: per_page,
+               url: "RipotiWamiliki",
+               pages: Math.ceil(numRows / per_page),
+             },
+           });
         }
        
       }

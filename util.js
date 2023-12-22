@@ -277,7 +277,6 @@ module.exports = {
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     );
     res.setHeader("Content-Disposition", "attachment; filename="+report_name ? report_name+"_report.xlsx" : "report.xlsx");
-
     // Send the Excel file as a binary stream
     res.send(Buffer.from(xls, "binary"));
   }

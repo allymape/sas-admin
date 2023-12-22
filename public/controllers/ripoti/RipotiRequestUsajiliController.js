@@ -50,24 +50,21 @@ reportUsajiliRequestController.get("/RipotiZilizosajiliwa",isAuthenticated,can("
            data.forEach( (item) => { delete item.status })
            exportJSONToExcel(res, data);
         }else{
-           res.render(
-             path.join(__dirname + "/../../design/reports/usajili"),
-             {
-               req: req,
-               data: data,
-               categories,
-               structures,
-               ownerships,
-               regions,
-               pagination: {
-                 total: numRows,
-                 current: page,
-                 per_page: per_page,
-                 url: "RipotiKuanzisha",
-                 pages: Math.ceil(numRows / per_page),
-               },
-             }
-           );
+           res.render(path.join(__dirname + "/../../design/reports/usajili"), {
+             req: req,
+             data: data,
+             categories,
+             structures,
+             ownerships,
+             regions,
+             pagination: {
+               total: numRows,
+               current: page,
+               per_page: per_page,
+               url: "RipotiZilizosajiliwa",
+               pages: Math.ceil(numRows / per_page),
+             },
+           });
         }
        
       }
