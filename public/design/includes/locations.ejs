@@ -1,0 +1,19 @@
+  <script>
+    // $(function(){
+        const regionCode = "<%= req.query.region %>"
+        const districtCode = "<%= req.query.district %>"
+        const wardCode = "<%= req.query.ward %>"
+        const streetCode = "<%= req.query.street %>"
+        if(regionCode){
+            getAllDistricts(regionCode , districtCode)
+        }
+
+        if(districtCode){
+            getAllWards(districtCode , wardCode)
+        }
+
+        if(wardCode){
+            getAllStreets(wardCode , streetCode)
+        }
+    // })
+</script>

@@ -1,0 +1,9 @@
+ <a href="<%= req.protocol + '://' + req.get('host') + 
+        req.originalUrl + 
+        (req.originalUrl.includes("?") ? '&export=true' : '?export=true') + '&max='+pagination.total %>" 
+        id="btn-export-excel" 
+        class="btn btn-<%=btn_color%> w-100"
+       
+>
+    Export to Excel 
+</a>

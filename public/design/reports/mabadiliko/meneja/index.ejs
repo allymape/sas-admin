@@ -1,12 +1,14 @@
 <% var card_title = '' %> 
-<%- include('../../layouts/partials/header.ejs' , {
-    title : 'Kuanzisha Shule',
-    page_title : 'Taarifa ya Uanzishaji wa Shule',
-    card_title : 'Uanzisha wa Shule',
+<%- include('../../../layouts/partials/header.ejs' , {
+    title : 'Kubadili Meneja',
+    page_title : 'Taarifa ya Kubadili Meneja',
+    card_title : 'Kubadili Umeneja',
     breadcrumb_main : 'Ripoti',
     // top_header : '../../reports/top_headers/badili_dahalia_top_header.ejs',
 }) %>
+
   <div class="card-body border border-dashed border-end-0 border-start-0">
+      <%- include('../../../includes/change_request_links.ejs') %>
         <form>
             <div class="row g-3">
                 <div class="col-xxl-3 col-sm-12">
@@ -138,9 +140,9 @@
                 <div class="col-xxl-8 col-sm-8"></div>
                 <% if(pagination.total > 0){ %>
                     <div class="col-xxl-2 col-sm-2">
-                      <%- include('../../includes/export_excel_link.ejs' , {
-                        btn_color : 'success' 
-                }) %>
+                      <%- include('../../../includes/export_excel_link.ejs' , {
+                        btn_color : 'info' 
+                       }) %>
                     </div>
                 <% } %>
                 <!--end col-->
@@ -150,7 +152,7 @@
     </div>
     <!--end card-body-->
     <div class="card-body">
-         <div class="ribbon-three ribbon-three-success">
+         <div class="ribbon-three ribbon-three-info">
             <span class="badge"><%=`${pagination.total}`%></span>
         </div>
         <div class="table-responsive table-card mb-4">
@@ -208,15 +210,15 @@
             </div>
         </div>
           <!-- Pagination and page length -->
-            <%- include('../../paginations/html_pagination.ejs'); %>
+            <%- include('../../../paginations/html_pagination.ejs'); %>
                <!-- End pagination and page length -->
             </div>
     <!--end card-body-->
-<%- include('../../layouts/partials/footer.ejs' , {
+<%- include('../../../layouts/partials/footer.ejs' , {
      card_title :  '' , 
      pagination_script : false,
     }) %>
-  <%- include('../../includes/locations') %>
+  <%- include('../../../includes/locations') %>
 <!-- <script type="text/javascript" src="/design/layouts/scripts/anzishashule_scripts.js"></script> -->
 </body>
 </html>

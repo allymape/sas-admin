@@ -1,0 +1,67 @@
+<% 
+  const tabs = [
+        {
+            link : 'RipotiKuongezaMikondo',
+            title : 'Kuongeza Mikondo',
+            name : 'Mikondo',
+        },
+        {
+            link : 'RipotiKubadiliUsajili',
+            title : 'Kubadili Aina ya Usajili',
+            name : 'Usajili',
+        },
+        {
+            link : 'RipotiKuhamishaShule',
+            title : 'Kuhamisha Shule',
+            name : 'Uhamisho',
+        },
+        {
+            link : 'RipotiKubadiliUmiliki',
+            title : 'Kubadili Umiliki',
+            name : 'Umiliki',
+        },
+        {
+            link : 'RipotiKubadiliMeneja',
+            title : 'Kubadili Meneja',
+            name : 'Meneja',
+        },
+        {
+            link : 'RipotiKubadiliJina',
+            title : 'Kubadili Jina',
+            name : 'Jina'
+        },
+        {
+            link : 'RipotiKufutaShule',
+            title : 'Kufuta Usajili',
+            name : 'Kufuta'
+        },
+        {
+            link : 'RipotiKuongezaTahasusi',
+            title : 'Kuongeza Tahasusi',
+            name : 'Tahasusi'
+        },
+        {
+            link : 'RipotiKuongezaDahalia',
+            title : 'Kuongeza Dahalia',
+            name : 'Dahalia'
+        },
+        {
+            link : 'RipotiKuongezaBweni',
+            title : ' Kuongeza Bweni',
+            name : 'Bweni'
+        },
+
+  ]
+ %>
+<ul class="nav nav-tabs nav-border-top nav-border-top-primary mb-3 nav-justified" role="tablist">
+    <% tabs.forEach(tab => { %>
+        <li class="nav-item" onclick="window.location.href='<%= tab.link %>';"  data-bs-toggle="tooltip" title="<%= tab.title %>">
+            <a class="nav-link <%= req.originalUrl == '/'+ tab.link ? 'active' : '' %>" data-bs-toggle="tab" 
+                href="<%= tab.link %>" role="tab" 
+                aria-selected="<%= req.originalUrl == '/'+ tab.link ? 'true' : 'false' %>"
+            >
+                <%= tab.name %>
+            </a>
+        </li>
+    <% }); %>
+</ul>
