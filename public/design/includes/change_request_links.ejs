@@ -56,7 +56,7 @@
 <ul class="nav nav-tabs nav-border-top nav-border-top-primary mb-3 nav-justified" role="tablist">
     <% tabs.forEach(tab => { %>
         <li class="nav-item" onclick="window.location.href='<%= tab.link %>';"  data-bs-toggle="tooltip" title="<%= tab.title %>">
-            <a class="nav-link <%= req.originalUrl == '/'+ tab.link ? 'active' : '' %>" data-bs-toggle="tab" 
+            <a class="nav-link <%= req.originalUrl.includes(tab.link) ? 'active' : '' %>" data-bs-toggle="tab" 
                 href="<%= tab.link %>" role="tab" 
                 aria-selected="<%= req.originalUrl == '/'+ tab.link ? 'true' : 'false' %>"
             >
