@@ -13,7 +13,7 @@ var ombiDetails = API_BASE_URL + "view-ombi-details";
 var ombiReply = API_BASE_URL + "tuma-ombi-majibu";
 
 // Display
-reportKuanzishaRequestController.get("/RipotiKuanzisha",isAuthenticated,can("view-initiate-schools"),
+reportKuanzishaRequestController.get("/RipotiKuanzisha",isAuthenticated,can("view-established-schools-report"),
   function (req, res) {
     const per_page =
       req.query.export == "true" && req.query.max

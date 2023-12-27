@@ -18,7 +18,7 @@ const requestRiportBadiliTahasusiAPI = API_BASE_URL + "ripoti-badili-tahasusi";
 const requestRiportBadiliBweniAPI = API_BASE_URL + "ripoti-badili-bweni";
 
 // Mikondo
-reportMabadilikoRequestController.get("/RipotiKuongezaMikondo",isAuthenticated,can("view-initiate-schools"),
+reportMabadilikoRequestController.get("/RipotiKuongezaMikondo",isAuthenticated,can("view-addition-of-streams-report"),
   function (req, res) {
     const per_page = req.query.export == "true" && req.query.max ? Number(req.query.max) : Number(req.query.per_page || 10);
     const page = Number(req.query.page || 1);
@@ -77,7 +77,7 @@ reportMabadilikoRequestController.get("/RipotiKuongezaMikondo",isAuthenticated,c
   }
 );
 // Uhamisho
-reportMabadilikoRequestController.get("/RipotiKuhamishaShule",isAuthenticated,can("view-initiate-schools"),
+reportMabadilikoRequestController.get("/RipotiKuhamishaShule",isAuthenticated,can("view-change-school-location"),
   function (req, res) {
     const per_page = req.query.export == "true" && req.query.max ? Number(req.query.max) : Number(req.query.per_page || 10);
     const page = Number(req.query.page || 1);
@@ -137,7 +137,7 @@ reportMabadilikoRequestController.get("/RipotiKuhamishaShule",isAuthenticated,ca
 );
 
 // Usajili
-reportMabadilikoRequestController.get("/RipotiKubadiliUsajili",isAuthenticated,can("view-initiate-schools"),
+reportMabadilikoRequestController.get("/RipotiKubadiliUsajili",isAuthenticated,can("view-change-registration-type"),
   function (req, res) {
     const per_page = req.query.export == "true" && req.query.max ? Number(req.query.max) : Number(req.query.per_page || 10);
     const page = Number(req.query.page || 1);
@@ -197,7 +197,7 @@ reportMabadilikoRequestController.get("/RipotiKubadiliUsajili",isAuthenticated,c
 );
 
 // Umiliki
-reportMabadilikoRequestController.get("/RipotiKubadiliUmiliki",isAuthenticated,can("view-initiate-schools"),
+reportMabadilikoRequestController.get("/RipotiKubadiliUmiliki",isAuthenticated,can("view-change-school-owners-report"),
   function (req, res) {
     const per_page = req.query.export == "true" && req.query.max ? Number(req.query.max) : Number(req.query.per_page || 10);
     const page = Number(req.query.page || 1);
@@ -257,7 +257,7 @@ reportMabadilikoRequestController.get("/RipotiKubadiliUmiliki",isAuthenticated,c
 );
 
 // Meneja
-reportMabadilikoRequestController.get("/RipotiKubadiliMeneja",isAuthenticated,can("view-initiate-schools"),
+reportMabadilikoRequestController.get("/RipotiKubadiliMeneja",isAuthenticated,can("view-change-school-managers-report"),
   function (req, res) {
     const per_page = req.query.export == "true" && req.query.max ? Number(req.query.max) : Number(req.query.per_page || 10);
     const page = Number(req.query.page || 1);
@@ -316,7 +316,7 @@ reportMabadilikoRequestController.get("/RipotiKubadiliMeneja",isAuthenticated,ca
   }
 );
 // Jina
-reportMabadilikoRequestController.get("/RipotiKubadiliJina",isAuthenticated,can("view-initiate-schools"),
+reportMabadilikoRequestController.get("/RipotiKubadiliJina",isAuthenticated,can("view-change-school-name-report"),
   function (req, res) {
     const per_page = req.query.export == "true" && req.query.max ? Number(req.query.max) : Number(req.query.per_page || 10);
     const page = Number(req.query.page || 1);
@@ -376,7 +376,7 @@ reportMabadilikoRequestController.get("/RipotiKubadiliJina",isAuthenticated,can(
 );
 
 // Kufuta
-reportMabadilikoRequestController.get("/RipotiKufutaShule",isAuthenticated,can("view-initiate-schools"),
+reportMabadilikoRequestController.get("/RipotiKufutaShule",isAuthenticated,can("view-deregistration-report"),
   function (req, res) {
     const per_page = req.query.export == "true" && req.query.max ? Number(req.query.max) : Number(req.query.per_page || 10);
     const page = Number(req.query.page || 1);
@@ -436,7 +436,7 @@ reportMabadilikoRequestController.get("/RipotiKufutaShule",isAuthenticated,can("
 );
 
 // Tahasusi
-reportMabadilikoRequestController.get("/RipotiKuongezaTahasusi",isAuthenticated,can("view-initiate-schools"),
+reportMabadilikoRequestController.get("/RipotiKuongezaTahasusi", isAuthenticated, can("view-addition-of-bias-report"),
   function (req, res) {
     const per_page = req.query.export == "true" && req.query.max ? Number(req.query.max) : Number(req.query.per_page || 10);
     const page = Number(req.query.page || 1);
@@ -496,7 +496,7 @@ reportMabadilikoRequestController.get("/RipotiKuongezaTahasusi",isAuthenticated,
 );
 
 // Dahalia
-reportMabadilikoRequestController.get("/RipotiKuongezaDahalia",isAuthenticated,can("view-initiate-schools"),
+reportMabadilikoRequestController.get("/RipotiKuongezaDahalia",isAuthenticated,can("view-addition-of-combinations-report"),
   function (req, res) {
     const per_page = req.query.export == "true" && req.query.max ? Number(req.query.max) : Number(req.query.per_page || 10);
     const page = Number(req.query.page || 1);
@@ -556,7 +556,7 @@ reportMabadilikoRequestController.get("/RipotiKuongezaDahalia",isAuthenticated,c
 );
 
 // Bweni
-reportMabadilikoRequestController.get("/RipotiKuongezaBweni",isAuthenticated,can("view-initiate-schools"),
+reportMabadilikoRequestController.get("/RipotiKuongezaBweni",isAuthenticated,can("view-addition-of-domitory-report"),
   function (req, res) {
     const per_page = req.query.export == "true" && req.query.max ? Number(req.query.max) : Number(req.query.per_page || 10);
     const page = Number(req.query.page || 1);
