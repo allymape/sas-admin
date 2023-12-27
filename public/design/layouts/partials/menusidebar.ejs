@@ -342,10 +342,10 @@ const menuItems = [
 //    Track
     {
         label : "Track Ombi",
-        url  : "TrackOmbi",
+        url  : `TrackOmbi/${crypt().encrypt(1)}`,
         icon : "ri-search-2-line",
         counterId : "",
-        pattern : "TrackOmbi",
+        pattern : "TrackOmbi/*",
         hasPermissionTo : permission(req , 'view-track-application'),
     },
    //MPANGLIO

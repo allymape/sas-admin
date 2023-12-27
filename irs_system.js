@@ -40,7 +40,7 @@ const attachmentTypeController = require("./public/controllers/attachmentTypeCon
 const applicationCategoryController = require("./public/controllers/applicationCategoryController");
 const registrationTypeController = require("./public/controllers/registrationTypeController");
 const errorController = require("./public/controllers/errorController");
-const { can, isAuthenticated, titleCase, lowerCase, sumAssociativeArray, formatDate } = require("./util");
+const { can, isAuthenticated, titleCase, lowerCase, sumAssociativeArray, formatDate, crypt } = require("./util");
 const dashboardController = require("./public/controllers/dashboardController");
 const designationController = require("./public/controllers/designationController");
 const applicantController = require("./public/controllers/applicantController");
@@ -124,7 +124,9 @@ app.locals.getCurrentUrl = function (req) {
 global.sumAssociativeArray = (array) => {
   return sumAssociativeArray(array);
 }
-
+global.crypt = () => {
+     return crypt();
+}
 global.routeIs =  (url_segments, currentUrl) => {
   // console.log(currentUrl , url_segments)
     if(url_segments){

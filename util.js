@@ -9,7 +9,7 @@ const fs = require("fs");
 const PDFDocument = require("pdfkit");
 const doc = new PDFDocument();
 const  json2xls = require("json2xls");
-
+const Cryptr = require("cryptr");
 module.exports = {
   sendRequest: (req, res, url, method, formData, callback) => {
     if (
@@ -146,6 +146,10 @@ module.exports = {
       typeof date === "string" ? new Date(date) : date,
       format
     );
+  },
+  crypt : () => {
+    const cryptr = new Cryptr("ReALLY#299992%Secret#@901838Key");
+    return cryptr;
   },
   createLetter: (
     tracking_number,
