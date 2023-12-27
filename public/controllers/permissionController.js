@@ -70,7 +70,6 @@ permissionController.post("/futaPermission/:id",  isAuthenticated, can('delete-p
 });
 
 function getAllPermissions(req, res, edit = false, editedData = null) {
-  var obj = [];
   var per_page = Number(req.query.per_page || 10);
   var page = Number(req.query.page || 1);
   var url = allPermissionsAPI + "?page=" + page + "&per_page=" + per_page;
@@ -79,6 +78,7 @@ function getAllPermissions(req, res, edit = false, editedData = null) {
             ip_address: req.session.ip_address,
             useLevel: req.session.UserLevel,
             office: req.session.office,
+            tafuta : req.query.tafuta
    };
 
   sendRequest(req, res, url, "GET", formData, (jsonData) => {
