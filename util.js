@@ -7,9 +7,10 @@ const {
 } = require("text-case");
 const fs = require("fs");
 const PDFDocument = require("pdfkit");
-const doc = new PDFDocument();
 const  json2xls = require("json2xls");
 const Cryptr = require("cryptr");
+const cheerio = require("cheerio");
+const  path = require("path");
 module.exports = {
   sendRequest: (req, res, url, method, formData, callback) => {
     if (
@@ -204,71 +205,7 @@ module.exports = {
 
       doc.font("Times-Bold").text(LgaName + " - " + RegionName, 100, 190, 50, 50);
       doc.text(title, 210, 220, 50, 50);
-      // doc
-      //   .font("Times-Roman")
-      //   .text("Tafadhali rejea somo la barua hii.", 100, 240, 50, 50);
-
       doc.font(`Times-Roman`).text(body, 100, 260, 50, 50);
-      // doc.text("Ninafurahi kukufahamisha kuwa Kamishna wa Elimu amemthibitisha  " +owner_name.toUpperCase() +" kumiliki " +schoolCategory.toUpperCase() +" " +
-      //     school_name.toUpperCase() +
-      //     ".",
-      //   100,
-      //   260,
-      //   50,
-      //   50
-      // );
-
-      // doc.text(
-      //   "Uthibitisho huu umetolewa tarehe " +
-      //     created_at +
-      //     " kwa mujibu wa Sheria ya Elimu, Sura 353. Utamiliki shule hii kwa kuzingatia Sheria na Miongozo ya Wizara ya Elimu, Sayansi na Teknolojia. Unaagizwa kukamilisha miundombinu yote muhimu ya shule kabla ya kujaza fomu Namba RS 8..",
-      //   100,
-      //   290,
-      //   50,
-      //   50
-      // );
-
-      // doc.text("Nakutakia utekelezaji mwema.", 100, 400, 50, 50);
-
-      // doc.image('arm.png',280, 430, 50, 50);
-
-      // doc.text("KAMISHNA WA ELIMU", 280, 520, 50, 50);
-      // doc.font("Times-Bold").text("KAMISHNA WA ELIMU", 250, 540, 50, 50);
-      // doc.text("Nakala:", 100, 580, 50, 50);
-      // doc.font("Times-Roman").text("Katibu Mkuu,", 100, 600, 50, 50);
-
-      // doc.text("OR – TAMISEMI,", 100, 610, 50, 50);
-      // doc.text("S.L.P.1923,", 100, 620, 50, 50);
-      // doc.font("Times-Bold").text("DODOMA.", 100, 630, 50, 50);
-
-      // doc.font("Times-Roman").text("Katibu Mtendaji,", 100, 650, 50, 50);
-      // doc.text("Baraza la Mitihani Tanzania,", 100, 660, 50, 50);
-      // doc.text("S.L.P.2624,", 100, 670, 50, 50);
-      // doc.font("Times-Bold").text("DAR ES SALAAM.", 100, 680, 50, 50);
-
-      // doc.addPage().font("Times-Roman").text("Mthibiti Mkuu Ubora wa Shule,", 100, 50, 50, 50);
-      // doc.text("Kanda ya Mashariki,", 100, 60, 50, 50);
-      // doc.text("S.L.P.2419,", 100, 70, 50, 50);
-      // doc.font("Times-Bold").text(RegionName + ".", 100, 80, 50, 50);
-
-      // doc.font("Times-Roman").text("Afisa Elimu Mkoa,", 100, 100, 50, 50);
-      // doc.text("Mkoa wa " + RegionName + ",", 100, 110, 50, 50);
-
-      // doc.text("S.L.P.315,", 100, 120, 50, 50);
-      // doc.font("Times-Bold").text(RegionName + ".", 100, 130, 50, 50);
-
-      // doc.font("Times-Roman").text("Afisa Elimu " + schoolCategory + ",", 100, 150, 50, 50);
-      // doc.text(LgaName + ",", 100, 160, 50, 50);
-      // doc.text("S.L.P.384,", 100, 170, 50, 50);
-      // doc.font("Times-Bold").text(RegionName + ".", 100, 180, 50, 50);
-
-      // doc.font("Times-Bold").text(RegionName + ".", 100, 130, 50, 50);
-      // doc.font("Times-Roman").text("Mthibiti Mkuu Ubora wa Shule,", 100, 200, 50, 50);
-      // doc.text(LgaName + ",", 100, 160, 50, 50);
-      // doc.text("S.L.P.384,", 100, 210, 50, 50);
-      // doc.font("Times-Bold").text(RegionName + ".", 100, 220, 50, 50);
-
-      // Finalize PDF file
       doc.end();
     }
   },
@@ -283,5 +220,228 @@ module.exports = {
     res.setHeader("Content-Disposition", "attachment; filename="+report_name ? report_name+"_report.xlsx" : "report.xlsx");
     // Send the Excel file as a binary stream
     res.send(Buffer.from(xls, "binary"));
+  },
+
+  generateLetter : (req , res , reference , created_at , company , box , mkoa , title, paragraphs , signature , signatory , cheo) => {
+    let doc = new PDFDocument({
+      margin: 72,
+      size: "A4",
+    });
+    const imagesPaths = path.join(__dirname + "/public/assets/images");
+    const trackingNumber = req.params.id;
+    const filename = encodeURIComponent(trackingNumber) + ".pdf";
+    // for downloading set the content-dispostion to (download, attachment)
+    res.setHeader("Content-disposition", 'inline; filename="' + filename + '"');
+    res.setHeader("Content-type", "application/pdf");
+
+    generateHeader(doc, imagesPaths , reference , created_at, company , box , mkoa); // Invoke `generateHeader` function.
+    generateTitle(doc , title);
+    paragraphs.forEach((paragraph) => generateBody(doc, paragraph));
+    generateFooter(doc , signature , signatory , cheo);
+
+    doc.pipe(res);
+    doc.end();
   }
 };
+
+const containsBoldTag = (text) => /<b>(.*?)<\/b>/i.test(text);
+const formatParagraph = (text, doc) => {
+  //  if <b> tag present render with bold font
+    if (containsBoldTag(text)) {
+      const $ = cheerio.load(`<body> ${text} </body>`);
+      $("body")
+        .contents()
+        .each((index, element) => {
+          if (element.nodeType === 1) {
+            doc
+              .font("Times-Bold")
+              .text(`${$(element).text()}`, {
+                lineGap: 4,
+                continued: true,
+              });
+          } else {
+            doc.font('Times-Roman').text($(element).text(), { lineGap: 4, continued: true });
+          }
+        });
+    } else {
+      // If no tag render normal text
+      doc.font("Times-Roman").text(text, { lineGap: 4, continued: true });
+    }
+}
+const generateHeader = (doc, imagesPaths , reference, createdAt, company , box , mkoa) => {
+  doc
+    .font("Times-Bold")
+    .fontSize(14)
+    .text("JAMUHURI YA MUUNGANO WA TANZANIA", 30, 30, {
+      align: "center",
+      characterSpacing: 0.2,
+    })
+    .text("WIZARA YA ELIMU, SAYANSI NA TEKNOLOJIA", {
+      align: "center",
+      characterSpacing: 0.2,
+    })
+    .moveDown();
+
+  doc
+    .font("Times-Roman")
+    .fontSize(12)
+    .text(
+      `Anuani ya simu "ELIMU"\nSimu: 026 296 35 33 \nBaruapepe: info@moe.go.tz \nTovut: www.moe.go.tz`,
+      { lineGap: 2 }
+    )
+    .text(
+      "Mji wa Serikali, Mtumba, \nMtaa wa Afya,\nS. L. P. 10,\n40479 DODOMA.",
+      doc.page.width / 2 + 120,
+      80,
+      { lineGap: 2 }
+    );
+
+  doc
+    .image(imagesPaths + "/national-logo.png", doc.page.width / 2 - 30, 80, {
+      width: 80,
+      height: 80,
+    })
+    .fillColor("#444444");
+  doc.moveDown();
+
+  doc.text("Unapojibu tafadhali taja:", 30, 160).moveDown().moveDown();
+  doc
+    .font("Times-Bold")
+    .text(`Kumb. na. ${reference}`, { continued: true })
+    .text(createdAt, doc.page.width / 2 - 20, 200)
+    .moveDown()
+    .moveDown();
+
+// Addressee
+  doc
+    .font("Times-Roman")
+    .text(`${company}, \nS.L.P. ${box}, \n${mkoa}.`)
+    .moveDown()
+    .moveDown();
+}
+const generateTitle = (doc , title) => {
+  doc.text("Yah: ", {
+      continued: true,
+      width: doc.page.width - 100,
+      indent: 50,
+      lineBreak: true,
+    })
+    .font("Times-Bold")
+    .text(title.toUpperCase(), { underline: true, align: "center" })
+    .font("Times-Roman")
+    .moveDown();
+}
+const  generateBody = (doc, body) => {
+   formatParagraph(body , doc)
+  // doc
+  //   .text("       Tafadhali rejea somo la barua hii", { lineGap: 4 })
+  //   .moveDown();
+
+  // doc
+  //   .text(`2.    Ninafurahi kukufahamisha kuwa thibitisho umetolewa kwa `, {
+  //     lineGap: 4,
+  //     continued: true,
+  //   })
+  //   .font("Times-Bold")
+  //   .text("Zainabu Aly Mweta ", { lineGap: 4, continued: true })
+  //   .font("Times-Roman")
+  //   .text("kuwa Meneja wa Shule ya Awali na Msingi ", {
+  //     lineGap: 4,
+  //     continued: true,
+  //   })
+  //   .font("Times-Bold")
+  //   .text("Diligence.")
+  //   .font("Times-Roman")
+  //   .moveDown();
+  // doc
+  //   .text(`3.    Uthibitisho huu umetolewa tarehe `, {
+  //     lineGap: 4,
+  //     continued: true,
+  //   })
+  //   .font("Times-Bold")
+  //   .text("25/10/12 ", { lineGap: 4, continued: true })
+  //   .font("Times-Roman")
+  //   .text("kwa mujibu wa ", { lineGap: 4, continued: true })
+  //   .font("Times-Bold")
+  //   .text("Sheria ya Elimu, Sura 353. ", { lineGap: 4, continued: true })
+  //   .font("Times-Roman")
+  //   .text("Utaiendesha shule hi kwa kuzingatia ", {
+  //     lineGap: 4,
+  //     continued: true,
+  //   })
+  //   .font("Times-Bold")
+  //   .text("Sheria, Kanuni, Taratibu na Miongozo ", {
+  //     lineGap: 4,
+  //     continued: true,
+  //   })
+  //   .font("Times-Roman")
+  //   .text("ya Wizara ya Elimu, Sayansi na Teknolojia. ", {
+  //     lineGap: 4,
+  //     continued: true,
+  //   })
+  //   .font("Times-Roman")
+  //   .text("Hakikisha shule ina ", { lineGap: 4, continued: true })
+  //   .font("Times-Bold")
+  //   .text("kasiki", { lineGap: 4, continued: true })
+  //   .font("Times-Roman")
+  //   .text("kwa ajili ya kuhifadhia nyaraka nyeti.")
+  //   .moveDown();
+  // doc
+  //   .font("Times-Bold")
+  //   .text(`4.    Uthibitisho huu siyo kibali cha kusajili wanafunzi.`, {
+  //     lineGap: 4,
+  //   })
+  //   .moveDown();
+  // doc
+  //   .font("Times-Roman")
+  //   .text(`5.    Ninakutakia utekelezaji mwema.`, { lineGap: 4 });
+}
+
+const generateFooter = (doc , signature , signatory , cheo) => {
+  const lineSize = 174;
+  const signatureHeight = doc.page.height - 150;
+
+  const startLine1 = doc.page.width / 2 - 100;
+  const endLine1 = doc.page.width / 2 - 100 + lineSize;
+  doc
+    .moveTo(startLine1, signatureHeight)
+    .lineTo(endLine1, signatureHeight)
+    .stroke();
+
+  doc
+    .font("Times-Roman")
+    .fontSize(12)
+    .fill("#021c27")
+    .text(
+      signatory,
+      doc.page.width / 2 - 100,
+      signatureHeight + 25,
+      {
+        columns: 1,
+        columnGap: 0,
+        height: 40,
+        width: lineSize,
+        align: "center",
+      }
+    );
+  doc
+    .font("Times-Bold")
+    .fontSize(12)
+    .fill("#021c27")
+    .text(
+      cheo,
+      doc.page.width / 2 - 100,
+      signatureHeight + 45,
+      {
+        columns: 1,
+        columnGap: 0,
+        height: 40,
+        width: lineSize,
+        align: "center",
+        underline: true,
+      }
+    );
+  doc.font("Times-Roman").text("", 20, doc.page.height - 50, {
+    lineBreak: false,
+  });
+}
