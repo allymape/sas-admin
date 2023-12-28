@@ -11,7 +11,7 @@ const requestRiportKuanzishaAPI = API_BASE_URL + "ripoti-wamiliki-shule";
 
 
 // Display
-reportWamilikiRequestController.get("/RipotiWamiliki",isAuthenticated,can("view-initiate-schools"),
+reportWamilikiRequestController.get("/RipotiWamiliki",isAuthenticated,can("view-school-owners-report"),
   function (req, res) {
     const per_page =
       req.query.export == "true" && req.query.max

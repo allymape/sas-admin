@@ -40,7 +40,7 @@ const attachmentTypeController = require("./public/controllers/attachmentTypeCon
 const applicationCategoryController = require("./public/controllers/applicationCategoryController");
 const registrationTypeController = require("./public/controllers/registrationTypeController");
 const errorController = require("./public/controllers/errorController");
-const { can, isAuthenticated, titleCase, lowerCase, sumAssociativeArray, formatDate } = require("./util");
+const { can, isAuthenticated, titleCase, lowerCase, sumAssociativeArray, formatDate, crypt } = require("./util");
 const dashboardController = require("./public/controllers/dashboardController");
 const designationController = require("./public/controllers/designationController");
 const applicantController = require("./public/controllers/applicantController");
@@ -76,6 +76,7 @@ const reportUsajiliRequestController = require("./public/controllers/ripoti/Ripo
 const reportWamilikiRequestController = require("./public/controllers/ripoti/RipotiRequestWamilikiController");
 const reportMenejaRequestController = require("./public/controllers/ripoti/RipotiRequestMenejaController");
 const reportMabadilikoRequestController = require("./public/controllers/ripoti/RipotiRequestMabadilikoController");
+const mmilikiKuthibitishwaBaruaController = require("./public/controllers/barua/mmilikiKuthibitishwaBaruaController");
 // const reportRequestController = require("./public/controllers/ripoti/RipotiRequestController");
 
 var app = express();
@@ -124,7 +125,9 @@ app.locals.getCurrentUrl = function (req) {
 global.sumAssociativeArray = (array) => {
   return sumAssociativeArray(array);
 }
-
+global.crypt = () => {
+     return crypt();
+}
 global.routeIs =  (url_segments, currentUrl) => {
   // console.log(currentUrl , url_segments)
     if(url_segments){
@@ -13644,75 +13647,7 @@ app.get("/Baruameneja/:id", function (req, res) {
 // });
 
 
-// app.get("/Roles", isAuthenticated ,can('view-roles'), function (req, res) {
-//   var per_page = Number(req.query.per_page || 10);
-//   var page = Number(req.query.page || 1);
-//   if (
-//     typeof req.session.userName !== "undefined" ||
-//     req.session.userName === true
-//   ) {
-//     var hasMatch =false;
-//     // for (var index = 0; index < req.session.RoleManage.length; ++index) {
-//         // var animal = req.session.RoleManage[index]; 
-//     // if(animal.permission_id == 64){ 
-//     request(
-//       {
-//         url: rolesAPI+`?page=${page}&per_page=${per_page}`,
-//         method: "GET",
-//         headers: {
-//           Authorization: "Bearer" + " " + req.session.Token,
-//           "Content-Type": "application/json",
-//         },
-//         json: {
-//           browser_used: req.session.browser_used,
-//           ip_address: req.session.ip_address,
-//           useLevel: req.session.UserLevel,
-//           office: req.session.office,
-//         },
-//       },
-//       function (error, response, body) {
-//         if (error) {
-//           console.log(
-//             new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
-//           );
-//           res.send("failed");
-//         }
-//         if (body !== undefined) {
-//           var jsonData = body;
-//           var message = jsonData.message;
-//           var statusCode = jsonData.statusCode;
-//           var data = jsonData.data;
-//           if (statusCode == 300) {
-//             var numRows = jsonData.numRows;
-//             res.render(path.join(__dirname + "/public/design/roles"), {
-//               req: req,
-//               data: data,
-//               useLev: req.session.UserLevel,
-//                                 userName: req.session.userName,
-//               RoleManage: req.session.RoleManage,
-//               userID: req.session.userID,
-//               cheoName: req.session.cheoName,
-//               pagination : {
-//                     total : numRows , 
-//                     current : page , 
-//                     per_page : per_page , 
-//                     url : 'Roles',
-//                     pages : Math.ceil( numRows / per_page)
-//                 }
-//             });
-//           }
-//           if (statusCode == 209) {
-//             res.redirect("/");
-//           }
-//         }
-//       }
-//     );
-//     // }
-//   // }
-//   } else {
-//     res.redirect("/");
-//   }
-// });
+
 
 // app.post("/SajiliWatumiaji", function (req, res) {
 //   // console.log(req.body);
@@ -15029,6 +14964,7 @@ app.use("/", reportUsajiliRequestController);
 app.use("/", reportWamilikiRequestController);
 app.use("/", reportMenejaRequestController);
 app.use("/", reportMabadilikoRequestController);
+app.use("/", mmilikiKuthibitishwaBaruaController);
 
 app.use("/", errorController);
 app.listen(port, () => {

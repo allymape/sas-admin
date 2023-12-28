@@ -131,7 +131,7 @@
                         Angalia
                     </button>
                      <% if(req.query.tracking_number || req.query.date_range || req.query.status) { %>
-                     <a href="RipotiKuanzisha" class="btn btn-danger w-100">
+                     <a href="RipotiKubadiliMeneja" class="btn btn-danger w-100">
                         <!-- <i class="ri-equalizer-fill me-1 align-bottom"></i> -->
                         Futa
                      </a>
@@ -163,6 +163,7 @@
                 <thead class="table-light text-muted">
                     <tr>
                         <th class="sort" data-sort="id">Namba ya Ombi</th>
+                         <th class="sort" data-sort="project_name">Jina Meneja</th>
                         <th class="sort" data-sort="project_name">Jina la Shule</th>
                         <th class="sort" data-sort="project_name">Aina</th>
                         <th class="sort" data-sort="project_name">Majengo</th>
@@ -181,6 +182,7 @@
                    <% const item = data[i];%>
                     <tr>
                         <td> <%= item.tracking_number %> </td>
+                        <td> <%= item.manager_name %> </td>
                         <td> <%= item.school_name %> </td>
                         <td> <%= item.category %> </td>
                         <td> <%= item.structure %> </td>

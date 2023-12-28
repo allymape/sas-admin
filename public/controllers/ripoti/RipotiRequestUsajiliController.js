@@ -11,7 +11,7 @@ const requestRiportKuanzishaAPI = API_BASE_URL + "ripoti-usajili-shule";
 
 
 // Display
-reportUsajiliRequestController.get("/RipotiZilizosajiliwa",isAuthenticated,can("view-initiate-schools"),
+reportUsajiliRequestController.get("/RipotiZilizosajiliwa",isAuthenticated,can("view-registered-school-report"),
   function (req, res) {
     const per_page =
       req.query.export == "true" && req.query.max

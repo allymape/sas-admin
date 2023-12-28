@@ -41,10 +41,17 @@ card_title : 'Tengeneza Role'
                             <%=data[i].is_default ? 'checked disabled' : ''%>
                             type="checkbox" name="formCheck1" 
                             id="formCheck<%=i%>">
-                                <% var display_name = data[i].display_name %>
+                                <% 
+                                var display_name = data[i].display_name 
+                                var permission_name = data[i].permission_name; 
+                                %>
                                 <span class="ml-4 <%= display_name.includes('Futa ') ? 'text-danger' : (
                                         display_name.includes('Ona ') ? 'text-success' : (display_name.includes('Tengeneza') ? 'text-primary' : (display_name.includes('Badili') ? ' text-secondary' : '' ) )
-                                    ) %>"><%= display_name %>  </span>  
+                                    ) %>"><%= display_name %>  
+                                </span>  
+                                 <% if(req.session.jukumu == "SUPER-ADMIN"){ %>
+                                          <i><%= permission_name %></i>
+                                <% } %>
                             </label>
                         </div>
                         <% } %>

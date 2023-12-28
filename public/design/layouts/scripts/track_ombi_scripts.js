@@ -16,3 +16,10 @@ function makePayment(e){
 $(".btn-reassign").on("click" , function(){
      modal("reassign-modal" , true);
 });
+
+$("#application-category").on('change' , function(){
+  const id = $(this).val()
+        if(id){
+          window.location.href = `/TrackOmbi/${id}`;
+        }
+});

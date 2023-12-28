@@ -25,40 +25,20 @@ umilikinaumenejaRequestController.get(
       //  is_paginated: req.query.is_paginated,
       //  search: req.query.tafuta,
     };
-  sendRequest(
+    sendRequest(
       req,
       res,
       maommilikiShuleAPI,
       "POST",
       formData,
       (jsonData) => {
-        const obj = [];
         const { dataList, dataSummary } = jsonData;
-        for (var i = 0; i < dataList.length; i++) {
-              var tracking_number = dataList[i].tracking_number;
-              var user_id = dataList[i].user_id;
-              var LgaName = dataList[i].LgaName;
-              var RegionName = dataList[i].RegionName;
-              var school_name = dataList[i].school_name;
-              var created_at = dataList[i].created_at;
-              var remain_days = dataList[i].remain_days;
-              req.session.TrackingNumber = tracking_number;
-              obj.push({
-                tracking_number: tracking_number,
-                user_id: user_id,
-                school_name: school_name,
-                LgaName: LgaName,
-                RegionName: RegionName,
-                created_at: created_at,
-                remain_days: remain_days,
-              });
-            }
         res.render(
           path.join(__dirname + "/../../design/maombi/mmiliki"),
           {
             req: req,
             summary: dataSummary,
-            maombi: obj,
+            maombi: dataList,
           }
         );
       }
@@ -67,27 +47,27 @@ umilikinaumenejaRequestController.get(
 );
 
 umilikinaumenejaRequestController.get(
-  "/ViewOmbi/:id", 
+  "/ViewOmbiMmilliki/:id",
   isAuthenticated,
   can("view-school-owners-and-managers"),
-function (req, res) {
-  var obj = [];
-  // console.log(req.params)
-  var TrackingNumber = req.params.id;
-  // console.log("TrackingNumber")
-  // console.log(TrackingNumber)
-  sendRequest(
-    req,
-    res,
-    ombiMmilikiDetails,
-    "POST",
-    { TrackingNumber: TrackingNumber },
-    (jsonData) => {
-      // console.log(req.session.UserLevel)
-      var message = jsonData.message;
-      var statusCode = jsonData.statusCode;
-      var data = jsonData.data;
-   
+  function (req, res) {
+    var obj = [];
+    // console.log(req.params)
+    var TrackingNumber = req.params.id;
+    // console.log("TrackingNumber")
+    // console.log(TrackingNumber)
+    sendRequest(
+      req,
+      res,
+      ombiMmilikiDetails,
+      "POST",
+      { TrackingNumber: TrackingNumber },
+      (jsonData) => {
+        // console.log(req.session.UserLevel)
+        var message = jsonData.message;
+        var statusCode = jsonData.statusCode;
+        var data = jsonData.data;
+
         var remain_days = data[0].remain_days;
         var created_at = data[0].created_at;
         var tracking_number = data[0].tracking_number;
@@ -135,7 +115,7 @@ function (req, res) {
         // var maoni = JSON.parse(jsonData.maoni)
         // console.log(attachment_path)
         console.log(new Date() + " " + req.session.userName + ": /ViewOmbi");
-        
+
         res.render(
           path.join(
             __dirname + "/../../design/maombi/details/view-ombi-mmiliki-details"
@@ -195,10 +175,10 @@ function (req, res) {
             Refferes: Refferes,
           }
         );
-      
-    }
-  );
-});
+
+      }
+    );
+  });
 
 
 umilikinaumenejaRequestController.post(
@@ -206,23 +186,23 @@ umilikinaumenejaRequestController.post(
   isAuthenticated,
   function (req, res) {
     // console.log(req.body);
-     var trackerId = req.body.trackerId;
-     var from_user = req.session.userID;
-     var staff = req.body.staffs;
-     var owner_name = req.body.owner_name;
-     var authorized_person = req.body.authorized_person;
-     var owner_name_old = req.body.owner_name_old;
-     var coments = req.body.coments;
-     var authorized_person_old = req.body.authorized_person_old;
-     var haliombi = req.body.haliombi;
-     var attachment = req.body.attachment;
-     var kiambatisho = req.body.kiambatisho;
-     var attach_length = req.body.attach_length;
-     var schoolCategoryID = req.body.schoolCategoryID;
-     var ombitype = req.body.ombitype;
-     var staffDet = staff.split("-");
-     var department = staffDet[1];
-     var staffs = staffDet[0];
+    var trackerId = req.body.trackerId;
+    var from_user = req.session.userID;
+    var staff = req.body.staffs;
+    var owner_name = req.body.owner_name;
+    var authorized_person = req.body.authorized_person;
+    var owner_name_old = req.body.owner_name_old;
+    var coments = req.body.coments;
+    var authorized_person_old = req.body.authorized_person_old;
+    var haliombi = req.body.haliombi;
+    var attachment = req.body.attachment;
+    var kiambatisho = req.body.kiambatisho;
+    var attach_length = req.body.attach_length;
+    var schoolCategoryID = req.body.schoolCategoryID;
+    var ombitype = req.body.ombitype;
+    var staffDet = staff.split("-");
+    var department = staffDet[1];
+    var staffs = staffDet[0];
     // return;
     // console.log(department + " and " + staffs)
     sendRequest(

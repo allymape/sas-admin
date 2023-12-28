@@ -13,7 +13,7 @@ var ombiDetails = API_BASE_URL + "view-ombi-details";
 var ombiReply = API_BASE_URL + "tuma-ombi-majibu";
 
 // Display
-reportMenejaRequestController.get("/RipotiMeneja",isAuthenticated,can("view-initiate-schools"),
+reportMenejaRequestController.get("/RipotiMeneja",isAuthenticated,can("view-school-managers-report"),
   function (req, res) {
     const per_page =
       req.query.export == "true" && req.query.max

@@ -98,7 +98,7 @@ const menuItems = [
                 counterId : "",
                 pattern : "KuongezaDahalia|BadiliDahalia/*",
                 menuId : "",
-                hasPermissionTo : permission(req , 'view-change-of-combinations'),
+                hasPermissionTo : permission(req , 'view-change-of-hostel'),
             },
             {
                 label : "Kubadili Aina ya Usajili",
@@ -155,7 +155,7 @@ const menuItems = [
         icon : "ri-bubble-chart-line",
         menuId : "sidebarRipoti",
         // pattern : "",
-        hasPermissionTo : '',
+        // hasPermissionTo : 'RipotiKuanzisha',
         subMenus : [
              {
                 label : "Uanzishaji wa Shule",
@@ -164,7 +164,7 @@ const menuItems = [
                 counterId : "",
                 pattern : "RipotiKuanzisha",
                 menuId : "",
-                hasPermissionTo : permission(req , 'view-registered-school-reports'),
+                hasPermissionTo : permission(req , 'view-established-schools-report'),
             },
             {
                 label : "Wamiliki wa Shule",
@@ -173,7 +173,7 @@ const menuItems = [
                 counterId : "",
                 pattern : "RipotiWamiliki",
                 menuId : "",
-                hasPermissionTo : permission(req , 'view-registered-school-reports'),
+                hasPermissionTo : permission(req , 'view-school-owners-report'),
             },
             {
                 label : "Meneja wa Shule",
@@ -182,7 +182,7 @@ const menuItems = [
                 counterId : "",
                 pattern : "RipotiMeneja",
                 menuId : "",
-                hasPermissionTo : permission(req , 'view-registered-school-reports'),
+                hasPermissionTo : permission(req , 'view-school-managers-report'),
             },
             {
                 label : "Shule Zilizosajiliwa",
@@ -191,16 +191,16 @@ const menuItems = [
                 counterId : "",
                 pattern : "RipotiZilizosajiliwa",
                 menuId : "",
-                hasPermissionTo : permission(req , 'view-registered-school-reports'),
+                hasPermissionTo : permission(req , 'view-registered-school-report'),
             },
             {
                 label : "Mabadiliko",
                 url  : "RipotiKuongezaMikondo",
                 icon : "",
                 counterId : "",
-                pattern : "RipotiKuongezaMikondo",
+                pattern : "RipotiKuongezaMikondo|RipotiKuhamishaShule|RipotiKubadiliUsajili|RipotiKubadiliUmiliki|RipotiKubadiliMeneja|RipotiKubadiliJina|RipotiKufutaShule|RipotiKuongezaTahasusi|RipotiKuongezaDahalia|RipotiKuongezaBweni",
                 menuId : "",
-                hasPermissionTo : permission(req , 'view-registered-school-reports'),
+                hasPermissionTo : permission(req , 'view-addition-of-streams-report'),
             },
             // {
             //     label : "Shule Zilizosajiliwa",
@@ -342,10 +342,10 @@ const menuItems = [
 //    Track
     {
         label : "Track Ombi",
-        url  : "TrackOmbi",
+        url  : `TrackOmbi/${crypt().encrypt(1)}`,
         icon : "ri-search-2-line",
         counterId : "",
-        pattern : "TrackOmbi",
+        pattern : "TrackOmbi/*",
         hasPermissionTo : permission(req , 'view-track-application'),
     },
    //MPANGLIO

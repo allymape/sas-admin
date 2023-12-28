@@ -13,7 +13,7 @@ var badiliDahaliaDetalis = API_BASE_URL + "view-badili-dahalia";
 ongezaDahaliaRequestController.get(
   "/KuongezaDahalia",
   isAuthenticated,
-  can("view-change-of-combinations"),
+  can("view-change-of-hostel"),
   function (req, res) {
     var formData = {
       //  is_paginated: req.query.is_paginated,

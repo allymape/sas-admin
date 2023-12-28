@@ -36,6 +36,7 @@ breadcrumb_main : 'Mipangilio'
                         <div class="row">
                             <% for(var i = 0; i < permissions.length; i++){ 
                                 var display_name = permissions[i].display_name;    
+                                var permission_name = permissions[i].permission_name;    
                             %>
                             <div class="col-md-4 mb-2">
                                 <label class="form-check-label" for="formCheck<%=i%>"> 
@@ -48,6 +49,9 @@ breadcrumb_main : 'Mipangilio'
                                     ) %>">
                                         <%= display_name %>  
                                     </span>  
+                                    <% if(req.session.jukumu == "SUPER-ADMIN"){ %>
+                                          <i><%= permission_name %></i>
+                                     <% } %>
                                 </label>
                             </div>
                             <% } %>
