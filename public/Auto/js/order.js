@@ -155,7 +155,7 @@ $(document).ready(function() {
 						data: form.serialize(),					
 						dataType: 'json',
 						success:function(response) {
-							console.log(response);
+							// console.log(response);
 							// reset button
 							$("#createOrderBtn").button('reset');
 							

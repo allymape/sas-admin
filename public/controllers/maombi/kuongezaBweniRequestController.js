@@ -17,7 +17,10 @@ kuongezaBweniRequestController.get(
   can("view-addition-of-domitory"),
   function (req, res) {
     var obj = [];
-    sendRequest(req, res , badiliBweni , "POST" , {},
+    const formData = {
+      status: req.query.status,
+    };
+    sendRequest(req, res , badiliBweni , "POST" ,formData,
       function (jsonData) {
       
           var data = jsonData.dataList;

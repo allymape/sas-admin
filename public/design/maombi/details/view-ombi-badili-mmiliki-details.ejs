@@ -1,5 +1,7 @@
-<% var card_title = '' %> 
-<%- include('../../layouts/partials/header.ejs' , {
+<% var card_title=''
+   const status = req.query.status;
+   const status_title = status == 'approved' ? 'Yaliyokubaliwa' : (status == 'rejected' ? 'Yaliyokataliwa' : 'Yanayosubiri')
+%><%- include('../../layouts/partials/header.ejs' , {
     title : 'Ombi la Kubadili Mmiliki wa Shule',
     page_title : 'Kubadili Mmiliki wa shule',
     card_title : '',

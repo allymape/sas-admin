@@ -1,10 +1,13 @@
-<% var card_title = '' %> 
+<% var card_title=''
+   const status = req.query.status;
+   const status_title = status == 'approved' ? 'Yaliyokubaliwa' : (status == 'rejected' ? 'Yaliyokataliwa' : 'Yanayosubiri')
+%>
 <%- include('../layouts/partials/header.ejs' , {
     title : 'Maombi Kuanzisha Shule',
     page_title : 'Maombi Kuanzisha Shule',
-    card_title : 'Orodha ya Maombi ya kuanzisha shule',
+    card_title : 'Orodha ya Maombi ya kuanzisha shule '+status_title,
     breadcrumb_main : 'Maombi',
-    top_header : '../../maombi/top_headers/kuanzisha_shule_top_header.ejs',
+    top_header : '../../maombi/top_headers/maombi_top_header.ejs',
 }) %>
 <div class="card-body border border-dashed border-end-0 border-start-0">
     <form>
@@ -63,6 +66,9 @@
                     <th class="sort" data-sort="assignedto">Mkoa</th>
                     <th class="sort" data-sort="due_date">Muda wa Ombi</th>
                     <th class="sort" data-sort="status">Hali</th>
+                     <% if(status == 'rejected' || status == 'approved'){ %>
+                        <th class="text-center" id="barua-column" data-status="<%=status%>">Barua</th>
+                    <% } %>
                     <!-- <th class="sort" data-sort="priority">Walioshughulikia</th>--> 
                 </tr>
             </thead>

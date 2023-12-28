@@ -18,6 +18,7 @@ kubadiliUsajiliRequestController.get(
     var formData = {
       //  is_paginated: req.query.is_paginated,
       //  search: req.query.tafuta,
+      status: req.query.status,
     };
     sendRequest(req, res, badiliAinaUsajili, "POST", formData, (jsonData) => {
       var data = jsonData.dataList;

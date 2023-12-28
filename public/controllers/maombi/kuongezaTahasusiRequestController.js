@@ -21,6 +21,7 @@ kuongezaTahasusiRequestController.get(
     var formData = {
       //  is_paginated: req.query.is_paginated,
       //  search: req.query.tafuta,
+      status: req.query.status,
     };
 
     sendRequest(req, res, badiliTahasusi, "POST", formData, (jsonData) => {

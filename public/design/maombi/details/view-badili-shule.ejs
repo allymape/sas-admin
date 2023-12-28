@@ -1,4 +1,7 @@
-<% var card_title = '' %> 
+<% var card_title=''
+   const status = req.query.status;
+   const status_title = status == 'approved' ? 'Yaliyokubaliwa' : (status == 'rejected' ? 'Yaliyokataliwa' : 'Yanayosubiri')
+%>
 <%- include('../../layouts/partials/header.ejs' , {
     title : 'Ombi la Kubadili Jina la Shule',
     page_title : 'Ombi la Kubadili Jina la Shule',

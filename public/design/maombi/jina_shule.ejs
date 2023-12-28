@@ -1,10 +1,13 @@
-<% var card_title = '' %> 
+<% var card_title=''
+   const status = req.query.status;
+   const status_title = status == 'approved' ? 'Yaliyokubaliwa' : (status == 'rejected' ? 'Yaliyokataliwa' : 'Yanayosubiri')
+%>
 <%- include('../layouts/partials/header.ejs' , {
     title : 'Kubadili Jina la Shule',
     page_title : 'Kubadili Jina la Shule',
-    card_title : 'Orodha ya Maombi ya Kubadili Jina la Shule',
+    card_title : 'Orodha ya Maombi ya Kubadili Jina la Shule '+status_title,
     breadcrumb_main : 'Maombi',
-    top_header : '../../maombi/top_headers/badili_jina_top_header.ejs',
+    top_header : '../../maombi/top_headers/maombi_top_header.ejs',
 }) %>
   <div class="card-body border border-dashed border-end-0 border-start-0">
     <form>
@@ -62,6 +65,9 @@
                     <th class="sort" data-sort="assignedto">Mkoa</th>
                     <th class="sort" data-sort="due_date">Muda wa Ombi</th>
                     <th class="sort" data-sort="status">Hali</th>
+                     <% if(status == 'rejected' || status == 'approved'){ %>
+                        <th class="text-center">Barua</th>
+                     <% } %>
                     <!--<th class="sort" data-sort="priority">Walioshughulikia</th>-->
                 </tr>
             </thead>
@@ -87,17 +93,18 @@
                     </td>
                     <td class="client_name"><%= maombi[i].RegionName %></td>
                     <td class="due_date badge badge-soft-secondary text-uppercase"  title=" <%= maombi[i].created_at %>"> <%= maombi[i].remain_days %></td>
-                    <td class="priority"><span class="badge bg-danger text-uppercase"></span>Jipya</td>
-<!--                                                    <td class="assignedto">
-                        <div class="avatar-group">
-                            <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Frank">
-                                <img src="design/assets/images/users/avatar-3.jpg" alt="" class="rounded-circle avatar-xxs" />
-                            </a>
-                            <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Anna">
-                                <img src="design/assets/images/users/avatar-1.jpg" alt="" class="rounded-circle avatar-xxs" />
-                            </a>
-                        </div>
-                    </td>-->
+                    <td class="is_approved">
+                        <%= maombi[i].is_approved == 0 || maombi[i].is_approved == 1 ? 'Jipya' : '' %>
+                        <%= maombi[i].is_approved == 2 ? 'Limekubaliwa' : '' %>
+                        <%= maombi[i].is_approved == 3 ? 'Limekataliwa' : '' %>
+                    </td>
+                    <% if(status == 'rejected' || status == 'approved'){ %>
+                        <td class="text-center">
+                                        <a target="_blank" title="Barua" data-bs-toggle="tooltip" href="/mmilikiShuleBarua/<%= maombi[i].tracking_number %>">
+                                        <i class="ri-file-pdf-fill ri-2x align-bottom me-1 text-danger"></i>
+                                        </a>
+                        </td>
+                    <% } %>
                 </tr>
                 <% } %>
             </tbody>

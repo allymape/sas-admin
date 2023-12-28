@@ -18,6 +18,7 @@ futaShuleRequestController.get(
     var formData = {
       //  is_paginated: req.query.is_paginated,
       //  search: req.query.tafuta,
+      status: req.query.status,
     };
     sendRequest(req, res, futaShuleHiari, "POST", formData, (jsonData) => {
       const data = jsonData.dataList;

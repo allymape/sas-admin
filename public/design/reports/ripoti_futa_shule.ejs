@@ -87,7 +87,11 @@
                         </td>
                         <td class="client_name"><%= maombi[i].RegionName %></td>
                         <td class="due_date badge badge-soft-secondary text-uppercase"  title=" <%= maombi[i].created_at %>"> <%= maombi[i].remain_days %></td>
-                        <!-- <td class="priority"><span class="badge bg-danger text-uppercase"></span>Jipya</td>
+                        <!-- <td class="is_approved">
+                        <%= maombi[i].is_approved == 0 || maombi[i].is_approved == 1 ? 'Jipya' : '' %>
+                        <%= maombi[i].is_approved == 2 ? 'Limekubaliwa' : '' %>
+                        <%= maombi[i].is_approved == 3 ? 'Limekataliwa' : '' %>
+                    </td>
                             <td class="assignedto">
                             <div class="avatar-group">
                                 <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Frank">
