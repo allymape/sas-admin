@@ -59,7 +59,7 @@ function nata() {
                 if( $('#barua-column').is(':visible')){
                   row += `
                         <td class="text-center">
-                            <a target="_blank" title="Barua" data-bs-toggle="tooltip" href="/mmilikiShuleBarua/${data[i].tracking_number}">
+                            <a target="_blank" title="Barua" data-bs-toggle="tooltip" href="/usajiliWaShuleBarua/${data[i].tracking_number}">
                             <i class="ri-file-pdf-fill ri-2x align-bottom me-1 text-danger"></i>
                             </a>
                       </td>`;

@@ -414,11 +414,11 @@ const generateFooter = (doc , signature , signatory , cheo) => {
     .fill("#021c27")
     .text(
       signatory,
-      doc.page.width / 2 - 100,
+      doc.page.width / 2 - 350,
       signatureHeight + 25,
       {
         columns: 1,
-        columnGap: 0,
+        columnGap: 2,
         height: 40,
         width: lineSize,
         align: "center",
@@ -430,13 +430,13 @@ const generateFooter = (doc , signature , signatory , cheo) => {
     .fill("#021c27")
     .text(
       cheo,
-      doc.page.width / 2 - 100,
+      doc.page.width / 2 - 150,
       signatureHeight + 45,
       {
         columns: 1,
         columnGap: 0,
         height: 40,
-        width: lineSize,
+        width: lineSize + 100,
         align: "center",
         underline: true,
       }
