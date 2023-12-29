@@ -239,6 +239,7 @@ module.exports = {
     company,
     box,
     mkoa,
+    title,
     paragraphs,
     signature,
     signatory,
@@ -256,19 +257,201 @@ module.exports = {
     res.setHeader("Content-type", "application/pdf");
 
     generateHeader(doc, imagesPaths, reference, created_at, company, box, mkoa); // Invoke `generateHeader` function.
-    generateTitle(
-      doc,
-      application_category_id,
-      school_type_id,
-      school_type,
-      school_name
-    );
+    generateTitle(doc, title);
     paragraphs.forEach((paragraph) => generateBody(doc, paragraph));
     generateFooter(doc, signature, signatory, cheo);
 
     doc.pipe(res);
     doc.end();
   },
+
+  bodyContent: (
+    application_category_id,
+    registry_type,
+    school_name,
+    school_type_id,
+    school_type,
+    approved_date,
+    type = "",  //manager or owner
+    owner_name = "",
+    manager_name = "",
+    region = "",
+    council = ""
+  ) => {
+    let bodyContent = null;
+    const name = getSchoolType(school_type_id, school_type, school_name);
+    let title = ``;
+    switch (application_category_id) {
+      case 1:
+        title = `KIBALI CHA KUANZISHA ${name}`;
+        bodyContent = [
+          `      Tafadhali rejea somo la barua hii.\n\n\n`,
+          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>${owner_name}</b>  kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
+          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
+          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
+          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+        ];
+
+        break;
+      case 2:
+        title = `UTHIBITISHO WA ${type == 'mmiliki' ? 'MMILIKI' : 'MENEJA'} WA ${name}`;
+        bodyContent = [
+          `      Tafadhali rejea somo la barua hii.\n\n\n`,
+          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>${type == 'mmiliki' ? owner_name : manager_name }</b>  kuwa ${type == 'mmiliki' ? 'Mmiliki' : 'Meneja'} wa <b>${name}</b>\n\n`,
+          `3.    Uthibitisho huu umetolewa tarehe <b>${approved_date}</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
+          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
+          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+        ];
+        break;
+      case 4:
+        title =
+          registry_type == 3
+            ? `USAJILI WA ${name} KATIKA HALMASHAURI YA WILAYA YA ${council}`
+            : `USAJILI WA ${name}`;
+        bodyContent = registry_type == 3 ? usajiliSerikali() : usajiliBinafsi();
+        break;
+      case 5:
+        title = ``;
+        bodyContent = [
+          `      Tafadhali rejea somo la barua hii.\n\n\n`,
+          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>Zainabu Ally</b> Mweta kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
+          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
+          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
+          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+        ];
+        break;
+      case 6:
+        title = ``;
+        bodyContent = [
+          `      Tafadhali rejea somo la barua hii.\n\n\n`,
+          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>Zainabu Ally</b> Mweta kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
+          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
+          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
+          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+        ];
+        break;
+      case 7:
+        title = ``;
+        bodyContent = [
+          `      Tafadhali rejea somo la barua hii.\n\n\n`,
+          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>Zainabu Ally</b> Mweta kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
+          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
+          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
+          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+        ];
+        break;
+      case 8:
+        title = ``;
+        bodyContent = [
+          `      Tafadhali rejea somo la barua hii.\n\n\n`,
+          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>Zainabu Ally</b> Mweta kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
+          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
+          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
+          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+        ];
+        break;
+      case 8:
+        title = ``;
+        bodyContent = [
+          `      Tafadhali rejea somo la barua hii.\n\n\n`,
+          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>Zainabu Ally</b> Mweta kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
+          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
+          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
+          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+        ];
+        break;
+      case 9:
+        title = ``;
+        bodyContent = [
+          `      Tafadhali rejea somo la barua hii.\n\n\n`,
+          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>Zainabu Ally</b> Mweta kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
+          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
+          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
+          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+        ];
+        break;
+      case 10:
+        title = ``;
+        bodyContent = [
+          `      Tafadhali rejea somo la barua hii.\n\n\n`,
+          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>Zainabu Ally</b> Mweta kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
+          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
+          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
+          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+        ];
+        break;
+      case 11:
+        title = ``;
+        bodyContent = [
+          `      Tafadhali rejea somo la barua hii.\n\n\n`,
+          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>Zainabu Ally</b> Mweta kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
+          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
+          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
+          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+        ];
+        break;
+      case 12:
+        title = ``;
+        bodyContent = [
+          `      Tafadhali rejea somo la barua hii.\n\n\n`,
+          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>Zainabu Ally</b> Mweta kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
+          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
+          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
+          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+        ];
+        break;
+      case 13:
+        title = ``;
+        bodyContent = [
+          `      Tafadhali rejea somo la barua hii.\n\n\n`,
+          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>Zainabu Ally</b> Mweta kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
+          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
+          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
+          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+        ];
+        break;
+      case 14:
+        title = ``;
+        bodyContent = [
+          `      Tafadhali rejea somo la barua hii.\n\n\n`,
+          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>Zainabu Ally</b> Mweta kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
+          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
+          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
+          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+        ];
+        break;
+      default:
+        break;
+    }
+    return { bodyContent, title };
+  },
+};
+
+const usajiliSerikali = (school_name, region, council) => {
+  return [
+    `      Tafadhali rejea somo la barua hii.\n\n\n`,
+    `2.	Napenda kukujulisha kuwa Wizara imekubali maombi ya Halmashauri ya Wilaya ya ${council} ya kusajili Shule ya Sekondari ${school_name} itakayomilikiwa na wananchi wa Halmashauri ya Wilaya ya ${council}. kwa kushirikiana na Mkoa wa ${region}`,
+    `3.	Mkoa unaruhusiwa kuchagua wanafunzi wa Kidato cha Kwanza kwa mwaka 2023.  Shule itakuwa ya kutwa, mchanganyiko na yenye mkondo mmoja (01). Shule hii imesajiliwa rasmi tarehe 17/02/2023 na kupewa namba ya usajili kama ifuatavyo:`,
+    `<table/>`,
+    `4.	Wizara inaiagiza   Halmashauri ya Wilaya ya ${council} kuendelea kukamilisha ujenzi wa miundombinu yote.  Endapo miundombinu haitakamilika,  Halmashauri haitaruhusiwa kuandikisha Wanafunzi wa kidato cha kwanza Januari 2024.`,
+    `5.	Mkuu wa Shule atapaswa kuifahamisha Wizara sanduku la barua la shule pindi litakapofunguliwa ili kurahisisha mawasiliano. Aidha, mfahamishe Katibu Mtendaji wa Baraza la Mitihani ni lini shule itakuwa na Wanafunzi watakaofanya Mtihani wa Taifa. `,
+    `6.	Kwa mujibu wa Waraka wa Elimu Na. 10 wa mwaka 2011, Usajili wa shule hii utarudiwa baada ya miaka 4.`,
+    `7.	Nakutakia utekelezaji mwema.`,
+  ];
+};
+const usajiliBinafsi = (
+  school_name,
+  registration_date,
+  registration_number
+) => {
+  return [
+    `      Tafadhali rejea somo la barua hii.\n\n\n`,
+    `2	Ninafurahi kukujulisha kuwa shule ya Awali na Msingi ${school_name} imesajiliwa tarehe ${registration_date} kwa mujibu wa Sheria ya Elimu, Sura ya 353.`,
+    `3.	Shule imepewa namba ya Usajili ${registration_number} kuwa shule ya Awali na Msingi na jina Jehovah Shalom limeidhinishwa. Shule hii ni ya kutwa, na mchanganyiko na imeidhinishwa kuwa na Mkondo Mmoja (01) inayotumia lugha ya Kiingereza kufundishia na kujifunzia. `,
+    `4.	Kufuatana na Sheria ya Elimu, Sura 353, cheti cha Usajili kiwekwe bayana na Uongozi wa Shule uwe tayari kukionesha iwapo kitatakiwa. Hakikisha kuwa Kamati ya Shule inaundwa katika muda wa miezi sita baada ya usajili. Kulingana na Waraka wa Elimu Na. 10 wa mwaka 2011 usajili wa shule hii utarudiwa baada ya miaka 4.`,
+    `5.	Mmiliki wa Shule atatakiwa kuja kuchukua cheti  cha usajili  wa shule akiwa  na kitambulisho  chake  mwezi  mmoja baada ya kupokea  barua hii.`,
+    `6.	Ninakutakia utekelezaji mwema.`,
+  ];
 };
 const getSchoolType = (school_type_id , school_type , school_name) => {
     var name = '';
@@ -303,6 +486,8 @@ const formatParagraph = (text, doc) => {
       doc.font("Times-Roman").text(text, { lineGap: 4, continued: true });
     }
 }
+
+// Letter Head
 const generateHeader = (doc, imagesPaths , reference, createdAt, company , box , mkoa) => {
   doc
     .font("Times-Bold")
@@ -350,60 +535,12 @@ const generateHeader = (doc, imagesPaths , reference, createdAt, company , box ,
 // Addressee
   doc
     .font("Times-Roman")
-    .text(`${company}, \nS.L.P. ${box}, \n${mkoa}.`)
+    .text(`${company}, \n ${box}, \n${mkoa}.`)
     .moveDown()
     .moveDown();
 }
-
-const generateTitle = (doc , application_category ,school_type_id , school__type , school_name , council) => {
-  let title = ``;
-  const name = getSchoolType(school_type_id , school__type , school_name);
-  switch (application_category) {
-    case 1:
-      title = `KIBALI CHA KUANZISHA ${name}`;
-      break;
-    case 2:
-      title = `UTHIBITISHO WA MMILIKI WA ${name}`;
-      break;
-    case 4:
-      title = `USAJILI WA ${name} KATIKA HALMASHAURI YA WILAYA YA ${council}`;
-      break;
-    case 5:
-      title = ``
-      break;
-    case 6:
-      title = ``
-      break;
-    case 7:
-      title = ``
-      break;
-    case 8:
-      title = ``
-      break;
-    case 8:
-      title = ``
-      break;
-    case 9:
-      title = ``
-      break;
-    case 10:
-      title = ``
-      break;
-    case 11:
-      title = ``
-      break;
-    case 12:
-      title = ``
-      break;
-    case 13:
-      title = ``
-      break;
-    case 14:
-      title = ``
-      break;
-    default:
-      break;
-  }
+// Title
+const generateTitle = (doc , title) => {
   doc
     .text("Yah: ", {
       continued: true,
@@ -415,8 +552,9 @@ const generateTitle = (doc , application_category ,school_type_id , school__type
     .text(title.toUpperCase().trim(), { underline: true, align: "center" })
     .moveDown();
 }
-const  generateBody = (doc, body) => {
-   formatParagraph(body , doc)
+// Body
+const  generateBody = (doc, bodyContent) => {
+   formatParagraph(bodyContent , doc)
   // doc
   //   .text("       Tafadhali rejea somo la barua hii", { lineGap: 4 })
   //   .moveDown();
@@ -480,7 +618,7 @@ const  generateBody = (doc, body) => {
   //   .font("Times-Roman")
   //   .text(`5.    Ninakutakia utekelezaji mwema.`, { lineGap: 4 });
 }
-
+// 
 const generateFooter = (doc , signature , signatory , cheo) => {
   const lineSize = 174;
   const signatureHeight = doc.page.height - 150;

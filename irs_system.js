@@ -14965,8 +14965,10 @@ app.use("/", reportUsajiliRequestController);
 app.use("/", reportWamilikiRequestController);
 app.use("/", reportMenejaRequestController);
 app.use("/", reportMabadilikoRequestController);
-app.use("/", maombiBaruaController);
+// app.use("/", maombiBaruaController);
 app.use("/", mmilikiKuthibitishwaBaruaController);
+
+// app.use("/", maombiBaruaController);
 
 app.use("/", errorController);
 app.listen(port, () => {

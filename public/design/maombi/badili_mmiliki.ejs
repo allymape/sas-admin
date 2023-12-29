@@ -64,7 +64,7 @@
                     <th class="sort" data-sort="assignedto">Halmashauri</th>
                     <th class="sort" data-sort="due_date">Mkoa</th>
                     <th class="sort" data-sort="priority">Muda wa Ombi</th>
-                     <% if(status == 'rejected' || status == 'approved'){ %>
+                     <% if(status == 'approved'){ %>
                       <th class="text-center">Barua</th>
                     <% } %>
                 </tr>
@@ -93,7 +93,7 @@
                     <td class="client_name"><%= maombi[i].LgaName %></td>
                     <td class="due_date badge badge-soft-secondary text-uppercase"  title=" <%= maombi[i].created_at %>"> <%= maombi[i].RegionName %></td>
                     <td class="priority"><span class="badge bg-danger text-uppercase"></span><%= maombi[i].remain_days %></td>
-                  <% if(status == 'rejected' || status == 'approved'){ %>
+                  <% if(status == 'approved'){ %>
                         <td class="text-center">
                                         <a target="_blank" title="Barua" data-bs-toggle="tooltip" href="/mmilikiShuleBarua/<%= maombi[i].tracking_number %>">
                                         <i class="ri-file-pdf-fill ri-2x align-bottom me-1 text-danger"></i>

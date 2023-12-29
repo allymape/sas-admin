@@ -65,7 +65,7 @@
                     <th class="sort" data-sort="assignedto">Mkoa</th>
                     <th class="sort" data-sort="due_date">Muda wa Ombi</th>
                     <th class="sort" data-sort="status">Hali</th>
-                     <% if(status == 'rejected' || status == 'approved'){ %>
+                     <% if(status == 'approved'){ %>
                         <th class="text-center">Barua</th>
                      <% } %>
                     <!--<th class="sort" data-sort="priority">Walioshughulikia</th>-->
@@ -98,7 +98,7 @@
                         <%= maombi[i].is_approved == 2 ? 'Limekubaliwa' : '' %>
                         <%= maombi[i].is_approved == 3 ? 'Limekataliwa' : '' %>
                     </td>
-                     <% if(status == 'rejected' || status == 'approved'){ %>
+                     <% if(status == 'approved'){ %>
                             <td class="text-center">
                                 <a target="_blank" title="Barua" data-bs-toggle="tooltip" href="/mmilikiShuleBarua/<%= maombi[i].tracking_number %>">
                                 <i class="ri-file-pdf-fill ri-2x align-bottom me-1 text-danger"></i>

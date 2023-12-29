@@ -7,48 +7,91 @@ const PDFDocument = require("pdfkit");
 const mmilikiKuthibitishwaBaruaController = express.Router();
 
 var session = require("express-session");
-const { isAuthenticated, sendRequest, can, formatParagraph, generateLetter } = require("../../../util");
-const { createBody, bodyContent } = require("../../design/maombi/barua/baruaBodyTemplate");
+const { isAuthenticated, sendRequest,  generateLetter, bodyContent, formatDate } = require("../../../util");
 const API_BASE_URL = process.env.API_BASE_URL;
-
 const baruaDetailsAPI = API_BASE_URL + "barua";
 
-mmilikiKuthibitishwaBaruaController.get("/mmilikiShuleBarua/:tracking_number",
+mmilikiKuthibitishwaBaruaController.get("/uthibitishoMenejaShuleBarua/:tracking_number",
   function (req, res) {
     const tracking_number = req.params.tracking_number;
-    sendRequest(req , res , baruaDetailsAPI +"/"+ tracking_number , 'POST' , {} , (jsonData) => {
-         console.log(jsonData)
+    const type = req.query.type;
+    const formData = {
+         type : type
+    }
+    sendRequest(req , res , baruaDetailsAPI +"/"+ tracking_number , 'POST' , formData , (jsonData) => {
+     
+      const {statusCode , data } = jsonData;
+      console.log(statusCode)
+      if(statusCode == 300){
+        const {
+          school_name,
+          owner_name,
+          manager_name,
+          category,
+          approved_at,
+          file_number,
+          school_folio,
+          folio,
+          registry_type_id,
+          school_category_id,
+          application_category_id,
+          address_name,
+          address_box,
+          region,
+          district
+        } = data;
+        console.log(data)
+        const reference = `${file_number}/${school_folio}/${folio}`;
+        const createdAt = formatDate(approved_at , 'DD/MM/YYYY');
+        const box = "S.L.P "+address_box;
+        const region_address = "Dar es salaam";
+        const signature = "Sahihi";
+        const signatory = "Ephrahim A. Simbeye";
+        const cheo = "KAIMU KAMISHNA WA ELIMU";
+        const registry_type = registry_type_id;
+        const school_region = region;
+        const school_council = district;
+        const letter = bodyContent(
+              application_category_id, //Aina ya Ombi Kuanzisha, Umiliki na Meneja
+              registry_type,
+              school_name,
+              school_category_id,
+              category,  // Aina ya Shule Sekendari, Msingi n.k
+              createdAt,
+              type,
+              owner_name,
+              manager_name,
+              school_region,
+              school_council
+        );
+
+        const paragraphs = letter.bodyContent;
+        const title = letter.title;
+        generateLetter(
+          req,
+          res,
+          application_category_id, //Aina ya Ombi Kuanzisha, Umiliki na Meneja
+          school_name,
+          school_category_id,
+          category,  // Aina ya Shule Sekendari, Msingi n.k
+          reference,
+          createdAt,
+          address_name,
+          box,
+          region_address,
+          title,
+          paragraphs,
+          signature,
+          signatory,
+          cheo
+        );
+      }else{
+        // res.status(404).send();
+        res.redirect('/404')
+      }
+      
     })
-    // const reference = "CD.5/315/3169";
-    // const createdAt = '27/12/2023';
-    // const company = 'Fedha Boys Secondary School';
-    // const box = "S.L.P 12999";
-    // const mkoa = 'Dar es salaam';
-    // const signature = 'Sahihi'
-    // const signatory = "Ephrahim A. Simbeye";
-    // const cheo = "KAIMU KAMISHNA WA ELIMU";
-    // const application_category_id = 1;
-    // const school_type_id = 4;
-    // const school_type = 'Sekondari';
-    // const paragraphs = bodyContent(application_category_id)
-    // const school_name = `Fedha Boys`
-    // generateLetter(
-    //   req,
-    //   res,
-    //   application_category_id,
-    //   school_name,
-    //   school_type_id,
-    //   school_type,
-    //   reference,
-    //   createdAt,
-    //   company,
-    //   box,
-    //   mkoa,
-    //   paragraphs,
-    //   signature,
-    //   signatory,
-    //   cheo
-    // );
+   
   }
 );
 
