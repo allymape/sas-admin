@@ -4,14 +4,14 @@ const express = require("express");
 const PDFDocument = require("pdfkit");
 
 
-const mmilikiKuthibitishwaBaruaController = express.Router();
+const baruaController = express.Router();
 
 var session = require("express-session");
 const { isAuthenticated, sendRequest,  generateLetter, bodyContent, formatDate } = require("../../../util");
 const API_BASE_URL = process.env.API_BASE_URL;
 const baruaDetailsAPI = API_BASE_URL + "barua";
 
-mmilikiKuthibitishwaBaruaController.get("/uthibitishoMenejaShuleBarua/:tracking_number",
+baruaController.get("/barua/:tracking_number",
   function (req, res) {
     const tracking_number = req.params.tracking_number;
     const type = req.query.type;
@@ -108,4 +108,4 @@ function generateTableRow(doc, y, c1, c2, c3, c4, c5) {
 
 
 
-module.exports = mmilikiKuthibitishwaBaruaController;
+module.exports = baruaController;

@@ -77,7 +77,7 @@ const reportWamilikiRequestController = require("./public/controllers/ripoti/Rip
 const reportMenejaRequestController = require("./public/controllers/ripoti/RipotiRequestMenejaController");
 const reportMabadilikoRequestController = require("./public/controllers/ripoti/RipotiRequestMabadilikoController");
 const maombiBaruaController = require("./public/controllers/barua/maombiBaruaController");
-const mmilikiKuthibitishwaBaruaController = require("./public/controllers/barua/mmilikiKuthibitishwaBaruaController");
+const baruaController = require("./public/controllers/barua/baruaController");
 // const reportRequestController = require("./public/controllers/ripoti/RipotiRequestController");
 
 var app = express();
@@ -13556,15 +13556,15 @@ app.get("/MaombiKuanzishaShuleJumla", function (req, res) {
 //   res.download("sample.xlsx");
 // });
 
-app.get("/Barua/:id", function (req, res) {
-  var filename = req.params.id;
-  res.download(filename + ".pdf");
-});
+// app.get("/Barua/:id", function (req, res) {
+//   var filename = req.params.id;
+//   res.download(filename + ".pdf");
+// });
 
-app.get("/Baruameneja/:id", function (req, res) {
-  var filename = req.params.id;
-  res.download(filename + "meneja.pdf");
-});
+// app.get("/Baruameneja/:id", function (req, res) {
+//   var filename = req.params.id;
+//   res.download(filename + "meneja.pdf");
+// });
 
 // app.get("/Viambatisho", function (req, res) {
 //   var obj = [];
@@ -14966,7 +14966,7 @@ app.use("/", reportWamilikiRequestController);
 app.use("/", reportMenejaRequestController);
 app.use("/", reportMabadilikoRequestController);
 // app.use("/", maombiBaruaController);
-app.use("/", mmilikiKuthibitishwaBaruaController);
+app.use("/", baruaController);
 
 // app.use("/", maombiBaruaController);
 
