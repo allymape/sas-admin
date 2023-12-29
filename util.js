@@ -148,68 +148,68 @@ module.exports = {
       format
     );
   },
-  crypt : () => {
+  crypt: () => {
     const cryptr = new Cryptr("ReALLY#299992%Secret#@901838Key");
     return cryptr;
   },
-  createLetter: (
-    tracking_number,
-    todaydate,
-    mwombajiAddress,
-    finalFileNumber,
-    fullname,
-    title,
-    body,
-    signature,
-    copies,
-    LgaName,
-    RegionName
-  ) => {
-    if (fs.existsSync(tracking_number + ".pdf")) {
-      console.log(
-        `A letter with a tracking number ${tracking_number} already exist.`
-      );
-    } else {
-      console.log(`Generate a letter tracking number ${tracking_number}`);
+  // createLetter: (
+  //   tracking_number,
+  //   todaydate,
+  //   mwombajiAddress,
+  //   finalFileNumber,
+  //   fullname,
+  //   title,
+  //   body,
+  //   signature,
+  //   copies,
+  //   LgaName,
+  //   RegionName
+  // ) => {
+  //   if (fs.existsSync(tracking_number + ".pdf")) {
+  //     console.log(
+  //       `A letter with a tracking number ${tracking_number} already exist.`
+  //     );
+  //   } else {
+  //     console.log(`Generate a letter tracking number ${tracking_number}`);
 
-      doc.pipe(fs.createWriteStream(tracking_number + ".pdf"));
-      // Adding functionality
-      doc
-        .fontSize(12)
-        .font("Times-Bold")
-        .text("JAMHURI YA MUUNGANO WA TANZANIA", 220, 20, 100, 100);
-      doc.text("WIZARA YA ELIMU, SAYANSI NA TEKNOLOJIA", 210, 35, 100, 100);
-      // Adding an image in the pdf.
-      //doc.image("arm.png", 280, 50, 50, 50);
-      doc
-        .fontSize(10)
-        .font("Times-Roman")
-        .text("Mji wa Serikali,", 450, 80, 50, 50);
-      doc.text("Mtumba,", 450, 90, 50, 50);
-      doc.text("Mtaa wa Afya,", 450, 100, 50, 50);
-      doc.text("S. L. P. 10,", 450, 110, 50, 50);
-      doc.font("Times-Bold").text("40479 DODOMA.", 450, 120, 50, 50);
-      doc.fontSize(10).font("Times-Roman").text(todaydate, 450, 140, 50, 50);
+  //     doc.pipe(fs.createWriteStream(tracking_number + ".pdf"));
+  //     // Adding functionality
+  //     doc
+  //       .fontSize(12)
+  //       .font("Times-Bold")
+  //       .text("JAMHURI YA MUUNGANO WA TANZANIA", 220, 20, 100, 100);
+  //     doc.text("WIZARA YA ELIMU, SAYANSI NA TEKNOLOJIA", 210, 35, 100, 100);
+  //     // Adding an image in the pdf.
+  //     //doc.image("arm.png", 280, 50, 50, 50);
+  //     doc
+  //       .fontSize(10)
+  //       .font("Times-Roman")
+  //       .text("Mji wa Serikali,", 450, 80, 50, 50);
+  //     doc.text("Mtumba,", 450, 90, 50, 50);
+  //     doc.text("Mtaa wa Afya,", 450, 100, 50, 50);
+  //     doc.text("S. L. P. 10,", 450, 110, 50, 50);
+  //     doc.font("Times-Bold").text("40479 DODOMA.", 450, 120, 50, 50);
+  //     doc.fontSize(10).font("Times-Roman").text(todaydate, 450, 140, 50, 50);
 
-      doc.text("Anuani ya simu “ELIMU”,", 100, 80, 50, 50);
-      doc.text("Simu: 026 296 35 33,", 100, 90, 50, 50);
-      doc.text("Baruapepe: info@moe.go.tz,", 100, 100, 50, 50);
+  //     doc.text("Anuani ya simu “ELIMU”,", 100, 80, 50, 50);
+  //     doc.text("Simu: 026 296 35 33,", 100, 90, 50, 50);
+  //     doc.text("Baruapepe: info@moe.go.tz,", 100, 100, 50, 50);
 
-      doc.fillColor("blue").text("Tovuti: www.moe.go.tz,", 100, 110, 50, 50).link(100, 100, 160, 27, "https://www.moe.go.tz/");
+  //     doc.fillColor("blue").text("Tovuti: www.moe.go.tz,", 100, 110, 50, 50).link(100, 100, 160, 27, "https://www.moe.go.tz/");
 
-      doc.fontSize(10).fillColor("black").text("Upatapo tafadhali jibu kwa:", 100, 130, 50, 50);
+  //     doc.fontSize(10).fillColor("black").text("Upatapo tafadhali jibu kwa:", 100, 130, 50, 50);
 
-      doc.font("Times-Bold").text("Kumb. Na. " + finalFileNumber, 100, 150, 50, 50);
-      doc.font("Times-Roman").text(fullname + ",", 100, 170, 170, 50);
-      doc.text(mwombajiAddress + ",", 100, 180, 50, 50);
+  //     doc.font("Times-Bold").text("Kumb. Na. " + finalFileNumber, 100, 150, 50, 50);
+  //     doc.font("Times-Roman").text(fullname + ",", 100, 170, 170, 50);
+  //     doc.text(mwombajiAddress + ",", 100, 180, 50, 50);
 
-      doc.font("Times-Bold").text(LgaName + " - " + RegionName, 100, 190, 50, 50);
-      doc.text(title, 210, 220, 50, 50);
-      doc.font(`Times-Roman`).text(body, 100, 260, 50, 50);
-      doc.end();
-    }
-  },
-  exportJSONToExcel : (res , jsonData , report_name = '') => {
+  //     doc.font("Times-Bold").text(LgaName + " - " + RegionName, 100, 190, 50, 50);
+  //     doc.text(title, 210, 220, 50, 50);
+  //     doc.font(`Times-Roman`).text(body, 100, 260, 50, 50);
+  //     doc.end();
+  //   }
+  // },
+  exportJSONToExcel: (res, jsonData, report_name = "") => {
     const xls = json2xls(jsonData);
     // fs.writeFileSync('data.xlsx' , xls , 'binary')
     // Set response headers for file download
@@ -217,12 +217,33 @@ module.exports = {
       "Content-Type",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     );
-    res.setHeader("Content-Disposition", "attachment; filename="+report_name ? report_name+"_report.xlsx" : "report.xlsx");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=" + report_name
+        ? report_name + "_report.xlsx"
+        : "report.xlsx"
+    );
     // Send the Excel file as a binary stream
     res.send(Buffer.from(xls, "binary"));
   },
 
-  generateLetter : (req , res , reference , created_at , company , box , mkoa , title, paragraphs , signature , signatory , cheo) => {
+  generateLetter: (
+    req,
+    res,
+    application_category_id,
+    school_name,
+    school_type_id,
+    school_type,
+    reference,
+    created_at,
+    company,
+    box,
+    mkoa,
+    paragraphs,
+    signature,
+    signatory,
+    cheo
+  ) => {
     let doc = new PDFDocument({
       margin: 72,
       size: "A4",
@@ -234,16 +255,30 @@ module.exports = {
     res.setHeader("Content-disposition", 'inline; filename="' + filename + '"');
     res.setHeader("Content-type", "application/pdf");
 
-    generateHeader(doc, imagesPaths , reference , created_at, company , box , mkoa); // Invoke `generateHeader` function.
-    generateTitle(doc , title);
+    generateHeader(doc, imagesPaths, reference, created_at, company, box, mkoa); // Invoke `generateHeader` function.
+    generateTitle(
+      doc,
+      application_category_id,
+      school_type_id,
+      school_type,
+      school_name
+    );
     paragraphs.forEach((paragraph) => generateBody(doc, paragraph));
-    generateFooter(doc , signature , signatory , cheo);
+    generateFooter(doc, signature, signatory, cheo);
 
     doc.pipe(res);
     doc.end();
-  }
+  },
 };
-
+const getSchoolType = (school_type_id , school_type , school_name) => {
+    var name = '';
+    if([1,2,3].includes(school_type_id)){
+      name = `Shule ya ${school_type} ${school_name} `;
+    }else{
+      name = `Chuo cha Ualimu ${school_name}`;
+    }
+    return name;
+};
 const containsBoldTag = (text) => /<b>(.*?)<\/b>/i.test(text);
 const formatParagraph = (text, doc) => {
   //  if <b> tag present render with bold font
@@ -308,7 +343,7 @@ const generateHeader = (doc, imagesPaths , reference, createdAt, company , box ,
   doc
     .font("Times-Bold")
     .text(`Kumb. na. ${reference}`, { continued: true })
-    .text(createdAt, doc.page.width / 2 - 20, 200)
+    .text(createdAt, doc.page.width / 2 - 10, 200)
     .moveDown()
     .moveDown();
 
@@ -319,16 +354,65 @@ const generateHeader = (doc, imagesPaths , reference, createdAt, company , box ,
     .moveDown()
     .moveDown();
 }
-const generateTitle = (doc , title) => {
-  doc.text("Yah: ", {
+
+const generateTitle = (doc , application_category ,school_type_id , school__type , school_name , council) => {
+  let title = ``;
+  const name = getSchoolType(school_type_id , school__type , school_name);
+  switch (application_category) {
+    case 1:
+      title = `KIBALI CHA KUANZISHA ${name}`;
+      break;
+    case 2:
+      title = `UTHIBITISHO WA MMILIKI WA ${name}`;
+      break;
+    case 4:
+      title = `USAJILI WA ${name} KATIKA HALMASHAURI YA WILAYA YA ${council}`;
+      break;
+    case 5:
+      title = ``
+      break;
+    case 6:
+      title = ``
+      break;
+    case 7:
+      title = ``
+      break;
+    case 8:
+      title = ``
+      break;
+    case 8:
+      title = ``
+      break;
+    case 9:
+      title = ``
+      break;
+    case 10:
+      title = ``
+      break;
+    case 11:
+      title = ``
+      break;
+    case 12:
+      title = ``
+      break;
+    case 13:
+      title = ``
+      break;
+    case 14:
+      title = ``
+      break;
+    default:
+      break;
+  }
+  doc
+    .text("Yah: ", {
       continued: true,
       width: doc.page.width - 100,
       indent: 50,
       lineBreak: true,
     })
     .font("Times-Bold")
-    .text(title.toUpperCase(), { underline: true, align: "center" })
-    .font("Times-Roman")
+    .text(title.toUpperCase().trim(), { underline: true, align: "center" })
     .moveDown();
 }
 const  generateBody = (doc, body) => {
