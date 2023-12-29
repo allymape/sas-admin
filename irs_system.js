@@ -77,6 +77,7 @@ const reportWamilikiRequestController = require("./public/controllers/ripoti/Rip
 const reportMenejaRequestController = require("./public/controllers/ripoti/RipotiRequestMenejaController");
 const reportMabadilikoRequestController = require("./public/controllers/ripoti/RipotiRequestMabadilikoController");
 const maombiBaruaController = require("./public/controllers/barua/maombiBaruaController");
+const mmilikiKuthibitishwaBaruaController = require("./public/controllers/barua/mmilikiKuthibitishwaBaruaController");
 // const reportRequestController = require("./public/controllers/ripoti/RipotiRequestController");
 
 var app = express();
@@ -14965,6 +14966,7 @@ app.use("/", reportWamilikiRequestController);
 app.use("/", reportMenejaRequestController);
 app.use("/", reportMabadilikoRequestController);
 app.use("/", maombiBaruaController);
+app.use("/", mmilikiKuthibitishwaBaruaController);
 
 app.use("/", errorController);
 app.listen(port, () => {
