@@ -115,6 +115,32 @@ maombiBaruaController.get(
   }
 );
 
+maombiBaruaController.get(
+  "/kubadiliMkondoBarua/:id",
+
+  function (req, res) {
+    const reference = "CD.5/315/3169";
+    const createdAt = '27/12/2023';
+    const company = 'Fedha Boys Secondary School';
+    const box = "S.L.P 12999";
+    const mkoa = 'Dar es salaam';
+    const title = `KIBALI CHA KUTUMIA MAJENGO KUANZISHA SHULE YA AWALI NA MSINGI NURUNJEMA TEGETA`;
+    const signature = 'Sahihi'
+    const signatory = "Ephrahim A. Simbeye";
+    const cheo = "KAIMU KAMISHNA WA ELIMU";
+    const paragraphs = [
+                    `      Tafadhali rejea somo la barua hii.\n\n\n`,
+                    `2.    Ninafurahi kukufahamisha kuwa kibali cha kutumia majengo kuanzisha shule ya Awali na Msingi <b>Nurunjema Tegeta</b> katika Mtaa wa <b>Nyuki</b>, Kata ya <b>Kunduchi</b>, Halmashauri ya <b>Manispaa ya Kinondoni</b>, Mkoa wa <b>Dar es Salaam</b>, kimetolewa. \n\n`,
+                    `3.    Kibali hiki kimetolewa kwa mujibu wa <b>Sheria ya Elimu, Sura 353,</b> kwa masharti  kuwa utazingatia mongozo wa Wizara wa kuanzisha na kusajili shule. Unashauriwa kuendelea kuwasiliana na <b>Mhandisi wa Ujenzi wa Halmashauri ya Manispaa</b> kwa ushauri wa kitaalam. \n\n`,
+                    `4.    Hakikisha jina la Mmiliki wa Shule litakalojazwa katika fomu <b>US.2</b> ya kuomba. Uthibitisho wa mwenye shule liwe lililoko kwenye Hatimiliki ya ardhi au mkataba wa mauziano. Aidha, Meneja atakayependekezwa katika fomu namba <b>US.3</b> awe mwalimu au kama siyo mwalim awe amepata mafunzo ya Vongozi wa Elimu katika Chuo kinachotambulia na Serikali. Awasilishe nakala ya cheti cha taaluma ya Ualimu na wasifu binafsi. \n\n`,
+                    `5.    <b>Kibali hiki siyo ruhusa ya kuandikisha wanafunzi.</b>\n\n\n`,
+                    `6.    Ninakutakia utekelezaji mwema.`,
+    ];
+    const body = ``;
+    generateLetter(req , res , reference, createdAt, company , box , mkoa , title , paragraphs , signature , signatory , cheo);
+  }
+);
+
 
 
 
