@@ -8,7 +8,7 @@ const mmilikiKuthibitishwaBaruaController = express.Router();
 
 var session = require("express-session");
 const { isAuthenticated, sendRequest, can, formatParagraph, generateLetter } = require("../../../util");
-const { createBody, bodyContent } = require("../../../../sas-api/templates/baruaBodyTemplate");
+const { createBody, bodyContent } = require("../../design/maombi/barua/baruaBodyTemplate");
 const API_BASE_URL = process.env.API_BASE_URL;
 
 const baruaDetailsAPI = API_BASE_URL + "barua";
