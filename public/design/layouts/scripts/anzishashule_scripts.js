@@ -57,12 +57,14 @@ function nata() {
                   row +
                   '<td class="priority"><span class="badge bg-danger text-uppercase">Jipya</span></td>';
                 if( $('#barua-column').is(':visible')){
-                  row += `
-                        <td class="text-center">
-                            <a target="_blank" title="Barua" data-bs-toggle="tooltip" href="/barua/${data[i].tracking_number}">
-                            <i class="ri-file-pdf-fill ri-2x align-bottom me-1 text-danger"></i>
-                            </a>
-                      </td>`;
+                      if(data[i].folio){
+                        row += `
+                            <td class="text-center">
+                                <a target="_blank" title="Barua" data-bs-toggle="tooltip" href="/barua/${data[i].tracking_number}">
+                                <i class="ri-file-pdf-fill ri-2x align-bottom me-1 text-danger"></i>
+                                </a>
+                           </td>`;
+                      }
                    }
                 row = row+ "</tr>";
                 $("#tasksTable").append(row);

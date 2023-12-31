@@ -33,6 +33,7 @@ kuongezaBweniRequestController.get(
               var school_name = data[i].school_name;
               var created_at = data[i].created_at;
               var remain_days = data[i].remain_days;
+              var folio = data[i].folio;
               req.session.TrackingNumber = tracking_number;
               obj.push({
                 tracking_number: tracking_number,
@@ -42,6 +43,7 @@ kuongezaBweniRequestController.get(
                 RegionName: RegionName,
                 created_at: created_at,
                 remain_days: remain_days,
+                folio
               });
             }
             console.log(

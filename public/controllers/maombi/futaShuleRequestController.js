@@ -32,6 +32,7 @@ futaShuleRequestController.get(
         var created_at = data[i].created_at;
         var remain_days = data[i].remain_days;
         var schoolId = data[i].schoolId;
+        var folio = data[i].folio;
         req.session.TrackingNumber = tracking_number;
         obj.push({
           schoolId: schoolId,
@@ -42,6 +43,7 @@ futaShuleRequestController.get(
           RegionName: RegionName,
           created_at: created_at,
           remain_days: remain_days,
+          folio
         });
       }
       console.log(new Date() + " " + req.session.userName + ": /BadiliJina");

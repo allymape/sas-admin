@@ -93,11 +93,13 @@
                     <td class="client_name"><%= maombi[i].LgaName %></td>
                     <td class="due_date badge badge-soft-secondary text-uppercase"  title=" <%= maombi[i].created_at %>"> <%= maombi[i].RegionName %></td>
                     <td class="priority"><span class="badge bg-danger text-uppercase"></span><%= maombi[i].remain_days %></td>
-                  <% if(status == 'approved'){ %>
+                  <% if(status == 'approved' ){ %>
                         <td class="text-center">
-                                        <a target="_blank" title="Barua" data-bs-toggle="tooltip" href="/barua/<%= maombi[i].tracking_number %>">
+                            <% if(maombi[i].folio){ %>
+                                 <a target="_blank" title="Barua" data-bs-toggle="tooltip" href="/barua/<%= maombi[i].tracking_number %>">
                                         <i class="ri-file-pdf-fill ri-2x align-bottom me-1 text-danger"></i>
-                                        </a>
+                                 </a>
+                            <% } %>
                         </td>
                     <% } %>
                 </tr>

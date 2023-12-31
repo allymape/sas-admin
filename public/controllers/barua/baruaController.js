@@ -38,7 +38,13 @@ baruaController.get("/barua/:tracking_number",
           address_name,
           address_box,
           region,
-          district
+          district,
+          registration_number,
+          registration_date,
+          subcategory,
+          stream,
+          language,
+          level,
         } = data;
         console.log(data)
         const reference = `${file_number}/${school_folio}/${folio}`;
@@ -52,28 +58,44 @@ baruaController.get("/barua/:tracking_number",
         const school_region = region;
         const school_council = district;
         const letter = bodyContent(
-              application_category_id, //Aina ya Ombi Kuanzisha, Umiliki na Meneja
-              registry_type,
-              school_name,
-              school_category_id,
-              category,  // Aina ya Shule Sekendari, Msingi n.k
-              createdAt,
-              type,
-              owner_name,
-              manager_name,
-              school_region,
-              school_council
+          application_category_id, //Aina ya Ombi Kuanzisha, Umiliki na Meneja
+          registry_type,
+          school_name,
+          school_category_id,
+          category, // Aina ya Shule Sekendari, Msingi n.k
+          createdAt,
+          registration_number,
+          registration_date ? formatDate(registration_date, "DD/MM/YYYY") : "",
+          type,
+          owner_name,
+          manager_name,
+          school_region,
+          school_council,
+          subcategory,
+          stream,
+          language
         );
 
         const paragraphs = letter.bodyContent;
         const title = letter.title;
+        const table = {
+                        headers : [`Na.`, "Jina la Shule", "Namba ya Usajili", "Darasa", "Masharti"],
+                        rows : [
+                                  [
+                                   "1.", 
+                                  school_name, 
+                                  registration_number, 
+                                  `${category} ${level}`, 
+                                  `Shule imesajiliwa kwa masharti ya kukamilisha maabara 03, ofisi 02, maktaba 01, jengo la utawala, nyumba za walimu na chumba maalum cha wasichana ifikapo Oktoba, 2022`],
+                                ]
+                      }
         generateLetter(
           req,
           res,
           application_category_id, //Aina ya Ombi Kuanzisha, Umiliki na Meneja
           school_name,
           school_category_id,
-          category,  // Aina ya Shule Sekendari, Msingi n.k
+          category, // Aina ya Shule Sekendari, Msingi n.k
           reference,
           createdAt,
           address_name,
@@ -83,7 +105,9 @@ baruaController.get("/barua/:tracking_number",
           paragraphs,
           signature,
           signatory,
-          cheo
+          cheo,
+          table,
+          registry_type
         );
       }else{
         // res.status(404).send();
@@ -94,18 +118,5 @@ baruaController.get("/barua/:tracking_number",
    
   }
 );
-
-
-
-function generateTableRow(doc, y, c1, c2, c3, c4, c5) {
-  doc.fontSize(10)
-    .text(c1, 50, y)
-    .text(c2, 150, y)
-    .text(c3, 280, y, { width: 90, align: 'right' })
-    .text(c4, 370, y, { width: 90, align: 'right' })
-    .text(c5, 0, y, { align: 'right' });
-}
-
-
 
 module.exports = baruaController;

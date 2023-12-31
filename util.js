@@ -6,11 +6,12 @@ const {
   titleCase, lowerCase,
 } = require("text-case");
 const fs = require("fs");
-const PDFDocument = require("pdfkit");
 const  json2xls = require("json2xls");
 const Cryptr = require("cryptr");
 const cheerio = require("cheerio");
 const  path = require("path");
+const PDFDocument = require("./public/controllers/barua/pdfkitTable");
+
 module.exports = {
   sendRequest: (req, res, url, method, formData, callback) => {
     if (
@@ -152,63 +153,7 @@ module.exports = {
     const cryptr = new Cryptr("ReALLY#299992%Secret#@901838Key");
     return cryptr;
   },
-  // createLetter: (
-  //   tracking_number,
-  //   todaydate,
-  //   mwombajiAddress,
-  //   finalFileNumber,
-  //   fullname,
-  //   title,
-  //   body,
-  //   signature,
-  //   copies,
-  //   LgaName,
-  //   RegionName
-  // ) => {
-  //   if (fs.existsSync(tracking_number + ".pdf")) {
-  //     console.log(
-  //       `A letter with a tracking number ${tracking_number} already exist.`
-  //     );
-  //   } else {
-  //     console.log(`Generate a letter tracking number ${tracking_number}`);
 
-  //     doc.pipe(fs.createWriteStream(tracking_number + ".pdf"));
-  //     // Adding functionality
-  //     doc
-  //       .fontSize(12)
-  //       .font("Times-Bold")
-  //       .text("JAMHURI YA MUUNGANO WA TANZANIA", 220, 20, 100, 100);
-  //     doc.text("WIZARA YA ELIMU, SAYANSI NA TEKNOLOJIA", 210, 35, 100, 100);
-  //     // Adding an image in the pdf.
-  //     //doc.image("arm.png", 280, 50, 50, 50);
-  //     doc
-  //       .fontSize(10)
-  //       .font("Times-Roman")
-  //       .text("Mji wa Serikali,", 450, 80, 50, 50);
-  //     doc.text("Mtumba,", 450, 90, 50, 50);
-  //     doc.text("Mtaa wa Afya,", 450, 100, 50, 50);
-  //     doc.text("S. L. P. 10,", 450, 110, 50, 50);
-  //     doc.font("Times-Bold").text("40479 DODOMA.", 450, 120, 50, 50);
-  //     doc.fontSize(10).font("Times-Roman").text(todaydate, 450, 140, 50, 50);
-
-  //     doc.text("Anuani ya simu “ELIMU”,", 100, 80, 50, 50);
-  //     doc.text("Simu: 026 296 35 33,", 100, 90, 50, 50);
-  //     doc.text("Baruapepe: info@moe.go.tz,", 100, 100, 50, 50);
-
-  //     doc.fillColor("blue").text("Tovuti: www.moe.go.tz,", 100, 110, 50, 50).link(100, 100, 160, 27, "https://www.moe.go.tz/");
-
-  //     doc.fontSize(10).fillColor("black").text("Upatapo tafadhali jibu kwa:", 100, 130, 50, 50);
-
-  //     doc.font("Times-Bold").text("Kumb. Na. " + finalFileNumber, 100, 150, 50, 50);
-  //     doc.font("Times-Roman").text(fullname + ",", 100, 170, 170, 50);
-  //     doc.text(mwombajiAddress + ",", 100, 180, 50, 50);
-
-  //     doc.font("Times-Bold").text(LgaName + " - " + RegionName, 100, 190, 50, 50);
-  //     doc.text(title, 210, 220, 50, 50);
-  //     doc.font(`Times-Roman`).text(body, 100, 260, 50, 50);
-  //     doc.end();
-  //   }
-  // },
   exportJSONToExcel: (res, jsonData, report_name = "") => {
     const xls = json2xls(jsonData);
     // fs.writeFileSync('data.xlsx' , xls , 'binary')
@@ -243,7 +188,9 @@ module.exports = {
     paragraphs,
     signature,
     signatory,
-    cheo
+    cheo,
+    table,
+    registry_type
   ) => {
     let doc = new PDFDocument({
       margin: 72,
@@ -258,9 +205,16 @@ module.exports = {
 
     generateHeader(doc, imagesPaths, reference, created_at, company, box, mkoa); // Invoke `generateHeader` function.
     generateTitle(doc, title);
-    paragraphs.forEach((paragraph) => generateBody(doc, paragraph));
+    paragraphs.forEach((paragraph) => {
+      if (paragraph.trim() == "<table/>") {
+        if (application_category_id == 4 && registry_type == 3) {
+          addTable(doc, table);
+        }
+      } else {
+        generateBody(doc, paragraph);
+      }
+    });
     generateFooter(doc, signature, signatory, cheo);
-
     doc.pipe(res);
     doc.end();
   },
@@ -272,11 +226,16 @@ module.exports = {
     school_type_id,
     school_type,
     approved_date,
-    type = "",  //manager or owner
+    registration_number,
+    registration_date,
+    type = "", //manager or owner
     owner_name = "",
     manager_name = "",
     region = "",
-    council = ""
+    council = "",
+    subcategory = '',
+    stream = '',
+    language = ''
   ) => {
     let bodyContent = null;
     const name = getSchoolType(school_type_id, school_type, school_name);
@@ -294,10 +253,16 @@ module.exports = {
 
         break;
       case 2:
-        title = `UTHIBITISHO WA ${type == 'mmiliki' ? 'MMILIKI' : 'MENEJA'} WA ${name}`;
+        title = `UTHIBITISHO WA ${
+          type == "mmiliki" ? "MMILIKI" : "MENEJA"
+        } WA ${name}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>${type == 'mmiliki' ? owner_name : manager_name }</b>  kuwa ${type == 'mmiliki' ? 'Mmiliki' : 'Meneja'} wa <b>${name}</b>\n\n`,
+          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>${
+            type == "mmiliki" ? owner_name : manager_name
+          }</b>  kuwa ${
+            type == "mmiliki" ? "Mmiliki" : "Meneja"
+          } wa <b>${name}</b>\n\n`,
           `3.    Uthibitisho huu umetolewa tarehe <b>${approved_date}</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
           `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
           `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
@@ -308,7 +273,25 @@ module.exports = {
           registry_type == 3
             ? `USAJILI WA ${name} KATIKA HALMASHAURI YA WILAYA YA ${council}`
             : `USAJILI WA ${name}`;
-        bodyContent = registry_type == 3 ? usajiliSerikali() : usajiliBinafsi();
+        bodyContent =
+          registry_type == 3
+            ? usajiliSerikali(
+                name,
+                school_name,
+                school_type_id,
+                region,
+                council
+              )
+            : usajiliBinafsi(
+                name,
+                school_name,
+                school_type_id,
+                registration_date,
+                registration_number,
+                subcategory,
+                stream,
+                language
+              );
         break;
       case 5:
         title = ``;
@@ -427,30 +410,36 @@ module.exports = {
   },
 };
 
-const usajiliSerikali = (school_name, region, council) => {
+const usajiliSerikali = (name , school_name , school_type, region, council) => {
   return [
-    `      Tafadhali rejea somo la barua hii.\n\n\n`,
-    `2.	Napenda kukujulisha kuwa Wizara imekubali maombi ya Halmashauri ya Wilaya ya ${council} ya kusajili Shule ya Sekondari ${school_name} itakayomilikiwa na wananchi wa Halmashauri ya Wilaya ya ${council}. kwa kushirikiana na Mkoa wa ${region}`,
-    `3.	Mkoa unaruhusiwa kuchagua wanafunzi wa Kidato cha Kwanza kwa mwaka 2023.  Shule itakuwa ya kutwa, mchanganyiko na yenye mkondo mmoja (01). Shule hii imesajiliwa rasmi tarehe 17/02/2023 na kupewa namba ya usajili kama ifuatavyo:`,
+    `    Tafadhali rejea somo la barua hii.\n\n\n`,
+    `2.  Napenda kukujulisha kuwa Wizara imekubali maombi ya Halmashauri ya Wilaya ya <b>${council}</b> ya kusajili <b>${name}</b> itakayomilikiwa na wananchi wa Halmashauri ya Wilaya ya ${council}. kwa kushirikiana na Mkoa wa ${region}\n\n`,
+    `3.  Mkoa unaruhusiwa kuchagua wanafunzi wa Kidato cha Kwanza kwa mwaka 2023.  Shule itakuwa ya kutwa, mchanganyiko na yenye mkondo mmoja (01). Shule hii imesajiliwa rasmi tarehe 17/02/2023 na kupewa namba ya usajili kama ifuatavyo:\n\n\n`,
     `<table/>`,
-    `4.	Wizara inaiagiza   Halmashauri ya Wilaya ya ${council} kuendelea kukamilisha ujenzi wa miundombinu yote.  Endapo miundombinu haitakamilika,  Halmashauri haitaruhusiwa kuandikisha Wanafunzi wa kidato cha kwanza Januari 2024.`,
-    `5.	Mkuu wa Shule atapaswa kuifahamisha Wizara sanduku la barua la shule pindi litakapofunguliwa ili kurahisisha mawasiliano. Aidha, mfahamishe Katibu Mtendaji wa Baraza la Mitihani ni lini shule itakuwa na Wanafunzi watakaofanya Mtihani wa Taifa. `,
-    `6.	Kwa mujibu wa Waraka wa Elimu Na. 10 wa mwaka 2011, Usajili wa shule hii utarudiwa baada ya miaka 4.`,
-    `7.	Nakutakia utekelezaji mwema.`,
+    `4.  Wizara inaiagiza Halmashauri ya Wilaya ya <b>${council}</b> kuendelea kukamilisha ujenzi wa miundombinu yote. Endapo miundombinu haitakamilika, Halmashauri haitaruhusiwa kuandikisha Wanafunzi wa kidato cha kwanza Januari 2024.\n\n`,
+    `5.  Mkuu wa Shule atapaswa kuifahamisha Wizara sanduku la barua la shule pindi litakapofunguliwa ili kurahisisha mawasiliano. Aidha, mfahamishe Katibu Mtendaji wa Baraza la Mitihani ni lini shule itakuwa na Wanafunzi watakaofanya Mtihani wa Taifa.\n\n\n`,
+    `6.  Kwa mujibu wa Waraka wa Elimu Na. 10 wa mwaka 2011, Usajili wa shule hii utarudiwa baada ya miaka 4.\n\n\n`,
+    `7.  Nakutakia utekelezaji mwema.`,
   ];
 };
 const usajiliBinafsi = (
+  name,
   school_name,
+  school_type,
   registration_date,
-  registration_number
+  registration_number,
+  subcategory,
+  stream,
+  language
 ) => {
+  const type = school_type == 4 ? 'Chuo' : 'Shule'
   return [
-    `      Tafadhali rejea somo la barua hii.\n\n\n`,
-    `2	Ninafurahi kukujulisha kuwa shule ya Awali na Msingi ${school_name} imesajiliwa tarehe ${registration_date} kwa mujibu wa Sheria ya Elimu, Sura ya 353.`,
-    `3.	Shule imepewa namba ya Usajili ${registration_number} kuwa shule ya Awali na Msingi na jina Jehovah Shalom limeidhinishwa. Shule hii ni ya kutwa, na mchanganyiko na imeidhinishwa kuwa na Mkondo Mmoja (01) inayotumia lugha ya Kiingereza kufundishia na kujifunzia. `,
-    `4.	Kufuatana na Sheria ya Elimu, Sura 353, cheti cha Usajili kiwekwe bayana na Uongozi wa Shule uwe tayari kukionesha iwapo kitatakiwa. Hakikisha kuwa Kamati ya Shule inaundwa katika muda wa miezi sita baada ya usajili. Kulingana na Waraka wa Elimu Na. 10 wa mwaka 2011 usajili wa shule hii utarudiwa baada ya miaka 4.`,
-    `5.	Mmiliki wa Shule atatakiwa kuja kuchukua cheti  cha usajili  wa shule akiwa  na kitambulisho  chake  mwezi  mmoja baada ya kupokea  barua hii.`,
-    `6.	Ninakutakia utekelezaji mwema.`,
+    `    Tafadhali rejea somo la barua hii.\n\n\n`,
+    `2.  Ninafurahi kukujulisha kuwa ${name} imesajiliwa tarehe <b>${registration_date}</b> kwa mujibu wa Sheria ya Elimu, Sura ya 353.\n\n\n`,
+    `3.  ${type} ${school_type == 4 ? 'kimipewa' : 'imepewa'} namba ya Usajili <b>${registration_number}</b> kuwa shule ya ${subcategory} na jina <b>${school_name}</b> limeidhinishwa. Shule hii ni ya ${subcategory} na imeidhinishwa kuwa na Mkondo ${stream} inayotumia lugha ya ${language} kufundishia na kujifunzia. \n\n`,
+    `4.	 Kufuatana na Sheria ya Elimu, Sura 353, cheti cha Usajili kiwekwe bayana na Uongozi wa Shule uwe tayari kukionesha iwapo kitatakiwa. Hakikisha kuwa Kamati ya Shule inaundwa katika muda wa miezi sita baada ya usajili. Kulingana na Waraka wa Elimu Na. 10 wa mwaka 2011 usajili wa shule hii utarudiwa baada ya miaka 4.\n\n\n`,
+    `5.	 Mmiliki wa Shule atatakiwa kuja kuchukua cheti  cha usajili  wa shule akiwa  na kitambulisho  chake  mwezi  mmoja baada ya kupokea  barua hii.\n\n\n`,
+    `6.  Ninakutakia utekelezaji mwema.`,
   ];
 };
 const getSchoolType = (school_type_id , school_type , school_name) => {
@@ -472,25 +461,37 @@ const formatParagraph = (text, doc) => {
         .each((index, element) => {
           if (element.nodeType === 1) {
             doc
-              .font("Times-Bold")
-              .text(`${$(element).text()}`, {
+              .font("Helvetica-Bold")
+              .fillColor("black")
+              .text(` ${$(element).text().trim() } `, {
                 lineGap: 4,
                 continued: true,
+                align : 'justify'
               });
           } else {
-            doc.font('Times-Roman').text($(element).text(), { lineGap: 4, continued: true });
+            doc
+              .fillColor("black")
+              .font("Helvetica")
+              .text($(element).text(), {
+                lineGap: 4,
+                continued: true,
+                align: "justify",
+              });
           }
         });
     } else {
       // If no tag render normal text
-      doc.font("Times-Roman").text(text, { lineGap: 4, continued: true });
+      doc
+        .fillColor("black")
+        .font("Helvetica")
+        .text(text, { lineGap: 4, continued: true, align: "justify" });
     }
 }
 
 // Letter Head
 const generateHeader = (doc, imagesPaths , reference, createdAt, company , box , mkoa) => {
   doc
-    .font("Times-Bold")
+    .font("Helvetica-Bold")
     .fontSize(14)
     .text("JAMUHURI YA MUUNGANO WA TANZANIA", 30, 30, {
       align: "center",
@@ -503,13 +504,20 @@ const generateHeader = (doc, imagesPaths , reference, createdAt, company , box ,
     .moveDown();
 
   doc
-    .font("Times-Roman")
+    .font("Helvetica")
     .fontSize(12)
     .text(
-      `Anuani ya simu "ELIMU"\nSimu: 026 296 35 33 \nBaruapepe: info@moe.go.tz \nTovut: www.moe.go.tz`,
+      `Anuani ya simu "ELIMU"\nSimu: 026 296 35 33 \nBaruapepe: info@moe.go.tz`,
       { lineGap: 2 }
     )
-    .text(
+
+    doc.text('Tovuti: ' , {lineBreak : false})
+    doc.fillColor("blue")
+    .text("www.moe.go.tz")
+    .link(100, 100, 160, 27, "https://www.moe.go.tz/")
+
+    doc.fillColor("black")
+      .text(
       "Mji wa Serikali, Mtumba, \nMtaa wa Afya,\nS. L. P. 10,\n40479 DODOMA.",
       doc.page.width / 2 + 120,
       80,
@@ -526,7 +534,7 @@ const generateHeader = (doc, imagesPaths , reference, createdAt, company , box ,
 
   doc.text("Unapojibu tafadhali taja:", 30, 160).moveDown().moveDown();
   doc
-    .font("Times-Bold")
+    .font("Helvetica-Bold")
     .text(`Kumb. na. ${reference}`, { continued: true })
     .text(createdAt, doc.page.width / 2 - 10, 200)
     .moveDown()
@@ -534,7 +542,7 @@ const generateHeader = (doc, imagesPaths , reference, createdAt, company , box ,
 
 // Addressee
   doc
-    .font("Times-Roman")
+    .font("Helvetica")
     .text(`${company}, \n ${box}, \n${mkoa}.`)
     .moveDown()
     .moveDown();
@@ -548,80 +556,19 @@ const generateTitle = (doc , title) => {
       indent: 50,
       lineBreak: true,
     })
-    .font("Times-Bold")
+    .font("Helvetica-Bold")
     .text(title.toUpperCase().trim(), { underline: true, align: "center" })
     .moveDown();
 }
 // Body
 const  generateBody = (doc, bodyContent) => {
    formatParagraph(bodyContent , doc)
-  // doc
-  //   .text("       Tafadhali rejea somo la barua hii", { lineGap: 4 })
-  //   .moveDown();
-
-  // doc
-  //   .text(`2.    Ninafurahi kukufahamisha kuwa thibitisho umetolewa kwa `, {
-  //     lineGap: 4,
-  //     continued: true,
-  //   })
-  //   .font("Times-Bold")
-  //   .text("Zainabu Aly Mweta ", { lineGap: 4, continued: true })
-  //   .font("Times-Roman")
-  //   .text("kuwa Meneja wa Shule ya Awali na Msingi ", {
-  //     lineGap: 4,
-  //     continued: true,
-  //   })
-  //   .font("Times-Bold")
-  //   .text("Diligence.")
-  //   .font("Times-Roman")
-  //   .moveDown();
-  // doc
-  //   .text(`3.    Uthibitisho huu umetolewa tarehe `, {
-  //     lineGap: 4,
-  //     continued: true,
-  //   })
-  //   .font("Times-Bold")
-  //   .text("25/10/12 ", { lineGap: 4, continued: true })
-  //   .font("Times-Roman")
-  //   .text("kwa mujibu wa ", { lineGap: 4, continued: true })
-  //   .font("Times-Bold")
-  //   .text("Sheria ya Elimu, Sura 353. ", { lineGap: 4, continued: true })
-  //   .font("Times-Roman")
-  //   .text("Utaiendesha shule hi kwa kuzingatia ", {
-  //     lineGap: 4,
-  //     continued: true,
-  //   })
-  //   .font("Times-Bold")
-  //   .text("Sheria, Kanuni, Taratibu na Miongozo ", {
-  //     lineGap: 4,
-  //     continued: true,
-  //   })
-  //   .font("Times-Roman")
-  //   .text("ya Wizara ya Elimu, Sayansi na Teknolojia. ", {
-  //     lineGap: 4,
-  //     continued: true,
-  //   })
-  //   .font("Times-Roman")
-  //   .text("Hakikisha shule ina ", { lineGap: 4, continued: true })
-  //   .font("Times-Bold")
-  //   .text("kasiki", { lineGap: 4, continued: true })
-  //   .font("Times-Roman")
-  //   .text("kwa ajili ya kuhifadhia nyaraka nyeti.")
-  //   .moveDown();
-  // doc
-  //   .font("Times-Bold")
-  //   .text(`4.    Uthibitisho huu siyo kibali cha kusajili wanafunzi.`, {
-  //     lineGap: 4,
-  //   })
-  //   .moveDown();
-  // doc
-  //   .font("Times-Roman")
-  //   .text(`5.    Ninakutakia utekelezaji mwema.`, { lineGap: 4 });
 }
+
 // 
 const generateFooter = (doc , signature , signatory , cheo) => {
   const lineSize = 174;
-  const signatureHeight = doc.page.height - 150;
+  const signatureHeight = doc.y + 100;
 
   const startLine1 = doc.page.width / 2 - 100;
   const endLine1 = doc.page.width / 2 - 100 + lineSize;
@@ -631,7 +578,7 @@ const generateFooter = (doc , signature , signatory , cheo) => {
     .stroke();
 
   doc
-    .font("Times-Roman")
+    .font("Helvetica")
     .fontSize(12)
     .fill("#021c27")
     .text(
@@ -641,13 +588,13 @@ const generateFooter = (doc , signature , signatory , cheo) => {
       {
         columns: 1,
         columnGap: 2,
-        height: 40,
+        height: 2,
         width: lineSize,
         align: "center",
       }
     );
   doc
-    .font("Times-Bold")
+    .font("Helvetica-Bold")
     .fontSize(12)
     .fill("#021c27")
     .text(
@@ -663,7 +610,21 @@ const generateFooter = (doc , signature , signatory , cheo) => {
         underline: true,
       }
     );
-  doc.font("Times-Roman").text("", 20, doc.page.height - 50, {
+  doc.font("Helvetica").text("", 20, doc.page.height - 50, {
     lineBreak: false,
+  });
+}
+
+const addTable = (doc  , table) => {
+  const tableArray = {
+                      headers : table.headers,
+                      rows : table.rows
+                    };
+  doc.table(tableArray, {
+    columnsSize: [40, 60, 80, 120, 230],
+    prepareHeader: () => doc.font("Helvetica-Bold").fontSize(12),
+    prepareRow: () => doc.font("Helvetica").fontSize(12),
+    padding : 0,
+    hideHeader : false
   });
 }
