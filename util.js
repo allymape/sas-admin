@@ -300,46 +300,27 @@ module.exports = {
           `2.    Napenda kukufahamisha kuwa Wizara imekubali ombi lako la kuongeza Mkondo <b>mmoja (01)</b> katika shule ya Awali na Msingi <b>Sayari</b> ili iwe <b>Mikondo miwili (02)</b>. Kibali kimetolewa tarehe <b>15/09/2023</b>\n\n`,
           `3.    Hata hivyo unatakiwa kuendelea kuboresha miundombinu ya shule ikiwa ni pamoja na kuajiri walimu wenye sifa na kununua vitabu vya kutosha.\n\n`,
           `4.    Mfahamishe Katibu Mtendaji wa Baraza la Mitihani ni lini wanafunzi walioongezeka watafanya upimaji wa darasa la IV na mtihani wa Taifa wa darasa la VII.\n\n\n`,
-          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+          `5.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
       case 6:
-        title = ``;
+        title = `Kubadili aina ya usajili`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>Zainabu Ally</b> Mweta kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
-          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
-          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
           `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
         ];
         break;
       case 7:
-        title = ``;
+        title = `Kubadili mmiliki wa shule`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>Zainabu Ally</b> Mweta kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
-          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
-          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
           `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
         ];
         break;
       case 8:
-        title = ``;
+        title = `Kubadili meneja wa shule`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>Zainabu Ally</b> Mweta kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
-          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
-          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
-          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
-        ];
-        break;
-      case 8:
-        title = ``;
-        bodyContent = [
-          `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>Zainabu Ally</b> Mweta kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
-          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
-          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
           `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
         ];
         break;
@@ -354,22 +335,16 @@ module.exports = {
         ];
         break;
       case 10:
-        title = ``;
+        title = `Kuhamisha shule`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>Zainabu Ally</b> Mweta kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
-          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
-          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
           `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
         ];
         break;
       case 11:
-        title = ``;
+        title = `Kufuta usajili wa shule`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>Zainabu Ally</b> Mweta kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
-          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
-          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
           `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
         ];
         break;
@@ -384,23 +359,21 @@ module.exports = {
         ];
         break;
       case 13:
-        title = ``;
+        title = `Kuongeza dahalia`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>Zainabu Ally</b> Mweta kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
-          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
-          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
           `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
         ];
         break;
       case 14:
-        title = ``;
+        title = `KIBALI CHA KUTOA HUDUMA YA BWENI KWA SHULE YA SEKONDARI AHMES`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>Zainabu Ally</b> Mweta kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
-          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
-          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
-          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+          `2.    Napenda kukujulisha kuwa maombi yako ya kibali cha kutoa <b>huduma ya bweni</b> katika shule ya Sekondari <b>AHMES</b> yamekubaliwa. \n\n`,
+          `3.    Kibali kimetolewa tarehe <b>26/10/2023</b> kulaza wanafunzi <b>288 Wasichana tu</b>. Unaagizwa kuimarisha hali ya usalama wa wanafunzi ndani na nje ya bweni. Kibali hiki kimetolewa kulaza wanafunzi wa <b>Sekondari tu.</b> \n\n`,
+          `4.    Aidha, <b>Wathibiti Ubora wa Shule</b> watafuatilia kuhusu uwekaji vifaa vya zimamoto, viashiria moshi, makabati pamoja na sehemu ya kuteketeza taka <b>(Incinerator)</b>. Pia watafuatilia idadi halisi ya wanafunzi wanaolala ndani ya mabweni ili kuepuka <b>msongamano</b> wa wanafunzi.\n\n`,
+          `5.    Kibali hiki kimetolewa kwa mujibu wa <b>Sheria ya Elimu, Sura 353</b>. Kwa masharti kuwa utazingatia mwongozo wa Wizara wa kuanzisha na kusajili shule. \n\n\n`,
+          `6.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
       default:
