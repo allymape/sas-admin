@@ -36,10 +36,10 @@ class PDFDocumentWithTables extends PDFDocument {
         // draw bg
         this
             .fill(fillColor)
-            //.stroke(fillColor)
+            .stroke(fillColor)
             .fillOpacity(fillOpacity)
             .rect(x, y, width, height)
-            //.stroke()
+            .stroke()
             .fill();
 
         // back to saved style

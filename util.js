@@ -245,10 +245,10 @@ module.exports = {
         title = `KIBALI CHA KUANZISHA ${name}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>${owner_name}</b>  kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
-          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
+          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>${owner_name}</b>  kuwa Meneja wa Shule ya Awali na Msingi <b>${school_name}</b>\n\n`,
+          `3.    Uthibitisho huu umetolewa tarehe <b>${approved_date}</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
           `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
-          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+          `5.   <b>Ninakutakia utekelezaji mwema.</b>`,
         ];
 
         break;
@@ -259,7 +259,7 @@ module.exports = {
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
           `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>${
-            type == "mmiliki" ? owner_name : manager_name
+            type == "mmiliki" ? owner_name.replace(/ +(?= )/g,'') : str = manager_name.replace(/ +(?= )/g,'')
           }</b>  kuwa ${
             type == "mmiliki" ? "Mmiliki" : "Meneja"
           } wa <b>${name}</b>\n\n`,
@@ -516,7 +516,7 @@ const generateHeader = (doc, imagesPaths , reference, createdAt, company , box ,
 // Addressee
   doc
     .font("Helvetica")
-    .text(`${company}, \n ${box}, \n${mkoa}.`)
+    .text(`${company}, \n${box}, \n${mkoa}.`)
     .moveDown()
     .moveDown();
 }

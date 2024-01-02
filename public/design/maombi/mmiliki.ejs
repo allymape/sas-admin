@@ -106,11 +106,7 @@
           <% if(status == 'approved'){ %>
                     <td class="text-center">
                         <% if(ombi.folio){ %>
-                            <a target="_blank" title="Barua" data-bs-toggle="tooltip" href="/barua/<%= ombi.tracking_number %>">
-                                <i class="ri-file-pdf-fill ri-2x align-bottom me-1 text-danger"></i>
-                            </a>
-                        &nbsp;
-                            <a target="_blank" title="Barua Meneja" data-bs-toggle="tooltip" href="/barua/<%= ombi.tracking_number %>?type=meneja">
+                            <a target="_blank" title="Barua Meneja" data-bs-toggle="tooltip" href="/barua/<%= ombi.tracking_number %>?type=<%=ombi.is_manager == 1 ? 'meneja' : 'mmiliki' %>">
                                 <i class="ri-file-pdf-line ri-2x align-bottom me-1 text-danger"></i>
                             </a>
                         <% } %>

@@ -1,9 +1,6 @@
 require("dotenv").config();
 const express = require("express");
 
-const PDFDocument = require("pdfkit");
-
-
 const baruaController = express.Router();
 
 var session = require("express-session");
@@ -48,7 +45,7 @@ baruaController.get("/barua/:tracking_number",
         } = data;
         console.log(data)
         const reference = `${file_number}/${school_folio}/${folio}`;
-        const createdAt = formatDate(approved_at , 'DD/MM/YYYY');
+        const createdAt = approved_at != undefined ? formatDate(approved_at , 'DD/MM/YYYY'): null;
         const box = "S.L.P "+address_box;
         const region_address = "Dar es salaam";
         const signature = "Sahihi";
