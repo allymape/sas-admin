@@ -11,8 +11,31 @@ const Cryptr = require("cryptr");
 const cheerio = require("cheerio");
 const  path = require("path");
 const PDFDocument = require("./public/controllers/barua/pdfkitTable");
+const url  = require("url");
 
 module.exports = {
+  modifiedUrl: (req, newParams = { status: req.query.status }) => {
+    const currentUrl = req.originalUrl;
+    const parseUrl = url.parse(currentUrl, true);
+    console.log(parseUrl);
+    for (const key in newParams) {
+      if (newParams.hasOwnProperty(key)) {
+        const value = newParams[key];
+        if (value) {
+          console.log(`${key} ${value}`);
+          parseUrl.query[key] = value;
+        }
+      }
+    }
+    if (parseUrl.query.page) {
+      delete parseUrl.query.page;
+    }
+    const newUrl = url.format({
+      pathname: parseUrl.pathname.substring(1),
+      query: parseUrl.query,
+    });
+    return newUrl;
+  },
   sendRequest: (req, res, url, method, formData, callback) => {
     if (
       typeof req.session.userName !== "undefined" ||
@@ -233,9 +256,10 @@ module.exports = {
     manager_name = "",
     region = "",
     council = "",
-    subcategory = '',
-    stream = '',
-    language = ''
+    subcategory = "",
+    stream = "",
+    old_stream = "",
+    language = ""
   ) => {
     let bodyContent = null;
     const name = getSchoolType(school_type_id, school_type, school_name);
@@ -294,7 +318,9 @@ module.exports = {
               );
         break;
       case 5:
-        title = `KIBALI CHA KUONGEZA MKONDO MMOJA (01) ILI IWE MIKONDO MIWILI (02) KWA SHULE YA AWALI NA MSINGI SAYARI`;
+        title = `KIBALI CHA KUONGEZA MKONDO  ${
+          stream - old_stream
+        } ILI IWE MIKONDO ${stream} KWA ${name}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
           `2.    Napenda kukufahamisha kuwa Wizara imekubali ombi lako la kuongeza Mkondo <b>mmoja (01)</b> katika shule ya Awali na Msingi <b>Sayari</b> ili iwe <b>Mikondo miwili (02)</b>. Kibali kimetolewa tarehe <b>15/09/2023</b>\n\n`,

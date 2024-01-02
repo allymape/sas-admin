@@ -17,11 +17,15 @@ kubadiliJinaRequestController.get(
   can("view-school-registration-private"),
   function (req, res) {
   var obj = [];
-   var formData = {
-          //  is_paginated: req.query.is_paginated,
-          //  search: req.query.tafuta,
-          status: req.query.status,
-        };
+   const per_page = Number(req.query.per_page || 10);
+   const page = Number(req.query.page || 1);
+   const formData = {
+     page,
+     per_page,
+     //  is_paginated: req.query.is_paginated,
+     //  search: req.query.tafuta,
+     status: req.query.status,
+   };
 sendRequest(req, res, badiliJinaShule, "POST", formData, (jsonData) => {
         const {statusCode , dataSummary } = jsonData;
         const data = jsonData.dataList;

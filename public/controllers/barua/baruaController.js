@@ -43,6 +43,7 @@ baruaController.get("/barua/:tracking_number",
           registration_date,
           subcategory,
           stream,
+          old_stream,
           language,
           level,
         } = data;
@@ -73,6 +74,7 @@ baruaController.get("/barua/:tracking_number",
           school_council,
           subcategory,
           stream,
+          old_stream,
           language
         );
 

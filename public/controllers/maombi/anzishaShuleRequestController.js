@@ -18,7 +18,11 @@ anzishaShuleRequestController.get(
   isAuthenticated,
   can("view-initiate-schools"),
   function (req, res) {
-    var formData = {
+    const per_page = Number(req.query.per_page || 10);
+    const page = Number(req.query.page || 1);
+    const formData = {
+      page,
+      per_page,
       //  is_paginated: req.query.is_paginated,
       //  search: req.query.tafuta,
     };

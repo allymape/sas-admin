@@ -15,14 +15,18 @@ kubadiliUsajiliRequestController.get(
   isAuthenticated,
   can("view-change-registration-type"),
   function (req, res) {
-    var formData = {
-      //  is_paginated: req.query.is_paginated,
-      //  search: req.query.tafuta,
-      status: req.query.status,
-    };
+  const per_page = Number(req.query.per_page || 10);
+  const page = Number(req.query.page || 1);
+  const formData = {
+    page,
+    per_page,
+    //  is_paginated: req.query.is_paginated,
+    //  search: req.query.tafuta,
+    status: req.query.status,
+  };
     sendRequest(req, res, badiliAinaUsajili, "POST", formData, (jsonData) => {
       var data = jsonData.dataList;
-      console.log(jsonData.dataList);
+      // console.log(jsonData.dataList);
       const obj = [];
       for (var i = 0; i < data.length; i++) {
         var tracking_number = data[i].tracking_number;
