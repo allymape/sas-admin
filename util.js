@@ -294,12 +294,12 @@ module.exports = {
               );
         break;
       case 5:
-        title = ``;
+        title = `KIBALI CHA KUONGEZA MKONDO MMOJA (01) ILI IWE MIKONDO MIWILI (02) KWA SHULE YA AWALI NA MSINGI SAYARI`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>Zainabu Ally</b> Mweta kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
-          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
-          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
+          `2.    Napenda kukufahamisha kuwa Wizara imekubali ombi lako la kuongeza Mkondo <b>mmoja (01)</b> katika shule ya Awali na Msingi <b>Sayari</b> ili iwe <b>Mikondo miwili (02)</b>. Kibali kimetolewa tarehe <b>15/09/2023</b>\n\n`,
+          `3.    Hata hivyo unatakiwa kuendelea kuboresha miundombinu ya shule ikiwa ni pamoja na kuajiri walimu wenye sifa na kununua vitabu vya kutosha.\n\n`,
+          `4.    Mfahamishe Katibu Mtendaji wa Baraza la Mitihani ni lini wanafunzi walioongezeka watafanya upimaji wa darasa la IV na mtihani wa Taifa wa darasa la VII.\n\n\n`,
           `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
         ];
         break;
@@ -344,13 +344,13 @@ module.exports = {
         ];
         break;
       case 9:
-        title = ``;
+        title = `KIBALI CHA KUBADILI JINA LA SHULE YA SEKONDARI EMBRI’S BOYS   KUWA SHULE YA SEKONDARI EMBRIS`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>Zainabu Ally</b> Mweta kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
-          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
-          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
-          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+          `2.    Wizara ya Elimu, Sayansi na Teknolojia imepokea barua yenye <b>Kumb. Na. HMW/SMJ/EL/EM/41/43</b> ya tarehe <b>20/09/2023</b> kuhusu maombi ya mabadiliko ya jina la Shule ya Sekondari <b>Embri’s Boys</b> kuwa <b>Embris</b>\n\n`,
+          `3.    Ninafurahi kukufahamisha kuwa maombi ya mabadiliko ya jina la shule yamekubaliwa. Hivyo, kuanzia tarehe ya barua hii, shule hii itatambulika kwa jina la <b>Embris Sekondari.</b>\n\n`,
+          `4.    Unaagizwa kuzijulisha Mamlaka zote za kielimu juu ya mabadiliko ya jina la shule.\n\n\n`,
+          `5.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
       case 10:
@@ -374,13 +374,13 @@ module.exports = {
         ];
         break;
       case 12:
-        title = ``;
+        title = `KIBALI CHA KUONGEZA  TAHASUSI  ZA  CBG NA HGK, KATIKA SHULE YA SEKONDARI  BWABUKI`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>Zainabu Ally</b> Mweta kuwa Meneja wa Shule ya Awali na Msingi <b>Fedha Boys</b>\n\n`,
-          `3.    Uthibitisho huu umetolewa tarehe <b>27/12/2023</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
-          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
-          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+          `2.    Nafurahi kukujulisha kuwa Wizara imekubali kutoa kibali cha kuanzisha tahasusi za <b>CBG NA HGK</b> mkondo mmoja <b>(01)</b> kwa kila tahasusi kwa Wasichana pekee. Kibali hiki kimetolewa tarehe <b>26/6/2023</b>\n\n`,
+          `3.    Hata hivyo, unatakiwa kuendelea kuboresha miundombinu ya shule pamoja na kununua samani na vitabu vya kutosha.\n\n`,
+          `4.    Aidha, mfahamishe <b>Katibu Mtendaji Baraza la Mitihani Tanzania</b> ni lini shule itakuwa na <b>Wanafunzi watakaofanya Mtihani wa Taifa kidato cha sita kwa tahasusi husika</b>.\n\n\n`,
+          `5.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
       case 13:
