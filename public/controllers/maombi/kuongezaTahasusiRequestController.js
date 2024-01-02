@@ -28,36 +28,18 @@ kuongezaTahasusiRequestController.get(
       var message = jsonData.message;
       var statusCode = jsonData.statusCode;
       var data = jsonData.dataList;
+
+      console.log(data, statusCode);
+
       var dataSummary = jsonData.dataSummary;
       if (statusCode == 300) {
-        for (var i = 0; i < data.length; i++) {
-          var tracking_number = data[i].tracking_number;
-          var user_id = data[i].user_id;
-          var LgaName = data[i].LgaName;
-          var RegionName = data[i].RegionName;
-          var school_name = data[i].school_name;
-          var created_at = data[i].created_at;
-          var remain_days = data[i].remain_days;
-          var folio = data[i].folio;
-          req.session.TrackingNumber = tracking_number;
-          obj.push({
-            tracking_number: tracking_number,
-            user_id: user_id,
-            school_name: school_name,
-            LgaName: LgaName,
-            RegionName: RegionName,
-            created_at: created_at,
-            remain_days: remain_days,
-            folio
-          });
-        }
         console.log(
           new Date() + " " + req.session.userName + ": /KuongezaTahasusi"
         );
         res.render(path.join(__dirname + "/../../design/maombi/tahasusi"), {
           req: req,
           summary: dataSummary,
-          maombi: obj,
+          maombi: data,
           useLev: req.session.UserLevel,
           userName: req.session.userName,
           RoleManage: req.session.RoleManage,

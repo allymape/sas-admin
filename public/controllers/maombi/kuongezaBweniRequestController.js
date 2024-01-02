@@ -20,41 +20,21 @@ kuongezaBweniRequestController.get(
     const formData = {
       status: req.query.status,
     };
-    sendRequest(req, res , badiliBweni , "POST" ,formData,
+    sendRequest(req, res, badiliBweni, "POST", formData,
       function (jsonData) {
-      
-          var data = jsonData.dataList;
-          var dataSummary = jsonData.dataSummary;
-            for (var i = 0; i < data.length; i++) {
-              var tracking_number = data[i].tracking_number;
-              var user_id = data[i].user_id;
-              var LgaName = data[i].LgaName;
-              var RegionName = data[i].RegionName;
-              var school_name = data[i].school_name;
-              var created_at = data[i].created_at;
-              var remain_days = data[i].remain_days;
-              var folio = data[i].folio;
-              req.session.TrackingNumber = tracking_number;
-              obj.push({
-                tracking_number: tracking_number,
-                user_id: user_id,
-                school_name: school_name,
-                LgaName: LgaName,
-                RegionName: RegionName,
-                created_at: created_at,
-                remain_days: remain_days,
-                folio
-              });
-            }
-            console.log(
-              new Date() + " " + req.session.userName + ": /KuongezaBweni"
-            );
-            res.render(path.join(__dirname + "/../../design/maombi/bweni"), {
-              req: req,
-              summary: dataSummary,
-              maombi: obj,
-            });
-          }
+
+        var data = jsonData.dataList;
+        var dataSummary = jsonData.dataSummary;
+
+        console.log(
+          new Date() + " " + req.session.userName + ": /KuongezaBweni"
+        );
+        res.render(path.join(__dirname + "/../../design/maombi/bweni"), {
+          req: req,
+          summary: dataSummary,
+          maombi: data,
+        });
+      }
     );
   }
 );
