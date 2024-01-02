@@ -23,40 +23,17 @@ kubadiliJinaRequestController.get(
           status: req.query.status,
         };
 sendRequest(req, res, badiliJinaShule, "POST", formData, (jsonData) => {
-  // var jsonData = JSON.parse(body)
         const {statusCode , dataSummary } = jsonData;
         const data = jsonData.dataList;
-          if (statusCode == 300) {
-            for (var i = 0; i < data.length; i++) {
-              var tracking_number = data[i].tracking_number;
-              var user_id = data[i].user_id;
-              var LgaName = data[i].LgaName;
-              var RegionName = data[i].RegionName;
-              var school_name = data[i].school_name;
-              var created_at = data[i].created_at;
-              var remain_days = data[i].remain_days;
-              var folio = data[i].folio;
-              req.session.TrackingNumber = tracking_number;
-              obj.push({
-                tracking_number: tracking_number,
-                user_id: user_id,
-                school_name: school_name,
-                LgaName: LgaName,
-                RegionName: RegionName,
-                created_at: created_at,
-                remain_days: remain_days,
-                folio
-              });
-            }
-          }
-            console.log(
-              new Date() + " " + req.session.userName + ": /BadiliJina"
-            );
-          res.render(path.join(__dirname + "/../../design/maombi/jina_shule"), {
-                req: req,
-                summary: dataSummary,
-                maombi: obj,
-          });
+        
+        console.log(
+          new Date() + " " + req.session.userName + ": /BadiliJina"
+        );
+        res.render(path.join(__dirname + "/../../design/maombi/jina_shule"), {
+              req: req,
+              summary: dataSummary,
+              maombi: data,
+        });
 });
 
 });
