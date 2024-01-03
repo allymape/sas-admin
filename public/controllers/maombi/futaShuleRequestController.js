@@ -4,7 +4,7 @@ const request = require("request");
 const futaShuleRequestController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { isAuthenticated, sendRequest, can } = require("../../../util");
+const { isAuthenticated, sendRequest, can, modifiedUrl } = require("../../../util");
 const API_BASE_URL = process.env.API_BASE_URL;
 const futaShuleHiari = API_BASE_URL + "maombi-futa-shule";
 var ombiFutaDetails = API_BASE_URL + "view-ombi-futa-details";
@@ -26,6 +26,7 @@ futaShuleRequestController.get(
   };
     sendRequest(req, res, futaShuleHiari, "POST", formData, (jsonData) => {
       const data = jsonData.dataList;
+      const {numRows} = jsonData
       const obj = [];
       for (var i = 0; i < data.length; i++) {
         var tracking_number = data[i].tracking_number;
@@ -55,11 +56,13 @@ futaShuleRequestController.get(
         req: req,
         summary: jsonData.dataSummary,
         maombi: obj,
-        // useLev: req.session.UserLevel,
-        // userName: req.session.userName,
-        // RoleManage: req.session.RoleManage,
-        // userID: req.session.userID,
-        // cheoName: req.session.cheoName,
+        pagination: {
+          total: Number(numRows),
+          current: Number(page),
+          per_page: Number(per_page),
+          url: modifiedUrl(req),
+          pages: Math.ceil(Number(numRows) / Number(per_page)),
+        },
       });
     });
   }

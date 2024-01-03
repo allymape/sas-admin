@@ -4,7 +4,7 @@ const request = require("request");
 const badiliMenejaRequestController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { isAuthenticated, sendRequest, can } = require("../../../util");
+const { isAuthenticated, sendRequest, can, modifiedUrl } = require("../../../util");
 const API_BASE_URL = process.env.API_BASE_URL;
 const maobadilimenejaShuleListAPI = API_BASE_URL + "maombi-badili-meneja-shule";
 var badiliMenejaDetails = API_BASE_URL + "view-ombi-badili-meneja-details";
@@ -32,6 +32,7 @@ badiliMenejaRequestController.get(
       formData,
       (jsonData) => {
         const data = jsonData.dataList;
+        const {numRows} = jsonData
         const obj = [];
         for (var i = 0; i < data.length; i++) {
           var tracking_number = data[i].tracking_number;
@@ -67,11 +68,13 @@ badiliMenejaRequestController.get(
             req: req,
             summary: jsonData.dataSummary,
             maombi: obj,
-            //  useLev: req.session.UserLevel,
-            //  userName: req.session.userName,
-            //  RoleManage: req.session.RoleManage,
-            //  userID: req.session.userID,
-            //  cheoName: req.session.cheoName,
+            pagination: {
+              total: Number(numRows),
+              current: Number(page),
+              per_page: Number(per_page),
+              url: modifiedUrl(req),
+              pages: Math.ceil(Number(numRows) / Number(per_page)),
+            },
           }
         );
       }

@@ -4,7 +4,7 @@ const request = require("request");
 const kubadiliJinaRequestController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { isAuthenticated, sendRequest, can } = require("../../../util");
+const { isAuthenticated, sendRequest, can, modifiedUrl } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var badiliJinaShule = API_BASE_URL + "maombi-badili-jina-shule";
 var badiliShuleDetails = API_BASE_URL + "view-badili-shule-details";
@@ -27,16 +27,23 @@ kubadiliJinaRequestController.get(
      status: req.query.status,
    };
 sendRequest(req, res, badiliJinaShule, "POST", formData, (jsonData) => {
-        const {statusCode , dataSummary } = jsonData;
+        const {dataSummary } = jsonData;
         const data = jsonData.dataList;
-        
+        const {numRows} = jsonData
         console.log(
           new Date() + " " + req.session.userName + ": /BadiliJina"
         );
         res.render(path.join(__dirname + "/../../design/maombi/jina_shule"), {
-              req: req,
-              summary: dataSummary,
-              maombi: data,
+          req: req,
+          summary: dataSummary,
+          maombi: data,
+          pagination: {
+            total: Number(numRows),
+            current: Number(page),
+            per_page: Number(per_page),
+            url: modifiedUrl(req),
+            pages: Math.ceil(Number(numRows) / Number(per_page)),
+          },
         });
 });
 

@@ -5,7 +5,7 @@ const kuongezaTahasusiRequestController = express.Router();
 var session = require("express-session");
 var path = require("path");
 const requestIp = require("request-ip");
-const { isAuthenticated, sendRequest, can } = require("../../../util");
+const { isAuthenticated, sendRequest, can, modifiedUrl } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var badiliTahasusi = API_BASE_URL + "maombi-badili-tahasusi";
 var ongezatahasusiDetails = API_BASE_URL + "view-ongeza-tahasusi-details";
@@ -32,7 +32,7 @@ kuongezaTahasusiRequestController.get(
       var message = jsonData.message;
       var statusCode = jsonData.statusCode;
       var data = jsonData.dataList;
-
+      const {numRows} = jsonData
       // console.log(data, statusCode);
 
       var dataSummary = jsonData.dataSummary;
@@ -44,11 +44,13 @@ kuongezaTahasusiRequestController.get(
           req: req,
           summary: dataSummary,
           maombi: data,
-          useLev: req.session.UserLevel,
-          userName: req.session.userName,
-          RoleManage: req.session.RoleManage,
-          userID: req.session.userID,
-          cheoName: req.session.cheoName,
+          pagination: {
+            total: Number(numRows),
+            current: Number(page),
+            per_page: Number(per_page),
+            url: modifiedUrl(req),
+            pages: Math.ceil(Number(numRows) / Number(per_page)),
+          },
         });
       }
       if (statusCode == 209) {

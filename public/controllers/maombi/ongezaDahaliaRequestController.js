@@ -4,7 +4,7 @@ const request = require("request");
 const ongezaDahaliaRequestController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { isAuthenticated, sendRequest, can } = require("../../../util");
+const { isAuthenticated, sendRequest, can, modifiedUrl } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var badiliDahalia = API_BASE_URL + "maombi-ongeza-dahalia";
 var badiliDahaliaDetalis = API_BASE_URL + "view-badili-dahalia";
@@ -34,6 +34,7 @@ ongezaDahaliaRequestController.get(
         var message = jsonData.message;
         var statusCode = jsonData.statusCode;
         var data = jsonData.dataList;
+        const {numRows} = jsonData
         const obj = [];
         for (var i = 0; i < data.length; i++) {
           var tracking_number = data[i].tracking_number;
@@ -63,6 +64,13 @@ ongezaDahaliaRequestController.get(
           req: req,
           summary: jsonData.dataSummary,
           maombi: obj,
+          pagination: {
+            total: Number(numRows),
+            current: Number(page),
+            per_page: Number(per_page),
+            url: modifiedUrl(req),
+            pages: Math.ceil(Number(numRows) / Number(per_page)),
+          },
         });
       }
     );

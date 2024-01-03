@@ -4,7 +4,7 @@ const request = require("request");
 const kuongezaBweniRequestController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { isAuthenticated, sendRequest, can } = require("../../../util");
+const { isAuthenticated, sendRequest, can, modifiedUrl } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var bweniDetails = API_BASE_URL + "view-bweni-details";
 var badiliBweni = API_BASE_URL + "maombi-badili-bweni";
@@ -29,7 +29,7 @@ kuongezaBweniRequestController.get(
 
         var data = jsonData.dataList;
         var dataSummary = jsonData.dataSummary;
-
+        const {numRows} = jsonData
         console.log(
           new Date() + " " + req.session.userName + ": /KuongezaBweni"
         );
@@ -37,6 +37,13 @@ kuongezaBweniRequestController.get(
           req: req,
           summary: dataSummary,
           maombi: data,
+          pagination: {
+            total: Number(numRows),
+            current: Number(page),
+            per_page: Number(per_page),
+            url: modifiedUrl(req),
+            pages: Math.ceil(Number(numRows) / Number(per_page)),
+          },
         });
       }
     );
