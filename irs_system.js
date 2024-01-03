@@ -137,7 +137,8 @@ global.routeIs =  (url_segments, currentUrl) => {
               for(var i=0; i< urls.length; i++){
                 // console.log('cehkakdka ',currentUrl , currentUrl.replace(/^\/+/, '') , urls[i].trim()))
                 // console.log(modifyUrl(currentUrl.) === urls[i].trim())
-                if(modifyUrl(currentUrl).toLowerCase() == urls[i].trim().toLowerCase()){
+                // console.log(modifyUrl(currentUrl).toLowerCase().trim() , "xxxxx" , urls[i].toLowerCase())
+                if(modifyUrl(currentUrl).toLowerCase().trim() == urls[i].trim().toLowerCase()){
                     return true;
                 }
               }
@@ -173,17 +174,25 @@ global.permission = (req , permission_name) => {
 }
 
 var modifyUrl = function(currentUrl){
+  
     var url = currentUrl.split("?").length == 2 ? currentUrl.split("?")[0].split("/") : currentUrl.split("/");
-     if(url.length == 2){
-        return url[1];
+    if(url.length > 0 && !JSON.stringify(url).includes('.')){
+      // console.log(url.length  , currentUrl , url[0]) 
+     if(url.length == 1){
+        return url[0];
+     }
+    if(url.length == 2){
+        return url[0]+"/*";
      }
      if(url.length == 3){
-        return url[1]+"/*";
+        return url[0]+"/*"+url[2];
      }
      if(url.length == 4){
-        return url[1]+"/*/"+url[3];
+        return url[0]+`/${url[1]}/*/`+url[3];
      }
      return currentUrl;
+    }
+    return '';
 } 
 
 global.nameCase = (text) => {
