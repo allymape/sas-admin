@@ -528,7 +528,16 @@ const getSchoolTypeOnly = (school_type_id, school_type) => {
 };
 
 const containsBoldTag = (text) => /<b>(.*?)<\/b>/i.test(text);
-const formatParagraph = (text, doc) => {
+const containUnderlineTag = (text) => /<u>(.*?)<\/u>/i.test(text);
+const formatText = (
+  text,
+  doc,
+  align = "justify",
+  font_family = "Helvetica",
+  uppercase = true,
+  lineGap = 4,
+  continued = true
+) => {
   //  if <b> tag present render with bold font
   if (containsBoldTag(text)) {
     const $ = cheerio.load(`<body> ${text} </body>`);
@@ -626,14 +635,8 @@ const generateHeader = (doc, imagesPaths, reference, createdAt, company, box, mk
 // Title
 const generateTitle = (doc, title) => {
   doc
-    .text("Yah: ", {
-      continued: true,
-      width: doc.page.width - 100,
-      indent: 50,
-      lineBreak: true,
-    })
     .font("Helvetica-Bold")
-    .text(title.toUpperCase().trim(), { underline: true, align: "center" })
+    .text(``)
     .moveDown();
 }
 // Body
@@ -659,7 +662,7 @@ const generateFooter = (doc, signature, signatory, cheo) => {
     .fill("#021c27")
     .text(
       signatory,
-      doc.page.width / 2 - 350,
+      doc.page.width / 2 - 370,
       signatureHeight + 25,
       {
         columns: 1,
@@ -669,6 +672,7 @@ const generateFooter = (doc, signature, signatory, cheo) => {
         align: "center",
       }
     );
+
   doc
     .font("Helvetica-Bold")
     .fontSize(12)
