@@ -1,9 +1,14 @@
 function nata() {
   ajaxRequest(`/MaombiKuanzishaShuleList`, "GET", (response) => {
-    const { statusCode , message , data} = response
+    const { statusCode  , data , pagination} = response
           if(statusCode == 300){
-            console.log(data)
+           const { url, pages, current, per_page , total } = pagination;
               $("#tasksTable").find("tbody").empty();
+
+              $("#tasksTable").closest(".card-body")
+                .append(`<div class="ribbon-three ribbon-three-info">
+              <span class="badge">${total}</span>
+              </div>`);
               for (var i = 0; i < data.length; i++) {
                 var row =
                   '<tr> <th scope="row">' +
@@ -56,18 +61,20 @@ function nata() {
                 row =
                   row +
                   '<td class="priority"><span class="badge bg-danger text-uppercase">Jipya</span></td>';
-                if( $('#barua-column').is(':visible')){
-                      if(data[i].folio){
-                        row += `
+                if ($("#barua-column").is(":visible")) {
+                  if (data[i].folio) {
+                    row += `
                             <td class="text-center">
                                 <a target="_blank" title="Barua" data-bs-toggle="tooltip" href="/barua/${data[i].tracking_number}">
                                 <i class="ri-file-pdf-fill ri-2x align-bottom me-1 text-danger"></i>
                                 </a>
                            </td>`;
-                      }
-                   }
-                row = row+ "</tr>";
+                  }
+                }
+                row = row + "</tr>";
                 $("#tasksTable").append(row);
+                
+                paginate(url, pages, current, per_page); //add pagination
               }
           }else{
 

@@ -4,7 +4,7 @@ const request = require("request");
 const badiliMmilikiRequestController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { isAuthenticated, sendRequest, can } = require("../../../util");
+const { isAuthenticated, sendRequest, can, modifiedUrl } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var maobadilimmilikiShuleListAPI = API_BASE_URL + "maombi-badili-mmiliki-shule";
 var badiliMmilikiDetails = API_BASE_URL + "view-ombi-badili-mmiliki-details";
@@ -15,7 +15,11 @@ badiliMmilikiRequestController.get(
   isAuthenticated,
   can("view-change-of-school-owner"),
   function (req, res) {
-    var formData = {
+    const per_page = Number(req.query.per_page || 10);
+    const page = Number(req.query.page || 1);
+    const formData = {
+      page,
+      per_page,
       //  is_paginated: req.query.is_paginated,
       //  search: req.query.tafuta,
       status: req.query.status,
@@ -29,7 +33,8 @@ badiliMmilikiRequestController.get(
       (jsonData) => {
         
           var data = jsonData.dataList;
-            const obj = [];
+          const {numRows} = jsonData;
+          const obj = [];
             // console.log("gaiia",data)
             for (var i = 0; i < data.length; i++) {
               var tracking_number = data[i].tracking_number;
@@ -63,14 +68,18 @@ badiliMmilikiRequestController.get(
                 ": /BadiliMmiliki"
             );
             res.render(
-              path.join(
-                __dirname +
-                  "/../../design/maombi/badili_mmiliki"
-              ),
+              path.join(__dirname + "/../../design/maombi/badili_mmiliki"),
               {
                 req: req,
                 summary: jsonData.dataSummary,
                 maombi: obj,
+                pagination: {
+                  total: Number(numRows),
+                  current: Number(page),
+                  per_page: Number(per_page),
+                  url: modifiedUrl(req),
+                  pages: Math.ceil(Number(numRows) / Number(per_page)),
+                },
               }
             );
 

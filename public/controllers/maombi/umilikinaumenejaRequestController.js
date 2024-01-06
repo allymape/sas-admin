@@ -4,7 +4,7 @@ const request = require("request");
 const umilikinaumenejaRequestController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { isAuthenticated, sendRequest, can } = require("../../../util");
+const { isAuthenticated, sendRequest, can, modifiedUrl } = require("../../../util");
 // const { sendRequest, isAuthenticated, can } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 
@@ -21,10 +21,14 @@ umilikinaumenejaRequestController.get(
   isAuthenticated,
   can("view-school-owners-and-managers"),
   function (req, res) {
-    var formData = {
+    const per_page = Number(req.query.per_page || 10);
+    const page = Number(req.query.page || 1);
+    const formData = {
+      page,
+      per_page,
       //  is_paginated: req.query.is_paginated,
       //  search: req.query.tafuta,
-      status : req.query.status
+      status: req.query.status,
     };
     sendRequest(
       req,
@@ -33,15 +37,19 @@ umilikinaumenejaRequestController.get(
       "POST",
       formData,
       (jsonData) => {
-        const { dataList, dataSummary } = jsonData;
-        res.render(
-          path.join(__dirname + "/../../design/maombi/mmiliki"),
-          {
-            req: req,
-            summary: dataSummary,
-            maombi: dataList,
-          }
-        );
+        const { dataList, dataSummary , numRows } = jsonData;
+        res.render(path.join(__dirname + "/../../design/maombi/mmiliki"), {
+          req: req,
+          summary: dataSummary,
+          maombi: dataList,
+          pagination: {
+            total: Number(numRows),
+            current: Number(page),
+            per_page: Number(per_page),
+            url: modifiedUrl(req),
+            pages: Math.ceil(Number(numRows) / Number(per_page)),
+          },
+        });
       }
     );
   }

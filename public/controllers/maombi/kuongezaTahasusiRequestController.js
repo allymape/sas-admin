@@ -5,7 +5,7 @@ const kuongezaTahasusiRequestController = express.Router();
 var session = require("express-session");
 var path = require("path");
 const requestIp = require("request-ip");
-const { isAuthenticated, sendRequest, can } = require("../../../util");
+const { isAuthenticated, sendRequest, can, modifiedUrl } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var badiliTahasusi = API_BASE_URL + "maombi-badili-tahasusi";
 var ongezatahasusiDetails = API_BASE_URL + "view-ongeza-tahasusi-details";
@@ -18,7 +18,11 @@ kuongezaTahasusiRequestController.get(
   can("view-school-registration-private"),
   function (req, res) {
     var obj = [];
-    var formData = {
+    const per_page = Number(req.query.per_page || 10);
+    const page = Number(req.query.page || 1);
+    const formData = {
+      page,
+      per_page,
       //  is_paginated: req.query.is_paginated,
       //  search: req.query.tafuta,
       status: req.query.status,
@@ -28,8 +32,8 @@ kuongezaTahasusiRequestController.get(
       var message = jsonData.message;
       var statusCode = jsonData.statusCode;
       var data = jsonData.dataList;
-
-      console.log(data, statusCode);
+      const {numRows} = jsonData
+      // console.log(data, statusCode);
 
       var dataSummary = jsonData.dataSummary;
       if (statusCode == 300) {
@@ -40,11 +44,13 @@ kuongezaTahasusiRequestController.get(
           req: req,
           summary: dataSummary,
           maombi: data,
-          useLev: req.session.UserLevel,
-          userName: req.session.userName,
-          RoleManage: req.session.RoleManage,
-          userID: req.session.userID,
-          cheoName: req.session.cheoName,
+          pagination: {
+            total: Number(numRows),
+            current: Number(page),
+            per_page: Number(per_page),
+            url: modifiedUrl(req),
+            pages: Math.ceil(Number(numRows) / Number(per_page)),
+          },
         });
       }
       if (statusCode == 209) {

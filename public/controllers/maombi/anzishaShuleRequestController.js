@@ -4,7 +4,7 @@ const request = require("request");
 const anzishaShuleRequestController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { isAuthenticated, sendRequest, can } = require("../../../util");
+const { isAuthenticated, sendRequest, can, modifiedUrl } = require("../../../util");
 // const { sendRequest, isAuthenticated, can } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 const requestSummariesAPI = API_BASE_URL + "request_summaries";
@@ -18,9 +18,7 @@ anzishaShuleRequestController.get(
   isAuthenticated,
   can("view-initiate-schools"),
   function (req, res) {
-    var formData = {
-      //  is_paginated: req.query.is_paginated,
-      //  search: req.query.tafuta,
+    const formData = {
     };
     sendRequest(req, res, requestSummariesAPI+"/1", "GET", formData, (jsonData) => {
       const { dataSummary } = jsonData;
@@ -35,16 +33,33 @@ anzishaShuleRequestController.get(
 // List
 anzishaShuleRequestController.get("/MaombiKuanzishaShuleList", isAuthenticated , 
 (req, res) => {
-        const formData = {
-          status: req.query.status,
-        };
+       const per_page = Number(req.query.per_page || 10);
+       const page = Number(req.query.page || 1);
+       const formData = {
+         page,
+         per_page,
+         status: req.query.status,
+       };
       sendRequest(req, res, maoanzishaShuleListAPI , 'POST' , formData , (jsonData) => {
         const {message , statusCode , data} = jsonData
+        const { numRows } = jsonData;
+        req.originalUrl = req.originalUrl.replace(
+                        "MaombiKuanzishaShuleList",
+                        "MaombiKuanzishaShule"
+                      );
+        console.log(req.originalUrl);
         console.log(data);
           res.send({
             message,
             statusCode,
-            data
+            data,
+            pagination: {
+              total: Number(numRows),
+              current: Number(page),
+              per_page: Number(per_page),
+              url: modifiedUrl(req),
+              pages: Math.ceil(Number(numRows) / Number(per_page)),
+            },
           });
       });
 });

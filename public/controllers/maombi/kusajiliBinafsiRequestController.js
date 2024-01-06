@@ -4,7 +4,7 @@ const request = require("request");
 const kusajiliBinafsiRequestController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { isAuthenticated, sendRequest, can } = require("../../../util");
+const { isAuthenticated, sendRequest, can, modifiedUrl } = require("../../../util");
 const API_BASE_URL = process.env.API_BASE_URL;
 const maousajiliShuleListAPI = API_BASE_URL + "maombi-usajili-shule";
 const ombiKusajiliDetails = API_BASE_URL + "view-ombi-kusajili-details";
@@ -15,7 +15,11 @@ kusajiliBinafsiRequestController.get(
   isAuthenticated,
   can("view-school-registration-private"),
   function (req, res) {
-    var formData = {
+    const per_page = Number(req.query.per_page || 10);
+    const page = Number(req.query.page || 1);
+    const formData = {
+      page,
+      per_page,
       //  is_paginated: req.query.is_paginated,
       //  search: req.query.tafuta,
       status: req.query.status,
@@ -30,6 +34,7 @@ kusajiliBinafsiRequestController.get(
       (jsonData) => {
                   
                   var data = jsonData.dataList;
+                  const {numRows} = jsonData
                     for (var i = 0; i < data.length; i++) {
                       var tracking_number = data[i].tracking_number;
                       var user_id = data[i].user_id;
@@ -63,6 +68,13 @@ kusajiliBinafsiRequestController.get(
                         req: req,
                         summary: jsonData.dataSummary,
                         maombi: obj,
+                        pagination: {
+                          total: Number(numRows),
+                          current: Number(page),
+                          per_page: Number(per_page),
+                          url: modifiedUrl(req),
+                          pages: Math.ceil(Number(numRows) / Number(per_page)),
+                        },
                       }
                     );
                   
@@ -78,7 +90,6 @@ kusajiliBinafsiRequestController.get("/SajiliOmbi/:id",
     var TrackingNumber = req.params.id;
     sendRequest(req, res , ombiKusajiliDetails, "POST" , {TrackingNumber: TrackingNumber} , (jsonData) => {
           var data = jsonData.data;
-         
             var remain_days = data[0].remain_days;
             var created_at = data[0].created_at;
             var tracking_number = data[0].tracking_number;

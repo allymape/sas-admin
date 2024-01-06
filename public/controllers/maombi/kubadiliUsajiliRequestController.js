@@ -4,7 +4,7 @@ const request = require("request");
 const kubadiliUsajiliRequestController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { isAuthenticated, sendRequest, can } = require("../../../util");
+const { isAuthenticated, sendRequest, can, modifiedUrl } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var badiliAinaUsajili = API_BASE_URL + "maombi-badili-aina-usajili";
 var usajiliDetails = API_BASE_URL + "view-aina-usajili-details";
@@ -15,14 +15,19 @@ kubadiliUsajiliRequestController.get(
   isAuthenticated,
   can("view-change-registration-type"),
   function (req, res) {
-    var formData = {
-      //  is_paginated: req.query.is_paginated,
-      //  search: req.query.tafuta,
-      status: req.query.status,
-    };
+  const per_page = Number(req.query.per_page || 10);
+  const page = Number(req.query.page || 1);
+  const formData = {
+    page,
+    per_page,
+    //  is_paginated: req.query.is_paginated,
+    //  search: req.query.tafuta,
+    status: req.query.status,
+  };
     sendRequest(req, res, badiliAinaUsajili, "POST", formData, (jsonData) => {
       var data = jsonData.dataList;
-      console.log(jsonData.dataList);
+      const {numRows} = jsonData
+      // console.log(jsonData.dataList);
       const obj = [];
       for (var i = 0; i < data.length; i++) {
         var tracking_number = data[i].tracking_number;
@@ -50,11 +55,13 @@ kubadiliUsajiliRequestController.get(
         req: req,
         summary: jsonData.dataSummary,
         maombi: obj,
-        // useLev: req.session.UserLevel,
-        // userName: req.session.userName,
-        // RoleManage: req.session.RoleManage,
-        // userID: req.session.userID,
-        // cheoName: req.session.cheoName,
+        pagination: {
+          total: Number(numRows),
+          current: Number(page),
+          per_page: Number(per_page),
+          url: modifiedUrl(req),
+          pages: Math.ceil(Number(numRows) / Number(per_page)),
+        },
       });
     });
   }

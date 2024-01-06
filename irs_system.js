@@ -14076,67 +14076,67 @@ app.get("/MaombiKuanzishaShuleJumla", function (req, res) {
 
 
 
-// app.get("/AuditTrail", function (req, res) {
-//   var obj = [];
-//   if (
-//     typeof req.session.userName !== "undefined" ||
-//     req.session.userName === true
-//   ) {
-//     var hasMatch =false;
-//     for (var index = 0; index < req.session.RoleManage.length; ++index) {
-//         var animal = req.session.RoleManage[index]; 
-//     if(animal.permission_id == 64){ 
-//     request(
-//       {
-//         url: auditTrailAPI,
-//         method: "GET",
-//         headers: {
-//           Authorization: "Bearer" + " " + req.session.Token,
-//           "Content-Type": "application/json",
-//         },
-//       },
-//       function (error, response, body) {
-//         if (error) {
-//           console.log(
-//             new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
-//           );
-//           res.send("failed");
-//         }
-//         // console.log(body)
-//         if (body !== undefined) {
-//           var jsonData = JSON.parse(body);
-//           // var jsonData = body
-//           var message = jsonData.message;
-//           var statusCode = jsonData.statusCode;
-//           var data = jsonData.data;
-//           var vyeo = jsonData.vyeo;
-//           // var listWaombaji = jsonData.listWaombaji;
-//           // var objAttachment = jsonData.objAttachment;
-//           if (statusCode == 300) {
-//             console.log(new Date() + " " + req.session.userName + ": /Vyeo");
-//             res.render(path.join(__dirname + "/public/design/audits/audit"), {
-//               req: req,
-//               data: data,
-//               vyeo: vyeo,
-//               useLev: req.session.UserLevel,
-//                                 userName: req.session.userName,
-//               RoleManage: req.session.RoleManage,
-//     userID: req.session.userID,
-//               cheoName: req.session.cheoName,
-//             });
-//           }
-//           if (statusCode == 209) {
-//             res.redirect("/");
-//           }
-//         }
-//       }
-//     );
-//     }
-//   }
-//   } else {
-//     res.redirect("/");
-//   }
-// });
+app.get("/AuditTrail", function (req, res) {
+  var obj = [];
+  if (
+    typeof req.session.userName !== "undefined" ||
+    req.session.userName === true
+  ) {
+    var hasMatch =false;
+    for (var index = 0; index < req.session.RoleManage.length; ++index) {
+        var animal = req.session.RoleManage[index]; 
+    if(animal.permission_id == 64){ 
+    request(
+      {
+        url: auditTrailAPI,
+        method: "GET",
+        headers: {
+          Authorization: "Bearer" + " " + req.session.Token,
+          "Content-Type": "application/json",
+        },
+      },
+      function (error, response, body) {
+        if (error) {
+          console.log(
+            new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
+          );
+          res.send("failed");
+        }
+        // console.log(body)
+        if (body !== undefined) {
+          var jsonData = JSON.parse(body);
+          // var jsonData = body
+          var message = jsonData.message;
+          var statusCode = jsonData.statusCode;
+          var data = jsonData.data;
+          var vyeo = jsonData.vyeo;
+          // var listWaombaji = jsonData.listWaombaji;
+          // var objAttachment = jsonData.objAttachment;
+          if (statusCode == 300) {
+            console.log(new Date() + " " + req.session.userName + ": /Vyeo");
+            res.render(path.join(__dirname + "/public/design/audits/audit"), {
+              req: req,
+              data: data,
+              vyeo: vyeo,
+              useLev: req.session.UserLevel,
+                                userName: req.session.userName,
+              RoleManage: req.session.RoleManage,
+    userID: req.session.userID,
+              cheoName: req.session.cheoName,
+            });
+          }
+          if (statusCode == 209) {
+            res.redirect("/");
+          }
+        }
+      }
+    );
+    }
+  }
+  } else {
+    res.redirect("/"); 
+  }
+});
 
 // app.get("/Tahasusi", function (req, res) {
 //   var obj = [];
