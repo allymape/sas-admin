@@ -43,8 +43,8 @@ baruaController.get("/barua/:tracking_number",
           old_stream,
           language,
           level,
+          ward
         } = data;
-        console.log(data)
         const reference = `${file_number}/${school_folio}/${folio}`;
         const createdAt = approved_at != undefined ? formatDate(approved_at , 'DD/MM/YYYY'): null;
         const box = "S.L.P "+address_box;
@@ -72,7 +72,8 @@ baruaController.get("/barua/:tracking_number",
           subcategory,
           stream,
           old_stream,
-          language
+          language,
+          ward,
         );
 
         const paragraphs = letter.bodyContent;

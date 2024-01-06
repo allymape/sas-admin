@@ -14,6 +14,7 @@ const PDFDocument = require("./public/controllers/barua/pdfkitTable");
 const url = require("url");
 
 const { toSwahili } = require('digits-to-swahili');
+const { level } = require("winston");
 
 module.exports = {
   modifiedUrl: (req, newParams = { status: req.query.status }) => {
@@ -300,20 +301,23 @@ module.exports = {
     subcategory = "",
     stream = "",
     old_stream = "",
-    language = ""
+    language = "",
+    ward = ""
   ) => {
     let bodyContent = null;
     const name = getSchoolType(school_type_id, school_type, school_name);
     let title = ``;
+    let school_type_only = getSchoolTypeOnly(school_type_id, school_type)
+
     switch (application_category_id) {
       case 1:
         title = `KIBALI CHA KUANZISHA ${name}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>${owner_name}</b>  kuwa Meneja wa Shule ya Awali na Msingi <b>${school_name}</b>\n\n`,
-          `3.    Uthibitisho huu umetolewa tarehe <b>${approved_date}</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
-          `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
-          `5.   <b>Ninakutakia utekelezaji mwema.</b>`,
+          `2.    Ninafurahi kukufahamisha kuwa kibali cha kuanzisha ${school_type_only}<b>${school_name}</b> kimetolewa ili shule hiyo ianzishwe katika Kata ya <b>${ward}</b> Halmashauri ya Wilaya ya <b>${council}</b> Mkoa wa <b>${region}.</b>\n\n`,
+          `3.    Kibali hiki kimetolewa kwa mujibu wa <b>Sheria ya Elimu Sura ya 353</b>, kwa masharti kuwa utazingatia mwongozo wa Wizara wa kuanzisha na kusajili shule zisizo za Serikali. Unashauriwa kuwasiliana na <b>Msanifu wa Majengo wa Wilaya</b> kwa ushauri wa kitaalam wa kuendeleza majengo hayo kulingana na mahitaji ya Shule. Aidha, unatakiwa kuhakikisha uwepo wa miundombinu ya walemavu katika shule yako.\n\n`,
+          `4.    <b>Uthibitisho huu siyo kibali cha kusajili Wanafunzi.</b>\n\n`,
+          `5.    Ninakutakia utekelezaji mwema`,
         ];
 
         break;
@@ -324,7 +328,7 @@ module.exports = {
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
           `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>${type == "mmiliki" ? owner_name.replace(/ +(?= )/g, '') : str = manager_name.replace(/ +(?= )/g, '')
           }</b>  kuwa ${type == "mmiliki" ? "Mmiliki" : "Meneja"
-          } wa <b>${name}</b>\n\n`,
+          } wa ${school_type_only}<b>${school_name}</b>\n\n`,
           `3.    Uthibitisho huu umetolewa tarehe <b>${approved_date}</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
           `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
           `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
@@ -355,10 +359,7 @@ module.exports = {
               language
             );
         break;
-
-        
       case 5:
-        let school_type_only = getSchoolTypeOnly(school_type_id, school_type)
         let total_streams = (stream ?? 0) + (old_stream ?? 0);
         let mikondo_text =(count) => count > 1 ? 'mikondo' : 'mkondo';
 
