@@ -355,6 +355,8 @@ module.exports = {
               language
             );
         break;
+
+        
       case 5:
         let school_type_only = getSchoolTypeOnly(school_type_id, school_type)
         let total_streams = (stream ?? 0) + (old_stream ?? 0);
@@ -369,6 +371,9 @@ module.exports = {
           `5.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
+
+
+
       case 6:
         title = `Kubadili aina ya usajili`;
         bodyContent = [
@@ -376,6 +381,8 @@ module.exports = {
           `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
         ];
         break;
+
+        
       case 7:
         title = `Kubadili mmiliki wa shule`;
         bodyContent = [
@@ -383,6 +390,8 @@ module.exports = {
           `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
         ];
         break;
+
+
       case 8:
         title = `Kubadili meneja wa shule`;
         bodyContent = [
@@ -390,6 +399,8 @@ module.exports = {
           `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
         ];
         break;
+
+
       case 9:
         title = `KIBALI CHA KUBADILI JINA LA SHULE YA SEKONDARI EMBRI’S BOYS   KUWA SHULE YA SEKONDARI EMBRIS`;
         bodyContent = [
@@ -400,6 +411,7 @@ module.exports = {
           `5.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
+        
       case 10:
         title = `Kuhamisha shule`;
         bodyContent = [
@@ -407,6 +419,9 @@ module.exports = {
           `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
         ];
         break;
+
+
+
       case 11:
         title = ` KUFUTA USAJILI WA CHUO CHA UALIMU ..............`;
         bodyContent = [
@@ -416,6 +431,8 @@ module.exports = {
           `4.    Ninakutakia utekelezaji mwema`,
         ];
         break;
+
+
       case 12:
         title = `KIBALI CHA KUONGEZA  TAHASUSI ZA CBG NA HGK, KATIKA SHULE YA SEKONDARI  BWABUKI`;
         bodyContent = [
@@ -426,6 +443,9 @@ module.exports = {
           `5.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
+
+
+
       case 13:
         title = `Kuongeza dahalia`;
         bodyContent = [
@@ -433,12 +453,15 @@ module.exports = {
           `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
         ];
         break;
+
+
+
       case 14:
-        title = `KIBALI CHA KUTOA HUDUMA YA BWENI KWA SHULE YA SEKONDARI AHMES`;
+        title = `KIBALI CHA KUTOA HUDUMA YA BWENI KWA ${name}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
           `2.    Napenda kukujulisha kuwa maombi yako ya kibali cha kutoa <b>huduma ya bweni</b> katika shule ya Sekondari <b>AHMES</b> yamekubaliwa. \n\n`,
-          `3.    Kibali kimetolewa tarehe <b>26/10/2023</b> kulaza wanafunzi <b>288 Wasichana tu</b>. Unaagizwa kuimarisha hali ya usalama wa wanafunzi ndani na nje ya bweni. Kibali hiki kimetolewa kulaza wanafunzi wa <b>Sekondari tu.</b> \n\n`,
+          `3.    Kibali kimetolewa tarehe ${approved_date} kulaza wanafunzi <b>288 Wasichana tu</b>. Unaagizwa kuimarisha hali ya usalama wa wanafunzi ndani na nje ya bweni. Kibali hiki kimetolewa kulaza wanafunzi wa <b>Sekondari tu.</b> \n\n`,
           `4.    Aidha, <b>Wathibiti Ubora wa Shule</b> watafuatilia kuhusu uwekaji vifaa vya zimamoto, viashiria moshi, makabati pamoja na sehemu ya kuteketeza taka <b>(Incinerator)</b>. Pia watafuatilia idadi halisi ya wanafunzi wanaolala ndani ya mabweni ili kuepuka <b>msongamano</b> wa wanafunzi.\n\n`,
           `5.    Kibali hiki kimetolewa kwa mujibu wa <b>Sheria ya Elimu, Sura 353</b>. Kwa masharti kuwa utazingatia mwongozo wa Wizara wa kuanzisha na kusajili shule. \n\n\n`,
           `6.    Ninakutakia utekelezaji mwema.`,

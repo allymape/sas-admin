@@ -316,7 +316,7 @@ function nata(){
                 row = row + '<td class="assignedto">'+
                             '<div class="avatar-group">'+
                                 '<a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Frank">'+
-                                    '<img src="design/assets/images/users/avatar-3.jpg" alt="" class="rounded-circle avatar-xxs" />'+
+                                    '<img src="/design/assets/images/users/avatar-3.jpg" alt="" class="rounded-circle avatar-xxs" />'+
                                 '</a>'+
                                 '<a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Anna">'+
                                     '<img src="design/assets/images/users/avatar-1.jpg" alt="" class="rounded-circle avatar-xxs" />'+

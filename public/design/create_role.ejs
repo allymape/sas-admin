@@ -49,7 +49,7 @@ card_title : 'Tengeneza Role'
                                         display_name.includes('Ona ') ? 'text-success' : (display_name.includes('Tengeneza') ? 'text-primary' : (display_name.includes('Badili') ? ' text-secondary' : '' ) )
                                     ) %>"><%= display_name %>  
                                 </span>  
-                                 <% if(req.session.jukumu == "SUPER-ADMIN"){ %>
+                                 <% if(["SUPER-ADMIN","SUPER ADMIN"].includes(req.session.jukumu)){ %>
                                           <i><%= permission_name %></i>
                                 <% } %>
                             </label>

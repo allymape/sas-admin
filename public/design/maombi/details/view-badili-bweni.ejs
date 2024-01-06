@@ -169,11 +169,13 @@
                                                     Viambatisho
                                                 </a>
                                             </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" data-bs-toggle="tab" href="#home-1" role="tab">
-                                                    Maoni
-                                                </a>
-                                            </li>
+                                            <% if(permission(req , "view-comments")){ %>  
+                                                <li class="nav-item">
+                                                    <a class="nav-link" data-bs-toggle="tab" href="#home-1" role="tab">
+                                                        Maoni
+                                                    </a>
+                                                </li>
+                                            <% } %>
                                             <!-- <li class="nav-item">
                                                 <a class="nav-link" data-bs-toggle="tab" href="#profile-1" role="tab">
                                                     Shule zinazomilikiwa na Mwombaji
@@ -322,6 +324,7 @@
                                                 </table>
                                             </div>
                                         </div>
+                                        <% if(permission(req , "view-comments")){%>  
                                         <div class="tab-pane" id="home-1" role="tabpanel">
                                             <h5 class="card-title mb-4">Maoni</h5>
                                             <% for(var i = 0; i < Maoni.length; i++){ %>
@@ -339,10 +342,11 @@
                                                 </div>
                                             </div>
                                             <% } %>
-                                            
-
-                                            <%- include('includes/formchangerbadilibweni.ejs') %>
+                                            <% if(permission(req , "create-comments")){%> 
+                                               <%- include('includes/formchangerbadilibweni.ejs') %>
+                                            <% } %>
                                         </div>
+                                        <% } %>
                                         <!--end tab-pane-->
                                         <div class="tab-pane" id="messages-1" role="tabpanel">
                                             <div class="table-responsive table-card">
