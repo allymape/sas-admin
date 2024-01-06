@@ -4,7 +4,7 @@ const express = require("express");
 const baruaController = express.Router();
 
 var session = require("express-session");
-const { isAuthenticated, sendRequest,  generateLetter, bodyContent, formatDate } = require("../../../util");
+const { isAuthenticated, sendRequest,  generateLetter, bodyContent, formatDate, decodeSignature } = require("../../../util");
 const API_BASE_URL = process.env.API_BASE_URL;
 const baruaDetailsAPI = API_BASE_URL + "barua";
 
@@ -16,7 +16,6 @@ baruaController.get("/barua/:tracking_number",
          type : type
     }
     sendRequest(req , res , baruaDetailsAPI +"/"+ tracking_number , 'POST' , formData , (jsonData) => {
-     
       const {statusCode , data } = jsonData;
       console.log(statusCode)
       if(statusCode == 300){
@@ -43,15 +42,16 @@ baruaController.get("/barua/:tracking_number",
           old_stream,
           language,
           level,
-          ward
+          ward,
+          signatory, 
+          base64signature , 
+          cheo
         } = data;
+        decodeSignature(base64signature, tracking_number);
         const reference = `${file_number}/${school_folio}/${folio}`;
         const createdAt = approved_at != undefined ? formatDate(approved_at , 'DD/MM/YYYY'): null;
         const box = "S.L.P "+address_box;
         const region_address = "Dar es salaam";
-        const signature = "Sahihi";
-        const signatory = "Ephrahim A. Simbeye";
-        const cheo = "KAIMU KAMISHNA WA ELIMU";
         const registry_type = registry_type_id;
         const school_region = region;
         const school_council = district;
@@ -92,10 +92,11 @@ baruaController.get("/barua/:tracking_number",
         generateLetter(
           req,
           res,
+          tracking_number,
           application_category_id, //Aina ya Ombi Kuanzisha, Umiliki na Meneja
-          school_name,
-          school_category_id,
-          category, // Aina ya Shule Sekendari, Msingi n.k
+          // school_name,
+          // school_category_id,
+          // category, // Aina ya Shule Sekendari, Msingi n.k
           reference,
           createdAt,
           address_name,
@@ -103,7 +104,6 @@ baruaController.get("/barua/:tracking_number",
           region_address,
           title,
           paragraphs,
-          signature,
           signatory,
           cheo,
           table,

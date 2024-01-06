@@ -15,6 +15,7 @@ const url = require("url");
 
 const { toSwahili } = require('digits-to-swahili');
 const { level } = require("winston");
+const { upperCase } = require("../sas-api/utils");
 
 module.exports = {
   modifiedUrl: (req, newParams = { status: req.query.status }) => {
@@ -123,7 +124,6 @@ module.exports = {
         }
       }
     );
-
   },
   // Check user permission
   can: (permission) => {
@@ -186,7 +186,17 @@ module.exports = {
     );
     return sum;
   },
-
+  decodeSignature: (base64Data, tracking_number) => {
+    if (base64Data) {
+      const fileDataDecoded = Buffer.from(base64Data, "base64");
+      fs.writeFileSync(
+        __dirname + `/tmp/signature_${tracking_number}.png`,fileDataDecoded,
+        (error) => {
+          if (error) console.log(error);
+        }
+      );
+    }
+  },
   arraySum: (array) => {
     let sum = 0;
     if (array.length > 0) {
@@ -240,10 +250,8 @@ module.exports = {
   generateLetter: (
     req,
     res,
+    tracking_number,
     application_category_id,
-    school_name,
-    school_type_id,
-    school_type,
     reference,
     created_at,
     company,
@@ -251,7 +259,6 @@ module.exports = {
     mkoa,
     title,
     paragraphs,
-    signature,
     signatory,
     cheo,
     table,
@@ -279,7 +286,7 @@ module.exports = {
         generateBody(doc, paragraph);
       }
     });
-    generateFooter(doc, signature, signatory, cheo);
+    generateFooter(res, doc, tracking_number, signatory, cheo);
     doc.pipe(res);
     doc.end();
   },
@@ -307,7 +314,7 @@ module.exports = {
     let bodyContent = null;
     const name = getSchoolType(school_type_id, school_type, school_name);
     let title = ``;
-    let school_type_only = getSchoolTypeOnly(school_type_id, school_type)
+    let school_type_only = getSchoolTypeOnly(school_type_id, school_type);
 
     switch (application_category_id) {
       case 1:
@@ -322,12 +329,17 @@ module.exports = {
 
         break;
       case 2:
-        title = `UTHIBITISHO WA ${type == "mmiliki" ? "MMILIKI" : "MENEJA"
-          } WA ${name}`;
+        title = `UTHIBITISHO WA ${
+          type == "mmiliki" ? "MMILIKI" : "MENEJA"
+        } WA ${name}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>${type == "mmiliki" ? owner_name.replace(/ +(?= )/g, '') : str = manager_name.replace(/ +(?= )/g, '')
-          }</b>  kuwa ${type == "mmiliki" ? "Mmiliki" : "Meneja"
+          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>${
+            type == "mmiliki"
+              ? owner_name.replace(/ +(?= )/g, "")
+              : (str = manager_name.replace(/ +(?= )/g, ""))
+          }</b>  kuwa ${
+            type == "mmiliki" ? "Mmiliki" : "Meneja"
           } wa ${school_type_only}<b>${school_name}</b>\n\n`,
           `3.    Uthibitisho huu umetolewa tarehe <b>${approved_date}</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
           `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
@@ -342,38 +354,48 @@ module.exports = {
         bodyContent =
           registry_type == 3
             ? usajiliSerikali(
-              name,
-              school_name,
-              school_type_id,
-              region,
-              council
-            )
+                name,
+                school_name,
+                school_type_id,
+                region,
+                council
+              )
             : usajiliBinafsi(
-              name,
-              school_name,
-              school_type_id,
-              registration_date,
-              registration_number,
-              subcategory,
-              stream,
-              language
-            );
+                name,
+                school_name,
+                school_type_id,
+                registration_date,
+                registration_number,
+                subcategory,
+                stream,
+                language
+              );
         break;
       case 5:
         let total_streams = (stream ?? 0) + (old_stream ?? 0);
-        let mikondo_text =(count) => count > 1 ? 'mikondo' : 'mkondo';
+        let mikondo_text = (count) => (count > 1 ? "mikondo" : "mkondo");
 
-        title = `KIBALI CHA KUONGEZA ${mikondo_text(stream ?? 0)}  (${stream ?? 0}) ILI IWE ${mikondo_text(total_streams)} (${total_streams}) KWA ${name}`;
+        title = `KIBALI CHA KUONGEZA ${mikondo_text(stream ?? 0)}  (${
+          stream ?? 0
+        }) ILI IWE ${mikondo_text(
+          total_streams
+        )} (${total_streams}) KWA ${name}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Napenda kukufahamisha kuwa Wizara imekubali ombi lako la kuongeza ${mikondo_text(stream ?? 0)} <b>${toSwahili(stream ?? 0)} (${stream ?? 0})</b> katika ${school_type_only} <b>${school_name}</b> ili iwe <b>${mikondo_text(total_streams)} ${toSwahili(total_streams)} (${total_streams})</b>. Kibali kimetolewa tarehe <b>${approved_date}</b>.\n\n`,
+          `2.    Napenda kukufahamisha kuwa Wizara imekubali ombi lako la kuongeza ${mikondo_text(
+            stream ?? 0
+          )} <b>${toSwahili(stream ?? 0)} (${
+            stream ?? 0
+          })</b> katika ${school_type_only} <b>${school_name}</b> ili iwe <b>${mikondo_text(
+            total_streams
+          )} ${toSwahili(
+            total_streams
+          )} (${total_streams})</b>. Kibali kimetolewa tarehe <b>${approved_date}</b>.\n\n`,
           `3.    Hata hivyo unatakiwa kuendelea kuboresha miundombinu ya shule ikiwa ni pamoja na kuajiri walimu wenye sifa na kununua vitabu vya kutosha.\n\n\n`,
           `4.    Mfahamishe Katibu Mtendaji wa Baraza la Mitihani ni lini wanafunzi walioongezeka watafanya upimaji wa darasa la IV na mtihani wa Taifa wa darasa la VII.\n\n\n`,
           `5.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
-
-
 
       case 6:
         title = `Kubadili aina ya usajili`;
@@ -383,7 +405,6 @@ module.exports = {
         ];
         break;
 
-        
       case 7:
         title = `Kubadili mmiliki wa shule`;
         bodyContent = [
@@ -392,7 +413,6 @@ module.exports = {
         ];
         break;
 
-
       case 8:
         title = `Kubadili meneja wa shule`;
         bodyContent = [
@@ -400,7 +420,6 @@ module.exports = {
           `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
         ];
         break;
-
 
       case 9:
         title = `KIBALI CHA KUBADILI JINA LA SHULE YA SEKONDARI EMBRI’S BOYS   KUWA SHULE YA SEKONDARI EMBRIS`;
@@ -412,7 +431,7 @@ module.exports = {
           `5.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
-        
+
       case 10:
         title = `Kuhamisha shule`;
         bodyContent = [
@@ -420,8 +439,6 @@ module.exports = {
           `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
         ];
         break;
-
-
 
       case 11:
         title = ` KUFUTA USAJILI WA CHUO CHA UALIMU ..............`;
@@ -432,7 +449,6 @@ module.exports = {
           `4.    Ninakutakia utekelezaji mwema`,
         ];
         break;
-
 
       case 12:
         title = `KIBALI CHA KUONGEZA  TAHASUSI ZA CBG NA HGK, KATIKA SHULE YA SEKONDARI  BWABUKI`;
@@ -445,8 +461,6 @@ module.exports = {
         ];
         break;
 
-
-
       case 13:
         title = `Kuongeza dahalia`;
         bodyContent = [
@@ -454,8 +468,6 @@ module.exports = {
           `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
         ];
         break;
-
-
 
       case 14:
         title = `KIBALI CHA KUTOA HUDUMA YA BWENI KWA ${name}`;
@@ -636,25 +648,38 @@ const generateHeader = (doc, imagesPaths, reference, createdAt, company, box, mk
 const generateTitle = (doc, title) => {
   doc
     .font("Helvetica-Bold")
-    .text(``)
+    .text(`Yah: ${upperCase(title)}`, { underline: true, align: "center" })
     .moveDown();
 }
 // Body
 const generateBody = (doc, bodyContent) => {
-  formatParagraph(bodyContent, doc)
+  formatText(bodyContent, doc)
 }
 
 // 
-const generateFooter = (doc, signature, signatory, cheo) => {
+const generateFooter = (res , doc, tracking_number, signatory, cheo) => {
   const lineSize = 174;
   const signatureHeight = doc.y + 100;
 
   const startLine1 = doc.page.width / 2 - 100;
   const endLine1 = doc.page.width / 2 - 100 + lineSize;
-  doc
-    .moveTo(startLine1, signatureHeight)
-    .lineTo(endLine1, signatureHeight)
-    .stroke();
+
+  // SIGNATURE
+  const signature = `${__dirname + "/tmp/signature_" + tracking_number}.png`;
+  if (fs.existsSync(signature)) {
+    doc.image(signature, doc.page.width / 2 - 50, signatureHeight - 70, {
+      width: 120,
+      height: 80,
+    });
+    fs.unlinkSync(signature)
+    //  .fillColor("#444444");
+    //  doc.moveDown();
+  }
+// LINE
+  // doc
+  //   .moveTo(startLine1, signatureHeight)
+  //   .lineTo(endLine1, signatureHeight)
+  //   .stroke();
 
   doc
     .font("Helvetica")
@@ -662,8 +687,8 @@ const generateFooter = (doc, signature, signatory, cheo) => {
     .fill("#021c27")
     .text(
       signatory,
-      doc.page.width / 2 - 370,
-      signatureHeight + 25,
+      doc.page.width / 2 - 360,
+      signatureHeight + 10,
       {
         columns: 1,
         columnGap: 2,
@@ -680,7 +705,7 @@ const generateFooter = (doc, signature, signatory, cheo) => {
     .text(
       cheo,
       doc.page.width / 2 - 150,
-      signatureHeight + 45,
+      signatureHeight + 30,
       {
         columns: 1,
         columnGap: 0,
