@@ -6,12 +6,14 @@ const {
   titleCase, lowerCase,
 } = require("text-case");
 const fs = require("fs");
-const  json2xls = require("json2xls");
+const json2xls = require("json2xls");
 const Cryptr = require("cryptr");
 const cheerio = require("cheerio");
-const  path = require("path");
+const path = require("path");
 const PDFDocument = require("./public/controllers/barua/pdfkitTable");
-const url  = require("url");
+const url = require("url");
+
+const { toSwahili } = require('digits-to-swahili');
 
 module.exports = {
   modifiedUrl: (req, newParams = { status: req.query.status }) => {
@@ -82,6 +84,45 @@ module.exports = {
       req.flash("error", "Your session has expired, Tafadhali ingia tena.");
       res.redirect("/");
     }
+  },
+  sendRequestTest: (req, res, url, method, formData, callback) => {
+    request(
+      {
+        url: url,
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        json: formData,
+      },
+      (error, response, body) => {
+        // console.log(body);
+        if (error) {
+          console.log("error", error);
+        }
+        //  console.log(body)
+        if (body == "Too many requests, please try again later.") {
+          req.flash(
+            "warning",
+            "Too many requests, please try again after 10 minutes."
+          );
+          res.redirect("/");
+        } else if (body !== undefined && response.statusCode == 200) {
+          callback(body);
+        } else {
+          if (
+            response &&
+            typeof response !== "undefined" &&
+            response.statusCode == 403
+          ) {
+            res.status(response.statusCode).redirect("/403");
+          } else {
+            console.log(body, response);
+          }
+        }
+      }
+    );
+
   },
   // Check user permission
   can: (permission) => {
@@ -277,15 +318,12 @@ module.exports = {
 
         break;
       case 2:
-        title = `UTHIBITISHO WA ${
-          type == "mmiliki" ? "MMILIKI" : "MENEJA"
-        } WA ${name}`;
+        title = `UTHIBITISHO WA ${type == "mmiliki" ? "MMILIKI" : "MENEJA"
+          } WA ${name}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>${
-            type == "mmiliki" ? owner_name.replace(/ +(?= )/g,'') : str = manager_name.replace(/ +(?= )/g,'')
-          }</b>  kuwa ${
-            type == "mmiliki" ? "Mmiliki" : "Meneja"
+          `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>${type == "mmiliki" ? owner_name.replace(/ +(?= )/g, '') : str = manager_name.replace(/ +(?= )/g, '')
+          }</b>  kuwa ${type == "mmiliki" ? "Mmiliki" : "Meneja"
           } wa <b>${name}</b>\n\n`,
           `3.    Uthibitisho huu umetolewa tarehe <b>${approved_date}</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
           `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
@@ -300,31 +338,33 @@ module.exports = {
         bodyContent =
           registry_type == 3
             ? usajiliSerikali(
-                name,
-                school_name,
-                school_type_id,
-                region,
-                council
-              )
+              name,
+              school_name,
+              school_type_id,
+              region,
+              council
+            )
             : usajiliBinafsi(
-                name,
-                school_name,
-                school_type_id,
-                registration_date,
-                registration_number,
-                subcategory,
-                stream,
-                language
-              );
+              name,
+              school_name,
+              school_type_id,
+              registration_date,
+              registration_number,
+              subcategory,
+              stream,
+              language
+            );
         break;
       case 5:
-        title = `KIBALI CHA KUONGEZA MKONDO  ${
-          stream - old_stream
-        } ILI IWE MIKONDO ${stream} KWA ${name}`;
+        let school_type_only = getSchoolTypeOnly(school_type_id, school_type)
+        let total_streams = (stream ?? 0) + (old_stream ?? 0);
+        let mikondo_text =(count) => count > 1 ? 'mikondo' : 'mkondo';
+
+        title = `KIBALI CHA KUONGEZA ${mikondo_text(stream ?? 0)}  (${stream ?? 0}) ILI IWE ${mikondo_text(total_streams)} (${total_streams}) KWA ${name}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Napenda kukufahamisha kuwa Wizara imekubali ombi lako la kuongeza Mkondo <b>mmoja (01)</b> katika shule ya Awali na Msingi <b>Sayari</b> ili iwe <b>Mikondo miwili (02)</b>. Kibali kimetolewa tarehe <b>15/09/2023</b>\n\n`,
-          `3.    Hata hivyo unatakiwa kuendelea kuboresha miundombinu ya shule ikiwa ni pamoja na kuajiri walimu wenye sifa na kununua vitabu vya kutosha.\n\n`,
+          `2.    Napenda kukufahamisha kuwa Wizara imekubali ombi lako la kuongeza ${mikondo_text(stream ?? 0)} <b>${toSwahili(stream ?? 0)} (${stream ?? 0})</b> katika ${school_type_only} <b>${school_name}</b> ili iwe <b>${mikondo_text(total_streams)} ${toSwahili(total_streams)} (${total_streams})</b>. Kibali kimetolewa tarehe <b>${approved_date}</b>.\n\n`,
+          `3.    Hata hivyo unatakiwa kuendelea kuboresha miundombinu ya shule ikiwa ni pamoja na kuajiri walimu wenye sifa na kununua vitabu vya kutosha.\n\n\n`,
           `4.    Mfahamishe Katibu Mtendaji wa Baraza la Mitihani ni lini wanafunzi walioongezeka watafanya upimaji wa darasa la IV na mtihani wa Taifa wa darasa la VII.\n\n\n`,
           `5.    Ninakutakia utekelezaji mwema.`,
         ];
@@ -368,14 +408,16 @@ module.exports = {
         ];
         break;
       case 11:
-        title = `Kufuta usajili wa shule`;
+        title = ` KUFUTA USAJILI WA CHUO CHA UALIMU ..............`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+          `2.    Rejea barua yenye Kumb. Na. CD.JA/287/361/131/35 ya tarehe 30/9/2021 iliyohusu kusudio la kufuta usajili wa chuo cha Ualimu ………………….\n\n`,
+          `3.    Kwa kuwa umewasilisha cheti halisi cha usajaili wa Chuo cha Ualimu…………….inaonesha umeridhia Chuo kufutwa. Kwa mamlaka niliyopewa na Sheria ya Elimu, Sura 353, ninafuta usajili CU…………., kuanzia tarehe ya barua hii Chuo hiki kinafutwa kutoka katika kanzi data ya Vyuo vya Ualimu vilivyopo nchini Tanzania Bara.\n\n`,
+          `4.    Ninakutakia utekelezaji mwema`,
         ];
         break;
       case 12:
-        title = `KIBALI CHA KUONGEZA  TAHASUSI  ZA  CBG NA HGK, KATIKA SHULE YA SEKONDARI  BWABUKI`;
+        title = `KIBALI CHA KUONGEZA  TAHASUSI ZA CBG NA HGK, KATIKA SHULE YA SEKONDARI  BWABUKI`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
           `2.    Nafurahi kukujulisha kuwa Wizara imekubali kutoa kibali cha kuanzisha tahasusi za <b>CBG NA HGK</b> mkondo mmoja <b>(01)</b> kwa kila tahasusi kwa Wasichana pekee. Kibali hiki kimetolewa tarehe <b>26/6/2023</b>\n\n`,
@@ -409,7 +451,7 @@ module.exports = {
   },
 };
 
-const usajiliSerikali = (name , school_name , school_type, region, council) => {
+const usajiliSerikali = (name, school_name, school_type, region, council) => {
   return [
     `    Tafadhali rejea somo la barua hii.\n\n\n`,
     `2.  Napenda kukujulisha kuwa Wizara imekubali maombi ya Halmashauri ya Wilaya ya <b>${council}</b> ya kusajili <b>${name}</b> itakayomilikiwa na wananchi wa Halmashauri ya Wilaya ya ${council}. kwa kushirikiana na Mkoa wa ${region}\n\n`,
@@ -441,54 +483,65 @@ const usajiliBinafsi = (
     `6.  Ninakutakia utekelezaji mwema.`,
   ];
 };
-const getSchoolType = (school_type_id , school_type , school_name) => {
-    var name = '';
-    if([1,2,3].includes(school_type_id)){
-      name = `Shule ya ${school_type} ${school_name} `;
-    }else{
-      name = `Chuo cha Ualimu ${school_name}`;
-    }
-    return name;
+const getSchoolType = (school_type_id, school_type, school_name) => {
+  var name = '';
+  if ([1, 2, 3].includes(school_type_id)) {
+    name = `Shule ya ${school_type} ${school_name} `;
+  } else {
+    name = `Chuo cha Ualimu ${school_name}`;
+  }
+  return name;
 };
+
+const getSchoolTypeOnly = (school_type_id, school_type) => {
+  var name = '';
+  if ([1, 2, 3].includes(school_type_id)) {
+    name = `Shule ya ${school_type} `;
+  } else {
+    name = `Chuo cha Ualimu `;
+  }
+  return name;
+};
+
 const containsBoldTag = (text) => /<b>(.*?)<\/b>/i.test(text);
 const formatParagraph = (text, doc) => {
   //  if <b> tag present render with bold font
-    if (containsBoldTag(text)) {
-      const $ = cheerio.load(`<body> ${text} </body>`);
-      $("body")
-        .contents()
-        .each((index, element) => {
-          if (element.nodeType === 1) {
-            doc
-              .font("Helvetica-Bold")
-              .fillColor("black")
-              .text(` ${$(element).text().trim() } `, {
-                lineGap: 4,
-                continued: true,
-                align : 'justify'
-              });
-          } else {
-            doc
-              .fillColor("black")
-              .font("Helvetica")
-              .text($(element).text(), {
-                lineGap: 4,
-                continued: true,
-                align: "justify",
-              });
-          }
-        });
-    } else {
-      // If no tag render normal text
-      doc
-        .fillColor("black")
-        .font("Helvetica")
-        .text(text, { lineGap: 4, continued: true, align: "justify" });
-    }
+  if (containsBoldTag(text)) {
+    const $ = cheerio.load(`<body> ${text} </body>`);
+    $("body")
+      .contents()
+      .each((index, element) => {
+        if (element.nodeType === 1) {
+          doc
+            .font("Helvetica-Bold")
+            .fillColor("black")
+            .text(` ${$(element).text().trim()} `, {
+              lineGap: 4,
+              continued: true,
+              align: 'justify'
+            });
+        } else {
+          doc
+            .fillColor("black")
+            .font("Helvetica")
+            .text($(element).text(), {
+              lineGap: 4,
+              continued: true,
+              align: "justify",
+            });
+        }
+      });
+  } else {
+    // If no tag render normal text
+    doc
+      .fillColor("black")
+      .font("Helvetica")
+      .text(text, { lineGap: 4, continued: true, align: "justify" });
+  }
 }
 
 // Letter Head
-const generateHeader = (doc, imagesPaths , reference, createdAt, company , box , mkoa) => {
+const generateHeader = (doc, imagesPaths, reference, createdAt, company, box, mkoa) => {
   doc
     .font("Helvetica-Bold")
     .fontSize(14)
@@ -510,13 +563,13 @@ const generateHeader = (doc, imagesPaths , reference, createdAt, company , box ,
       { lineGap: 2 }
     )
 
-    doc.text('Tovuti: ' , {lineBreak : false})
-    doc.fillColor("blue")
+  doc.text('Tovuti: ', { lineBreak: false })
+  doc.fillColor("blue")
     .text("www.moe.go.tz")
     .link(100, 100, 160, 27, "https://www.moe.go.tz/")
 
-    doc.fillColor("black")
-      .text(
+  doc.fillColor("black")
+    .text(
       "Mji wa Serikali, Mtumba, \nMtaa wa Afya,\nS. L. P. 10,\n40479 DODOMA.",
       doc.page.width / 2 + 120,
       80,
@@ -539,7 +592,7 @@ const generateHeader = (doc, imagesPaths , reference, createdAt, company , box ,
     .moveDown()
     .moveDown();
 
-// Addressee
+  // Addressee
   doc
     .font("Helvetica")
     .text(`${company}, \n${box}, \n${mkoa}.`)
@@ -547,7 +600,7 @@ const generateHeader = (doc, imagesPaths , reference, createdAt, company , box ,
     .moveDown();
 }
 // Title
-const generateTitle = (doc , title) => {
+const generateTitle = (doc, title) => {
   doc
     .text("Yah: ", {
       continued: true,
@@ -560,12 +613,12 @@ const generateTitle = (doc , title) => {
     .moveDown();
 }
 // Body
-const  generateBody = (doc, bodyContent) => {
-   formatParagraph(bodyContent , doc)
+const generateBody = (doc, bodyContent) => {
+  formatParagraph(bodyContent, doc)
 }
 
 // 
-const generateFooter = (doc , signature , signatory , cheo) => {
+const generateFooter = (doc, signature, signatory, cheo) => {
   const lineSize = 174;
   const signatureHeight = doc.y + 100;
 
@@ -614,16 +667,16 @@ const generateFooter = (doc , signature , signatory , cheo) => {
   });
 }
 
-const addTable = (doc  , table) => {
+const addTable = (doc, table) => {
   const tableArray = {
-                      headers : table.headers,
-                      rows : table.rows
-                    };
+    headers: table.headers,
+    rows: table.rows
+  };
   doc.table(tableArray, {
     columnsSize: [40, 60, 80, 120, 230],
     prepareHeader: () => doc.font("Helvetica-Bold").fontSize(12),
     prepareRow: () => doc.font("Helvetica").fontSize(12),
-    padding : 0,
-    hideHeader : false
+    padding: 0,
+    hideHeader: false
   });
 }
