@@ -19,6 +19,7 @@ designationController.get("/Vyeo", isAuthenticated, can('view-designations'), fu
   var page = Number(req.query.page || 1);
   var formData = {
          is_paginated: true,
+         tafuta : req.query.tafuta
     };
   sendRequest(
     req,

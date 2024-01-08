@@ -22,8 +22,13 @@
         <div class="col-sm">
             <div class="d-flex justify-content-sm-end">
                 <div class="search-box ms-2">
-                    <input type="text" class="form-control search" placeholder="Tafuta...">
+                    <form action="/Vyeo" method="GET" class="d-flex gap-2">
+                    <input type="text" value="<%=req.query.tafuta%>" name="tafuta" class="form-control search" placeholder="Tafuta...">
                     <i class="ri-search-line search-icon"></i>
+                    <% if(req.query.tafuta){ %>
+                    <a href="/Vyeo" class="btn btn-outline-danger">Clear </a>
+                    <% } %>
+                    </form>
                 </div>
             </div>
         </div>
@@ -41,7 +46,8 @@
                     <th  width="5%">Na.</th>
                     <!-- <th class="">Jina</th> -->
                     <th class="">Cheo</th>
-                    <th class="">Ngazi ya Uongozi</th>
+                     <th class="">Kirefu</th>
+                    <th class="">Sehemu</th>
                     <th class="text-center">Status</th>
                     <th class="sort text-center" data-sort="action" width="10%">Action</th>
                 </tr>
@@ -55,6 +61,7 @@
                       }) %>
                     </td>
                     <td class="phone"><%= designations[i].name %></td>
+                    <td class="phone"><%= designations[i].description %></td>
                     <td class="phone"><%= designations[i].role %></td>
                     <td class="text-center">
                         <% var status = designations[i].status %>
@@ -64,6 +71,7 @@
                         <button type="button" class="btn btn-link btn-sm" 
                         data-id="<%= designations[i].id %>" 
                         data-name="<%= designations[i].name %>" 
+                        data-description="<%= designations[i].description %>" 
                         data-level="<%= designations[i].level %>" 
                         data-status="<%= designations[i].status %>" 
                         onclick="BadiliData(this); return false;">
@@ -108,6 +116,11 @@
                         <input type="text" id="name-field" class="form-control" placeholder="Mfano: USJ2" required />
                         <span style="color: red;display: none;" id="jazasimu">Tafadhali jaza Cheo</span>
                     </div>
+                    <div class="mb-3">
+                        <label for="description-field" class="form-label">Kirefu</label>
+                        <input type="text" id="description-field" class="form-control" placeholder="Mfano: Usajili"  />
+                        <span style="color: red;display: none;" id="description">Tafadhali jaza kirefu</span>
+                    </div>
                     <div>
                         <label for="uongozi-field" class="form-label">Ngazi ya Uongozi</label>
                         <select class="form-control" data-trigger name="uongozi-field" id="uongozi-field">
@@ -147,6 +160,10 @@
                     <div class="mb-3">
                         <label for="name2-field" class="form-label">Jina la Cheo</label>
                         <input type="text" class="form-control" name="name2-field" id="name2-field" placeholder="Mfano: USJ2" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="description2-field" class="form-label">Kirefu</label>
+                        <input type="text" id="description2-field" class="form-control" placeholder="Mfano: Usajili"  />
                     </div>
                     <div>
                         <label for="uongozi2-field" class="form-label">Ngazi ya Uongozi</label>

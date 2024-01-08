@@ -15,7 +15,7 @@ const url = require("url");
 
 const { toSwahili } = require('digits-to-swahili');
 const { level } = require("winston");
-const { upperCase } = require("../sas-api/utils");
+
 
 module.exports = {
   modifiedUrl: (req, newParams = { status: req.query.status }) => {
@@ -33,6 +33,9 @@ module.exports = {
     }
     if (parseUrl.query.page) {
       delete parseUrl.query.page;
+    }
+    if (parseUrl.query.per_page) {
+      delete parseUrl.query.per_page;
     }
     const newUrl = url.format({
       pathname: parseUrl.pathname.substring(1),
@@ -144,15 +147,24 @@ module.exports = {
     // req.session.previousUrl = req.originalUrl;
     if (authorization) {
       const token = authorization.slice(7, authorization.length); // Bearer XXXXXX
-      //  console.log(token);
       jwt.verify(
         token,
         process.env.JWT_SECRET || "the-super-strong-secrect",
         (err, decode) => {
           if (err) {
+            if(err.name === "TokenExpiredError"){
+               req.session.destroy((error) => {
+                 if (error) console.log(error);
+               });
+            }
             res.redirect("/");
           } else {
             req.user = decode;
+            const  {exp} = decode
+            const timestamp = Math.round(Date.now() / 1000 , 0);
+            if(exp - timestamp > 0){
+              console.log("Refresh token")
+            }
             next();
           }
         }
@@ -190,7 +202,8 @@ module.exports = {
     if (base64Data) {
       const fileDataDecoded = Buffer.from(base64Data, "base64");
       fs.writeFileSync(
-        __dirname + `/tmp/signature_${tracking_number}.png`,fileDataDecoded,
+        __dirname + `/tmp/signature_${tracking_number}.png`,
+        fileDataDecoded,
         (error) => {
           if (error) console.log(error);
         }
@@ -256,7 +269,7 @@ module.exports = {
     created_at,
     company,
     box,
-    mkoa,
+    region_address,
     title,
     paragraphs,
     signatory,
@@ -264,10 +277,11 @@ module.exports = {
     table,
     registry_type
   ) => {
-    let doc = new PDFDocument({
+    const options = {
       margin: 72,
       size: "A4",
-    });
+    };
+    let doc = new PDFDocument(options);
     const imagesPaths = path.join(__dirname + "/public/assets/images");
     const trackingNumber = req.params.id;
     const filename = encodeURIComponent(trackingNumber) + ".pdf";
@@ -275,7 +289,15 @@ module.exports = {
     res.setHeader("Content-disposition", 'inline; filename="' + filename + '"');
     res.setHeader("Content-type", "application/pdf");
 
-    generateHeader(doc, imagesPaths, reference, created_at, company, box, mkoa); // Invoke `generateHeader` function.
+    generateHeader(
+      doc,
+      imagesPaths,
+      reference,
+      created_at,
+      company,
+      box,
+      region_address
+    ); // Invoke `generateHeader` function.
     generateTitle(doc, title);
     paragraphs.forEach((paragraph) => {
       if (paragraph.trim() == "<table/>") {
@@ -586,7 +608,15 @@ const formatText = (
 }
 
 // Letter Head
-const generateHeader = (doc, imagesPaths, reference, createdAt, company, box, mkoa) => {
+const generateHeader = (
+  doc,
+  imagesPaths,
+  reference,
+  createdAt,
+  company,
+  box,
+  region_address
+) => {
   doc
     .font("Helvetica-Bold")
     .fontSize(14)
@@ -606,17 +636,19 @@ const generateHeader = (doc, imagesPaths, reference, createdAt, company, box, mk
     .text(
       `Anuani ya simu "ELIMU"\nSimu: 026 296 35 33 \nBaruapepe: info@moe.go.tz`,
       { lineGap: 2 }
-    )
+    );
 
-  doc.text('Tovuti: ', { lineBreak: false })
-  doc.fillColor("blue")
+  doc.text("Tovuti: ", { lineBreak: false });
+  doc
+    .fillColor("blue")
     .text("www.moe.go.tz")
-    .link(100, 100, 160, 27, "https://www.moe.go.tz/")
+    .link(100, 100, 160, 27, "https://www.moe.go.tz/");
 
-  doc.fillColor("black")
+  doc
+    .fillColor("black")
     .text(
-      "Mji wa Serikali, Mtumba, \nMtaa wa Afya,\nS. L. P. 10,\n40479 DODOMA.",
-      doc.page.width / 2 + 120,
+      "Mji wa Serikali Mtumba, \nMtaa wa Afya,\nS. L. P. 10,\n40479 DODOMA.",
+      doc.page.width / 2 + 80,
       80,
       { lineGap: 2 }
     );
@@ -629,26 +661,34 @@ const generateHeader = (doc, imagesPaths, reference, createdAt, company, box, mk
     .fillColor("#444444");
   doc.moveDown();
 
-  doc.text("Unapojibu tafadhali taja:", 30, 160).moveDown().moveDown();
+  doc
+    .text("Unapojibu tafadhali taja:", 30, 150, { continue: true })
+    .moveDown()
+    .moveDown();
   doc
     .font("Helvetica-Bold")
     .text(`Kumb. na. ${reference}`, { continued: true })
-    .text(createdAt, doc.page.width / 2 - 10, 200)
+    .text(createdAt, doc.page.width / 2 - 60, 190)
     .moveDown()
     .moveDown();
 
   // Addressee
   doc
-    .font("Helvetica")
-    .text(`${company}, \n${box}, \n${mkoa}.`)
+    .font("Helvetica-Bold")
+    .text(
+      `${company.toUpperCase() || "<Insert Company/Name>"}, \n${
+        box || "<Insert Address>"
+      }, \n`
+    )
+    .text(`${region_address.toUpperCase()}.`, { underline: true })
     .moveDown()
     .moveDown();
-}
+};
 // Title
 const generateTitle = (doc, title) => {
   doc
     .font("Helvetica-Bold")
-    .text(`Yah: ${upperCase(title)}`, { underline: true, align: "center" })
+    .text(`Yah: ${title.toUpperCase()}`, { underline: true, align: "center" })
     .moveDown();
 }
 // Body
@@ -674,6 +714,15 @@ const generateFooter = (res , doc, tracking_number, signatory, cheo) => {
     fs.unlinkSync(signature)
     //  .fillColor("#444444");
     //  doc.moveDown();
+  }else{
+    doc.text(
+      `<Insert Signature>`,
+      -50,
+      signatureHeight,
+      {
+        align : 'center'
+      }
+    ).moveDown();
   }
 // LINE
   // doc
@@ -686,14 +735,14 @@ const generateFooter = (res , doc, tracking_number, signatory, cheo) => {
     .fontSize(12)
     .fill("#021c27")
     .text(
-      signatory,
-      doc.page.width / 2 - 360,
-      signatureHeight + 10,
+      signatory ? signatory : `<Insert Name>`,
+      signatory ? doc.page.width / 2 - 350 : 50,
+      signatureHeight + 15,
       {
-        columns: 1,
+        // columns: 1,
         columnGap: 2,
         height: 2,
-        width: lineSize,
+        // width: lineSize,
         align: "center",
       }
     );
@@ -703,9 +752,9 @@ const generateFooter = (res , doc, tracking_number, signatory, cheo) => {
     .fontSize(12)
     .fill("#021c27")
     .text(
-      cheo,
+      cheo ? cheo : `<Insert Title>`,
       doc.page.width / 2 - 150,
-      signatureHeight + 30,
+      signatureHeight + 33,
       {
         columns: 1,
         columnGap: 0,

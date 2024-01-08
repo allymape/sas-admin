@@ -33,6 +33,7 @@ baruaController.get("/barua/:tracking_number",
           application_category_id,
           address_name,
           address_box,
+          address_region,
           region,
           district,
           registration_number,
@@ -50,8 +51,8 @@ baruaController.get("/barua/:tracking_number",
         decodeSignature(base64signature, tracking_number);
         const reference = `${file_number}/${school_folio}/${folio}`;
         const createdAt = approved_at != undefined ? formatDate(approved_at , 'DD/MM/YYYY'): null;
-        const box = "S.L.P "+address_box;
-        const region_address = "Dar es salaam";
+        const box = address_box;
+        const region_address = address_region;
         const registry_type = registry_type_id;
         const school_region = region;
         const school_council = district;

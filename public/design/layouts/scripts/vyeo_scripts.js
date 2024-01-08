@@ -1,13 +1,17 @@
+const { describe } = require("pm2");
+
 $("#create-btn").on("click", function () {
   modal("showModal", true);
 });
 function BadiliData(e) {
   var id = e.getAttribute("data-id");
   var name = e.getAttribute("data-name");
+  var description = e.getAttribute("data-description");
   var level = e.getAttribute("data-level");
   var status = e.getAttribute("data-status");
   document.getElementById("id-field").value = id;
   document.getElementById("name2-field").value = name;
+  document.getElementById("description2-field").value = description;
   document.getElementById("uongozi2-field").value = level;
   document.getElementById("status-field").checked = status == 1 ? true : false;
   modal("showEditModal" , true);
@@ -16,6 +20,7 @@ function BadiliData(e) {
 
 function sajiliHati() {
   var name = document.getElementById("name-field").value;
+  var description = document.getElementById("description-field").value;
   var level = document.getElementById("uongozi-field").value;
 
   if (name.length <= 0) {
@@ -43,6 +48,7 @@ function sajiliHati() {
       },
       JSON.stringify({
         name: name,
+        description : description,
         level: level,
       })
     );
@@ -70,6 +76,7 @@ function sajiliHati() {
 }
 function sasishaHati() {
   var name = document.getElementById("name2-field").value;
+  var description = document.getElementById("description2-field").value;
   var level = document.getElementById("uongozi2-field").value;
   var id = document.getElementById("id-field").value;
   var status = document.getElementById("status-field").checked;
@@ -93,6 +100,7 @@ function sasishaHati() {
       JSON.stringify({
         name: name,
         level: level,
+        description: description,
         status: status ? 1 : 0,
       })
     );

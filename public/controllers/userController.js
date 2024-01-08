@@ -1,7 +1,6 @@
 require("dotenv").config();
 const express = require("express");
 const request = require("request");
-var session = require("express-session");
 const userController = express.Router();
 const requestIp = require("request-ip");
 var path = require("path");
@@ -20,7 +19,7 @@ var disableMtumiajiAPI = API_BASE_URL + "disable-user";
 var sendMailAPI = API_BASE_URL + "reset-user-password";
 
 // Login Page
-userController.get("/", redirectIfAuthenticated, function (req, res) {
+userController.get("/", redirectIfAuthenticated, (req, res) => {
   res.render(path.join(__dirname + "/../design/login"), {
     req: req,
     message: "",
@@ -28,9 +27,6 @@ userController.get("/", redirectIfAuthenticated, function (req, res) {
 });
 
 userController.post("/auth", function (req, res) {
-  var username = req.body.username;
-  var password = req.body.password;
-  console.log("send login request")
   request(
     {
       url: loginAPI,
@@ -38,70 +34,75 @@ userController.post("/auth", function (req, res) {
       headers: {
         "Content-Type": "application/json",
       },
-      json: { username: username, password: password },
+      json: req.body,
     },
     (err, response, body) => {
-      if (err){
+      const errorMessage = `Kuna tatizo wasiliana na Msimamizi wa Mfumo`;
+      if (err) {
         console.log(err, body);
-        req.flash("error", "Kuna tatizo wasiliana na Msimamizi wa Mfumo");
+        req.flash("error", errorMessage);
         res.redirect("/");
-      }else{
-            if (body !== undefined && (response.statusCode == 200 || response.statusCode == 400)) {
-              const { statusCode, message, error } = body;
-              if (error) {
-                req.flash("error", "Kuna tatizo wasiliana na Msimamizi wa Mfumo");
-                res.redirect("/");
-              } else {
-                if (body == "Too many requests, please try again later.") {
-                  req.flash(
-                    "warning",
-                    "Too many requests, please try again after 10 minutes."
-                  );
-                  res.redirect("/");
-                } else {
-                  if (statusCode == 302) {
-                    req.session.loginAttempt = req.session.loginAttempt + 1;
-                    req.flash("warning", message);
-                    res.redirect("/");
-                  } else if (statusCode == 300) {
-                    const ip_address = requestIp.getClientIp(req);
-                    const browser_used = req.headers["user-agent"];
-                    const { user, RoleManage, token } = body;
-                    console.log("Controller");
-                    console.log(body);
-                    req.session.UserLevel = user.user_level;
-                    req.session.kanda = user.kanda;
-                    req.session.office = user.office;
-                    req.session.officeName = user.office_name;
-                    req.session.twofa = user.twofa;
-                    req.session.Token = token;
-                    req.session.userID = user.id;
-                    req.session.userName = user.name;
-                    req.session.cheoName = user.rank_name;
-                    req.session.jukumu = user.jukumu;
-                    req.session.email = user.email;
-                    req.session.ip_address = ip_address;
-                    req.session.browser_used = browser_used;
-                    req.session.RoleManage = RoleManage;
-                    console.log("out" , user.twofa);
-                    if (user.twofa == 0) {
-                       console.log("redirect to dashboard" , 0);
-                       res.redirect("/Dashboard");
-                    } else {
-                      console.log("redirect to dashboard", 'not zero');
-                       res.redirect("/Dashboard");
-                    }
-                  } else {
-                    req.flash("error", "Kuna tatizo wasiliana na Msimamizi wa Mfumo");
-                    res.redirect("/");
-                  }
-                }
-              }
-            } else {
-              req.flash("error", "Kuna tatizo wasiliana na Msimamizi wa Mfumo");
+      } else {
+        if (
+          body !== undefined &&
+          (response.statusCode == 200 || response.statusCode == 400)
+        ) {
+          const { statusCode, message, error } = body;
+          if (error) {
+            req.flash("error", errorMessage);
+            res.redirect("/");
+          } else {
+            if (body == "Too many requests, please try again later.") {
+              req.flash(
+                "warning",
+                "Too many requests, please try again after 10 minutes."
+              );
               res.redirect("/");
+            } else {
+              if (statusCode == 302) {
+                req.session.loginAttempt = req.session.loginAttempt + 1;
+                req.flash("warning", message);
+                res.redirect("/");
+              } else if (statusCode == 300) {
+                const ip_address = requestIp.getClientIp(req);
+                const browser_used = req.headers["user-agent"];
+                const { user, RoleManage, token } = body;
+                req.session.UserLevel = user.user_level;
+                req.session.kanda = user.kanda;
+                req.session.office = user.office;
+                req.session.officeName = user.office_name;
+                req.session.twofa = user.twofa;
+                req.session.Token = token;
+                req.session.userID = user.id;
+                req.session.userName = user.name;
+                req.session.cheoName = user.rank_name;
+                req.session.jukumu = user.jukumu;
+                req.session.email = user.email;
+                req.session.ip_address = ip_address;
+                req.session.browser_used = browser_used;
+                req.session.RoleManage = RoleManage;
+                // console.log("out", user.twofa);
+                if (user.twofa == 0) {
+                  console.log("redirect to dashboard", 0);
+                  res.redirect("/Dashboard");
+                } else {
+                  console.log("redirect to dashboard", "not zero");
+                  res.redirect("/Dashboard");
+                }
+              } else {
+                req.flash(
+                  "error",
+                  errorMessage
+                );
+                res.redirect("/");
+              }
             }
-    }
+          }
+        } else {
+          req.flash("error", errorMessage);
+          res.redirect("/");
+        }
+      }
     }
   );
 });

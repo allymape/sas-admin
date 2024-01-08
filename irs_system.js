@@ -80,7 +80,7 @@ const maombiBaruaController = require("./public/controllers/barua/maombiBaruaCon
 const baruaController = require("./public/controllers/barua/baruaController");
 // const reportRequestController = require("./public/controllers/ripoti/RipotiRequestController");
 
-var app = express();
+const app = express();
 app.use(helmet.frameguard())
 app.use(cookieParser())
 app.use(flash());
