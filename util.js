@@ -18,6 +18,46 @@ const { level } = require("winston");
 
 
 module.exports = {
+  isAuthenticated: (req, res, next) => {
+    const authorization = "Bearer" + " " + req.session.Token;
+    // req.session.previousUrl = req.originalUrl;
+    if (authorization) {
+      const token = authorization.slice(7, authorization.length); // Bearer XXXXXX
+      jwt.verify(
+        token,
+        process.env.ACCESS_TOKEN_SECRET || "the-super-strong-secrect",
+        (err, decode) => {
+          if (err) {
+            if (err.name === "TokenExpiredError") {
+              req.session.destroy((error) => {
+                if (error) console.log(error);
+              });
+            }
+            res.redirect("/");
+          } else {
+            req.user = decode;
+            const { exp } = decode;
+            const timestamp = Math.round(Date.now() / 1000, 0);
+            if (exp - timestamp > 0) {
+              console.log('refresh Token')
+            }
+            next();
+          }
+        }
+      );
+    } else {
+      res.redirect("/");
+    }
+  },
+
+  redirectIfAuthenticated: (req, res, next) => {
+    if (req.session.userName) {
+      // let  previousUrl = req.session.previousUrl
+      // res.redirect(previousUrl ? previousUrl : '/Dashboard');
+      res.redirect("/Dashboard");
+    }
+    next();
+  },
   modifiedUrl: (req, newParams = { status: req.query.status }) => {
     const currentUrl = req.originalUrl;
     const parseUrl = url.parse(currentUrl, true);
@@ -141,47 +181,6 @@ module.exports = {
       }
     };
   },
-
-  isAuthenticated: (req, res, next) => {
-    const authorization = "Bearer" + " " + req.session.Token;
-    // req.session.previousUrl = req.originalUrl;
-    if (authorization) {
-      const token = authorization.slice(7, authorization.length); // Bearer XXXXXX
-      jwt.verify(
-        token,
-        process.env.JWT_SECRET || "the-super-strong-secrect",
-        (err, decode) => {
-          if (err) {
-            if(err.name === "TokenExpiredError"){
-               req.session.destroy((error) => {
-                 if (error) console.log(error);
-               });
-            }
-            res.redirect("/");
-          } else {
-            req.user = decode;
-            const  {exp} = decode
-            const timestamp = Math.round(Date.now() / 1000 , 0);
-            if(exp - timestamp > 0){
-              console.log("Refresh token")
-            }
-            next();
-          }
-        }
-      );
-    } else {
-      res.redirect("/");
-    }
-  },
-
-  redirectIfAuthenticated: (req, res, next) => {
-    if (req.session.userName) {
-      // let  previousUrl = req.session.previousUrl
-      // res.redirect(previousUrl ? previousUrl : '/Dashboard');
-      res.redirect("/Dashboard");
-    }
-    next();
-  },
   titleCase: (text) => {
     //Title Case
     return titleCase(text);
@@ -296,7 +295,8 @@ module.exports = {
       created_at,
       company,
       box,
-      region_address
+      region_address,
+      registry_type
     ); // Invoke `generateHeader` function.
     generateTitle(doc, title);
     paragraphs.forEach((paragraph) => {
@@ -342,8 +342,8 @@ module.exports = {
       case 1:
         title = `KIBALI CHA KUANZISHA ${name}`;
         bodyContent = [
-          `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Ninafurahi kukufahamisha kuwa kibali cha kuanzisha ${school_type_only}<b>${school_name}</b> kimetolewa ili shule hiyo ianzishwe katika Kata ya <b>${ward}</b> Halmashauri ya Wilaya ya <b>${council}</b> Mkoa wa <b>${region}.</b>\n\n`,
+          `       Tafadhali rejea somo la barua hii.\n\n\n`,
+          `2.    Ninafurahi kukufahamisha kuwa kibali cha kuanzisha ${school_type_only}<b>${school_name}</b> kimetolewa ili shule hiyo ianzishwe katika Kata ya <b>${ward}</b> Halmashauri ya Wilaya ya <b>${council}</b> Mkoa wa <b>${region}.</b> \n\n`,
           `3.    Kibali hiki kimetolewa kwa mujibu wa <b>Sheria ya Elimu Sura ya 353</b>, kwa masharti kuwa utazingatia mwongozo wa Wizara wa kuanzisha na kusajili shule zisizo za Serikali. Unashauriwa kuwasiliana na <b>Msanifu wa Majengo wa Wilaya</b> kwa ushauri wa kitaalam wa kuendeleza majengo hayo kulingana na mahitaji ya Shule. Aidha, unatakiwa kuhakikisha uwepo wa miundombinu ya walemavu katika shule yako.\n\n`,
           `4.    <b>Uthibitisho huu siyo kibali cha kusajili Wanafunzi.</b>\n\n`,
           `5.    Ninakutakia utekelezaji mwema`,
@@ -593,7 +593,7 @@ const formatText = (
           doc
             .font("Helvetica-Bold")
             .fillColor("black")
-            .text(` ${$(element).text().trim()} `, {
+            .text($(element).text() , {
               lineGap: 4,
               continued: true,
               align: 'justify'
@@ -602,7 +602,7 @@ const formatText = (
           doc
             .fillColor("black")
             .font("Helvetica")
-            .text($(element).text(), {
+            .text($(element).text() , {
               lineGap: 4,
               continued: true,
               align: "justify",
@@ -626,7 +626,8 @@ const generateHeader = (
   createdAt,
   company,
   box,
-  region_address
+  region_address,
+  registry_type
 ) => {
   doc
     .font("Helvetica-Bold")
@@ -687,11 +688,14 @@ const generateHeader = (
   doc
     .font("Helvetica-Bold")
     .text(
-      `${company.toUpperCase() || "<Insert Company/Name>"}, \n${
-        box || "<Insert Address>"
-      }, \n`
+      `${
+        company ? company.toUpperCase() : company || "<Insert Company/Name>"
+      },  \n${ registry_type != 3 || registry_type == '' ? (box  || "<Insert Address>")+`,\n` : "" }`
     )
-    .text(`${region_address.toUpperCase()}.`, { underline: true })
+    .text(
+      `${region_address ? region_address.toUpperCase() : region_address}.`,
+      { underline: true }
+    )
     .moveDown()
     .moveDown();
 };
@@ -704,6 +708,7 @@ const generateTitle = (doc, title) => {
 }
 // Body
 const generateBody = (doc, bodyContent) => {
+  
   formatText(bodyContent, doc)
 }
 
