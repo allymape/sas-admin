@@ -420,31 +420,39 @@ module.exports = {
         break;
 
       case 6:
-        title = `Kubadili aina ya usajili`;
+        title = `KIBALI CHA KUBADILI USAJILI WA ${name} KUWA MCHANGANYIKO`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+          `2.    Napenda kukujulisha kuwa Wizara imepokea barua yako yenye <b>Kumb Na. WIPAHS/KIB/EXT/GIRLS/2023/0049</b> ya tarehe <b>24/10/2023</b> ukiomba kubadili usajili wa ${name}, kuwa shule ya Sekondari Mchanganyiko ya WALI UL ASR Seminari.\n\n`,
+          `3.    Wizara imeridhia ombi lako. Pia kibali cha bweni kimetokea kulaza wanafunzi 500 Wavulana. Hivyo, kuanzi a tarehe ya barua hii shule itakuwa kutwa, bweni mchanganyiko.\n\n`,
+          `4.    <b>Hivyo unatakiwa kuzifahamisha mamlaka nyingine za kielimu kuhusu mabadiliko haya.</b>\n\n`,
+          `5.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
 
       case 7:
-        title = `Kubadili mmiliki wa shule`;
+        title = `KIBALI CHA KUBADILISHA MMILIKI WA SHULE KATIKA ${name}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+          `2.    Wizara inapenda kukujulisha kuwa maombi yako ya kubadili mmiliki yamekubaliwa kuanzia tarehe ya barua hii shule itamilikiwa na 'The Registered Trustees of the Seventh Day Adventist Church of Tanzani' kutoka kwa SDA Church East Tanzania Field.\n\n`,
+          `3.    Shule itaendelea na namba ile ile ya zamani ya usajili EM. 13761. Aidha, unajulishwa kufuata cheti kipya cha usajili chenye jina la mmiliki mpya mwezi mmoja tangu barua hii ilipoandikwa.\n\n`,
+          `4.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
 
       case 8:
-        title = `Kubadili meneja wa shule`;
+        title = `KIBALI CHA KUBADILI MENEJA WA ${name}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+          `2.    Wizara imepokea barua yako yenye/isiyo na kumbukumbu namba ya tarehe ………………………… ukiomba kibali cha kubadili Meneja wa shule ya Awali Pekee……...\n\n`,
+          `3.    Ninafurahi kukujulisha kuwa ombi lako limekubaliwa.  Kwa mamlaka niliyonayo na kwa Sheria ya Elimu, Sura 353 nafuta uthibitisho wa ndugu ……………. Aliyekuwa meneja wa shule ya Awali Pekee…………  Kuanzia tarehe ya barua hii …………………siyo meneja wa shule ya Awali Pekee …………….\n\n`,
+          `3.    Unatakiwa kuzitaarifu Mamlaka nyingine za kielimu juu ya mabadiliko yaliyofanyika.\n\n`,
+          `5.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
 
       case 9:
-        title = `KIBALI CHA KUBADILI JINA LA SHULE YA SEKONDARI EMBRI’S BOYS   KUWA SHULE YA SEKONDARI EMBRIS`;
+        title = `KIBALI CHA KUBADILI JINA LA SHULE YA ${name} KUWA SHULE YA SEKONDARI EMBRIS`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
           `2.    Wizara ya Elimu, Sayansi na Teknolojia imepokea barua yenye <b>Kumb. Na. HMW/SMJ/EL/EM/41/43</b> ya tarehe <b>20/09/2023</b> kuhusu maombi ya mabadiliko ya jina la Shule ya Sekondari <b>Embri’s Boys</b> kuwa <b>Embris</b>\n\n`,
@@ -455,10 +463,13 @@ module.exports = {
         break;
 
       case 10:
-        title = `Kuhamisha shule`;
+        title = `KIBALI CHA KUHAMISHA SHULE YA `;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+          `2.    Wizara ya Elimu, Sayansi na Teknolojia imepokea barua ya maombi ya kibali cha kuhamisha shule ya………………….\n\n`,
+          `3.    Kamishna wa Elimu ameridhia  shule hiyo ihamie katika eneo jipya.  \n\n`,
+          `4.    Shule itahama na namba ya usajili ……. na itakuwa katika eneo ………… la Kiutawala.\n\n`,
+          `5.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
 
@@ -473,7 +484,7 @@ module.exports = {
         break;
 
       case 12:
-        title = `KIBALI CHA KUONGEZA  TAHASUSI ZA CBG NA HGK, KATIKA SHULE YA SEKONDARI  BWABUKI`;
+        title = `KIBALI CHA KUONGEZA TAHASUSI ZA CBG NA HGK, KATIKA SHULE YA SEKONDARI  BWABUKI`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
           `2.    Nafurahi kukujulisha kuwa Wizara imekubali kutoa kibali cha kuanzisha tahasusi za <b>CBG NA HGK</b> mkondo mmoja <b>(01)</b> kwa kila tahasusi kwa Wasichana pekee. Kibali hiki kimetolewa tarehe <b>26/6/2023</b>\n\n`,
