@@ -397,6 +397,7 @@ app.post("/auth", function (req, res) {
   var ip_address = requestIp.getClientIp(req);
   var browser_used = req.headers["user-agent"];
   req.session.loginAttempt = 0;
+
   request(
     {
       url: loginAPI,
@@ -445,7 +446,6 @@ app.post("/auth", function (req, res) {
           var userID = body.id;
           var token = body.token;
           var RoleManage = body.RoleManage;
-          var user_level = body.user[0].user_level;
           var userName = body.user[0].name;
           var cheoName = body.user[0].rank_name;
           var office = body.user[0].office;
@@ -453,7 +453,7 @@ app.post("/auth", function (req, res) {
           var staffID = body.user[0].id;
           var twofa = body.user[0].twofa;
           var email = body.user[0].email;
-          req.session.UserLevel = user_level;
+          req.session.UserLevel = body.user[0].user_level;;
           req.session.office = office;
           req.session.twofa = twofa;
           req.session.Token = token;

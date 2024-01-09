@@ -29,7 +29,7 @@
                             <a href="/MaombiKuanzishaShule" class="nav-link <%= routeIs('MaombiKuanzishaShule' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-analytics"> Kuanzisha Shule
                                 <span class="badge badge-pill bg-danger" id="kuanzacounti" data-key="t-new"></span> </a>
                         </li>
-                        <% } } %>
+                        <% break; } } %>
                         <% var hasMatch =false; %>
                         <% for (var index = 0; index < RoleManage.length; ++index) { %>
                             <% var animal = RoleManage[index]; %>

@@ -37,6 +37,7 @@ userController.post("/auth", function (req, res) {
       json: req.body,
     },
     (err, response, body) => {
+      console.log(loginAPI);
       const errorMessage = `Kuna tatizo wasiliana na Msimamizi wa Mfumo`;
       if (err) {
         console.log(err, body);
