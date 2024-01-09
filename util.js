@@ -455,7 +455,7 @@ module.exports = {
         title = `KIBALI CHA KUBADILI JINA LA SHULE YA ${name} KUWA SHULE YA SEKONDARI EMBRIS`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Wizara ya Elimu, Sayansi na Teknolojia imepokea barua yenye <b>Kumb. Na. HMW/SMJ/EL/EM/41/43</b> ya tarehe <b>20/09/2023</b> kuhusu maombi ya mabadiliko ya jina la Shule ya Sekondari <b>Embri’s Boys</b> kuwa <b>Embris</b>\n\n`,
+          `2.    Wizara ya Elimu, Sayansi na Teknolojia imepokea barua yenye <b>Kumb. Na. HMW/SMJ/EL/EM/41/43</b> ya tarehe <b>20/09/2023 </b> kuhusu maombi ya mabadiliko ya jina la Shule ya Sekondari <b>Embri’s Boys </b> kuwa <b>Embris</b>\n\n`,
           `3.    Ninafurahi kukufahamisha kuwa maombi ya mabadiliko ya jina la shule yamekubaliwa. Hivyo, kuanzia tarehe ya barua hii, shule hii itatambulika kwa jina la <b>Embris Sekondari.</b>\n\n`,
           `4.    Unaagizwa kuzijulisha Mamlaka zote za kielimu juu ya mabadiliko ya jina la shule.\n\n\n`,
           `5.    Ninakutakia utekelezaji mwema.`,
@@ -495,10 +495,13 @@ module.exports = {
         break;
 
       case 13:
-        title = `Kuongeza dahalia`;
+        let total_student = 0
+        title = `KIBALI CHA KUTOA HUDUMA YA DAHALIA KATIKA ${name} KATIKA HALMASHAURI YA ${council}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
+          `2.    Napenda kukujulisha kuwa maombi yako ya <b>kibali cha kutoa huduma ya Dahalia</b> katika shule ya ${name}. yamekubaliwa.  Kibali kimetolewa tarehe ${approved_date}. kulaza wanafunzi ${total_student ?? 0}. tu ambao watagharamiwa na wazazi/walezi wa wanafunzi watakao lala ndani ya dahalia na kuratibiwa na Halmashauri husika.\n\n`,
+          `3.    Aidha, Serikali haitahusika na gharama za uendeshaji wa dahalia.\n\n\n`,
+          `4.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
 
