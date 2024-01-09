@@ -39,7 +39,7 @@ module.exports = {
             const { exp } = decode;
             const timestamp = Math.round(Date.now() / 1000, 0);
             if (exp - timestamp > 0) {
-              console.log('refresh Token')
+              console.log("refresh Token");
             }
             next();
           }
@@ -274,7 +274,10 @@ module.exports = {
     signatory,
     cheo,
     table,
-    registry_type
+    registry_type,
+    region,
+    district,
+    zone_name
   ) => {
     const options = {
       margin: 72,
@@ -309,6 +312,7 @@ module.exports = {
       }
     });
     generateFooter(res, doc, tracking_number, signatory, cheo);
+    generateCopies(doc, region, district, zone_name);
     doc.pipe(res);
     doc.end();
   },
@@ -317,6 +321,7 @@ module.exports = {
     application_category_id,
     registry_type,
     school_name,
+    old_school_name,
     school_type_id,
     school_type,
     approved_date,
@@ -324,19 +329,30 @@ module.exports = {
     registration_date,
     type = "", //manager or owner
     owner_name = "",
+    old_owner_name = "",
     manager_name = "",
+    old_manager_name = "",
     region = "",
     council = "",
     subcategory = "",
     stream = "",
     old_stream = "",
     language = "",
-    ward = ""
+    ward = "",
+    combinations = "",
+    number_of_students = 0,
+    gender_type = ""
   ) => {
     let bodyContent = null;
     const name = getSchoolType(school_type_id, school_type, school_name);
+    const old_name = getSchoolType(
+      school_type_id,
+      school_type,
+      old_school_name
+    );
     let title = ``;
     let school_type_only = getSchoolTypeOnly(school_type_id, school_type);
+    var type = school_type_id == 4 ? "Chuo" : "Shule";
 
     switch (application_category_id) {
       case 1:
@@ -420,11 +436,11 @@ module.exports = {
         break;
 
       case 6:
-        title = `KIBALI CHA KUBADILI USAJILI WA ${name} KUWA MCHANGANYIKO`;
+        title = `KIBALI CHA KUBADILI USAJILI WA ${name} KUWA ${gender_type}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Napenda kukujulisha kuwa Wizara imepokea barua yako yenye <b>Kumb Na. WIPAHS/KIB/EXT/GIRLS/2023/0049</b> ya tarehe <b>24/10/2023</b> ukiomba kubadili usajili wa ${name}, kuwa shule ya Sekondari Mchanganyiko ya WALI UL ASR Seminari.\n\n`,
-          `3.    Wizara imeridhia ombi lako. Pia kibali cha bweni kimetokea kulaza wanafunzi 500 Wavulana. Hivyo, kuanzi a tarehe ya barua hii shule itakuwa kutwa, bweni mchanganyiko.\n\n`,
+          `2.    Napenda kukujulisha kuwa Wizara imepokea barua yako yenye <b>Kumb Na. WIPAHS/KIB/EXT/GIRLS/2023/0049</b> ya tarehe <b>24/10/2023</b> ukiomba kubadili usajili wa ${name}, kuwa ${school_type_only} ${gender_type} ya ${school_name}.\n\n`,
+          `3.    Wizara imeridhia ombi lako. Pia kibali cha bweni kimetokea kulaza wanafunzi ${number_of_students} Wavulana. Hivyo, kuanzia tarehe ya barua hii shule itakuwa kutwa, bweni mchanganyiko.\n\n`,
           `4.    <b>Hivyo unatakiwa kuzifahamisha mamlaka nyingine za kielimu kuhusu mabadiliko haya.</b>\n\n`,
           `5.    Ninakutakia utekelezaji mwema.`,
         ];
@@ -434,8 +450,8 @@ module.exports = {
         title = `KIBALI CHA KUBADILISHA MMILIKI WA SHULE KATIKA ${name}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Wizara inapenda kukujulisha kuwa maombi yako ya kubadili mmiliki yamekubaliwa kuanzia tarehe ya barua hii shule itamilikiwa na 'The Registered Trustees of the Seventh Day Adventist Church of Tanzani' kutoka kwa SDA Church East Tanzania Field.\n\n`,
-          `3.    Shule itaendelea na namba ile ile ya zamani ya usajili EM. 13761. Aidha, unajulishwa kufuata cheti kipya cha usajili chenye jina la mmiliki mpya mwezi mmoja tangu barua hii ilipoandikwa.\n\n`,
+          `2.    Wizara inapenda kukujulisha kuwa maombi yako ya kubadili mmiliki yamekubaliwa kuanzia tarehe ya barua hii shule itamilikiwa na ${owner_name} kutoka kwa ${old_owner_name}.\n\n`,
+          `3.    Shule itaendelea na namba ile ile ya zamani ya usajili ${registration_number}. Aidha, unajulishwa kufuata cheti kipya cha usajili chenye jina la mmiliki mpya mwezi mmoja tangu barua hii ilipoandikwa.\n\n`,
           `4.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
@@ -444,50 +460,54 @@ module.exports = {
         title = `KIBALI CHA KUBADILI MENEJA WA ${name}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Wizara imepokea barua yako yenye/isiyo na kumbukumbu namba ya tarehe ………………………… ukiomba kibali cha kubadili Meneja wa shule ya Awali Pekee……...\n\n`,
-          `3.    Ninafurahi kukujulisha kuwa ombi lako limekubaliwa.  Kwa mamlaka niliyonayo na kwa Sheria ya Elimu, Sura 353 nafuta uthibitisho wa ndugu ……………. Aliyekuwa meneja wa shule ya Awali Pekee…………  Kuanzia tarehe ya barua hii …………………siyo meneja wa shule ya Awali Pekee …………….\n\n`,
+          `2.    Wizara imepokea barua yako yenye/isiyo na kumbukumbu namba ya tarehe ………………………… ukiomba kibali cha kubadili Meneja wa ${name}.\n\n`,
+          `3.    Ninafurahi kukujulisha kuwa ombi lako limekubaliwa.  Kwa mamlaka niliyonayo na kwa Sheria ya Elimu, Sura 353 nafuta uthibitisho wa ndugu ${old_manager_name}. Aliyekuwa meneja wa ${name}  Kuanzia tarehe ya barua hii …………………siyo meneja wa ${name}.\n\n`,
           `3.    Unatakiwa kuzitaarifu Mamlaka nyingine za kielimu juu ya mabadiliko yaliyofanyika.\n\n`,
           `5.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
 
       case 9:
-        title = `KIBALI CHA KUBADILI JINA LA SHULE YA ${name} KUWA SHULE YA SEKONDARI EMBRIS`;
+        title = `KIBALI CHA KUBADILI JINA LA ${old_name} KUWA ${name}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Wizara ya Elimu, Sayansi na Teknolojia imepokea barua yenye <b>Kumb. Na. HMW/SMJ/EL/EM/41/43</b> ya tarehe <b>20/09/2023 </b> kuhusu maombi ya mabadiliko ya jina la Shule ya Sekondari <b>Embri’s Boys </b> kuwa <b>Embris</b>\n\n`,
-          `3.    Ninafurahi kukufahamisha kuwa maombi ya mabadiliko ya jina la shule yamekubaliwa. Hivyo, kuanzia tarehe ya barua hii, shule hii itatambulika kwa jina la <b>Embris Sekondari.</b>\n\n`,
+          `2.    Wizara ya Elimu, Sayansi na Teknolojia imepokea barua yenye <b>Kumb. Na. HMW/SMJ/EL/EM/41/43</b> ya tarehe <b>20/09/2023 </b> kuhusu maombi ya mabadiliko ya jina la  <b>${old_name} </b> kuwa <b>${name}</b>\n\n`,
+          `3.    Ninafurahi kukufahamisha kuwa maombi ya mabadiliko ya jina la ${type} yamekubaliwa. Hivyo, kuanzia tarehe ya barua hii, shule hii itatambulika kwa jina la <b>Embris Sekondari.</b>\n\n`,
           `4.    Unaagizwa kuzijulisha Mamlaka zote za kielimu juu ya mabadiliko ya jina la shule.\n\n\n`,
           `5.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
 
       case 10:
-        title = `KIBALI CHA KUHAMISHA SHULE YA `;
+        title = `KIBALI CHA KUHAMISHA  ${name} `;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Wizara ya Elimu, Sayansi na Teknolojia imepokea barua ya maombi ya kibali cha kuhamisha shule ya………………….\n\n`,
+          `2.    Wizara ya Elimu, Sayansi na Teknolojia imepokea barua ya maombi ya kibali cha kuhamisha ${name}.\n\n`,
           `3.    Kamishna wa Elimu ameridhia  shule hiyo ihamie katika eneo jipya.  \n\n`,
-          `4.    Shule itahama na namba ya usajili ……. na itakuwa katika eneo ………… la Kiutawala.\n\n`,
+          `4.    Shule itahama na namba ya usajili ${registration_number} na itakuwa katika eneo ………… la Kiutawala.\n\n`,
           `5.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
 
       case 11:
-        title = ` KUFUTA USAJILI WA CHUO CHA UALIMU ..............`;
+        title = ` KUFUTA USAJILI WA ${name}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Rejea barua yenye Kumb. Na. CD.JA/287/361/131/35 ya tarehe 30/9/2021 iliyohusu kusudio la kufuta usajili wa chuo cha Ualimu ………………….\n\n`,
-          `3.    Kwa kuwa umewasilisha cheti halisi cha usajaili wa Chuo cha Ualimu…………….inaonesha umeridhia Chuo kufutwa. Kwa mamlaka niliyopewa na Sheria ya Elimu, Sura 353, ninafuta usajili CU…………., kuanzia tarehe ya barua hii Chuo hiki kinafutwa kutoka katika kanzi data ya Vyuo vya Ualimu vilivyopo nchini Tanzania Bara.\n\n`,
+          `2.    Rejea barua yenye Kumb. Na. CD.JA/287/361/131/35 ya tarehe 30/9/2021 iliyohusu kusudio la kufuta usajili wa ${name}.\n\n`,
+          `3.    Kwa kuwa umewasilisha cheti halisi cha usajaili wa ${name}.inaonesha umeridhia ${type} kufutwa. Kwa mamlaka niliyopewa na Sheria ya Elimu, Sura 353, ninafuta usajili ${registration_number}, kuanzia tarehe ya barua hii ${type} ${
+            school_type_id == 4 ? "hiki kinafutwa" : "hii inafutwa"
+          } kutoka katika kanzi data ya ${
+            school_type_id == 4 ? "Vyuo vya Ualimu vilivyopo" : "Shule zilizopo"
+          } nchini Tanzania Bara.\n\n`,
           `4.    Ninakutakia utekelezaji mwema`,
         ];
         break;
 
       case 12:
-        title = `KIBALI CHA KUONGEZA TAHASUSI ZA CBG NA HGK, KATIKA SHULE YA SEKONDARI  BWABUKI`;
+        title = `KIBALI CHA KUONGEZA TAHASUSI ZA ${combinations}, KATIKA ${name}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Nafurahi kukujulisha kuwa Wizara imekubali kutoa kibali cha kuanzisha tahasusi za <b>CBG NA HGK</b> mkondo mmoja <b>(01)</b> kwa kila tahasusi kwa Wasichana pekee. Kibali hiki kimetolewa tarehe <b>26/6/2023</b>\n\n`,
+          `2.    Nafurahi kukujulisha kuwa Wizara imekubali kutoa kibali cha kuanzisha tahasusi za <b>${combinations}</b> mkondo mmoja <b>(01)</b> kwa kila tahasusi kwa Wasichana pekee. Kibali hiki kimetolewa tarehe <b>${approved_date}</b>\n\n`,
           `3.    Hata hivyo, unatakiwa kuendelea kuboresha miundombinu ya shule pamoja na kununua samani na vitabu vya kutosha.\n\n`,
           `4.    Aidha, mfahamishe <b>Katibu Mtendaji Baraza la Mitihani Tanzania</b> ni lini shule itakuwa na <b>Wanafunzi watakaofanya Mtihani wa Taifa kidato cha sita kwa tahasusi husika</b>.\n\n\n`,
           `5.    Ninakutakia utekelezaji mwema.`,
@@ -495,11 +515,10 @@ module.exports = {
         break;
 
       case 13:
-        let total_student = 0
         title = `KIBALI CHA KUTOA HUDUMA YA DAHALIA KATIKA ${name} KATIKA HALMASHAURI YA ${council}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Napenda kukujulisha kuwa maombi yako ya <b>kibali cha kutoa huduma ya Dahalia</b> katika shule ya ${name}. yamekubaliwa.  Kibali kimetolewa tarehe ${approved_date}. kulaza wanafunzi ${total_student ?? 0}. tu ambao watagharamiwa na wazazi/walezi wa wanafunzi watakao lala ndani ya dahalia na kuratibiwa na Halmashauri husika.\n\n`,
+          `2.    Napenda kukujulisha kuwa maombi yako ya <b>kibali cha kutoa huduma ya Dahalia</b> katika ${name}. yamekubaliwa.  Kibali kimetolewa tarehe ${approved_date}. kulaza wanafunzi ${number_of_students}. tu ambao watagharamiwa na wazazi/walezi wa wanafunzi watakao lala ndani ya dahalia na kuratibiwa na Halmashauri husika.\n\n`,
           `3.    Aidha, Serikali haitahusika na gharama za uendeshaji wa dahalia.\n\n\n`,
           `4.    Ninakutakia utekelezaji mwema.`,
         ];
@@ -509,8 +528,8 @@ module.exports = {
         title = `KIBALI CHA KUTOA HUDUMA YA BWENI KWA ${name}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Napenda kukujulisha kuwa maombi yako ya kibali cha kutoa <b>huduma ya bweni</b> katika shule ya Sekondari <b>AHMES</b> yamekubaliwa. \n\n`,
-          `3.    Kibali kimetolewa tarehe ${approved_date} kulaza wanafunzi <b>288 Wasichana tu</b>. Unaagizwa kuimarisha hali ya usalama wa wanafunzi ndani na nje ya bweni. Kibali hiki kimetolewa kulaza wanafunzi wa <b>Sekondari tu.</b> \n\n`,
+          `2.    Napenda kukujulisha kuwa maombi yako ya kibali cha kutoa <b>huduma ya bweni</b> katika <b>${name}</b> yamekubaliwa. \n\n`,
+          `3.    Kibali kimetolewa tarehe ${approved_date} kulaza wanafunzi <b>${number_of_students} ${gender_type}</b>. Unaagizwa kuimarisha hali ya usalama wa wanafunzi ndani na nje ya bweni. Kibali hiki kimetolewa kulaza wanafunzi wa <b>${type} tu.</b> \n\n`,
           `4.    Aidha, <b>Wathibiti Ubora wa Shule</b> watafuatilia kuhusu uwekaji vifaa vya zimamoto, viashiria moshi, makabati pamoja na sehemu ya kuteketeza taka <b>(Incinerator)</b>. Pia watafuatilia idadi halisi ya wanafunzi wanaolala ndani ya mabweni ili kuepuka <b>msongamano</b> wa wanafunzi.\n\n`,
           `5.    Kibali hiki kimetolewa kwa mujibu wa <b>Sheria ya Elimu, Sura 353</b>. Kwa masharti kuwa utazingatia mwongozo wa Wizara wa kuanzisha na kusajili shule. \n\n\n`,
           `6.    Ninakutakia utekelezaji mwema.`,
@@ -787,6 +806,33 @@ const generateFooter = (res , doc, tracking_number, signatory, cheo) => {
     lineBreak: false,
   });
 }
+
+const generateCopies = (doc, region, district, zone_name) => {
+  doc.font("Helvetica-Bold").text(
+    `Nakala:
+
+            Mthibiti Mkuu Ubora wa Shule,
+            Kanda ya ${zone_name}
+            S.L.P. …………….,
+            ………………………
+
+            Afisa Elimu Mkoa,
+            Mkoa wa ${region},
+            S.L.P …………………,
+            ………………………
+
+            Afisa Elimu Sekondari
+            Halmashauri ya ${district}.,
+            S.L.P …………….,
+            ………………….
+
+            Mthibiti Mkuu Ubora wa Shule,
+            Halmashauri ya ${district},
+            S.L.P ……………,
+            ……………………
+            `
+  );
+};
 
 const addTable = (doc, table) => {
   const tableArray = {
