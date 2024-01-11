@@ -461,7 +461,7 @@ module.exports = {
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
           `2.    Wizara imepokea barua yako yenye/isiyo na kumbukumbu namba ya tarehe ………………………… ukiomba kibali cha kubadili Meneja wa ${name}.\n\n`,
-          `3.    Ninafurahi kukujulisha kuwa ombi lako limekubaliwa.  Kwa mamlaka niliyonayo na kwa Sheria ya Elimu, Sura 353 nafuta uthibitisho wa ndugu ${old_manager_name}. Aliyekuwa meneja wa ${name}  Kuanzia tarehe ya barua hii …………………siyo meneja wa ${name}.\n\n`,
+          `3.    Ninafurahi kukujulisha kuwa ombi lako limekubaliwa.  Kwa mamlaka niliyonayo na kwa Sheria ya Elimu, Sura 353 nafuta uthibitisho wa ndugu ${old_manager_name}. Aliyekuwa meneja wa ${name}  Kuanzia tarehe ya barua hii ${approved_date} siyo meneja wa ${name}.\n\n`,
           `3.    Unatakiwa kuzitaarifu Mamlaka nyingine za kielimu juu ya mabadiliko yaliyofanyika.\n\n`,
           `5.    Ninakutakia utekelezaji mwema.`,
         ];
@@ -472,7 +472,7 @@ module.exports = {
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
           `2.    Wizara ya Elimu, Sayansi na Teknolojia imepokea barua yenye <b>Kumb. Na. HMW/SMJ/EL/EM/41/43</b> ya tarehe <b>20/09/2023 </b> kuhusu maombi ya mabadiliko ya jina la  <b>${old_name} </b> kuwa <b>${name}</b>\n\n`,
-          `3.    Ninafurahi kukufahamisha kuwa maombi ya mabadiliko ya jina la ${type} yamekubaliwa. Hivyo, kuanzia tarehe ya barua hii, shule hii itatambulika kwa jina la <b>Embris Sekondari.</b>\n\n`,
+          `3.    Ninafurahi kukufahamisha kuwa maombi ya mabadiliko ya jina la ${type} yamekubaliwa. Hivyo, kuanzia tarehe ya barua hii, shule hii itatambulika kwa jina la <b>${name}</b>\n\n`,
           `4.    Unaagizwa kuzijulisha Mamlaka zote za kielimu juu ya mabadiliko ya jina la shule.\n\n\n`,
           `5.    Ninakutakia utekelezaji mwema.`,
         ];
@@ -493,7 +493,7 @@ module.exports = {
         title = ` KUFUTA USAJILI WA ${name}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Rejea barua yenye Kumb. Na. CD.JA/287/361/131/35 ya tarehe 30/9/2021 iliyohusu kusudio la kufuta usajili wa ${name}.\n\n`,
+          `2.    Rejea barua yenye Kumb. Na. ......... ya tarehe ........ iliyohusu kusudio la kufuta usajili wa ${name}.\n\n`,
           `3.    Kwa kuwa umewasilisha cheti halisi cha usajaili wa ${name}.inaonesha umeridhia ${type} kufutwa. Kwa mamlaka niliyopewa na Sheria ya Elimu, Sura 353, ninafuta usajili ${registration_number}, kuanzia tarehe ya barua hii ${type} ${
             school_type_id == 4 ? "hiki kinafutwa" : "hii inafutwa"
           } kutoka katika kanzi data ya ${
@@ -507,7 +507,7 @@ module.exports = {
         title = `KIBALI CHA KUONGEZA TAHASUSI ZA ${combinations}, KATIKA ${name}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Nafurahi kukujulisha kuwa Wizara imekubali kutoa kibali cha kuanzisha tahasusi za <b>${combinations}</b> mkondo mmoja <b>(01)</b> kwa kila tahasusi kwa Wasichana pekee. Kibali hiki kimetolewa tarehe <b>${approved_date}</b>\n\n`,
+          `2.    Nafurahi kukujulisha kuwa Wizara imekubali kutoa kibali cha kuanzisha tahasusi za <b>${combinations}</b> mkondo mmoja <b>(01)</b> kwa kila tahasusi kwa ${gender_type} pekee. Kibali hiki kimetolewa tarehe <b>${approved_date}</b>\n\n`,
           `3.    Hata hivyo, unatakiwa kuendelea kuboresha miundombinu ya shule pamoja na kununua samani na vitabu vya kutosha.\n\n`,
           `4.    Aidha, mfahamishe <b>Katibu Mtendaji Baraza la Mitihani Tanzania</b> ni lini shule itakuwa na <b>Wanafunzi watakaofanya Mtihani wa Taifa kidato cha sita kwa tahasusi husika</b>.\n\n\n`,
           `5.    Ninakutakia utekelezaji mwema.`,
@@ -546,7 +546,7 @@ const usajiliSerikali = (name, school_name, school_type, region, council) => {
   return [
     `    Tafadhali rejea somo la barua hii.\n\n\n`,
     `2.  Napenda kukujulisha kuwa Wizara imekubali maombi ya Halmashauri ya Wilaya ya <b>${council}</b> ya kusajili <b>${name}</b> itakayomilikiwa na wananchi wa Halmashauri ya Wilaya ya ${council}. kwa kushirikiana na Mkoa wa ${region}\n\n`,
-    `3.  Mkoa unaruhusiwa kuchagua wanafunzi wa Kidato cha Kwanza kwa mwaka 2023.  Shule itakuwa ya kutwa, mchanganyiko na yenye mkondo mmoja (01). Shule hii imesajiliwa rasmi tarehe 17/02/2023 na kupewa namba ya usajili kama ifuatavyo:\n\n\n`,
+    `3.  Mkoa unaruhusiwa kuchagua wanafunzi wa Kidato cha Kwanza kwa mwaka 2023.  Shule itakuwa ya kutwa, mchanganyiko na yenye mkondo mmoja (01). Shule hii imesajiliwa rasmi tarehe ${approved_date} na kupewa namba ya usajili kama ifuatavyo:\n\n\n`,
     `<table/>`,
     `4.  Wizara inaiagiza Halmashauri ya Wilaya ya <b>${council}</b> kuendelea kukamilisha ujenzi wa miundombinu yote. Endapo miundombinu haitakamilika, Halmashauri haitaruhusiwa kuandikisha Wanafunzi wa kidato cha kwanza Januari 2024.\n\n`,
     `5.  Mkuu wa Shule atapaswa kuifahamisha Wizara sanduku la barua la shule pindi litakapofunguliwa ili kurahisisha mawasiliano. Aidha, mfahamishe Katibu Mtendaji wa Baraza la Mitihani ni lini shule itakuwa na Wanafunzi watakaofanya Mtihani wa Taifa.\n\n\n`,
