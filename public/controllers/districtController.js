@@ -1,14 +1,13 @@
 require("dotenv").config();
 const express = require("express");
-const request = require("request");
 const districtController = express.Router();
-var session = require("express-session");
-var path = require("path");
+
 const { sendRequest, isAuthenticated, can } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var lgaListAPI = API_BASE_URL + "allDistricts";
 var lgaAPI = API_BASE_URL + "lookup-districts";
 var VutaWilayaListAPI = API_BASE_URL + "usajiliWilaya";
+var updateWilayaAPI = API_BASE_URL + "update-district";
 
 districtController.get(
   "/HalmashauriList",
@@ -69,6 +68,22 @@ districtController.post(
       res.send({
         statusCode: jsonData.statusCode,
         message: jsonData.message,
+      });
+    });
+  }
+);
+districtController.post(
+  "/UpdateDistrict/:id",
+  isAuthenticated,
+  can("update-districts"),
+  function (req, res) {
+    const { id }= req.params;
+    sendRequest(req, res, updateWilayaAPI+`/${id}`, "PUT", req.body, (jsonData) => {
+      const {success , message , statusCode} = jsonData
+      res.send({
+        success,
+        message,
+        statusCode
       });
     });
   }

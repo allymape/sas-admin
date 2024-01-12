@@ -16,7 +16,7 @@ baruaController.get("/barua/:tracking_number",
          type : type
     }
     sendRequest(req , res , baruaDetailsAPI +"/"+ tracking_number , 'POST' , formData , (jsonData) => {
-      const {statusCode , data } = jsonData;
+      const { statusCode, data, sqa_zone_region } = jsonData;
       console.log(statusCode)
       if(statusCode == 300){
         const {
@@ -53,7 +53,11 @@ baruaController.get("/barua/:tracking_number",
           ward,
           signatory, 
           base64signature , 
-          cheo
+          cheo,
+          zone_box,
+          region_box,
+          district_box,
+          district_sqa_box
         } = data;
         decodeSignature(base64signature, tracking_number);
         const reference = `${file_number}/${school_folio}/${folio}`;
@@ -121,7 +125,12 @@ baruaController.get("/barua/:tracking_number",
           registry_type,
           region,
           district,
-          zone_name
+          zone_name,
+          zone_box,
+          region_box,
+          sqa_zone_region,
+          district_box,
+          district_sqa_box
         );
       }else{
         // res.status(404).send();

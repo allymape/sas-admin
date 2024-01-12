@@ -74,6 +74,8 @@ regionController.post("/MkoaKanda", isAuthenticated, can('update-regions'), func
                     ip_address: req.session.ip_address,
                     kanda: req.body.kanda,
                     regionId: req.body.regionId,
+                    box : req.body.box,
+                    has_sqa_zone : req.body.has_sqa_zone
                   };
     sendRequest(req, res, mkoaKandaAPI, "POST", formData , (jsonData) => {
           res.send({

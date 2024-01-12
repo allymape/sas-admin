@@ -46,7 +46,9 @@
                         <th width="5%">Na.</th>
                         <th >Jina la Mkoa</th>
                         <th >Kodi ya Mkoa</th>
+                        <th >Anuani Mkoa</th>
                         <th >Kanda</th>
+                        <th >Ofisi ya Kanda</th>
                         <th >Imeingizwa</th>
                         <th >Imesasishwa</th>
                         <th class=" text-center" width="5%">Action</th>
@@ -108,16 +110,24 @@
             <form>
                 <div class="modal-body">
                 <input type="hidden" id="regionId" name="regionId"/>
-                <div id="rank_level">
+                <div class="mb-3">
                     <label for="status-field" class="form-label">Chagua Kanda/Zoni</label>
-                    <select class="form-control" data-trigger name="zones-field" id="zones-field">
+                    <select class="form-control" data-trigger name="zone-field" id="zone-field">
                         <option value=""> Chagua </option>
                         <% for(var i = 0; i < zones.length; i++){ %>
                             <option value="<%= zones[i].id %>"><%= zones[i].zone_name %></option>
                         <% } %>
                     </select>
                 </div>
-
+                <div class="mb-3">
+                <label for="box-field" class="form-label">Anuani ya Mkoa (S.L.P)</label>
+                    <input type="number" class="form-control" placeholder="Anuani ya Mkoa" data-trigger name="box-field" id="box-field">
+                </div>
+                <div>
+                    <label for="sqa-zone-field">
+                    <input type="checkbox" name="sqa_zone" id="sqa-zone-field"> Kuna Ofisi ya Kanda?
+                    </label>
+                </div>
                 </div>
                 <div class="modal-footer">
                     <div class="hstack gap-2 justify-content-end">

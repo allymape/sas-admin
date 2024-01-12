@@ -52,9 +52,11 @@
                         <th class="" >Jina la Halmashauri</th>
                         <th >Kodi ya Halmashauri</th>
                         <th >Mkoa</th>
+                        <th >Anuani Mkurugenzi</th>
+                        <th >Anuani W1</th>
                         <th >Imeingizwa</th>
                         <th >Imesasishwa</th>
-                        <!-- <th class="sort" data-sort="action">Action</th> -->
+                        <th class="sort" data-sort="action">Action</th>
                     </tr>
                 </thead>
                 <tbody class="list form-check-all">
@@ -72,6 +74,42 @@
         <%- include('paginations/ajax_pagination.ejs')%>
     </div>
 </div><!-- end card -->
+
+ <div class="modal fade" id="showEditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header bg-light p-3">
+                                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+                                </div>
+                                <form>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <input type="hidden" id="id-field" class="form-control" />
+                                            <label  class="form-label">Wilaya</label>
+                                            <input type="text"  class="form-control" id="name-field" readonly />
+                                        </div>
+                                        <div class="mb-3">
+                                            <input type="hidden" id="id-field" class="form-control" />
+                                            <label for="lga-box-field" class="form-label">Anuani Mkurugenzi Wilaya (S.L.P)</label>
+                                            <input type="number" id="lga-box-field" class="form-control" placeholder="Anuani Mkurugenzi" required />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="sqa-box-field" class="form-label">Anuani Uthibiti Ubora Wilaya  (S.L.P)</label>
+                                            <input type="number" id="sqa-box-field" class="form-control" placeholder="Anuani Uthibiti Ubora Wilaya" required />
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <div class="hstack gap-2 justify-content-end">
+                                            <button type="button" class="btn btn-light" onclick="funga()" data-bs-dismiss="modal">Close</button>
+                                            <!-- <button type="button" class="btn btn-success" onclick="saveKanda()" id="add-btn">Sajili</button> -->
+                                            <button type="button" class="btn btn-success" onclick="updateLga(event)" id="edit-btn">Update</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
 <%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
 <script type="text/javascript" src="design/layouts/scripts/halmashauri_scripts.js"></script>
 </body>

@@ -85,7 +85,7 @@ module.exports = {
   },
   sendRequest: (req, res, url, method, formData, callback) => {
     if (
-      typeof req.session.userName !== "undefined" ||
+      typeof req.session.userName !== "fined" ||
       req.session.userName === true
     ) {
       request(
@@ -277,7 +277,12 @@ module.exports = {
     registry_type,
     region,
     district,
-    zone_name
+    zone_name,
+    zone_box,
+    region_box,
+    sqa_zone_region,
+    district_box,
+    district_sqa_box
   ) => {
     const options = {
       margin: 72,
@@ -312,7 +317,17 @@ module.exports = {
       }
     });
     generateFooter(res, doc, tracking_number, signatory, cheo);
-    generateCopies(doc, region, district, zone_name);
+    generateCopies(
+      doc,
+      region,
+      district,
+      zone_name,
+      zone_box,
+      region_box,
+      sqa_zone_region,
+      district_box,
+      district_sqa_box
+    );
     doc.pipe(res);
     doc.end();
   },
@@ -603,41 +618,53 @@ const formatText = (
   font_family = "Helvetica",
   uppercase = true,
   lineGap = 4,
-  continued = true
+  continued = true,
+  is_bold = false
 ) => {
   //  if <b> tag present render with bold font
   if (containsBoldTag(text)) {
-    const $ = cheerio.load(`<body> ${text} </body>`);
+    var $ = cheerio.load(`<body> ${text} </body>`);
     $("body")
       .contents()
       .each((index, element) => {
-        if (element.nodeType === 1) {
           doc
-            .font("Helvetica-Bold")
+            .font(element.nodeType === 1 ? "Helvetica-Bold" : "Helvetica")
             .fillColor("black")
-            .text($(element).text() , {
-              lineGap: 4,
-              continued: true,
-              align: 'justify'
+            .text($(element).text(), {
+              lineGap: lineGap,
+              continued: continued,
+              align: align,
             });
-        } else {
-          doc
-            .fillColor("black")
-            .font("Helvetica")
-            .text($(element).text() , {
-              lineGap: 4,
-              continued: true,
-              align: "justify",
-            });
-        }
+        
       });
-  } else {
-    // If no tag render normal text
-    doc
-      .fillColor("black")
-      .font("Helvetica")
-      .text(text, { lineGap: 4, continued: true, align: "justify" });
-  }
+    }else if(containUnderlineTag(text)) {
+      var $ = cheerio.load(`<body> ${text} </body>`);
+    $("body")
+      .contents()
+      .each((index , element) => {
+          const myText = $(element).text();
+          console.log(is_bold ? font_family : `${font_family}-Bold`);
+             doc
+               .font(
+                 is_bold && element.nodeType === 1
+                   ? `${font_family}-Bold`
+                   : font_family
+               )
+               .text(myText, {
+                 lineGap: lineGap,
+                 indent: element.nodeType === 1 ? 33 : 0,
+                 underline: element.nodeType === 1,
+                 //  continued: continued,
+                 align: align,
+               });
+      });
+    } else {
+      // If no tag render normal text
+      doc
+        .fillColor("black")
+        .font("Helvetica")
+        .text(text, { align: align });
+    }
 }
 
 // Letter Head
@@ -731,7 +758,7 @@ const generateTitle = (doc, title) => {
 // Body
 const generateBody = (doc, bodyContent) => {
   
-  formatText(bodyContent, doc)
+  formatText(bodyContent, doc);
 }
 
 // 
@@ -807,31 +834,68 @@ const generateFooter = (res , doc, tracking_number, signatory, cheo) => {
   });
 }
 
-const generateCopies = (doc, region, district, zone_name) => {
-  doc.font("Helvetica-Bold").text(
-    `Nakala:
+const generateCopies = (
+  doc,
+  region,
+  district,
+  zone_name,
+  zone_box,
+  region_box,
+  sqa_zone_region,
+  district_box,
+  district_sqa_box
+) => {
+  const has_copies = zone_box || region_box || district_box || district_sqa_box;
+  const $copies = has_copies
+    ? `Nakala:
+  
+          ${
+            zone_box
+              ? `Mthibiti Mkuu Ubora wa Shule,
+          Kanda ya ${zone_name ? zone_box + "," : "<Insert Zone Name>"}
+          S.L.P. ${zone_box ? zone_box : "<Insert Zone Address>"}, ${
+                  sqa_zone_region
+                    ? "<u>" + sqa_zone_region + ".</u>"
+                    : "<Insert Region>"
+                }`
+              : ``
+          }
+        ${
+          region_box
+            ? `  Afisa Elimu Mkoa,
+          Mkoa wa ${region ? region : "<Insert Region>"},
+          S.L.P ${region_box ? region_box : "<Insert Region Address"}, ${
+                region ? "<u>" + region + ".</u>" : "<Insert Region>"
+              }`
+            : ``
+        }
+          ${
+            district_box
+              ? `Afisa Elimu Sekondari
+          Halmashauri ya ${district ? district : "<Insert District>"},
+          S.L.P ${district_box ? district_box : "<Insert District Address>"}, ${
+                  region ? "<u>" + region + ".</u>" : "<Insert Region>"
+                }`
+              : ``
+          }
+          ${
+            district_sqa_box
+              ? `Mthibiti Mkuu Ubora wa Shule,
+          Halmashauri ya ${district ? district : "<Insert District>"},
+          S.L.P ${
+            district_sqa_box
+              ? district_sqa_box
+              : "<Insert District SQA Address>"
+          }, ${region ? "<u>" + region + ".</u>" : "<Insert Region>"}`
+              : ``
+          }
+          `
+    : ``; //end has copies;
 
-            Mthibiti Mkuu Ubora wa Shule,
-            Kanda ya ${zone_name}
-            S.L.P. …………….,
-            ………………………
-
-            Afisa Elimu Mkoa,
-            Mkoa wa ${region},
-            S.L.P …………………,
-            ………………………
-
-            Afisa Elimu Sekondari
-            Halmashauri ya ${district}.,
-            S.L.P …………….,
-            ………………….
-
-            Mthibiti Mkuu Ubora wa Shule,
-            Halmashauri ya ${district},
-            S.L.P ……………,
-            ……………………
-            `
-  );
+  // console.log($copies)
+  has_copies
+    ? formatText($copies, doc, "left", "Helvetica", true, 0, false, true)
+    : ``;
 };
 
 const addTable = (doc, table) => {

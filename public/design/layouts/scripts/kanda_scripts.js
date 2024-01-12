@@ -5,6 +5,7 @@ $("#create-btn").on('click' , function(){
 function updateKanda() {
   var zoneid = document.getElementById("id1-field").value;
   var zonecode = document.getElementById("code1-field").value;
+  var box = document.getElementById("box1-field").value;
   var zonename = document.getElementById("customername1-field").value;
   var status = document.getElementById("status-field");
   if (zonecode.length <= 0) {
@@ -24,6 +25,7 @@ function updateKanda() {
     } , JSON.stringify({
         zonecode: zonecode,
         zonename: zonename,
+        box : box,
         statusid: status.checked ? 1 : 0
       }));
   }
@@ -72,17 +74,23 @@ function listZones() {
               id: {
                 hidden: true,
               },
+              address: {
+                hidden: true,
+              },
               status_id: {
                 hidden: true,
               },
               zone_name: {},
               zone_code: {},
+              box: {},
               status: {},
             };
          response.data = response.data.map((item) => ({
                 id : item.id,
                 zone_name: item.zone_name,
                 zone_code : item.zone_code,
+                box : item.box ? `S.L.P ${item.box}` : ``,
+                address : item.box,
                 status : item.status_id ? `<span class="badge bg-success">active</span>` : `<span class="badge bg-danger">In Active</span>`,
                 status_id : item.status_id,
          }));
@@ -112,11 +120,12 @@ window.onload = listZones;
 function badiliKanda(e) {
   var nameId = e.getAttribute("data-id");
   var name = e.getAttribute("data-zone_name");
-  var code = e.getAttribute("data-zone_code");
+  var box = e.getAttribute("data-address");
   var status = e.getAttribute("data-status_id");
-  document.getElementById("code1-field").value = code;
+  // document.getElementById("code1-field").value = code;
   document.getElementById("id1-field").value = nameId;
   document.getElementById("customername1-field").value = name;
+  document.getElementById("box1-field").value = box;
   document.getElementById("status-field").checked = status == 1 ? true : false;
    modal('showEditModal' , true)
 }
