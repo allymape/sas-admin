@@ -1,0 +1,118 @@
+$("#application-category").on("change", function () {
+//   modal("showModal-create", true);
+    $(this).closest('form').submit()
+});
+
+
+function listWorkflow() {
+  ajaxRequest("/All-workflows" , 'GET' , (response) => {
+       if(response.statusCode == 300){
+            const fields = {
+              id: {
+                hidden: true,
+              },
+              application_category_id: {
+                hidden: true,
+              },
+              app_name: {},
+              workflow: {},
+              order: {},
+            };
+         response.data = response.data.map((item) => ({
+           id : item.id,
+           application_category_id : item.application_category_id,
+           app_name: item.app_name,
+           workflow: `<div>
+                          <span class="mdi mdi-account-arrow-right"></span> 
+                           <span class="ml-2 mr-2"> ${item.start_from} </span>
+                           &nbsp;
+                           <span class="bx bx-right-arrow-alt"></span>&nbsp;
+                          <span class="mdi mdi-account-arrow-right"></span> 
+                           <span class="ml-2 mr-2"> ${item.end_to} </span>
+                      </div>`,
+           order: item._order,
+         }));
+            dataTable(
+              "Workflow",
+              "workflowTable",
+              fields,
+              response,
+              {
+                editBtn: {
+                  show: true,
+                  callback:
+                    "window.location.href='/Workflow/'+$(this).data('id')+'?application_category_id='+$(this).data('application_category_id'); return false;",
+                },
+              },
+              true,
+              "Idadi ya mipangilio ya utendaji kazi iliyosajiliwa"
+            );
+       }
+  });
+}
+window.onload = listWorkflow;
+
+function formatWorkflow(workflow){
+     if(workflow.includes(',')){
+      var modifiedFlow = '';
+      const flow = workflow.split(",")
+      flow.forEach((item , index) => {
+         if(index + 1 == flow.length){
+          modifiedFlow += `<span class="mdi mdi-account"></span><span class="ml-2 mr-2">${item}</span>`;
+         }else{
+          modifiedFlow += `<span class="mdi mdi-account-arrow-right"></span> 
+                           <span class="ml-2 mr-2"> ${item} </span>
+                           &nbsp;<span class="bx bx-right-arrow-alt"></span>&nbsp;`;
+         }
+        
+      });
+       return `<div class="d-flex">${modifiedFlow}</div>`;
+     }
+     return workflow;
+}
+
+function badiliAlgorith(e) {
+  var id = e.getAttribute("data-id");
+  var last_number = e.getAttribute("data-last_number");
+
+  document.getElementById("id-field").value = id;
+  document.getElementById("lastnumber-field").value = last_number;
+   modal('showEditModal' , true)
+}
+
+// function futaAlgorthim(e) {
+//   var zoneid = e.getAttribute("data-id");
+//   var statusid = e.getAttribute('data-status_id');
+//      if(statusid == 1){
+//          confirmAction(
+//            () => {
+//              ajaxRequest(
+//                `/FutaAlgorithm/${zoneid}`,
+//                "POST",
+//                (response) => {
+//                  const statusCode = response.statusCode;
+//                  alertMessage(
+//                    statusCode == 300 ? "Umefanikiwa" : "Haujafanikiwa",
+//                    response.message,
+//                    statusCode == 300 ? "success" : "error",
+//                    () => {
+//                      if (statusCode == 300) {
+//                        listWorkflow();
+//                      }
+//                    }
+//                  );
+//                },
+//                {}
+//              );
+//            },
+//            "Ndio",
+//            "warning",
+//            "Je, Unataka kweli kufuta algorithm hii?",
+//            "Una uhakika?"
+//          );
+//      }else{
+//         alertMessage('Haiwezekani' , 'Hauwezi kufuta Kanda hii, ilishafutwa tayari.' , 'error')
+//      }
+// }
+
+

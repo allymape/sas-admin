@@ -871,7 +871,7 @@ const generateCopies = (
         }
           ${
             district_box
-              ? `Afisa Elimu Sekondari
+            ? `Afisa Elimu Sekondari
           Halmashauri ya ${district ? district : "<Insert District>"},
           S.L.P ${district_box ? district_box : "<Insert District Address>"}, ${
                   region ? "<u>" + region + ".</u>" : "<Insert Region>"
