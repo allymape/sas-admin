@@ -36,8 +36,11 @@ function getWorkflow(req, res , eWorkflow = null){
 workflowController.get("/All-workflows",  isAuthenticated, can('view-workflow'),function (req, res) {
   var per_page = Number(req.query.per_page || 10);
   var page = Number(req.query.page || 1);
+  var application_category_id = req.query.application_category_id;
+
     var formData = {
          is_paginated: req.query.is_paginated,
+         application_category_id
     };
     
     sendRequest(req, res, allWorkflowAPI+ "?page=" + page + "&per_page=" + per_page, "GET", formData, (jsonData) => {
@@ -125,15 +128,53 @@ workflowController.get("/workflow/:id",  isAuthenticated, can('update-workflow')
 
 // Update workflow
 workflowController.post("/Badiliworkflow/:id",  isAuthenticated, can('update-workflow'), function (req, res) {
-  var id = Number(req.params.id);
-  sendRequest(req, res, updateWorkflowAPI + "/" + id, "PUT", req.body , (jsonData) => {
-        var statusCode = jsonData.statusCode;
-        var message = jsonData.message;
-        res.send({
-              statusCode : statusCode,
-              message : message
-        });
-  });
+  const id = Number(req.params.id);
+   const { from, to, order } = req.body;
+   if (Number(from) !== Number(to)) {
+    sendRequest(req, res, updateWorkflowAPI + "/" + id, "PUT", req.body , (jsonData) => {
+       const { message, success } = jsonData;
+       if (success) {
+         req.flash("successMessage", message);
+       } else {
+         req.flash("to", to);
+         req.flash("from", from);
+         req.flash("order", order);
+         req.flash("errorMessage", message);
+       }
+       res.redirect(
+         url.format({
+           pathname: "/Workflow/"+id,
+           query: {
+             application_category_id: req.body.application_category_id,
+           },
+         })
+       );
+     });
+   } else {
+     req.flash(
+       "errorMessage",
+       "Tafadhali sehemu ya kutoka na kwenda hazipaswi kufanana."
+     );
+     req.flash("to", to);
+     req.flash("from", from);
+     req.flash("order", order);
+     res.redirect(
+       url.format({
+         pathname: "/Workflow/"+id,
+         query: {
+           application_category_id: req.body.application_category_id,
+         },
+       })
+     );
+   }
+  // sendRequest(req, res, updateWorkflowAPI + "/" + id, "PUT", req.body , (jsonData) => {
+  //       var statusCode = jsonData.statusCode;
+  //       var message = jsonData.message;
+  //       res.send({
+  //             statusCode : statusCode,
+  //             message : message
+  //       });
+  // });
 });
 
 // Delete workflow

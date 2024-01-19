@@ -18,7 +18,7 @@
             <div class="col-sm-auto">
                 <form action="<%= eWorkflow ? `/Workflow/${eWorkflow.id}` : 'Workflow'%>" method="get">
                     <select name="application_category_id" class="form-control" id="application-category">
-                            <option value="">Chagua Aina ya Ombi</option>
+                            <option value=""> -- Chagua Aina ya Ombi --</option>
                             <% categories.forEach(item => { %>
                                 <option value="<%= item.id %>" <%= req.query.application_category_id == item.id ? 'selected' : ''%> > <%= item.name %></option>
                             <% }); %>
@@ -36,7 +36,7 @@
         </div>
 
          <% if(req.query.application_category_id){ %>
-            <form action="Tengenezaworkflow" method="post">
+            <form action="<%= eWorkflow ? `/Badiliworkflow/${eWorkflow.id}` : 'Tengenezaworkflow' %>" method="post">
             <div class="row g-4 mb-3">
             <div class="col-md-3">
                 <div class="form-group">
@@ -61,7 +61,14 @@
             </div>
             <div class="col-md-2">
                 <div class="form-group">
-                  <input type="number" min="0" value="<%= eWorkflow ? eWorkflow._order : order %>" required name="order" class="form-control" placeholder="Ingiza Order 0,1 ...">
+                  <!-- <input type="number" min="0" value="<%= eWorkflow ? eWorkflow._order : order %>" required name="order" class="form-control" placeholder="Ingiza Order 0,1 ..."> -->
+                  <select name="order" id="order" class="form-control">
+                    <% [0,1,2,3,4,5,6].forEach( _order => { %>
+                      <option value="<%= _order %>" <%= order == _order || (eWorkflow && eWorkflow._order == _order) ? 'selected' : ''%> >
+                        <%= _order %>
+                      </option>
+                    <% }) %>
+                  </select>
                 </div>
             </div>
             <div class="col-md-2">
