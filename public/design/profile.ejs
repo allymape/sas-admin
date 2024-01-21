@@ -272,29 +272,36 @@
                                                 </div>
                                                 <!--end row-->
                                             </form>
-                                            <!-- <div class="mt-4 mb-3 border-bottom pb-2">
+                                            <div class="mt-4 mb-3 border-bottom pb-2">
                                                 <div class="float-end">
-                                                    <a href="javascript:void(0);" class="link-primary">All Logout</a>
+                                                    <a href="javascript:void(0);" class="link-primary">IP</a>
                                                 </div>
-                                                <h5 class="card-title">Login History</h5>
+                                                <h5 class="card-title">Last 10 Login History</h5>
                                             </div>
+                                            <% activities.forEach(item => { %>
                                             <div class="d-flex align-items-center mb-3">
                                                 <div class="flex-shrink-0 avatar-sm">
                                                     <div
                                                         class="avatar-title bg-light text-primary rounded-3 fs-18 shadow">
-                                                        <i class="ri-smartphone-line"></i>
+                                                        <i class="ri-<%= item.device == 'Phone' ? 'smartphone' : 'computer'%>-line"></i>
                                                     </div>
                                                 </div>
                                                 <div class="flex-grow-1 ms-3">
-                                                    <h6>iPhone 12 Pro</h6>
-                                                    <p class="text-muted mb-0">Los Angeles, United States - March 16 at
-                                                        2:47PM</p>
+                                                    <h6><%= item.device %> </h6>
+                                                    <p class="text-muted mb-0"><%= item.browser %>
+                                                   - <%= dateFormat(item.created_at , 'dddd MMM DD, YYYY') %>
+                                                   at <%= dateFormat(item.created_at , 'HH:mm:ss') %>
+                                                 </p>
                                                 </div>
                                                 <div>
-                                                    <a href="javascript:void(0);">Logout</a>
+                                                    <span class="badge badge-label bg-primary">
+                                                        <i class="mdi mdi-circle-medium"></i>
+                                                        <%= item.ip %>
+                                                    </span>
                                                 </div>
                                             </div>
-                                            <div class="d-flex align-items-center mb-3">
+                                            <% }) %>
+                                            <!-- <div class="d-flex align-items-center mb-3">
                                                 <div class="flex-shrink-0 avatar-sm">
                                                     <div
                                                         class="avatar-title bg-light text-primary rounded-3 fs-18 shadow">

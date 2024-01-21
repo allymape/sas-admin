@@ -4,6 +4,9 @@ const request = require("request");
 const userController = express.Router();
 const requestIp = require("request-ip");
 var path = require("path");
+const device = require('express-device');
+userController.use(device.capture());
+
 const {
   sendRequest,
   isAuthenticated,
@@ -31,16 +34,30 @@ userController.get("/", redirectIfAuthenticated, (req, res) => {
 // User Profile
 userController.get("/Profile", isAuthenticated , can('view-profile') , (req, res) => {
     sendRequest(req , res , myProfileAPI , "POST" , {} , (jsonData) => {
-      const {user} = jsonData;
+      const { user, activities } = jsonData;
       res.render(path.join(__dirname + "/../design/profile"), {
         req: req,
         user : user,
+        activities : activities,
         message: "",
       });
     })
 });
 
+
 userController.post("/auth", function (req, res) {
+  const {username , password} = req.body;
+  const clientIp = requestIp.getClientIp(req);
+  const browser = req.headers['user-agent'];
+  const device = req.device.type;
+  const body = {
+    username,
+    password,
+    clientIp,
+    browser,
+    device
+  }
+
   request(
     {
       url: loginAPI,
@@ -48,7 +65,7 @@ userController.post("/auth", function (req, res) {
       headers: {
         "Content-Type": "application/json",
       },
-      json: req.body,
+      json: body,
     },
     (err, response, body) => {
       console.log(loginAPI);
