@@ -213,23 +213,24 @@
                     <div class="dropdown-menu dropdown-menu-end">
                         <!-- item-->
                         <h6 class="dropdown-header"><%=jukumu%></h6>
-                        <a class="dropdown-item" href="#"><i
-                                class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span
-                                class="align-middle" data-key="t-logout" onclick="logoutFx()">Ondoka</span></a>
-                                <a class="dropdown-item" href="#"><i
+                        <a class="dropdown-item" href="/Profile"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> 
+                            <span class="align-middle">My Profile</span>
+                        </a>
+                        <!-- <a class="dropdown-item" href="#"><i
                                     class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span
-                                    class="align-middle" data-key="t-logout" data-id="<%= req.session.userID %>" onclick="changePassFx(this); return false;">Badili Nywira</span></a>
-                        <a class="dropdown-item" href="#"><i
+                                    class="align-middle" data-key="t-logout" data-id="<%= req.session.userID %>" onclick="changePassFx(this); return false;">Badili Nywira</span>
+                                </a> -->
+                        <!-- <a class="dropdown-item" href="#"><i
                             class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span
                             class="align-middle">Wezesha 2FA
                             <div class="form-check form-switch form-switch-right form-switch-md">
                                 <label for="controls-slide" class="form-label text-muted"></label>
                                 <input class="form-check-input code-switcher" type="checkbox" onclick="validate2FA()" id="controls-slide">
-                            
-                                
                             </div>
-                        </span></a>
-
+                        </span></a> -->
+                        <a class="dropdown-item" href="#"><i
+                                class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span
+                                class="align-middle" data-key="t-logout" onclick="logoutFx()">Ondoka</span></a>
                         <script>
                             function logoutFx(){
                                 $.ajax({

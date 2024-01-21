@@ -217,333 +217,333 @@ var changepassAPI = BASEURL + "changepass";
 
 
 
-app.get("/PasswordReset", function (req, res) {
-  res.render(path.join(__dirname + "/public/design/password_reset"));
-});
+// app.get("/PasswordReset", function (req, res) {
+//   res.render(path.join(__dirname + "/public/design/password_reset"));
+// });
 
-app.post("/WekaNywira", function (req, res) {
-  var email = req.body.email;
-  request(
-    {
-      url: passResAPI,
-      method: "POST",
-      json: {
-        browser_used: req.session.browser_used,
-        ip_address: req.session.ip_address,
-        email: email,
-      },
-    },
-    function (error, response, body) {
-      if (error) {
-        console.error(
-          new Date() +
-            ": " +
-            email +
-            " with IP: " +
-            requestIp.getClientIp(req) +
-            ": fail to reset password " +
-            error
-        );
-        res.send("failed");
-      }
-      if (body !== undefined) {
-        // console.log(body)
-        var message = body.message;
-        var statusCode = body.statusCode;
-        if (statusCode == 302) {
-          res.render(path.join(__dirname + "/public/design/login"), {
-            req: req,
-            message: message,
-          });
-        } else if (statusCode == 300) {
-          // console.log("2FA: " + req.session.twofa);
-          console.info(
-            new Date() +
-              ": " +
-              email +
-              " with IP: " +
-              requestIp.getClientIp(req) +
-              ": reset password successful"
-          );
+// app.post("/WekaNywira", function (req, res) {
+//   var email = req.body.email;
+//   request(
+//     {
+//       url: passResAPI,
+//       method: "POST",
+//       json: {
+//         browser_used: req.session.browser_used,
+//         ip_address: req.session.ip_address,
+//         email: email,
+//       },
+//     },
+//     function (error, response, body) {
+//       if (error) {
+//         console.error(
+//           new Date() +
+//             ": " +
+//             email +
+//             " with IP: " +
+//             requestIp.getClientIp(req) +
+//             ": fail to reset password " +
+//             error
+//         );
+//         res.send("failed");
+//       }
+//       if (body !== undefined) {
+//         // console.log(body)
+//         var message = body.message;
+//         var statusCode = body.statusCode;
+//         if (statusCode == 302) {
+//           res.render(path.join(__dirname + "/public/design/login"), {
+//             req: req,
+//             message: message,
+//           });
+//         } else if (statusCode == 300) {
+//           // console.log("2FA: " + req.session.twofa);
+//           console.info(
+//             new Date() +
+//               ": " +
+//               email +
+//               " with IP: " +
+//               requestIp.getClientIp(req) +
+//               ": reset password successful"
+//           );
 
-          res.render(path.join(__dirname + "/public/design/badili_nywira"), {
-            req: req,
-            email: email,
-          });
-        }
-        else {
-          res.redirect("/");
-        }
-      }
-    }
-  );
-});
+//           res.render(path.join(__dirname + "/public/design/badili_nywira"), {
+//             req: req,
+//             email: email,
+//           });
+//         }
+//         else {
+//           res.redirect("/");
+//         }
+//       }
+//     }
+//   );
+// });
 
-app.post("/BadiliNywira", function (req, res) {
-  console.log(req.body);
-  var email = req.body.email;
-  var msimbo = req.body.msimbo;
-  var password = req.body.password;
-  request(
-    {
-      url: thibitishapassAPI,
-      method: "POST",
-      json: {
-        browser_used: req.session.browser_used,
-        ip_address: req.session.ip_address,
-        email: email,
-        password: password,
-        msimbo: msimbo,
-      },
-    },
-    function (error, response, body) {
-      if (error) {
-        console.error(
-          new Date() +
-            ": " +
-            email +
-            " with IP: " +
-            requestIp.getClientIp(req) +
-            " fail to access  /BadiliNywira Endpoint" +
-            error
-        );
-        // res.send("failed");
-      }
-      if (body !== undefined) {
-        // console.log(body)
-        var message = body.message;
-        var statusCode = body.statusCode;
-        if (statusCode == 302) {
-          res.render(path.join(__dirname + "/public/design/login"), {
-            req: req,
-            message: message,
-          });
-        } else if (statusCode == 300) {
-          // console.log("2FA: " + req.session.twofa);
-          console.info(
-            new Date() +
-              ": " +
-              email +
-              " with IP: " +
-              requestIp.getClientIp(req) +
-              " Successful to change password"
-          );
-          req.flash("error", message);
-          res.render(path.join(__dirname + "/public/design/login"), {
-            req: req,
-            message: message,
-          });
-        }
-        else {
-          res.redirect("/");
-        }
-      }
-    }
-  );
-});
+// app.post("/BadiliNywira", function (req, res) {
+//   console.log(req.body);
+//   var email = req.body.email;
+//   var msimbo = req.body.msimbo;
+//   var password = req.body.password;
+//   request(
+//     {
+//       url: thibitishapassAPI,
+//       method: "POST",
+//       json: {
+//         browser_used: req.session.browser_used,
+//         ip_address: req.session.ip_address,
+//         email: email,
+//         password: password,
+//         msimbo: msimbo,
+//       },
+//     },
+//     function (error, response, body) {
+//       if (error) {
+//         console.error(
+//           new Date() +
+//             ": " +
+//             email +
+//             " with IP: " +
+//             requestIp.getClientIp(req) +
+//             " fail to access  /BadiliNywira Endpoint" +
+//             error
+//         );
+//         // res.send("failed");
+//       }
+//       if (body !== undefined) {
+//         // console.log(body)
+//         var message = body.message;
+//         var statusCode = body.statusCode;
+//         if (statusCode == 302) {
+//           res.render(path.join(__dirname + "/public/design/login"), {
+//             req: req,
+//             message: message,
+//           });
+//         } else if (statusCode == 300) {
+//           // console.log("2FA: " + req.session.twofa);
+//           console.info(
+//             new Date() +
+//               ": " +
+//               email +
+//               " with IP: " +
+//               requestIp.getClientIp(req) +
+//               " Successful to change password"
+//           );
+//           req.flash("error", message);
+//           res.render(path.join(__dirname + "/public/design/login"), {
+//             req: req,
+//             message: message,
+//           });
+//         }
+//         else {
+//           res.redirect("/");
+//         }
+//       }
+//     }
+//   );
+// });
 
-app.post("/BadiliPass", function (req, res) {
-  console.log(req.body);
-  var userid = req.body.userid;
-  var oldpassword = req.body.oldpassword;
-  var password = req.body.password;
-  request(
-    {
-      url: changepassAPI,
-      method: "POST",
-      headers: {
-        Authorization: "Bearer" + " " + req.session.Token,
-        "Content-Type": "application/json",
-      },
-      json: {
-        browser_used: req.session.browser_used,
-        ip_address: req.session.ip_address,
-        userid: userid,
-        password: password,
-        oldpassword: oldpassword,
-      },
-    },
-    function (error, response, body) {
-      if (error) {
-        console.error(
-          new Date() +
-            ": " +
-            " with IP: " +
-            requestIp.getClientIp(req) +
-            " fail to access  /BadiliPass Endpoint" +
-            error
-        );
-        res.send("failed");
-      }
-      if (body !== undefined) {
-        console.log(body)
-res.send(body)
-      }
-    }
-  );
-});
+// app.post("/BadiliPass", function (req, res) {
+//   console.log(req.body);
+//   var userid = req.body.userid;
+//   var oldpassword = req.body.oldpassword;
+//   var password = req.body.password;
+//   request(
+//     {
+//       url: changepassAPI,
+//       method: "POST",
+//       headers: {
+//         Authorization: "Bearer" + " " + req.session.Token,
+//         "Content-Type": "application/json",
+//       },
+//       json: {
+//         browser_used: req.session.browser_used,
+//         ip_address: req.session.ip_address,
+//         userid: userid,
+//         password: password,
+//         oldpassword: oldpassword,
+//       },
+//     },
+//     function (error, response, body) {
+//       if (error) {
+//         console.error(
+//           new Date() +
+//             ": " +
+//             " with IP: " +
+//             requestIp.getClientIp(req) +
+//             " fail to access  /BadiliPass Endpoint" +
+//             error
+//         );
+//         res.send("failed");
+//       }
+//       if (body !== undefined) {
+//         console.log(body)
+// res.send(body)
+//       }
+//     }
+//   );
+// });
 
-app.post("/Wezesha2FA", function (req, res) {
-  var faValue = req.body.faValue;
-  request(
-    {
-      url: wezeshaAPI,
-      method: "POST",
-      headers: {
-        Authorization: "Bearer" + " " + req.session.Token,
-        "Content-Type": "application/json",
-      },
-      json: {
-        browser_used: req.session.browser_used,
-        ip_address: req.session.ip_address,
-        faValue: faValue,
-      },
-    },
-    function (error, response, body) {
-      if (error) {
-        console.error(new Date() + ": fail to access /Wezesha2FA " + error);
-        res.send("failed");
-      }
-      if (body !== undefined) {
-        console.log(body);
-        var message = body.message;
-        var statusCode = body.statusCode;
-        if (statusCode == 300) {
-          // console.log("uewrurure " + req.session.userID)
-          console.info(
-            new Date() + ": " + req.session.userName + "Successful 2FA"
-          );
-          res.send({ message: message });
-        }
-        else {
-          res.redirect("/");
-        }
-      }
-    }
-  );
-});
+// app.post("/Wezesha2FA", function (req, res) {
+//   var faValue = req.body.faValue;
+//   request(
+//     {
+//       url: wezeshaAPI,
+//       method: "POST",
+//       headers: {
+//         Authorization: "Bearer" + " " + req.session.Token,
+//         "Content-Type": "application/json",
+//       },
+//       json: {
+//         browser_used: req.session.browser_used,
+//         ip_address: req.session.ip_address,
+//         faValue: faValue,
+//       },
+//     },
+//     function (error, response, body) {
+//       if (error) {
+//         console.error(new Date() + ": fail to access /Wezesha2FA " + error);
+//         res.send("failed");
+//       }
+//       if (body !== undefined) {
+//         console.log(body);
+//         var message = body.message;
+//         var statusCode = body.statusCode;
+//         if (statusCode == 300) {
+//           // console.log("uewrurure " + req.session.userID)
+//           console.info(
+//             new Date() + ": " + req.session.userName + "Successful 2FA"
+//           );
+//           res.send({ message: message });
+//         }
+//         else {
+//           res.redirect("/");
+//         }
+//       }
+//     }
+//   );
+// });
 
-app.post("/Thibitisha2FA", function (req, res) {
-  console.log(req.body);
-  var faValue = req.body.faValue;
-  request(
-    {
-      url: thibitishaAPI,
-      method: "POST",
-      headers: {
-        Authorization: "Bearer" + " " + req.session.Token,
-        "Content-Type": "application/json",
-      },
-      json: {
-        browser_used: req.session.browser_used,
-        ip_address: req.session.ip_address,
-        faValue: faValue,
-      },
-    },
-    function (error, response, body) {
-      if (error) {
-        console.error(new Date() + ": fail to access /Thibitisha2FA " + error);
-        res.send("failed");
-      }
-      if (body !== undefined) {
-        console.log(body);
-        var message = body.message;
-        var statusCode = body.statusCode;
-        if (statusCode == 300) {
-          // console.log("uewrurure " + req.session.userID)
-          console.info(new Date() + ": Successful /Thibitisha2FA");
-          res.send({ message: message, statusCode: statusCode });
-        }
-        else {
-          res.redirect("/");
-        }
-      }
-    }
-  );
-});
+// app.post("/Thibitisha2FA", function (req, res) {
+//   console.log(req.body);
+//   var faValue = req.body.faValue;
+//   request(
+//     {
+//       url: thibitishaAPI,
+//       method: "POST",
+//       headers: {
+//         Authorization: "Bearer" + " " + req.session.Token,
+//         "Content-Type": "application/json",
+//       },
+//       json: {
+//         browser_used: req.session.browser_used,
+//         ip_address: req.session.ip_address,
+//         faValue: faValue,
+//       },
+//     },
+//     function (error, response, body) {
+//       if (error) {
+//         console.error(new Date() + ": fail to access /Thibitisha2FA " + error);
+//         res.send("failed");
+//       }
+//       if (body !== undefined) {
+//         console.log(body);
+//         var message = body.message;
+//         var statusCode = body.statusCode;
+//         if (statusCode == 300) {
+//           // console.log("uewrurure " + req.session.userID)
+//           console.info(new Date() + ": Successful /Thibitisha2FA");
+//           res.send({ message: message, statusCode: statusCode });
+//         }
+//         else {
+//           res.redirect("/");
+//         }
+//       }
+//     }
+//   );
+// });
 
-app.post("/ScanTrackNo", function (req, res) {
-  console.log(req.body);
-  var trackingNo = req.body.trackno;
-  request(
-    {
-      url: scanAPI,
-      method: "POST",
-      headers: {
-        Authorization: "Bearer" + " " + req.session.Token,
-        "Content-Type": "application/json",
-      },
-      json: {
-        browser_used: req.session.browser_used,
-        ip_address: req.session.ip_address,
-        trackingNo: trackingNo,
-      },
-    },
-    function (error, response, body) {
-      if (error) {
-        console.error(
-          new Date() + ": " + trackno + " fail to access /ScanTrackNo " + error
-        );
-        res.send("failed");
-      }
-      if (body !== undefined) {
-        console.log(body);
-        var message = body.message;
-        var jina = body.jina;
-        var statusCode = body.statusCode;
-        var finalText = message + " - " + jina;
-        if (statusCode == 300) {
-          // console.log("uewrurure " + req.session.userID)
-          console.info(
-            new Date() + trackingNo + ": Successful /ScanTrackNo Scanned"
-          );
-          res.send({ message: finalText });
-        }
-        else {
-          res.redirect("/");
-        }
-      }
-    }
-  );
-});
+// app.post("/ScanTrackNo", function (req, res) {
+//   console.log(req.body);
+//   var trackingNo = req.body.trackno;
+//   request(
+//     {
+//       url: scanAPI,
+//       method: "POST",
+//       headers: {
+//         Authorization: "Bearer" + " " + req.session.Token,
+//         "Content-Type": "application/json",
+//       },
+//       json: {
+//         browser_used: req.session.browser_used,
+//         ip_address: req.session.ip_address,
+//         trackingNo: trackingNo,
+//       },
+//     },
+//     function (error, response, body) {
+//       if (error) {
+//         console.error(
+//           new Date() + ": " + trackno + " fail to access /ScanTrackNo " + error
+//         );
+//         res.send("failed");
+//       }
+//       if (body !== undefined) {
+//         console.log(body);
+//         var message = body.message;
+//         var jina = body.jina;
+//         var statusCode = body.statusCode;
+//         var finalText = message + " - " + jina;
+//         if (statusCode == 300) {
+//           // console.log("uewrurure " + req.session.userID)
+//           console.info(
+//             new Date() + trackingNo + ": Successful /ScanTrackNo Scanned"
+//           );
+//           res.send({ message: finalText });
+//         }
+//         else {
+//           res.redirect("/");
+//         }
+//       }
+//     }
+//   );
+// });
 
-app.post("/SimulatePayment", function (req, res) {
-  var trackingNo = req.body.trackno;
-  request(
-    {
-      url: simulateAPI,
-      method: "POST",
-      headers: {
-        Authorization: "Bearer" + " " + req.session.Token,
-        "Content-Type": "application/json",
-      },
-      json: {
-        browser_used: req.session.browser_used,
-        ip_address: req.session.ip_address,
-        trackingNo: trackingNo,
-      },
-    },
-    function (error, response, body) {
-      if (error) {
-        console.error(new Date() + ": fail to login " + error);
-        res.send("failed");
-      }
-      if (body !== undefined) {
-        console.log(body);
-        var message = body.message;
-        var statusCode = body.statusCode;
-        if (statusCode == 300) {
-          // console.log("uewrurure " + req.session.userID)
-          console.info(new Date() + trackingNo + ": Successful Scanned");
-          res.send({ message: message });
-        }
-        if (statusCode == 209) {
-          res.redirect("/");
-        }
-      }
-    }
-  );
-});
+// app.post("/SimulatePayment", function (req, res) {
+//   var trackingNo = req.body.trackno;
+//   request(
+//     {
+//       url: simulateAPI,
+//       method: "POST",
+//       headers: {
+//         Authorization: "Bearer" + " " + req.session.Token,
+//         "Content-Type": "application/json",
+//       },
+//       json: {
+//         browser_used: req.session.browser_used,
+//         ip_address: req.session.ip_address,
+//         trackingNo: trackingNo,
+//       },
+//     },
+//     function (error, response, body) {
+//       if (error) {
+//         console.error(new Date() + ": fail to login " + error);
+//         res.send("failed");
+//       }
+//       if (body !== undefined) {
+//         console.log(body);
+//         var message = body.message;
+//         var statusCode = body.statusCode;
+//         if (statusCode == 300) {
+//           // console.log("uewrurure " + req.session.userID)
+//           console.info(new Date() + trackingNo + ": Successful Scanned");
+//           res.send({ message: message });
+//         }
+//         if (statusCode == 209) {
+//           res.redirect("/");
+//         }
+//       }
+//     }
+//   );
+// });
 
 // app.get("/UsajiliGraph", function (req, res) {
 //   // var trackingNo = req.body.trackno;
@@ -584,372 +584,236 @@ app.post("/SimulatePayment", function (req, res) {
 //   );
 // });
 
-app.get("/CreateRole", function (req, res) {
 
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: permissionsAPI,
-        method: "GET",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-        json: {
-          browser_used: req.session.browser_used,
-          ip_address: req.session.ip_address,
-          UserLevel: req.session.UserLevel,
-          Office: req.session.office,
-          is_paginated : 'false',
-          status : true
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(
-            new Date() + ": fail to MaombiKuanzishaShuleList " + error
-          );
-          res.send("failed");
-        }
-          console.log("here" , body.data);
-        if (body !== undefined) {
-          // var jsonData = JSON.parse(body)
-          var jsonData = body;
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-        
-          if (statusCode == 300) {
-            // console.log(data);
-            // console.log(
-            //   new Date() + " " + req.session.userName + ": /KuongezaMikondo"
-            // );
-            
-            res.render(
-              path.join(__dirname + "/public/design/create_role"),
-              {
-                req: req,
-                useLev: req.session.UserLevel,
-                userName: req.session.userName,
-                RoleManage: req.session.RoleManage,
-                userID: req.session.userID,
-                cheoName: req.session.cheoName,
-                data: data,
-              }
-            );
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
-
-app.get("/EditRole/:id", function (req, res) {
-  var role_id = req.params.id;
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    // console.log(req.session.office + " jjdjdjd " + req.session.UserLevel);
-    request(
-      {
-        url: editRoleAPI+`/${role_id}`,
-        method: "GET",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-        json: {
-          browser_used: req.session.browser_used,
-          ip_address: req.session.ip_address,
-          UserLevel: req.session.UserLevel,
-          Office: req.session.office,
-          role_id: role_id,
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(
-            new Date() + ": fail to MaombiKuanzishaShuleList " + error
-          );
-          res.send("failed");
-        }
-        console.log(body)
-        if (body !== undefined) {
-          // var jsonData = JSON.parse(body)
-          var jsonData = body;
-          var statusCode = jsonData.statusCode;
-       
-          if (statusCode == 300) {
-              var message = jsonData.message;
-              var permissions = jsonData.permissions;
-              var role_permissions = jsonData.role_permissions;
-              var role = jsonData.role;
-              var assigned_permissions = [];
-              role_permissions.forEach(role_permission =>{
-                  assigned_permissions.push(role_permission.permission_id);
-              });
-            res.render(path.join(__dirname + "/public/design/edit_role"), {
-              req: req,
-             
-              permissions: permissions,
-              assigned_permissions: assigned_permissions,
-              role : role
-            });
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-          if (statusCode == 306) {
-            res.redirect("/Roles");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
+// app.get("/Kata", function (req, res) {
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//         var hasMatch = false;
+//         for (var index = 0; index < req.session.RoleManage.length; ++index) {
+//           var animal = req.session.RoleManage[index];
+//           if (animal.permission_id == 53) {
+//             res.render(path.join(__dirname + "/public/design/wards"), {
+//                     req: req,
+//                     useLev: req.session.UserLevel,
+//                     userName: req.session.userName,
+//                     RoleManage: req.session.RoleManage,
+//                     userID: req.session.userID,
+//                     cheoName: req.session.cheoName,
+//             });
+//           }
+//         }
+//       } else {
+//         res.redirect("/");
+//       }
+// });
 
 
+// app.get("/verify/:id", function (req, res) {
+//   var TrackingNumber = req.params.id;
+//   request(
+//     {
+//       url: verify,
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       json: {
+//         browser_used: req.session.browser_used,
+//         ip_address: req.session.ip_address,
+//         TrackingNumber: TrackingNumber,
+//       },
+//     },
+//     function (error, response, body) {
+//       if (error) {
+//         console.log(
+//           new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
+//         );
+//         res.send("failed");
+//       }
+//       if (body !== undefined) {
+//         var jsonData = body;
+//         console.log(jsonData);
+//         var message = jsonData.message;
+//         var statusCode = jsonData.statusCode;
+//         console.log(
+//           new Date() + " " + req.session.userName + ": /Thibitisha acount"
+//         );
+//         res.render(path.join(__dirname + "/public/design/thibitisha_acount"), {
+//           req: req,
+//           statusCode: statusCode,
+//           message: message,
+//         });
+//       }
+//     }
+//   );
+// });
 
-app.get("/Kata", function (req, res) {
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-        var hasMatch = false;
-        for (var index = 0; index < req.session.RoleManage.length; ++index) {
-          var animal = req.session.RoleManage[index];
-          if (animal.permission_id == 53) {
-            res.render(path.join(__dirname + "/public/design/wards"), {
-                    req: req,
-                    useLev: req.session.UserLevel,
-                    userName: req.session.userName,
-                    RoleManage: req.session.RoleManage,
-                    userID: req.session.userID,
-                    cheoName: req.session.cheoName,
-            });
-          }
-        }
-      } else {
-        res.redirect("/");
-      }
-});
-
-
-app.get("/verify/:id", function (req, res) {
-  var TrackingNumber = req.params.id;
-  request(
-    {
-      url: verify,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      json: {
-        browser_used: req.session.browser_used,
-        ip_address: req.session.ip_address,
-        TrackingNumber: TrackingNumber,
-      },
-    },
-    function (error, response, body) {
-      if (error) {
-        console.log(
-          new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
-        );
-        res.send("failed");
-      }
-      if (body !== undefined) {
-        var jsonData = body;
-        console.log(jsonData);
-        var message = jsonData.message;
-        var statusCode = jsonData.statusCode;
-        console.log(
-          new Date() + " " + req.session.userName + ": /Thibitisha acount"
-        );
-        res.render(path.join(__dirname + "/public/design/thibitisha_acount"), {
-          req: req,
-          statusCode: statusCode,
-          message: message,
-        });
-      }
-    }
-  );
-});
-
-app.get("/ActiveMenu", function (req, res) {
+// app.get("/ActiveMenu", function (req, res) {
  
-  // if(req.session.userName){
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    const date = new Date().getHours();
-    var majira;
-    if (date < 12) {
-      majira = "Habari za Asubuhi";
-    } else if (date < 18) {
-      majira = "Habari za Mchana";
-    } else if (date > 18) {
-      majira = "Habari za Jioni";
-    }
-    //  console.log(req.session.Token)
-    request(
-      {
-        url: activeMenuAPI,
-        method: "GET",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(new Date() + ": fail to activeUserAPI " + error);
-          res.send("failed");
-        }
-        // console.log(body)
-        if (body !== undefined) {
-          // console.log(body);
-          var jsonData = JSON.parse(body);
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-          var count = jsonData.count;
-          var kauntikuanza = jsonData.kauntikuanza;
-          // var kauntimajengo = jsonData.kauntimajengo;
-          // var kauntimmiliki = jsonData.kauntimmiliki;
-          // var kauntibadilijina = jsonData.kauntibadilijina;
-          // var kauntibweni = jsonData.kauntibweni;
-          // var kauntidahalia = jsonData.kauntidahalia;
-          // var kauntiainausajili = jsonData.kauntiainausajili;
-          if (statusCode == 300) {
-            // console.log("2FA: " + req.session.twofa);
-            // console.log(new Date() + ": Successful dashbord");
-            res.send({
-              salamu: majira,
-              name: data,
-              count: count,
-              useLev: req.session.UserLevel,
-                                userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-    userID: req.session.userID,
-              cheoName: req.session.cheoName,
-              kauntikuanza: kauntikuanza,
-              TwoFA: req.session.twofa,
-            });
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
+//   // if(req.session.userName){
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//     const date = new Date().getHours();
+//     var majira;
+//     if (date < 12) {
+//       majira = "Habari za Asubuhi";
+//     } else if (date < 18) {
+//       majira = "Habari za Mchana";
+//     } else if (date > 18) {
+//       majira = "Habari za Jioni";
+//     }
+//     //  console.log(req.session.Token)
+//     request(
+//       {
+//         url: activeMenuAPI,
+//         method: "GET",
+//         headers: {
+//           Authorization: "Bearer" + " " + req.session.Token,
+//           "Content-Type": "application/json",
+//         },
+//       },
+//       function (error, response, body) {
+//         if (error) {
+//           console.log(new Date() + ": fail to activeUserAPI " + error);
+//           res.send("failed");
+//         }
+//         // console.log(body)
+//         if (body !== undefined) {
+//           // console.log(body);
+//           var jsonData = JSON.parse(body);
+//           var message = jsonData.message;
+//           var statusCode = jsonData.statusCode;
+//           var data = jsonData.data;
+//           var count = jsonData.count;
+//           var kauntikuanza = jsonData.kauntikuanza;
+//           // var kauntimajengo = jsonData.kauntimajengo;
+//           // var kauntimmiliki = jsonData.kauntimmiliki;
+//           // var kauntibadilijina = jsonData.kauntibadilijina;
+//           // var kauntibweni = jsonData.kauntibweni;
+//           // var kauntidahalia = jsonData.kauntidahalia;
+//           // var kauntiainausajili = jsonData.kauntiainausajili;
+//           if (statusCode == 300) {
+//             // console.log("2FA: " + req.session.twofa);
+//             // console.log(new Date() + ": Successful dashbord");
+//             res.send({
+//               salamu: majira,
+//               name: data,
+//               count: count,
+//               useLev: req.session.UserLevel,
+//                                 userName: req.session.userName,
+//               RoleManage: req.session.RoleManage,
+//     userID: req.session.userID,
+//               cheoName: req.session.cheoName,
+//               kauntikuanza: kauntikuanza,
+//               TwoFA: req.session.twofa,
+//             });
+//           }
+//           if (statusCode == 209) {
+//             res.redirect("/");
+//           }
+//         }
+//       }
+//     );
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
 
 
-app.post("/UserProfile", function (req, res) {
-  console.log(req.body);
-  // var zonecode = req.body.zonecode;
-  // var zonename = req.body.zonename;
-  // request({
-  //   url: sajiliZoniAPI,
-  //   method: 'POST',
-  //   headers: {
-  //     'Authorization': 'Bearer' + " " + req.session.Token,
-  //     'Content-Type': 'application/json',
-  //   },
-  //   json: {"browser_used": req.session.browser_used, "ip_address": req.session.ip_address, zonecode: zonecode, zonename: zonename}
-  // }, function(error, response, body){
-  //   if(error) {
-  //     console.log(new Date() + ": fail to login " + error)
-  //     res.send("failed")
-  //   }
-  //  // console.log(body)
-  //   if (body !== undefined) {
-  //     console.log(body)
-  //     res.send({"status": "success"})
-  //     // var message = body.message;
-  //     // var userID = body.id;
-  //     // var token = body.token;
-  //     // var resultcode = body.statusCode;
-  //     // req.session.Token = token;
-  //     // // var refreshToken = body.refreshToken;
+// app.post("/UserProfile", function (req, res) {
+//   console.log(req.body);
+//   // var zonecode = req.body.zonecode;
+//   // var zonename = req.body.zonename;
+//   // request({
+//   //   url: sajiliZoniAPI,
+//   //   method: 'POST',
+//   //   headers: {
+//   //     'Authorization': 'Bearer' + " " + req.session.Token,
+//   //     'Content-Type': 'application/json',
+//   //   },
+//   //   json: {"browser_used": req.session.browser_used, "ip_address": req.session.ip_address, zonecode: zonecode, zonename: zonename}
+//   // }, function(error, response, body){
+//   //   if(error) {
+//   //     console.log(new Date() + ": fail to login " + error)
+//   //     res.send("failed")
+//   //   }
+//   //  // console.log(body)
+//   //   if (body !== undefined) {
+//   //     console.log(body)
+//   //     res.send({"status": "success"})
+//   //     // var message = body.message;
+//   //     // var userID = body.id;
+//   //     // var token = body.token;
+//   //     // var resultcode = body.statusCode;
+//   //     // req.session.Token = token;
+//   //     // // var refreshToken = body.refreshToken;
 
-  //   }
-  // });
-});
+//   //   }
+//   // });
+// });
 
-app.post("/TumaAttachment", function (req, res) {
-  // console.log(req.body)
-  var keyString = req.body.keyString;
-  var trackerId = req.body.trackerId;
-  var attachment = req.body.attachment;
-  var kiambatisho = req.body.kiambatisho;
-  if (
-    typeof req.session.userName !== "undefined" ||
-    req.session.userName === true
-  ) {
-    request(
-      {
-        url: pandishaHatiAPI,
-        method: "POST",
-        headers: {
-          Authorization: "Bearer" + " " + req.session.Token,
-          "Content-Type": "application/json",
-        },
-        json: {
-          browser_used: req.session.browser_used,
-          ip_address: req.session.ip_address,
-          keyString: keyString,
-          trackerId: trackerId,
-          attachment: attachment,
-          kiambatisho: kiambatisho,
-        },
-      },
-      function (error, response, body) {
-        if (error) {
-          console.log(new Date() + ": fail to login " + error);
-          res.send("failed");
-        }
-        // console.log(body)
-        if (body !== undefined) {
-          // console.log(body)
-          var jsonData = body;
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          if (statusCode == 300) {
-            res.send("Imepakiwa kikamilifu");
-          }
-          if (statusCode == 302) {
-            console.log(
-              new Date() + " " + req.session.userName + ": /TumaAttachment"
-            );
-            res.send("Haijafanikiwa tafadhali jaribu tena");
-          }
-          if (statusCode == 209) {
-            res.redirect("/");
-          }
-        }
-      }
-    );
-  } else {
-    res.redirect("/");
-  }
-});
+// app.post("/TumaAttachment", function (req, res) {
+//   // console.log(req.body)
+//   var keyString = req.body.keyString;
+//   var trackerId = req.body.trackerId;
+//   var attachment = req.body.attachment;
+//   var kiambatisho = req.body.kiambatisho;
+//   if (
+//     typeof req.session.userName !== "undefined" ||
+//     req.session.userName === true
+//   ) {
+//     request(
+//       {
+//         url: pandishaHatiAPI,
+//         method: "POST",
+//         headers: {
+//           Authorization: "Bearer" + " " + req.session.Token,
+//           "Content-Type": "application/json",
+//         },
+//         json: {
+//           browser_used: req.session.browser_used,
+//           ip_address: req.session.ip_address,
+//           keyString: keyString,
+//           trackerId: trackerId,
+//           attachment: attachment,
+//           kiambatisho: kiambatisho,
+//         },
+//       },
+//       function (error, response, body) {
+//         if (error) {
+//           console.log(new Date() + ": fail to login " + error);
+//           res.send("failed");
+//         }
+//         // console.log(body)
+//         if (body !== undefined) {
+//           // console.log(body)
+//           var jsonData = body;
+//           var message = jsonData.message;
+//           var statusCode = jsonData.statusCode;
+//           if (statusCode == 300) {
+//             res.send("Imepakiwa kikamilifu");
+//           }
+//           if (statusCode == 302) {
+//             console.log(
+//               new Date() + " " + req.session.userName + ": /TumaAttachment"
+//             );
+//             res.send("Haijafanikiwa tafadhali jaribu tena");
+//           }
+//           if (statusCode == 209) {
+//             res.redirect("/");
+//           }
+//         }
+//       }
+//     );
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
 
 

@@ -7,11 +7,12 @@ var path = require("path");
 const { sendRequest, can, isAuthenticated } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var allRolesAPI = API_BASE_URL + "allRoles";
-var rolesApi = API_BASE_URL + "roles";
-var tengenezaRoleAPI = API_BASE_URL + "addRole";
-var editRoleAPI   = API_BASE_URL + "editRole";
-var updateRoleAPI = API_BASE_URL + "updateRole";
-var deleteRoleAPI = API_BASE_URL + "deleteRole";
+var rolesAPI = API_BASE_URL + "roles";
+var createRoleAPI = API_BASE_URL + "roles/create";
+var storeRoleAPI = API_BASE_URL + "roles";
+var editRoleAPI   = API_BASE_URL + "roles";
+var updateRoleAPI = API_BASE_URL + "roles";
+var deleteRoleAPI = API_BASE_URL + "roles";
 var syncRolesAndPermissions = API_BASE_URL + "generate_roles_permissions";
 
 roleController.get("/Roles", isAuthenticated ,can('view-roles'), function (req, res) {
@@ -34,80 +35,13 @@ roleController.get("/Roles", isAuthenticated ,can('view-roles'), function (req, 
 
 })
 
-// app.get("/Roles", isAuthenticated ,can('view-roles'), function (req, res) {
-//   var per_page = Number(req.query.per_page || 10);
-//   var page = Number(req.query.page || 1);
-//   if (
-//     typeof req.session.userName !== "undefined" ||
-//     req.session.userName === true
-//   ) {
-//     var hasMatch =false;
-//     // for (var index = 0; index < req.session.RoleManage.length; ++index) {
-//         // var animal = req.session.RoleManage[index]; 
-//     // if(animal.permission_id == 64){ 
-//     request(
-//       {
-//         url: rolesAPI+`?page=${page}&per_page=${per_page}`,
-//         method: "GET",
-//         headers: {
-//           Authorization: "Bearer" + " " + req.session.Token,
-//           "Content-Type": "application/json",
-//         },
-//         json: {
-//           browser_used: req.session.browser_used,
-//           ip_address: req.session.ip_address,
-//           useLevel: req.session.UserLevel,
-//           office: req.session.office,
-//         },
-//       },
-//       function (error, response, body) {
-//         if (error) {
-//           console.log(
-//             new Date() + ": fail to MaombiKuanzishaShuleJumla " + error
-//           );
-//           res.send("failed");
-//         }
-//         if (body !== undefined) {
-//           var jsonData = body;
-//           var message = jsonData.message;
-//           var statusCode = jsonData.statusCode;
-//           var data = jsonData.data;
-//           if (statusCode == 300) {
-//             var numRows = jsonData.numRows;
-//             res.render(path.join(__dirname + "/public/design/roles"), {
-//               req: req,
-//               data: data,
-//               useLev: req.session.UserLevel,
-//                                 userName: req.session.userName,
-//               RoleManage: req.session.RoleManage,
-//               userID: req.session.userID,
-//               cheoName: req.session.cheoName,
-//               pagination : {
-//                     total : numRows , 
-//                     current : page , 
-//                     per_page : per_page , 
-//                     url : 'Roles',
-//                     pages : Math.ceil( numRows / per_page)
-//                 }
-//             });
-//           }
-//           if (statusCode == 209) {
-//             res.redirect("/");
-//           }
-//         }
-//       }
-//     );
-//     // }
-//   // }
-//   } else {
-//     res.redirect("/");
-//   }
-// });
 // Get all roles
 roleController.get("/allRoles",  isAuthenticated, can('view-roles'), function (req, res) {
   var per_page = Number(req.query.per_page || 10);
   var page = Number(req.query.page || 1);
   var formData = {
+    page,
+    per_page,
     is_paginated: req.query.is_paginated,
   };
   sendRequest(req, res, allRolesAPI, "GET", formData, (jsonData) => {
@@ -122,7 +56,7 @@ roleController.get("/allRoles",  isAuthenticated, can('view-roles'), function (r
 });
 
 roleController.post("/LookupRoles", isAuthenticated, (req, res) => {
-  sendRequest(req, res, rolesApi, "GET", {}, (jsonData) => {
+  sendRequest(req, res, rolesAPI, "GET", {}, (jsonData) => {
     res.send({
       statusCode: jsonData.statusCode,
       data: jsonData.data,
@@ -137,37 +71,61 @@ roleController.post("/tengenezaRole",  isAuthenticated, can('create-roles'), fun
         roleName: req.body.role_name,
         displayName: req.body.display_name,
         };
-    sendRequest(req, res, tengenezaRoleAPI, "POST", formData, (body) => {
-        var statusCode = body.statusCode;
-        var message = body.message;
-        req.flash(statusCode == 300 ? "success" : "error", message);
-        res.redirect("/Roles");
+    sendRequest(req, res, storeRoleAPI, "POST", formData, (body) => {
+      var statusCode = body.statusCode;
+      var message = body.message;
+      req.flash(statusCode == 300 ? "success" : "error", message);
+      res.redirect("/Roles");
     });
 });
 
 // Edit Role
-roleController.get("/Roles/:id",  isAuthenticated, can('update-roles'), function (req, res) {
-  var id = Number(req.params.id);
-  sendRequest(req, res, editRoleAPI + "/" + id, "GET", {}, (jsonData) => {
-      getAllRoles(req, res, true, jsonData.data);
-  });
+roleController.get("/CreateRole", isAuthenticated, function (req, res) {
+    sendRequest(req , res , createRoleAPI,"GET", {} , 
+    function (jsonData) {
+            const {data} = jsonData
+            res.render(path.join(__dirname + "/../design/create_role"), {
+              req: req,
+              data: data,
+            });
+      }
+    );
 });
 
+roleController.get("/EditRole/:id", isAuthenticated, function (req, res) {
+    const role_id = req.params.id;
+    sendRequest(req, res , editRoleAPI + `/${role_id}`, "GET",{},function (jsonData) {
+      const {permissions , role_permissions , role } = jsonData;
+      const assigned_permissions = [];
+        role_permissions.forEach((role_permission) => {
+          assigned_permissions.push(role_permission.permission_id);
+        });
+        res.render(path.join(__dirname + "/../design/edit_role"), {
+          req: req,
+          permissions: permissions,
+          assigned_permissions: assigned_permissions,
+          role: role,
+        });
+      }
+    );
+});
+// roleController.get("/Roles/:id",  isAuthenticated, can('update-roles'), function (req, res) {
+//   var id = Number(req.params.id);
+//   sendRequest(req, res, editRoleAPI + "/" + id, "GET", {}, (jsonData) => {
+//       getAllRoles(req, res, true, jsonData.data);
+//   });
+// });
+
 // Update Role
-roleController.post("/badiliRole/:id",  isAuthenticated, can('update-roles'), function (req, res) {
-  var id = Number(req.params.id);
-  var formData = {
-          roleName: req.body.role_name,
-          displayName: req.body.display_name,
-          status: req.body.status,
-          is_default: req.body.is_default,
-  }
+roleController.post("/sasishaRole/:id",  isAuthenticated, can('update-roles'), function (req, res) {
+  const id = Number(req.params.id);
+  const formData = {
+    roleName: req.body.role_name,
+    permissions: req.body.permissions,
+  };
   sendRequest(req, res, updateRoleAPI + "/" + id, "PUT", formData , (jsonData) => {
-        var statusCode = jsonData.statusCode;
-        var message = jsonData.message;
-        req.flash(statusCode == 300 ? "success" : "error", message);
-        // Make redirection
-        statusCode == 300 ? res.redirect("/Roles"): res.redirect("/Roles/" + id);
+        const { message , statusCode} = jsonData
+        res.send({ statusCode,message });
   });
 });
 

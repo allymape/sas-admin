@@ -14,33 +14,41 @@
 %>
   <div class="card-body">
     <div id="customerList">
-        <div class="row g-4 mb-3">
-            <div class="col-sm-auto">
-                <form action="<%= eWorkflow ? `/Workflow/${eWorkflow.id}` : 'Workflow'%>" method="get">
-                    <select name="application_category_id" class="form-control" id="application-category">
-                            <option value=""> -- Chagua Aina ya Ombi --</option>
+        <form action="<%= eWorkflow ? `/Workflow/${eWorkflow.id}` : 'Workflow'%>" method="get">
+        <div class="row mb-3">
+            <div class="col-md-10">
+                    <% application_categories = req.query.application_category_id  %>
+                    <select name="application_category_id[]" class="form-control" 
+                    data-choices 
+                    data-choices-sorting-false 
+                    data-choices multiple 
+                    data-choices-removeItem 
+                    placeholder="Chagua Aina ya Ombi ..." >
+                            <option value=""></option>
                             <% categories.forEach(item => { %>
-                                <option value="<%= item.id %>" <%= req.query.application_category_id == item.id ? 'selected' : ''%> > <%= item.name %></option>
+                                <option value="<%= item.id %>" 
+                                    <%= application_categories && (
+                                        application_categories.length == 1 && application_categories == item.id || 
+                                        application_categories.length > 1 && application_categories.map(Number).includes(item.id)
+                                        )
+                                     ? 'selected' : ''%> > <%= item.name %></option>
                             <% }); %>
                     </select>
-                </form>
             </div>
-            <div class="col-sm">
-                <div class="d-flex justify-content-sm-end">
-                    <!-- <div class="search-box ms-2">
-                        <input type="text" class="form-control search" placeholder="Tafuta...">
-                        <i class="ri-search-line search-icon"></i>
-                    </div> -->
-                </div>
+            <div class="col-md-2">
+                <button class="btn btn-success" type="submit">Filter</button>
+                <% if(req.query.application_category_id && req.query.application_category_id.length > 0) {%>
+                    <a href="/Workflow" class="btn btn-danger ml-3">Clear</a>
+                <% } %>
             </div>
         </div>
-
+    </form>
          <% if(req.query.application_category_id){ %>
             <form action="<%= eWorkflow ? `/Badiliworkflow/${eWorkflow.id}` : 'Tengenezaworkflow' %>" method="post">
             <div class="row g-4 mb-3">
             <div class="col-md-3">
                 <div class="form-group">
-                    <input type="hidden"  name="application_category_id" value="<%= req.query.application_category_id %>">
+                    <input type="hidden"  name="application_categories[]" value="<%= application_categories %>">
                   <select name="from" required class="form-control" id="from">
                             <option value="">Kutoka ...</option>
                             <% hierarchies.forEach(item => { %>

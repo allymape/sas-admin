@@ -9,6 +9,7 @@ const {
   isAuthenticated,
   redirectIfAuthenticated,
   can,
+  validePassword,
 } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var loginAPI = API_BASE_URL + "login";
@@ -17,13 +18,26 @@ var createUserAPI = API_BASE_URL + "create-user";
 var updateUserAPI = API_BASE_URL + "update-user";
 var disableMtumiajiAPI = API_BASE_URL + "disable-user";
 var sendMailAPI = API_BASE_URL + "reset-user-password";
-
+const myProfileAPI = API_BASE_URL + "my-profile";
+const changeMyPasswordAPI = API_BASE_URL+ "change-my-password"
+const updateMyProfileAPI = API_BASE_URL+"update-my-profile"
 // Login Page
 userController.get("/", redirectIfAuthenticated, (req, res) => {
   res.render(path.join(__dirname + "/../design/login"), {
     req: req,
     message: "",
   });
+});
+// User Profile
+userController.get("/Profile", isAuthenticated , can('view-profile') , (req, res) => {
+    sendRequest(req , res , myProfileAPI , "POST" , {} , (jsonData) => {
+      const {user} = jsonData;
+      res.render(path.join(__dirname + "/../design/profile"), {
+        req: req,
+        user : user,
+        message: "",
+      });
+    })
 });
 
 userController.post("/auth", function (req, res) {
@@ -245,6 +259,30 @@ userController.post("/DisableUser/:id", isAuthenticated, can('delete-users'), fu
       }
     );
 });
+
+
+// Update profile
+userController.post("/UpdateMyProfile" , isAuthenticated , can('update-profile') , (req , res) => {
+    sendRequest(req , res , updateMyProfileAPI , "PUT" , req.body , (jsonData) => {
+         const {statusCode , message} = jsonData;
+         res.send({
+             message,
+             statusCode
+         })
+    });
+})
+// Change Password
+userController.post("/ChangeMyPassword" , isAuthenticated , can('update-profile') , validePassword , (req , res) => {
+    const {oldpassword , newpassword} = req.body
+    sendRequest(req , res , changeMyPasswordAPI , "PUT" , {oldpassword , newpassword} , (jsonData) => {
+         const {statusCode , message} = jsonData;
+         res.send({
+             message,
+             statusCode
+         })
+    });
+})
+
 // Logout User
 userController.post("/Logout", isAuthenticated, function (req, res) {
   req.session.destroy((error) => {

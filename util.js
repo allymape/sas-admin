@@ -58,6 +58,44 @@ module.exports = {
     }
     next();
   },
+  validePassword : (req , res , next) => {
+      const { oldpassword , newpassword, confirmpassword } = req.body;
+      if(!oldpassword || !newpassword || !confirmpassword){
+          res.send({
+            statusCode: 422,
+            message: "Tafadhali jaza maeneo yote kwa ukamilifu.",
+          });
+      }else if(!module.exports.isPasswordsMatched(newpassword , confirmpassword)){
+        res.send({
+          statusCode: 422,
+          message : "Tafadhali hakikisha nywila yako mpya zinafanana."
+        });
+      }else if(module.exports.isPasswordsMatched(oldpassword , newpassword)){
+        res.send({
+          statusCode: 422,
+          message: "Tafadhali hakikisha nywila yako mpya na ya zamani hazifanani.",
+        });
+      }
+      else if(!module.exports.isStrongPassword(newpassword)){
+        res.send({
+          statusCode: 422,
+          message : "Tafadhali hakikisha nywila yako mpya ina characters angalau 8 na ikiwa na mchanganyiko wa angalau herufi moja kubwa, herufi moja ndogo na special character."
+        });
+      }
+      else{
+        next();
+      }
+  },
+  isPasswordsMatched : (a , b) => {
+    return a === b;
+  },
+  isValidLength : (str , length = 8) => {
+    return str.length >= length;
+  },
+  isStrongPassword : (password , length = 8) => {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return regex.test(password);
+  },
   modifiedUrl: (req, newParams = { status: req.query.status }) => {
     const currentUrl = req.originalUrl;
     const parseUrl = url.parse(currentUrl, true);
