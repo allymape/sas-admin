@@ -57,6 +57,7 @@ const reportMabadilikoRequestController = require("./public/controllers/ripoti/R
 const maombiBaruaController = require("./public/controllers/barua/maombiBaruaController");
 const baruaController = require("./public/controllers/barua/baruaController");
 const workflowController = require("./public/controllers/workflowController");
+const loginActivityController = require("./public/controllers/loginActivityController");
 
 // const reportRequestController = require("./public/controllers/ripoti/RipotiRequestController");
 
@@ -939,6 +940,7 @@ app.use("/", reportMenejaRequestController);
 app.use("/", reportMabadilikoRequestController);
 app.use("/", maombiBaruaController);
 app.use("/", baruaController);
+app.use("/", loginActivityController);
 
 
 app.use("/", errorController);
