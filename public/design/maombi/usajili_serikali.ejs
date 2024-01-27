@@ -100,13 +100,15 @@
                         <%= maombi[i].is_approved == 2 ? 'Limekubaliwa' : '' %>
                         <%= maombi[i].is_approved == 3 ? 'Limekataliwa' : '' %>
                     </td>
-                    <% if(status == 'approved' ){ %>
+                   <td>
+                     <% if(status == 'approved' ){ %>
                         <% if(maombi[i].folio){ %>
                                  <a target="_blank" title="Barua" data-bs-toggle="tooltip" href="/barua/<%= maombi[i].tracking_number %>">
                                         <i class="ri-file-pdf-fill ri-2x align-bottom me-1 text-danger"></i>
                                  </a>
                             <% } %>
                     <% } %>
+                   </td>
                 </tr>
                 <% } %>
             </tbody>

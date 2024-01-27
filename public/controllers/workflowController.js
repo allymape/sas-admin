@@ -14,6 +14,15 @@ var updateWorkflowAPI = API_BASE_URL + "updateworkflow";
 var deleteWorkflowAPI = API_BASE_URL + "deleteworkflow";
 const workflowLookupAPI = API_BASE_URL + "workflow-lookup";
 
+// check if array key exists in another array
+
+const checkIfRoleExists = (array1 , array2) => {
+      var exists = false;
+       array1.forEach(a => {
+           exists = true;
+       });
+       return exists;
+}
 
 // Display workflow page
 workflowController.get("/Workflow", isAuthenticated, can('view-workflow') , function (req, res) {
@@ -68,8 +77,12 @@ workflowController.post(
   isAuthenticated,
   can("create-workflow"),
   function (req, res) {
-    const { from, to , order } = req.body;
-    if (Number(from) !== Number(to)) {
+    const { application_categories, from, to , order } = req.body;
+    const _from = typeof from === "object" ? from : [from];
+    const _to = typeof to === "object" ? to : [to];
+    const _order = typeof order === "object" ? order : [order];
+
+    if (_from.length == _to.length && _to.length == _order.length) {
       sendRequest(
         req,
         res,
@@ -78,13 +91,14 @@ workflowController.post(
         req.body,
         (jsonData) => {
           const { message, success } = jsonData;
-          if(success){
+          if (success) {
             req.flash("successMessage", message);
-          }else{
+          } else {
+            req.flash("application_categories", application_categories);
             req.flash("to", to);
             req.flash("from", from);
             req.flash("order", order);
-            req.flash('errorMessage' , message);
+            req.flash("errorMessage", message);
           }
           res.redirect(
             url.format({
@@ -99,16 +113,17 @@ workflowController.post(
     } else {
       req.flash(
         "errorMessage",
-        "Tafadhali sehemu ya kutoka na kwenda hazipaswi kufanana."
+        "Tafadhali sehemu ya kutoka, kwenda na mpangilio zinatakiwa kuwa na idadi sawa au zisifanane."
       );
-      req.flash('to' , to)
-      req.flash('from' , from)
-      req.flash('order' , order)
+      req.flash("application_categories", application_categories);
+      req.flash("to", to);
+      req.flash("from", from);
+      req.flash("order", order);
       res.redirect(
         url.format({
           pathname: "/Workflow",
           query: {
-            application_category_id: req.body.application_category_id,
+            // application_category_id: req.body.application_category_id,
           },
         })
       );

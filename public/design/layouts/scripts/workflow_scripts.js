@@ -1,9 +1,15 @@
-$("#application-category").on("change", function () {
-//   modal("showModal-create", true);
-    $(this).closest('form').submit()
-});
-
-
+// $("#select-application-categories-filter").on("change", function () {
+//   //   modal("showModal-create", true);
+//   alert('xx')
+//   const formFilter = $("#form-application-categories-filter");
+//   const select = $(this);
+//   console.log(this);
+//   // $(this).closest("form").submit();
+// });
+// const selectElement = document.querySelector("[data-choices]");
+// selectElement.addEventListener('change' , function(event){
+//    alert('xxx')
+// })
 function listWorkflow() {
   ajaxRequest("/All-workflows" , 'GET' , (response) => {
        if(response.statusCode == 300){

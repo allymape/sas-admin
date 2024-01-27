@@ -243,33 +243,45 @@ function wasilishaKe(){
 function kataaKe(){
     var coments = document.getElementById('exampleFormControlTextarea1').value;
     var staffs = '0-10';
-    var userLevel = document.getElementById('userLevel').value;
     var haliombi = 3;
-    
     var trackerId = document.getElementById('trackerId').value;
-    
-    var schoolCategoryID = document.getElementById('schoolCategoryID').value;
     var staffsInput = document.getElementById('staffs').value;
-    if(coments.length > 0){
-        if(staffsInput == '#'){
-        $.ajax({
-            url: "/FutaComment",
-            type: 'POST',
-            data: JSON.stringify({"coments": coments, "staffs": staffs, 
-            "haliombi": haliombi, "trackerId": trackerId, 
-            "attachment": "", "kiambatisho": "", 
-            "attach_length": ""}),
-            contentType: 'application/json',
-            success: function(response) {
-                window.location.href = "/FutaShule";
-            }
-        });
-    }else{
-        alert("Samahani huwezi kubonyeza kitufe hiki")
-    }
-    }else{
-    alert("Tafadhali weka maoni yako")
-    }
+    tumaMaoniYako(
+      "/FutaComment",
+      {
+        coments: coments,
+        staffs: staffs,
+        haliombi: haliombi,
+        trackerId: trackerId,
+        attachment: "",
+        kiambatisho: "",
+        attach_length: "",
+      },
+      staffsInput,
+      coments,
+      "kataa",
+      "/FutaShule"
+    );
+    // if(coments.length > 0){
+    //     if(staffsInput == '#'){
+    //     $.ajax({
+    //         url: "/FutaComment",
+    //         type: 'POST',
+    //         data: JSON.stringify({"coments": coments, "staffs": staffs, 
+    //         "haliombi": haliombi, "trackerId": trackerId, 
+    //         "attachment": "", "kiambatisho": "", 
+    //         "attach_length": ""}),
+    //         contentType: 'application/json',
+    //         success: function(response) {
+    //             window.location.href = "/FutaShule";
+    //         }
+    //     });
+    // }else{
+    //     alert("Samahani huwezi kubonyeza kitufe hiki")
+    // }
+    // }else{
+    // alert("Tafadhali weka maoni yako")
+    // }
 
 }
 

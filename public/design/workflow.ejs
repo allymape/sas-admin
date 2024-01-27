@@ -8,86 +8,105 @@
 <% 
     var errorMessage = req.flash('errorMessage') 
     var successMessage = req.flash('successMessage') 
+    var application_categories = req.flash('application_categories') 
     var to = req.flash('to') 
     var from = req.flash('from') 
     var order = req.flash('order') 
 %>
   <div class="card-body">
     <div id="customerList">
-        <form action="<%= eWorkflow ? `/Workflow/${eWorkflow.id}` : 'Workflow'%>" method="get">
-        <div class="row mb-3">
-            <div class="col-md-10">
-                    <% application_categories = req.query.application_category_id  %>
-                    <select name="application_category_id[]" class="form-control" 
-                    data-choices 
-                    data-choices-sorting-false 
-                    data-choices multiple 
-                    data-choices-removeItem 
-                    placeholder="Chagua Aina ya Ombi ..." >
-                            <option value=""></option>
-                            <% categories.forEach(item => { %>
-                                <option value="<%= item.id %>" 
-                                    <%= application_categories && (
-                                        application_categories.length == 1 && application_categories == item.id || 
-                                        application_categories.length > 1 && application_categories.map(Number).includes(item.id)
-                                        )
-                                     ? 'selected' : ''%> > <%= item.name %></option>
-                            <% }); %>
-                    </select>
-            </div>
-            <div class="col-md-2">
-                <button class="btn btn-success" type="submit">Filter</button>
-                <% if(req.query.application_category_id && req.query.application_category_id.length > 0) {%>
-                    <a href="/Workflow" class="btn btn-danger ml-3">Clear</a>
-                <% } %>
-            </div>
-        </div>
-    </form>
-         <% if(req.query.application_category_id){ %>
-            <form action="<%= eWorkflow ? `/Badiliworkflow/${eWorkflow.id}` : 'Tengenezaworkflow' %>" method="post">
-            <div class="row g-4 mb-3">
-            <div class="col-md-3">
-                <div class="form-group">
-                    <input type="hidden"  name="application_categories[]" value="<%= application_categories %>">
-                  <select name="from" required class="form-control" id="from">
-                            <option value="">Kutoka ...</option>
-                            <% hierarchies.forEach(item => { %>
-                                <option value="<%= item.id %>" <%= from == item.id || (eWorkflow && eWorkflow.start_from == item.id) ? 'selected' : '' %> ><%= item.name %></option>
-                            <% }); %>
-                </select>
+        <form action="<%= eWorkflow ? `/Workflow/${eWorkflow.id}` : 'Workflow'%>" method="get" id="form-application-categories-filter">
+        </form>
+        <form action="<%= eWorkflow ? `/Badiliworkflow/${eWorkflow.id}` : 'Tengenezaworkflow' %>" method="post">
+                <div class="row mb-3">
+                <div class="col-md-12">
+               
+                    <select name="application_categories" class="form-control" 
+                        id="select-application-categories-filter"
+                        data-choices 
+                        data-choices-sorting-false 
+                        data-choices multiple 
+                        data-choices-removeItem 
+                        placeholder="Chagua Aina ya Ombi ..." >
+                                <option value=""></option>
+                                <% categories.forEach(item => { %>
+                                    <option value="<%= item.id %>" 
+                                        <%= application_categories && (
+                                            application_categories.length == 1 && application_categories == item.id || 
+                                            application_categories.length > 1 && application_categories.map(Number).includes(item.id)
+                                            )
+                                        ? 'selected' : ''%> > <%= item.name %></option>
+                                <% }); %>
+                        </select>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                  <select name="to" required class="form-control" id="to">
-                            <option value="">Kwenda ...</option>
-                            <% hierarchies.forEach(item => { %>
-                                <option value="<%= item.id %>" <%= to == item.id || (eWorkflow && eWorkflow.end_to == item.id) ? 'selected' : '' %>><%= item.name %></option>
-                            <% }); %>
-                </select>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="form-group">
-                  <!-- <input type="number" min="0" value="<%= eWorkflow ? eWorkflow._order : order %>" required name="order" class="form-control" placeholder="Ingiza Order 0,1 ..."> -->
-                  <select name="order" id="order" class="form-control">
-                    <% [0,1,2,3,4,5,6].forEach( _order => { %>
-                      <option value="<%= _order %>" <%= order == _order || (eWorkflow && eWorkflow._order == _order) ? 'selected' : ''%> >
-                        <%= _order %>
-                      </option>
-                    <% }) %>
-                  </select>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="form-group">
-                  <button type="submit" class="btn btn-<%= eWorkflow ? 'primary' : 'success'%>"><%= eWorkflow ? 'Sasisha' : 'Sajili' %></button>
-                   <% if(eWorkflow){ %>
-                    <a href="/Workflow" class="btn btn-danger ml-3"> Clear</a>
+                <!-- <div class="col-md-2">
+                    <button class="btn btn-success" type="submit">Filter</button>
+                    <% if(req.query.application_categories && req.query.application_categories.length > 0) {%>
+                        <a href="/Workflow" class="btn btn-danger ml-3">Clear</a>
                     <% } %>
+                </div> -->
                 </div>
-            </div>
-        </div>
+           
+                    <div class="row g-4 mb-3">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <!-- <input type="hidden"  name="application_categories" value="<%= application_categories %>"> -->
+                        <select name="from[]" required class="form-control" id="from"
+                        data-choices 
+                            data-choices-sorting-false 
+                            data-choices multiple 
+                            placeholder="Kutoka ..."
+                            data-choices-removeItem >
+                                    <option value="">Kutoka ...</option>
+                                    <% hierarchies.forEach(item => { %>
+                                        <option value="<%= item.id %>" <%= from == item.id || (eWorkflow && eWorkflow.start_from == item.id) ? 'selected' : '' %> ><%= item.name %></option>
+                                    <% }); %>
+                        </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                        <select name="to[]" required class="form-control" id="to" 
+                        data-choices 
+                            data-choices-sorting-false 
+                            data-choices multiple 
+                            placeholder="Kwenda ..."
+                            data-choices-removeItem >
+                                    <option value="">Kwenda ...</option>
+                                    <% hierarchies.forEach(item => { %>
+                                        <option value="<%= item.id %>" <%= to == item.id || (eWorkflow && eWorkflow.end_to == item.id) ? 'selected' : '' %>><%= item.name %></option>
+                                    <% }); %>
+                        </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                        <!-- <input type="number" min="0" value="<%= eWorkflow ? eWorkflow._order : order %>" required name="order" class="form-control" placeholder="Ingiza Order 0,1 ..."> -->
+                        <select name="order[]" id="order" class="form-control" 
+                        data-choices 
+                            data-choices-sorting-false 
+                            data-choices multiple 
+                            placeholder="Mpangilio ..."
+                            data-choices-removeItem >
+                        <option value="">Mpangilio ...</option>
+                            <% [1,2,3,4,5,6].forEach( _order => { %>
+                            <option value="<%= _order %>" <%= order == _order || (eWorkflow && eWorkflow._order == _order) ? 'selected' : ''%> >
+                                <%= _order %>
+                            </option>
+                            <% }) %>
+                        </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                        <button type="submit" class="btn btn-<%= eWorkflow ? 'primary' : 'success'%>"><%= eWorkflow ? 'Sasisha' : 'Sajili' %></button>
+                        <% if(eWorkflow){ %>
+                            <a href="/Workflow" class="btn btn-danger ml-3"> Clear</a>
+                            <% } %>
+                        </div>
+                    </div>
+                  </div>
+            
          </form>
             <% if(errorMessage != '') { %>
                     <div class="alert alert-danger alert-dismissible alert-label-icon rounded-label shadow fade show" role="alert">
@@ -103,7 +122,7 @@
                     </div>
             <% } %>
 
-         <% }  %>
+         
         <div class="table-responsive table-card mt-3 mb-1">
             <table class="table align-middle table-nowrap" id="workflowTable">
                 <thead class="table-light">
