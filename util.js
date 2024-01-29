@@ -99,7 +99,7 @@ module.exports = {
   modifiedUrl: (req, newParams = { status : req.query.status }) => {
     const currentUrl = req.originalUrl;
     const parseUrl = url.parse(currentUrl, true);
-    console.log(parseUrl);
+    // console.log(parseUrl);
     for (const key in newParams) {
       if (newParams.hasOwnProperty(key)) {
         const value = newParams[key];
