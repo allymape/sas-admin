@@ -96,7 +96,7 @@ module.exports = {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     return regex.test(password);
   },
-  modifiedUrl: (req, newParams = { status: req.query.status }) => {
+  modifiedUrl: (req, newParams = { status : req.query.status }) => {
     const currentUrl = req.originalUrl;
     const parseUrl = url.parse(currentUrl, true);
     console.log(parseUrl);

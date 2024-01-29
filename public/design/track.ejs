@@ -108,8 +108,8 @@ const currentCategory = categories.filter( (item) => item.id == decrypted_param_
             </td>
             <td class=""><%= dateFormat(item.submitted_created_at , "DD/MM/YYYY HH:mm:ss") %></td>
             <td class="">
-                <span class="badge bg-<%= status == 1 || status == '' ? `info` : ( status == 2 ? 'success' : 'danger')%>">
-                    <%= status == 1 || status == '' ? `Linashughulikiwa` : ( status == 2 ? 'Limethibitishwa' : 'Limekatiliwa') %>
+                <span class="badge bg-<%= status == 1 || status == '' ? `info` : ( status == 2 ? 'success' : (status == 3 ? 'danger' : 'warning'))%>">
+                    <%= status == 1 || status == '' ? `Linashughulikiwa` : ( status == 2 ? 'Limethibitishwa' : (status == 3 ? 'Limekatiliwa' : 'Limerudishwa')) %>
                 </span>
             </td>
             <td>

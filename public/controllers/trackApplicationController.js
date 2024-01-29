@@ -4,7 +4,7 @@ const request = require("request");
 const trackApplicationController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { sendRequest, isAuthenticated, can, crypt } = require("../../util");
+const { sendRequest, isAuthenticated, can, crypt, modifiedUrl } = require("../../util");
 const API_BASE_URL = process.env.API_BASE_URL;
 const trackAPI = API_BASE_URL + "track_applications";
 const updatePaymentAPI = API_BASE_URL + "update_payment";
@@ -32,7 +32,7 @@ trackApplicationController.get("/TrackOmbi/:id", isAuthenticated, can('view-trac
             current: page,
             per_page: per_page,
             pages: Math.ceil(numRows / per_page),
-            url: `/TrackOmbi/${encrypted_param_id}`,
+            url: modifiedUrl(req),
           },
         });
       });

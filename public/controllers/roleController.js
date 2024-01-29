@@ -4,7 +4,7 @@ const request = require("request");
 const roleController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { sendRequest, can, isAuthenticated } = require("../../util");
+const { sendRequest, can, isAuthenticated, modifiedUrl } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var allRolesAPI = API_BASE_URL + "allRoles";
 var rolesAPI = API_BASE_URL + "roles";
@@ -27,7 +27,7 @@ roleController.get("/Roles", isAuthenticated ,can('view-roles'), function (req, 
                     total : numRows , 
                     current : page , 
                     per_page : per_page , 
-                    url : '/Roles',
+                    url : modifiedUrl(req),
                     pages : Math.ceil( numRows / per_page)
                 }
             });

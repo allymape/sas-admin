@@ -50,7 +50,7 @@ function rudisha() {
   var staffs = "0-1";
   var userLevel = document.getElementById("userLevel").value;
   var staffsInput = document.getElementById("staffs").value;
-  var haliombi = 1;
+  var haliombi = 4;
   var trackerId = document.getElementById("trackerId").value;
 
   tumaMaoniYako(
