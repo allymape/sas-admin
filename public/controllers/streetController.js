@@ -9,6 +9,17 @@ var API_BASE_URL = process.env.API_BASE_URL;
 var streetListAPI = API_BASE_URL + "allstreets";
 var vutaMitaaListAPI = API_BASE_URL + "usajiliMitaa";
 
+
+streetController.get(
+  "/Mitaa",
+  isAuthenticated,
+  can("view-streets"),
+  function (req, res) {
+    res.render(path.join(__dirname + "/../design/streets"), {
+      req: req,
+    });
+  }
+);
 streetController.get("/MitaaList", isAuthenticated, can('view-streets'), function (req, res) {
   var per_page = Number(req.query.per_page || 10);
   var page = Number(req.query.page || 1);

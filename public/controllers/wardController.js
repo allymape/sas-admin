@@ -3,7 +3,7 @@ const express = require("express");
 const request = require("request");
 const wardController = express.Router();
 var session = require("express-session");
-var path = require("path");
+const path = require("path");
 const { sendRequest, isAuthenticated, can } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var wardListAPI = API_BASE_URL + "allwards";
@@ -16,6 +16,16 @@ var vutaKataListAPI = API_BASE_URL + "usajiliKata";
 //     saveUninitialized: true,
 //   })
 // );
+wardController.get(
+  "/Kata",
+  isAuthenticated,
+  can("view-wards"),
+  function (req, res) {
+    res.render(path.join(__dirname + "/../design/wards"), {
+      req: req,
+    });
+  }
+);
 
 
 wardController.get("/WardList",  isAuthenticated, can('view-wards'), function (req, res) {

@@ -1,13 +1,25 @@
 require("dotenv").config();
 const express = require("express");
 const districtController = express.Router();
-
+const path = require("path");
 const { sendRequest, isAuthenticated, can } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var lgaListAPI = API_BASE_URL + "allDistricts";
 var lgaAPI = API_BASE_URL + "lookup-districts";
 var VutaWilayaListAPI = API_BASE_URL + "usajiliWilaya";
 var updateWilayaAPI = API_BASE_URL + "update-district";
+
+
+districtController.get(
+  "/Halmashauri",
+  isAuthenticated,
+  can("view-districts"),
+  function (req, res) {
+    res.render(path.join(__dirname + "/../design/halmashauri"), {
+      req: req,
+    });
+  }
+);
 
 districtController.get(
   "/HalmashauriList",
