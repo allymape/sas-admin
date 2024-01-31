@@ -16,6 +16,7 @@ const {
 } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var loginAPI = API_BASE_URL + "login";
+var baruaAuthAPI = API_BASE_URL + "authenticate-barua";
 var watumiajiAPI = API_BASE_URL + "users";
 var createUserAPI = API_BASE_URL + "create-user";
 var updateUserAPI = API_BASE_URL + "update-user";
@@ -24,6 +25,7 @@ var sendMailAPI = API_BASE_URL + "reset-user-password";
 const myProfileAPI = API_BASE_URL + "my-profile";
 const changeMyPasswordAPI = API_BASE_URL+ "change-my-password"
 const updateMyProfileAPI = API_BASE_URL+"update-my-profile"
+
 // Login Page
 userController.get("/", redirectIfAuthenticated, (req, res) => {
   res.render(path.join(__dirname + "/../design/login"), {
@@ -68,7 +70,7 @@ userController.post("/auth", function (req, res) {
       json: body,
     },
     (err, response, body) => {
-      console.log(loginAPI);
+      // console.log(loginAPI);
       const errorMessage = `Kuna tatizo wasiliana na Msimamizi wa Mfumo`;
       if (err) {
         console.log(err, body);
@@ -138,7 +140,30 @@ userController.post("/auth", function (req, res) {
     }
   );
 });
+// Get TOKEN for barua
+userController.post('/BaruaAuthentication' , (req , res) =>{
 
+  request(
+    {
+      url: baruaAuthAPI,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      json: req.body,
+    },
+    (err, response, body) => {
+      console.log(response)
+      if(err) console.log(err);
+      const {success , statusCode , message , token} = body;
+      res.send({
+        success,
+        message,
+        statusCode,
+        token
+      })
+    })
+});
 userController.get(
   "/Watumiaji",
   isAuthenticated,

@@ -19,8 +19,11 @@ const { level } = require("winston");
 
 module.exports = {
   isAuthenticated: (req, res, next) => {
-    const authorization = "Bearer" + " " + req.session.Token;
+    const sessionToken = req.session.Token 
+    const bodyToken =  req.body.token
+    const authorization = "Bearer" + " " + ( sessionToken || bodyToken );
     // req.session.previousUrl = req.originalUrl;
+  
     if (authorization) {
       const token = authorization.slice(7, authorization.length); // Bearer XXXXXX
       jwt.verify(
@@ -29,11 +32,29 @@ module.exports = {
         (err, decode) => {
           if (err) {
             if (err.name === "TokenExpiredError") {
-              req.session.destroy((error) => {
-                if (error) console.log(error);
-              });
+              if(bodyToken){
+                 return res.send({
+                   success: false,
+                   statusCode: 402,
+                   message: "Token is expired",
+                 });
+              }else{
+                req.session.destroy((error) => {
+                  if (error) console.log(error);
+                });
+              }
+            }else{
+              if (bodyToken) {
+                res.status(401).send({
+                  success: false,
+                  statusCode: 401,
+                  message: "You are not authorized",
+                });
+              } else {
+                res.redirect("/");
+              }
             }
-            res.redirect("/");
+            
           } else {
             req.user = decode;
             const { exp } = decode;
@@ -46,7 +67,15 @@ module.exports = {
         }
       );
     } else {
-      res.redirect("/");
+      if (bodyToken) {
+        res.status(401).send({
+          success: false,
+          statusCode: 401,
+          message: "You are not authorized",
+        });
+      } else {
+        res.redirect("/");
+      }
     }
   },
 
@@ -122,16 +151,15 @@ module.exports = {
     return newUrl;
   },
   sendRequest: (req, res, url, method, formData, callback) => {
-    if (
-      typeof req.session.userName !== "fined" ||
-      req.session.userName === true
-    ) {
+    const nameOrToken = typeof (req.session.userName || req.body.token)
+    const token = req.session.Token || req.body.token;
+    if (nameOrToken !== "undefined" || req.session.userName === true) {
       request(
         {
           url: url,
           method: method,
           headers: {
-            Authorization: "Bearer" + " " + req.session.Token,
+            Authorization: "Bearer" + " " + token,
             "Content-Type": "application/json",
           },
           json: formData,
