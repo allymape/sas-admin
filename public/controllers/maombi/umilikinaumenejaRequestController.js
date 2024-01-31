@@ -235,16 +235,12 @@ umilikinaumenejaRequestController.post(
         schoolCategoryID: schoolCategoryID,
       },
       (jsonData) => {
-        const { error, statusCode, message } = jsonData;
-        // var data = jsonData.data;
-        if (statusCode == 300) {
-          console.log(
-            new Date() + " " + req.session.userName + ": /TumaComment"
-          );
-          res.send(message);
-        } else {
-          res.send(message);
-        }
+        const { statusCode, message } = jsonData;
+        console.log(new Date() + " " + req.session.userName + ": /TumaComment Umiliki na Meneja");
+        res.send({
+          statusCode: statusCode,
+          message: message,
+        });
       }
     );
   }
