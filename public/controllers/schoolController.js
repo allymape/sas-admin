@@ -13,7 +13,7 @@ var addSchoolAPI = API_BASE_URL + "add-school";
 var updateSchoolAPI = API_BASE_URL + "update-school";
 var vutaExistingSchoolsAPI = API_BASE_URL + "existing_schools";
 var schoolFiltersAPI = API_BASE_URL + "school-filters";
-
+var changeShuleAPI = API_BASE_URL + "change-shule";
 
 // Page
 schoolController.get('/Shule' , isAuthenticated , can('view-schools') , (req , res) => {
@@ -82,7 +82,7 @@ schoolController.get("/LookForSchools", isAuthenticated, function (req, res) {
   );
 });
 
-schoolController.post("/VutaShule", function (req, res) {
+schoolController.post("/VutaShule", isAuthenticated, function (req, res) {
   sendRequest(req, res , vutaExistingSchoolsAPI, "POST", {}, (body) => {
         if(body !== 'undefined'){
             var jsonData = body;
@@ -96,7 +96,7 @@ schoolController.post("/VutaShule", function (req, res) {
       });
 });
 // Create School
-schoolController.post("/AddShule" , function(req , res){
+schoolController.post("/AddShule" , isAuthenticated, function(req , res){
        sendRequest(req, res, addSchoolAPI  , 'POST', req.body , (body) => {
                const {statusCode , message} = body;
                res.send({
@@ -107,7 +107,7 @@ schoolController.post("/AddShule" , function(req , res){
      });
 });
 // Edit School
-schoolController.get("/EditShule/:id" , function(req, res){
+schoolController.get("/EditShule/:id" , isAuthenticated, function(req, res){
      const tracking_number = req.params.id;
      sendRequest(req, res, editSchoolAPI + `/${tracking_number}` , 'GET', {} , (body) => {
            if(body !== 'undefined'){
@@ -121,7 +121,7 @@ schoolController.get("/EditShule/:id" , function(req, res){
      });
 });
 // Update School
-schoolController.post("/UpdateShule/:id" , function(req , res){
+schoolController.post("/UpdateShule/:id" , isAuthenticated , function(req , res){
       const id = req.params.id;
        sendRequest(req, res, updateSchoolAPI + `/${id}` , 'PUT', req.body , (body) => {
            if(body !== 'undefined'){
@@ -134,5 +134,23 @@ schoolController.post("/UpdateShule/:id" , function(req , res){
            }
      });
 });
+
+schoolController.post("/changeshule", isAuthenticated, function (req, res) {
+  const trackingId = req.body.trackingId;
+  const from_user = req.session.userID;
+  const newName = req.body.newName;
+    sendRequest(req , res , changeShuleAPI, "POST",{  trackingId: trackingId, from_user: from_user, newName: newName},
+      (jsonData) => {
+          const {message , statusCode , success} = jsonData
+          res.send({
+            message,
+            statusCode,
+            success
+          });
+        }
+    );
+ 
+});
+
 
 module.exports = schoolController;
