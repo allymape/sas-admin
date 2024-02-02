@@ -196,7 +196,7 @@ badiliMmilikiRequestController.get(
             manager_email: manager_email,
             house_number: house_number,
             old_tracking_number: old_tracking_number,
-            phone_number_old : phone_number_old,
+            phone_number_old: phone_number_old,
             language: language,
             school_size: school_size,
             purpose: purpose,
@@ -217,6 +217,8 @@ badiliMmilikiRequestController.get(
             Maoni: Maoni,
             Refferes: Refferes,
             objAttachment1: objAttachment1,
+            commentUrl: "/",
+            commentRedirectUrl: "/",
           }
         );
       }
@@ -224,47 +226,57 @@ badiliMmilikiRequestController.get(
   }
 );
 
-badiliMmilikiRequestController.post("/MmilikiBadiliComment", function (req, res) {
-  // console.log(req.body)
-  var trackerId = req.body.trackerId;
-  var from_user = req.session.userID;
-  var staff = req.body.staffs;
-  var owner_name = req.body.owner_name;
-  var authorized_person = req.body.authorized_person;
-  var owner_name_old = req.body.owner_name_old;
-  var coments = req.body.coments;
-  var authorized_person_old = req.body.authorized_person_old;
-  var haliombi = req.body.haliombi;
-  var attachment = req.body.attachment;
-  var kiambatisho = req.body.kiambatisho;
-  var attach_length = req.body.attach_length;
-  var schoolCategoryID = req.body.schoolCategoryID;
-  var ombitype = req.body.ombitype;
-  var staffDet = staff.split("-");
-  var department = staffDet[1];
-  var staffs = staffDet[0];
-  // console.log(department + " and " + staffs)
+badiliMmilikiRequestController.post(
+  "/MmilikiBadiliComment",
+  can("create-comments"),
+  function (req, res) {
+    // console.log(req.body)
+    var trackerId = req.body.trackerId;
+    var from_user = req.session.userID;
+    var staff = req.body.staffs;
+    var owner_name = req.body.owner_name;
+    var authorized_person = req.body.authorized_person;
+    var owner_name_old = req.body.owner_name_old;
+    var coments = req.body.coments;
+    var authorized_person_old = req.body.authorized_person_old;
+    var haliombi = req.body.haliombi;
+    var attachment = req.body.attachment;
+    var kiambatisho = req.body.kiambatisho;
+    var attach_length = req.body.attach_length;
+    var schoolCategoryID = req.body.schoolCategoryID;
+    var ombitype = req.body.ombitype;
+    var staffDet = staff.split("-");
+    var department = staffDet[1];
+    var staffs = staffDet[0];
+    // console.log(department + " and " + staffs)
     // console.log("HIIIIIIIII");
-    sendRequest(req , res , mmilikiReply , "POST" , 
+    sendRequest(
+      req,
+      res,
+      mmilikiReply,
+      "POST",
       {
-          trackerId: trackerId,
-          from_user: from_user,
-          owner_name: owner_name,
-          authorized_person: authorized_person,
-          staffs: staffs,
-          coments: coments,
-          ombitype: ombitype,
-          owner_name_old: owner_name_old,
-          authorized_person_old: authorized_person_old,
-          haliombi: haliombi,
-          replyType: 1,
-          department: department,
-          schoolCategoryID: schoolCategoryID,
+        trackerId: trackerId,
+        from_user: from_user,
+        owner_name: owner_name,
+        authorized_person: authorized_person,
+        staffs: staffs,
+        coments: coments,
+        ombitype: ombitype,
+        owner_name_old: owner_name_old,
+        authorized_person_old: authorized_person_old,
+        haliombi: haliombi,
+        replyType: 1,
+        department: department,
+        schoolCategoryID: schoolCategoryID,
       },
       function (jsonData) {
-         const { statusCode, message } = jsonData;
+        const { statusCode, message } = jsonData;
         console.log(
-          new Date() + " " + req.session.userName + ": /MmilikiBadiliComment ..."
+          new Date() +
+            " " +
+            req.session.userName +
+            ": /MmilikiBadiliComment ..."
         );
         // console.log(statusCode , message)
         res.send({
@@ -273,6 +285,6 @@ badiliMmilikiRequestController.post("/MmilikiBadiliComment", function (req, res)
         });
       }
     );
-  
-});
+  }
+);
 module.exports = badiliMmilikiRequestController;

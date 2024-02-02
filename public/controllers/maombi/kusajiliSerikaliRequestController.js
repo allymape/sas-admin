@@ -151,11 +151,12 @@ kusajiliSerikaliRequestController.get("/SajiliOmbiSerikali/:id",
             );
             res.render(
               path.join(
-                __dirname + "/../../design/maombi/details/view-ombi-sajili-serikali-details"
+                __dirname +
+                  "/../../design/maombi/details/view-ombi-sajili-serikali-details"
               ),
               {
                 req: req,
-                UserLevel: req.user.cheo,
+                userLevel: req.user.cheo,
                 muda_ombi: remain_days,
                 specialization: specialization,
                 created_at: created_at,
@@ -209,6 +210,8 @@ kusajiliSerikaliRequestController.get("/SajiliOmbiSerikali/:id",
                 objAttachment: objAttachment,
                 objAttachment1: objAttachment1,
                 Maoni: Maoni,
+                commentUrl: "/SajiliComment",
+                commentRedirectUrl: "/MaombiKusajiliShuleSerikali",
               }
             );
           

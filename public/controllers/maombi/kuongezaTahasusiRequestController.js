@@ -173,6 +173,8 @@ kuongezaTahasusiRequestController.get(
               objAttachment: objAttachment,
               objAttachment1: objAttachment1,
               Maoni: Maoni,
+              commentUrl: "/OngezaComment",
+              commentRedirectUrl: "/KuongezaTahasusi",
             }
           );
         
@@ -182,7 +184,8 @@ kuongezaTahasusiRequestController.get(
 );
 
 kuongezaTahasusiRequestController.post(
-  "/OngezaComment",
+  "/KuongezaTahasusiComment",
+  can("create-comments"),
   isAuthenticated,
   function (req, res) {
     // console.log(req.body)
@@ -223,7 +226,7 @@ kuongezaTahasusiRequestController.post(
         establishId: establishId,
       },
       function (jsonData) {
-        const {  statusCode, message } = jsonData;
+        const { statusCode, message } = jsonData;
         // var data = jsonData.data;
         console.log(
           new Date() + " " + req.session.userName + ": /OngezaComment"

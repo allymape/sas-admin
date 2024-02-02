@@ -942,7 +942,7 @@ function tumaMaoniYako(
             ? "unataka kutuma kwenda kwa " + $("#staffs option:selected").text()
             : btn == "wasilisha"
             ? "unataka kuwasilisha"
-            : btn == "rudidsha"
+            : btn == "rudisha"
             ? "unataka rudisha kwa Mwombaji."
             : ""
         }?`,

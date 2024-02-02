@@ -138,6 +138,8 @@ kuongezaBweniRequestController.get(
             objAttachment1: objAttachment1,
             Maoni: Maoni,
             objAttachment2: objAttachment2,
+            commentUrl: "/BadiliBweniComment",
+            commentRedirectUrl: "/KuongezaBweni",
           }
         );
       }
@@ -148,6 +150,7 @@ kuongezaBweniRequestController.get(
 kuongezaBweniRequestController.post(
   "/BadiliBweniComment",
   isAuthenticated,
+  can("create-comments"),
   function (req, res) {
     var trackerId = req.body.trackerId;
     var from_user = req.session.userID;

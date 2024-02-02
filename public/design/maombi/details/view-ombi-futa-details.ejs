@@ -420,68 +420,7 @@
                                                 </table>
                                             </div>
                                         </div>
-                                        <% if(permission(req , "view-comments")){%>  
-                                        <div class="tab-pane" id="home-1" role="tabpanel">
-                                            <h5 class="card-title mb-4">Maoni</h5>
-                                            <% for(var i = 0; i < Maoni.length; i++){ %>
-                                            <div data-simplebar class="px-3 mx-n3 mb-2">
-                                                
-                                                <div class="d-flex mb-4">
-                                                    <!-- <div class="flex-shrink-0">
-                                                        <img src="../design/assets/images/users/avatar-7.jpg" alt="" class="avatar-xs rounded-circle" />
-                                                    </div> -->
-                                                    <div class="flex-grow-1 ms-3">
-                                                        <h5 class="fs-13"><a href="#"><%= Maoni[i].name %> ( <%= Maoni[i].rank_name %> )</a> <small class="text-muted"><%= Maoni[i].created_at %></small></h5>
-                                                        <p class="text-muted"><%= Maoni[i].coments %></p>
-                                                        <a href="javascript: void(0);" class="badge text-muted bg-light"><i class="mdi mdi-reply"></i> Reply</a>
-                                                    </div>
-                                                </div>
-                                                
-                                                <!-- <div class="d-flex mb-4">
-                                                    <div class="flex-shrink-0">
-                                                        <img src="../design/assets/images/users/avatar-8.jpg" alt="" class="avatar-xs rounded-circle" />
-                                                    </div>
-                                                    <div class="flex-grow-1 ms-3">
-                                                        <h5 class="fs-13"><a href="pages-profile.html">Thomas Taylor</a> <small class="text-muted">24 Dec 2021 - 05:20PM</small></h5>
-                                                        <p class="text-muted">If you have further questions, please contact Customer Support from the “Action Menu” on your <a href="javascript:void(0);" class="text-decoration-underline">Online Order Support</a>.</p>
-                                                        <a href="javascript: void(0);" class="badge text-muted bg-light"><i class="mdi mdi-reply"></i> Reply</a>
-                                                    </div>
-                                                </div>
-                                                <div class="d-flex">
-                                                    <div class="flex-shrink-0">
-                                                        <img src="../design/assets/images/users/avatar-10.jpg" alt="" class="avatar-xs rounded-circle" />
-                                                    </div>
-                                                    <div class="flex-grow-1 ms-3">
-                                                        <h5 class="fs-13"><a href="pages-profile.html">Tonya Noble</a> <small class="text-muted">26 min ago</small></h5>
-                                                        <p class="text-muted">Your <a href="javascript:void(0)" class="text-decoration-underline">Online Order Support</a> provides you with the most current status of your order. To help manage your order refer to the “Action Menu” to initiate return, contact Customer Support and more.</p>
-                                                        <div class="row g-2 mb-3">
-                                                            <div class="col-lg-1 col-sm-2 col-6">
-                                                                <img src="../design/assets/images/small/img-4.jpg" alt="" class="img-fluid rounded">
-                                                            </div>
-                                                            <div class="col-lg-1 col-sm-2 col-6">
-                                                                <img src="../design/assets/images/small/img-5.jpg" alt="" class="img-fluid rounded">
-                                                            </div>
-                                                        </div>
-                                                        <a href="javascript: void(0);" class="badge text-muted bg-light"><i class="mdi mdi-reply"></i> Reply</a>
-                                                        <div class="d-flex mt-4">
-                                                            <div class="flex-shrink-0">
-                                                                <img src="../design/assets/images/users/avatar-6.jpg" alt="" class="avatar-xs rounded-circle" />
-                                                            </div>
-                                                            <div class="flex-grow-1 ms-3">
-                                                                <h5 class="fs-13"><a href="pages-profile.html">Nancy Martino</a> <small class="text-muted">8 sec ago</small></h5>
-                                                                <p class="text-muted">Other shipping methods are available at checkout if you want your purchase delivered faster.</p>
-                                                                <a href="javascript: void(0);" class="badge text-muted bg-light"><i class="mdi mdi-reply"></i> Reply</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div> -->
-                                            </div>
-                                            <% } %>
-                                            <% if(permission(req , "create-comments")){%> 
-                                              <%- include('includes/formchangerfthiari.ejs') %>
-                                            <% } %>
-                                        </div>
-                                        <% } %>
+                                        <%- include('comments.ejs') %>
                                         <!--end tab-pane-->
                                         <div class="tab-pane" id="messages-1" role="tabpanel">
                                             <div class="table-responsive table-card">
@@ -702,6 +641,7 @@
      card_title :  '' , 
      pagination_script : true,
     }) %>
-<script type="text/javascript" src="/design/maombi/details/scripts/futa.js"></script>
+<!-- <script type="text/javascript" src="/design/maombi/details/scripts/futa.js"></script> -->
+<script type="text/javascript" src="/design/maombi/details/scripts/comments.js"></script>
 </body>
 </html>

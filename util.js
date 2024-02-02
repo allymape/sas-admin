@@ -19,11 +19,12 @@ const { level } = require("winston");
 
 module.exports = {
   isAuthenticated: (req, res, next) => {
+    //  console.log("Hapappapappappa" , req.body);
     const sessionToken = req.session.Token 
     const bodyToken =  req.body.token
     const authorization = "Bearer" + " " + ( sessionToken || bodyToken );
     // req.session.previousUrl = req.originalUrl;
-  
+   
     if (authorization) {
       const token = authorization.slice(7, authorization.length); // Bearer XXXXXX
       jwt.verify(
@@ -394,7 +395,7 @@ module.exports = {
       district_box,
       district_sqa_box
     );
-    doc.pipe(res);
+    doc.pipe(res , {end : true});
     doc.end();
   },
 

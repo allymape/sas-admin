@@ -182,6 +182,8 @@ umilikinaumenejaRequestController.get(
             objAttachment: objAttachment1,
             Maoni: Maoni,
             Refferes: Refferes,
+            commentUrl: "/MmilikiComment",
+            commentRedirectUrl: "/MaombiMmilikiShule",
           }
         );
 
@@ -193,6 +195,7 @@ umilikinaumenejaRequestController.get(
 umilikinaumenejaRequestController.post(
   "/MmilikiComment",
   isAuthenticated,
+  can('create-comments'),
   function (req, res) {
     // console.log(req.body);
     var trackerId = req.body.trackerId;

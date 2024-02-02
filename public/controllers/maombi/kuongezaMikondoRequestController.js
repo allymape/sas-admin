@@ -130,7 +130,9 @@ kuongezaMikondoRequestController.get(
               new Date() + " " + req.session.userName + ": /BadiliMkondo"
             );
             res.render(
-              path.join(__dirname + "/../../design/maombi/details/view-badili-ombi"),
+              path.join(
+                __dirname + "/../../design/maombi/details/view-badili-ombi"
+              ),
               {
                 req: req,
                 muda_ombi: remain_days,
@@ -171,14 +173,17 @@ kuongezaMikondoRequestController.get(
                 objAttachment: objAttachment,
                 objAttachment1: objAttachment1,
                 Maoni: Maoni,
-              });
+                commentUrl: "/KuongezaMikondoComment",
+                commentRedirectUrl: "/KuongezaMikondo",
+              }
+            );
            });
 });
 
 kuongezaMikondoRequestController.post(
-  "/BadiliComment",
+  "/KuongezaMikondoComment",
   isAuthenticated,
-  can("view-school-registration-private"),
+  can("create-comments"),
   function (req, res) {
     // console.log(req.body)
     var trackerId = req.body.trackerId;
@@ -198,36 +203,40 @@ kuongezaMikondoRequestController.post(
     var department = staffDet[1];
     var staffs = staffDet[0];
     // console.log(department + " and " + staffs)
-    
-      sendRequest(req, res , badiliReply, "POST", {
-            trackerId: trackerId,
-            from_user: from_user,
-            staffs: staffs,
-            coments: coments,
-            ombitype: ombitype,
-            newstream: newstream,
-            haliombi: haliombi,
-            replyType: 1,
-            oldstream: oldstream,
-            department: department,
-            schoolCategoryID: schoolCategoryID,
-            establishId: establishId,
-        },
-        function (jsonData) {
-            var message = jsonData.message;
-            var statusCode = jsonData.statusCode;
-            var data = jsonData.data;
-            console.log(
-              new Date() + " " + req.session.userName + ": /BadiliComment"
-            );
-            res.send({
-              statusCode: statusCode,
-              message: message,
-              data : data
-            });
-        }
-      );
-    
+
+    sendRequest(
+      req,
+      res,
+      badiliReply,
+      "POST",
+      {
+        trackerId: trackerId,
+        from_user: from_user,
+        staffs: staffs,
+        coments: coments,
+        ombitype: ombitype,
+        newstream: newstream,
+        haliombi: haliombi,
+        replyType: 1,
+        oldstream: oldstream,
+        department: department,
+        schoolCategoryID: schoolCategoryID,
+        establishId: establishId,
+      },
+      function (jsonData) {
+        var message = jsonData.message;
+        var statusCode = jsonData.statusCode;
+        var data = jsonData.data;
+        console.log(
+          new Date() + " " + req.session.userName + ": /BadiliComment"
+        );
+        res.send({
+          statusCode: statusCode,
+          message: message,
+          data: data,
+        });
+      }
+    );
   }
 );
 

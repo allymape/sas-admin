@@ -162,6 +162,8 @@ anzishaShuleRequestController.get("/TaarifaOmbi/:id", isAuthenticated, function 
                             objAttachment1: objAttachment1,
                             Maoni: Maoni,
                             objAttachment2: objAttachment2,
+                            commentUrl: "/TumaComment",
+                            commentRedirectUrl: "/MaombiKuanzishaShule",
                           }
                         );
                       }
@@ -173,47 +175,55 @@ anzishaShuleRequestController.get("/TaarifaOmbi/:id", isAuthenticated, function 
                   });
 });
 
-anzishaShuleRequestController.post("/TumaComment", isAuthenticated ,function (req, res) {
-  // console.log(req.body);
-  var trackerId = req.body.trackerId;
-  var from_user = req.session.userID;
-  var staff = req.body.staffs;
-  var coments = req.body.coments;
-  var haliombi = req.body.haliombi;
-  var attachment = req.body.attachment;
-  var kiambatisho = req.body.kiambatisho;
-  var attach_length = req.body.attach_length;
-  var schoolCategoryID = req.body.schoolCategoryID;
-  var ombitype = req.body.ombitype;
-  var staffDet = staff.split("-");
-  var department = staffDet[1];
-  var staffs = staffDet[0];
+anzishaShuleRequestController.post(
+  "/TumaComment",
+  isAuthenticated,
+  can("create-comments"),
+  function (req, res) {
+    // console.log(req.body);
+    var trackerId = req.body.trackerId;
+    var from_user = req.session.userID;
+    var staff = req.body.staffs;
+    var coments = req.body.coments;
+    var haliombi = req.body.haliombi;
+    var attachment = req.body.attachment;
+    var kiambatisho = req.body.kiambatisho;
+    var attach_length = req.body.attach_length;
+    var schoolCategoryID = req.body.schoolCategoryID;
+    var ombitype = req.body.ombitype;
+    var staffDet = staff.split("-");
+    var department = staffDet[1];
+    var staffs = staffDet[0];
 
-  // return;
-  // console.log(department + " and " + staffs)
-        sendRequest(req , res , ombiReply , "POST" , 
-         {
-          trackerId: trackerId,
-          from_user: from_user,
-          staffs: staffs,
-          coments: coments,
-          ombitype: ombitype,
-          haliombi: haliombi,
-          replyType: 1,
-          department: department,
-          schoolCategoryID: schoolCategoryID
-        } , (jsonData) => {
-          const {statusCode , message } = jsonData;
-          // var data = jsonData.data;
-          console.log(
-            new Date() + " " + req.session.userName + ": /TumaComment"
-          );
-          res.send({
-            statusCode : statusCode,
-            message : message
-          })
-      });
-  
-});
+    // return;
+    // console.log(department + " and " + staffs)
+    sendRequest(
+      req,
+      res,
+      ombiReply,
+      "POST",
+      {
+        trackerId: trackerId,
+        from_user: from_user,
+        staffs: staffs,
+        coments: coments,
+        ombitype: ombitype,
+        haliombi: haliombi,
+        replyType: 1,
+        department: department,
+        schoolCategoryID: schoolCategoryID,
+      },
+      (jsonData) => {
+        const { statusCode, message } = jsonData;
+        // var data = jsonData.data;
+        console.log(new Date() + " " + req.session.userName + ": /TumaComment");
+        res.send({
+          statusCode: statusCode,
+          message: message,
+        });
+      }
+    );
+  }
+);
 
 module.exports = anzishaShuleRequestController;

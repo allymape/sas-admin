@@ -324,29 +324,7 @@
                                                 </table>
                                             </div>
                                         </div>
-                                        <% if(permission(req , "view-comments")){%>  
-                                        <div class="tab-pane" id="home-1" role="tabpanel">
-                                            <h5 class="card-title mb-4">Maoni</h5>
-                                            <% for(var i = 0; i < Maoni.length; i++){ %>
-                                            <div data-simplebar class="px-3 mx-n3 mb-2">
-                                                
-                                                <div class="d-flex mb-4">
-                                                    <!-- <div class="flex-shrink-0">
-                                                        <img src="../design/assets/images/users/avatar-7.jpg" alt="" class="avatar-xs rounded-circle" />
-                                                    </div> -->
-                                                    <div class="flex-grow-1 ms-3">
-                                                        <h5 class="fs-13"><a href="#"><%= Maoni[i].name %> ( <%= Maoni[i].rank_name %> )</a> <small class="text-muted"><%= Maoni[i].created_at %></small></h5>
-                                                        <p class="text-muted"><%= Maoni[i].coments %></p>
-                                                        <a href="javascript: void(0);" class="badge text-muted bg-light"><i class="mdi mdi-reply"></i> Reply</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <% } %>
-                                            <% if(permission(req , "create-comments")){%> 
-                                               <%- include('includes/formchangerbadilibweni.ejs') %>
-                                            <% } %>
-                                        </div>
-                                        <% } %>
+                                        <%- include('comments.ejs') %>
                                         <!--end tab-pane-->
                                         <div class="tab-pane" id="messages-1" role="tabpanel">
                                             <div class="table-responsive table-card">
@@ -547,6 +525,7 @@
      card_title :  '' , 
      pagination_script : true,
     }) %>
-<script type="text/javascript" src="/design/maombi/details/scripts/badilibweni.js"></script>
+<!-- <script type="text/javascript" src="/design/maombi/details/scripts/badilibweni.js"></script> -->
+<script type="text/javascript" src="/design/maombi/details/scripts/comments.js"></script>
 </body>
 </html>

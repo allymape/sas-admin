@@ -2,13 +2,13 @@ require("dotenv").config();
 const express = require("express");
 
 const baruaController = express.Router();
-
+const cors = require("cors");
 var session = require("express-session");
 const { isAuthenticated, sendRequest,  generateLetter, bodyContent, formatDate, decodeSignature, can } = require("../../../util");
 const API_BASE_URL = process.env.API_BASE_URL;
 const baruaDetailsAPI = API_BASE_URL + "barua";
 
-baruaController.get("/barua/:tracking_number", isAuthenticated,can('view-letters') ,function (req, res) {
+baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view-letters') ,function (req, res) {
         const tracking_number = req.params.tracking_number;
         const type = req.query.type;
         const formData = {

@@ -153,15 +153,23 @@ userController.post('/BaruaAuthentication' , (req , res) =>{
       json: req.body,
     },
     (err, response, body) => {
-      console.log(response)
+      // console.log(response)
       if(err) console.log(err);
-      const {success , statusCode , message , token} = body;
-      res.send({
-        success,
-        message,
-        statusCode,
-        token
-      })
+      if(body != undefined){
+        const {success , statusCode , message , token} = body;
+          res.send({
+            success,
+            message,
+            statusCode,
+            token
+          })
+      }else{
+         res.send({
+           success : false,
+           message : "No content",
+           statusCode : 404,
+         });
+      }
     })
 });
 userController.get(

@@ -184,7 +184,7 @@ global.numberFormat = (number , format = `0,0`) => {
     return numeral(number).format(format);
 }
 
-global.dateFormat = (date , format = "DD/MM/YYYY hh:mm:ss") => {
+global.dateFormat = (date , format = "DD/MM/YYYY HH:mm:ss") => {
     return formatDate(date , format);
 }
 

@@ -150,6 +150,8 @@ futaShuleRequestController.get("/FutaShuleTaarifa/:id", isAuthenticated, functio
                 objAttachment1: objAttachment1,
                 Maoni: Maoni,
                 objAttachment2: objAttachment2,
+                commentUrl: "/",
+                commentRedirectUrl: "/",
               }
             );
           
@@ -158,47 +160,57 @@ futaShuleRequestController.get("/FutaShuleTaarifa/:id", isAuthenticated, functio
   
 });
 
-futaShuleRequestController.post("/FutaComment", isAuthenticated, function (req, res) {
-  // console.log(req.body)
-  var trackerId = req.body.trackerId;
-  var from_user = req.session.userID;
-  var staff = req.body.staffs;
-  var coments = req.body.coments;
-  var haliombi = req.body.haliombi;
-  var attachment = req.body.attachment;
-  var kiambatisho = req.body.kiambatisho;
-  var schoolCategoryID = req.body.schoolCategoryID;
-  var schoolId = req.body.schoolId;
-  var ombitype = req.body.ombitype;
-  var staffDet = staff.split("-");
-  var department = staffDet[1];
-  var staffs = staffDet[0];
-  // console.log(department + " and " + staffs)
-  
-  sendRequest(req, res, futaReply, "POST",{
-          trackerId: trackerId,
-          from_user: from_user,
-          staffs: staffs,
-          coments: coments,
-          ombitype: ombitype,
-          haliombi: haliombi,
-          replyType: 1,
-          department: department,
-          schoolCategoryID: schoolCategoryID,
-          schoolId: schoolId,
-        } , (jsonData) => {
-          const {statusCode, message } = jsonData;
-          console.log(
-            new Date() + " " + req.session.userName + ": /FutaComment ..."
-          );
-          res.send({
-            statusCode: statusCode,
-            message: message,
-          });
+futaShuleRequestController.post(
+  "/FutaComment",
+  isAuthenticated,
+  can("create-comments"),
+  function (req, res) {
+    // console.log(req.body)
+    var trackerId = req.body.trackerId;
+    var from_user = req.session.userID;
+    var staff = req.body.staffs;
+    var coments = req.body.coments;
+    var haliombi = req.body.haliombi;
+    var attachment = req.body.attachment;
+    var kiambatisho = req.body.kiambatisho;
+    var schoolCategoryID = req.body.schoolCategoryID;
+    var schoolId = req.body.schoolId;
+    var ombitype = req.body.ombitype;
+    var staffDet = staff.split("-");
+    var department = staffDet[1];
+    var staffs = staffDet[0];
+    // console.log(department + " and " + staffs)
+
+    sendRequest(
+      req,
+      res,
+      futaReply,
+      "POST",
+      {
+        trackerId: trackerId,
+        from_user: from_user,
+        staffs: staffs,
+        coments: coments,
+        ombitype: ombitype,
+        haliombi: haliombi,
+        replyType: 1,
+        department: department,
+        schoolCategoryID: schoolCategoryID,
+        schoolId: schoolId,
+      },
+      (jsonData) => {
+        const { statusCode, message } = jsonData;
+        console.log(
+          new Date() + " " + req.session.userName + ": /FutaComment ..."
+        );
+        res.send({
+          statusCode: statusCode,
+          message: message,
+        });
       }
     );
- 
-});
+  }
+);
 
 
 module.exports = futaShuleRequestController;

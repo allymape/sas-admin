@@ -1,0 +1,66 @@
+<!-- <div>
+    <h5 class="mb-4">Maoni</h5>
+    <div class="timeline-2">
+        <div class="timeline-continue">
+            <div class="row">
+                <div class="col-12">
+                    <div class="timeline-year">
+                        <p class="shadow">08 Dec 2021</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row timeline-right">
+                <div class="col-12">
+                    <p class="timeline-date">
+                        10:24AM to 11:15PM
+                    </p>
+                </div>
+                <div class="col-12">
+                    <div class="timeline-box shadow">
+                        <div class="timeline-text">
+                            <h5>Client Meeting (Nancy Martino)</h5>
+                            <p class="text-muted mb-0">A client meeting, meaning, direct collaboration and communication with a customer, is the best way to understand their needs and how you can help support them.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>  -->
+ <% if(permission(req , "view-comments")){%>
+ <div class="tab-pane" id="home-1" role="tabpanel">
+   <!-- <h5 class="card-title">Maoni</h5> -->
+     <div class="timeline-2">
+        <div class="timeline-continue">
+   <% for(var i = 0; i < Maoni.length; i++){ %>
+    <% const {name , coments , created_at , rank_name} = Maoni[i]; %>
+            <div class="row timeline-right">
+                <div class="col-12" style="position: absolute;">
+                    <div class="timeline-year">
+                        <p class="shadow text-primary">
+                            <b>M.<%= Maoni.length - i%></b>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="timeline-box shadow" style="margin: 5px 100px;">
+                        <div class="timeline-text">
+                            <h6><%= name %> (<%= rank_name %>) - <%= dateFormat(created_at , 'MMM DD/MM/YYYY HH:mm:ss') %></h6>
+                            <p class="text-muted mb-0 text-justify"><%= coments %></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+   <% } %>
+      </div>
+    </div>
+   <% if(permission(req , "create-comments")){%>
+      <% if(Maoni.length > 0){ %>
+        <hr>
+      <% } %>
+   <%- include('includes/form_comment.ejs') %>
+   <% } %>
+ </div>
+ <% } %>
+
+

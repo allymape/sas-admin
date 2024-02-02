@@ -142,6 +142,8 @@ kubadiliJinaRequestController.get(
                   objAttachment1: objAttachment1,
                   Maoni: Maoni,
                   objAttachment2: objAttachment2,
+                  commentUrl: "/BadiliJinaComment",
+                  commentRedirectUrl: "/BadiliJina",
                 }
               );
         }
@@ -150,58 +152,67 @@ kubadiliJinaRequestController.get(
   }
 );
 
-kubadiliJinaRequestController.post("/BadiliJinaComment",  isAuthenticated, function (req, res) {
-  // console.log(req.body)
-  var trackerId = req.body.trackerId;
-  var from_user = req.session.userID;
-  var staff = req.body.staffs;
-  var coments = req.body.coments;
-  var haliombi = req.body.haliombi;
-  var attachment = req.body.attachment;
-  var kiambatisho = req.body.kiambatisho;
-  var attach_length = req.body.attach_length;
-  var school_name_old = req.body.school_name_old;
-  var school_name_new = req.body.school_name_new;
-  var newstream = req.body.newstream;
-  var oldstream = req.body.oldstream;
-  var establishId = req.body.establishId;
-  var schoolCategoryID = req.body.schoolCategoryID;
-  var ombitype = req.body.ombitype;
-  var staffDet = staff.split("-");
-  var department = staffDet[1];
-  var staffs = staffDet[0];
-  // console.log(department + " and " + staffs)
-    sendRequest(req , res ,badiliJinaReply, "POST",{
-          trackerId: trackerId,
-          from_user: from_user,
-          school_name_new: school_name_new,
-          staffs: staffs,
-          coments: coments,
-          ombitype: ombitype,
-          newstream: newstream,
-          haliombi: haliombi,
-          replyType: 1,
-          oldstream: oldstream,
-          school_name_old: school_name_old,
-          department: department,
-          schoolCategoryID: schoolCategoryID,
-          establishId: establishId,
-        },
+kubadiliJinaRequestController.post(
+  "/BadiliJinaComment",
+  isAuthenticated,
+  can("create-comments"),
+  function (req, res) {
+    // console.log(req.body)
+    var trackerId = req.body.trackerId;
+    var from_user = req.session.userID;
+    var staff = req.body.staffs;
+    var coments = req.body.coments;
+    var haliombi = req.body.haliombi;
+    var attachment = req.body.attachment;
+    var kiambatisho = req.body.kiambatisho;
+    var attach_length = req.body.attach_length;
+    var school_name_old = req.body.school_name_old;
+    var school_name_new = req.body.school_name_new;
+    var newstream = req.body.newstream;
+    var oldstream = req.body.oldstream;
+    var establishId = req.body.establishId;
+    var schoolCategoryID = req.body.schoolCategoryID;
+    var ombitype = req.body.ombitype;
+    var staffDet = staff.split("-");
+    var department = staffDet[1];
+    var staffs = staffDet[0];
+    // console.log(department + " and " + staffs)
+    sendRequest(
+      req,
+      res,
+      badiliJinaReply,
+      "POST",
+      {
+        trackerId: trackerId,
+        from_user: from_user,
+        school_name_new: school_name_new,
+        staffs: staffs,
+        coments: coments,
+        ombitype: ombitype,
+        newstream: newstream,
+        haliombi: haliombi,
+        replyType: 1,
+        oldstream: oldstream,
+        school_name_old: school_name_old,
+        department: department,
+        schoolCategoryID: schoolCategoryID,
+        establishId: establishId,
+      },
       function (jsonData) {
-          var message = jsonData.message;
-          var statusCode = jsonData.statusCode;
-          var data = jsonData.data;
-            console.log(
-              new Date() + " " + req.session.userName + ": /BadiliJinaComment"
-            );
-            res.send({
-              statusCode: statusCode,
-              message: message,
-              data : data
-            });
+        var message = jsonData.message;
+        var statusCode = jsonData.statusCode;
+        var data = jsonData.data;
+        console.log(
+          new Date() + " " + req.session.userName + ": /BadiliJinaComment"
+        );
+        res.send({
+          statusCode: statusCode,
+          message: message,
+          data: data,
+        });
       }
     );
-  
-});
+  }
+);
 module.exports = kubadiliJinaRequestController;
 

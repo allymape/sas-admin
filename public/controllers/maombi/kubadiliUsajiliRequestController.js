@@ -171,6 +171,8 @@ kubadiliUsajiliRequestController.get(
                 objAttachment1: objAttachment1,
                 Maoni: Maoni,
                 objAttachment2: objAttachment2,
+                commentUrl: "/BadiliAinaComment",
+                commentRedirectUrl: "/BadiliUsajili",
               }
             );
             });
@@ -180,6 +182,7 @@ kubadiliUsajiliRequestController.get(
 kubadiliUsajiliRequestController.post(
   "/BadiliAinaComment",
   isAuthenticated,
+  can("create-comments"),
   function (req, res) {
     // console.log(req.body)
     var trackerId = req.body.trackerId;

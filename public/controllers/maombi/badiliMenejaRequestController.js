@@ -202,13 +202,15 @@ badiliMenejaRequestController.get(
                   WardNameMtu: WardNameMtu,
                   userLevel: req.user.cheo,
                   subcategory: subcategory,
-                  phone_number_old : phone_number_old,
+                  phone_number_old: phone_number_old,
                   count: count,
                   staffs: jsonData.staffs,
                   attachment_path: attachment_path,
                   status: jsonData.status,
                   Maoni: Maoni,
                   Refferes: Refferes,
+                  commentUrl: "/MenejaComment",
+                  commentRedirectUrl: "/",
                 }
               );
             
@@ -219,41 +221,50 @@ badiliMenejaRequestController.get(
   }
 );
 
-badiliMenejaRequestController.post("/MenejaComment", isAuthenticated, function (req, res) {
-  // console.log(req.body)
-  var trackerId = req.body.trackerId;
-  var from_user = req.session.userID;
-  var staff = req.body.staffs;
-  var owner_name = req.body.owner_name;
-  var authorized_person = req.body.authorized_person;
-  var owner_name_old = req.body.owner_name_old;
-  var coments = req.body.coments;
-  var authorized_person_old = req.body.authorized_person_old;
-  var haliombi = req.body.haliombi;
-  var attachment = req.body.attachment;
-  var kiambatisho = req.body.kiambatisho;
-  var attach_length = req.body.attach_length;
-  var schoolCategoryID = req.body.schoolCategoryID;
-  var ombitype = req.body.ombitype;
-  var staffDet = staff.split("-");
-  var department = staffDet[1];
-  var staffs = staffDet[0];
-  // console.log(department + " and " + staffs)
+badiliMenejaRequestController.post(
+  "/MenejaComment",
+  isAuthenticated,
+  can("create-comments"),
+  function (req, res) {
+    // console.log(req.body)
+    var trackerId = req.body.trackerId;
+    var from_user = req.session.userID;
+    var staff = req.body.staffs;
+    var owner_name = req.body.owner_name;
+    var authorized_person = req.body.authorized_person;
+    var owner_name_old = req.body.owner_name_old;
+    var coments = req.body.coments;
+    var authorized_person_old = req.body.authorized_person_old;
+    var haliombi = req.body.haliombi;
+    var attachment = req.body.attachment;
+    var kiambatisho = req.body.kiambatisho;
+    var attach_length = req.body.attach_length;
+    var schoolCategoryID = req.body.schoolCategoryID;
+    var ombitype = req.body.ombitype;
+    var staffDet = staff.split("-");
+    var department = staffDet[1];
+    var staffs = staffDet[0];
+    // console.log(department + " and " + staffs)
 
-    sendRequest(req , res , menejaReply , "POST" , {
-          trackerId: trackerId,
-          from_user: from_user,
-          owner_name: owner_name,
-          authorized_person: authorized_person,
-          staffs: staffs,
-          coments: coments,
-          ombitype: ombitype,
-          owner_name_old: owner_name_old,
-          authorized_person_old: authorized_person_old,
-          haliombi: haliombi,
-          replyType: 1,
-          department: department,
-          schoolCategoryID: schoolCategoryID,
+    sendRequest(
+      req,
+      res,
+      menejaReply,
+      "POST",
+      {
+        trackerId: trackerId,
+        from_user: from_user,
+        owner_name: owner_name,
+        authorized_person: authorized_person,
+        staffs: staffs,
+        coments: coments,
+        ombitype: ombitype,
+        owner_name_old: owner_name_old,
+        authorized_person_old: authorized_person_old,
+        haliombi: haliombi,
+        replyType: 1,
+        department: department,
+        schoolCategoryID: schoolCategoryID,
       },
       function (jsonData) {
         const { statusCode, message } = jsonData;
@@ -266,6 +277,7 @@ badiliMenejaRequestController.post("/MenejaComment", isAuthenticated, function (
         });
       }
     );
-});
+  }
+);
 
 module.exports = badiliMenejaRequestController;
