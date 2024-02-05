@@ -43,12 +43,16 @@
       <button type="button" id="btn-tuma" onclick="tuma(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" title="Unatuma ombi liendelee kushughulikiwa zaidi" class="btn btn-primary d-none">Tuma</button>
 
       <% if(userLevel=='w1' ||  userLevel=='adsa' || userLevel=='ke' ){ %>
-        <button type="button" id="btn-wasilisha" onclick="wasilisha(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" title="Kwa kubonyeza kifute hiki unalituma ombi hili kwenda ngazi ya juu kwa utekelezaji" class="btn btn-success">
-            <%= userLevel == "ke" ? "Thibitisha" : "Wasilisha" %>
-        </button>
         <% if(userLevel=='ke' ){ %>
-        <button type="button" id="btn-kataa" onclick="kataa(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" title="Kwa kubonyeza kifute hiki unakataa usajili wa shule hii" class="btn btn-danger">Kataa</button>
-        <% } %>
+          <button type="button" id="btn-thibitisha" onclick="thibitisha(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" title="Kwa kubonyeza kifute hiki unakataa ombi hili" class="btn btn-success">
+            Thibitisha
+          </button>
+          <button type="button" id="btn-kataa" onclick="kataa(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" title="Kwa kubonyeza kifute hiki unalituma ombi hili kwenda ngazi ya juu kwa utekelezaji" class="btn btn-danger">Kataa</button>
+        <% }else{ %>
+          <button type="button" id="btn-wasilisha" onclick="wasilisha(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" title="Kwa kubonyeza kifute hiki unathibitisha ombi hili" class="btn btn-success">
+           Wasilisha
+          </button>
+        <% }  %>
          <button type="button" id="btn-rudisha" onclick="rudisha(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" title="Kwa kubonyeza kifute hiki unalirudisha ombi kwa mwombaji" class="btn btn-info">Rudisha kwa
             Mwombaji
         </button>

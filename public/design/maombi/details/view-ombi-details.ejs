@@ -372,10 +372,12 @@
                                     <tr>
                                         <td class="d-flex justify-content-between">
                                             <div><b><%= school_name %></b></div>
-                                            <a href="#" class="btn btn-link" onclick="badili('<%= school_name %>')"
-                                            title="Kama jina la shule haliko sawa badilisha hapa" bs-data-toggle="tooltip">
-                                                <span class="bx bx-edit"></span> Badili Jina
-                                            </a>
+                                            <% if(permission(req , 'update-school-name')){ %>
+                                                <a href="#" class="btn btn-link" onclick="badili('<%= school_name %>')"
+                                                title="Kama jina la shule haliko sawa badilisha hapa" bs-data-toggle="tooltip">
+                                                    <span class="bx bx-edit"></span> Badili Jina
+                                                </a>
+                                            <% } %>
                                         </td>
                                         <td><b><%= schoolCategory %></b></td>
                                         <td><b><%= language %></b></td>

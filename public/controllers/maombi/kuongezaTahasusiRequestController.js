@@ -9,7 +9,7 @@ const { isAuthenticated, sendRequest, can, modifiedUrl } = require("../../../uti
 var API_BASE_URL = process.env.API_BASE_URL;
 var badiliTahasusi = API_BASE_URL + "maombi-badili-tahasusi";
 var ongezatahasusiDetails = API_BASE_URL + "view-ongeza-tahasusi-details";
-var ongezaReply = API_BASE_URL + "tuma-ongeza-majibu";
+var ongezaReply = API_BASE_URL + "tuma-ongeza-tahasusi";
 // Display
 
 kuongezaTahasusiRequestController.get(
@@ -173,7 +173,7 @@ kuongezaTahasusiRequestController.get(
               objAttachment: objAttachment,
               objAttachment1: objAttachment1,
               Maoni: Maoni,
-              commentUrl: "/OngezaComment",
+              commentUrl: "/KuongezaTahasusiComment",
               commentRedirectUrl: "/KuongezaTahasusi",
             }
           );
@@ -185,10 +185,10 @@ kuongezaTahasusiRequestController.get(
 
 kuongezaTahasusiRequestController.post(
   "/KuongezaTahasusiComment",
-  can("create-comments"),
   isAuthenticated,
+  can("create-comments"),
   function (req, res) {
-    // console.log(req.body)
+    console.log(req.body)
     var trackerId = req.body.trackerId;
     var from_user = req.session.userID;
     var staff = req.body.staffs;

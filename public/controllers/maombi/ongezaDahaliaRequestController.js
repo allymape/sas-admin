@@ -8,6 +8,7 @@ const { isAuthenticated, sendRequest, can, modifiedUrl } = require("../../../uti
 var API_BASE_URL = process.env.API_BASE_URL;
 var badiliDahalia = API_BASE_URL + "maombi-ongeza-dahalia";
 var badiliDahaliaDetalis = API_BASE_URL + "view-badili-dahalia";
+var ongezaDahaliaReply = API_BASE_URL + "tuma-ongeza-dahalia";
 
 // Display
 ongezaDahaliaRequestController.get(
@@ -115,6 +116,8 @@ ongezaDahaliaRequestController.get(
         var area = data[0].area;
         var streamOld = data[0].streamOld;
         var streamNew = data[0].streamNew;
+        var oldIsHostel = data[0].oldIsHostel;
+        var newIsHostel = data[0].newIsHostel;
         var establishId = data[0].establishId;
         var WardName = data[0].WardName;
         var structure = data[0].structure;
@@ -157,6 +160,8 @@ ongezaDahaliaRequestController.get(
             baruaPepe: baruaPepe,
             streamNew: streamNew,
             streamOld: streamOld,
+            oldIsHostel : oldIsHostel,
+            newIsHostel : newIsHostel,
             language: language,
             school_size: school_size,
             userLevel: req.user.cheo,
@@ -211,7 +216,7 @@ ongezaDahaliaRequestController.post(
     sendRequest(
       req,
       res,
-      badiliReply,
+      ongezaDahaliaReply,
       "POST",
       {
         trackerId: trackerId,

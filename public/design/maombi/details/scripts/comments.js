@@ -3,11 +3,13 @@ $("#staffs").on('change' , function(){
            if(['#',""].includes(id)){
              $("#btn-tuma").addClass("d-none");
              $("#btn-wasilisha").removeClass("d-none");
+             $("#btn-thibitisha").removeClass("d-none");
              $("#btn-kataa").removeClass("d-none");
              $("#btn-rudisha").removeClass("d-none");
            }else{
              $("#btn-wasilisha").addClass("d-none");
              $("#btn-kataa").addClass("d-none");
+             $("#btn-thibitisha").addClass("d-none");
              $("#btn-rudisha").addClass("d-none");
             $("#btn-tuma").removeClass("d-none");
            }
@@ -18,7 +20,11 @@ function tuma(commentUrl , redirectUrl) {
 }
 // wasilisha;
 function wasilisha(commentUrl , redirectUrl) {
-  formSubmit(commentUrl, redirectUrl, "wasilisha", 2);
+  formSubmit(commentUrl, redirectUrl, "wasilisha", 1);
+}
+// wasilisha;
+function thibitisha(commentUrl , redirectUrl) {
+  formSubmit(commentUrl, redirectUrl, "thibitisha", 2);
 }
 
 function kataa(commentUrl, redirectUrl) {

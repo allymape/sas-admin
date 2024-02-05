@@ -8,7 +8,7 @@ const { isAuthenticated, sendRequest, can, modifiedUrl } = require("../../../uti
 var API_BASE_URL = process.env.API_BASE_URL;
 var maobadilimmilikiShuleListAPI = API_BASE_URL + "maombi-badili-mmiliki-shule";
 var badiliMmilikiDetails = API_BASE_URL + "view-ombi-badili-mmiliki-details";
-var mmilikiReply = API_BASE_URL + "tuma-mmiliki-majibu";
+var mmilikiReply = API_BASE_URL + "tuma-mmiliki-badili-majibu";
 // Display
 badiliMmilikiRequestController.get(
   "/BadiliMmiliki",
@@ -217,8 +217,8 @@ badiliMmilikiRequestController.get(
             Maoni: Maoni,
             Refferes: Refferes,
             objAttachment1: objAttachment1,
-            commentUrl: "/",
-            commentRedirectUrl: "/",
+            commentUrl: "/MmilikiBadiliComment",
+            commentRedirectUrl: "/BadiliMmiliki",
           }
         );
       }
@@ -228,6 +228,7 @@ badiliMmilikiRequestController.get(
 
 badiliMmilikiRequestController.post(
   "/MmilikiBadiliComment",
+  isAuthenticated,
   can("create-comments"),
   function (req, res) {
     // console.log(req.body)

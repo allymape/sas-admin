@@ -901,6 +901,7 @@ function tumaMaoniYako(
       (staffsInput == "#" && btn == "wasilisha") ||
       (staffsInput != "#" && staffsInput != "" && btn == "tuma") ||
       (staffsInput == "#" && staffsInput != "" && btn == "rudisha") ||
+      (staffsInput == "#" && staffsInput != "" && btn == "thibitisha") ||
       (staffsInput == "#" && staffsInput != "" && btn == "kataa")
     ) {
       confirmAction(
@@ -937,16 +938,20 @@ function tumaMaoniYako(
         },
         "Ndio!, Endelea",
         "warning",
-        `Je, una uhakika ${
+        `Je, una uhakika unataka ${
           btn == "tuma"
-            ? "unataka kutuma kwenda kwa " + $("#staffs option:selected").text()
+            ? "kutuma kwenda kwa " + $("#staffs option:selected").text()
             : btn == "wasilisha"
-            ? "unataka kuwasilisha"
+            ? "kuwasilisha ombi hili kwenda ngazi juu"
             : btn == "rudisha"
-            ? "unataka rudisha kwa Mwombaji."
+            ? "kurudisha ombi hili kwa Mwombaji"
+            : btn == "thibitisha"
+            ? "kuthibitisha ombi hili"
+            : btn == "kataa"
+            ? "kukataa ombi hili"
             : ""
         }?`,
-        "Thibitisha"
+        "Confirmation"
       );
     } else {
       if (btn == "tuma") {

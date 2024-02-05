@@ -8,7 +8,7 @@ const { isAuthenticated, sendRequest, can, modifiedUrl } = require("../../../uti
 var API_BASE_URL = process.env.API_BASE_URL;
 var badiliMkondo = API_BASE_URL + "maombi-badili-mkondo";
 var badiliDetails = API_BASE_URL + "view-badili-details";
-var badiliReply = API_BASE_URL + "tuma-badili-majibu";
+var badiliReply = API_BASE_URL + "tuma-badili-mikondo";
 // Display
 kuongezaMikondoRequestController.get(
   "/KuongezaMikondo",

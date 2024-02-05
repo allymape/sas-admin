@@ -135,7 +135,7 @@ schoolController.post("/UpdateShule/:id" , isAuthenticated , function(req , res)
      });
 });
 
-schoolController.post("/changeshule", isAuthenticated, function (req, res) {
+schoolController.post("/changeshule", isAuthenticated, can('update-school-name'), function (req, res) {
   const trackingId = req.body.trackingId;
   const from_user = req.session.userID;
   const newName = req.body.newName;
