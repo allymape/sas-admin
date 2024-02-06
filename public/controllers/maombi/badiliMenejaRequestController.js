@@ -34,31 +34,31 @@ badiliMenejaRequestController.get(
         const data = jsonData.dataList;
         const {numRows} = jsonData
         const obj = [];
-        for (var i = 0; i < data.length; i++) {
-          var tracking_number = data[i].tracking_number;
-          var user_id = data[i].user_id;
-          var LgaName = data[i].LgaName;
-          var RegionName = data[i].RegionName;
-          var school_name = data[i].school_name;
-          var WardName = data[i].WardName;
-          var owner_name = data[i].owner_name;
-          var created_at = data[i].created_at;
-          var remain_days = data[i].remain_days;
-          var folio = data[i].folio;
-          req.session.TrackingNumber = tracking_number;
-          obj.push({
-            tracking_number: tracking_number,
-            user_id: user_id,
-            WardName: WardName,
-            school_name: school_name,
-            LgaName: LgaName,
-            owner_name: owner_name,
-            RegionName: RegionName,
-            created_at: created_at,
-            remain_days: remain_days,
-            folio
-          });
-        }
+        // for (var i = 0; i < data.length; i++) {
+        //   var tracking_number = data[i].tracking_number;
+        //   var user_id = data[i].user_id;
+        //   var LgaName = data[i].LgaName;
+        //   var RegionName = data[i].RegionName;
+        //   var school_name = data[i].school_name;
+        //   var WardName = data[i].WardName;
+        //   var owner_name = data[i].owner_name;
+        //   var created_at = data[i].created_at;
+        //   var remain_days = data[i].remain_days;
+        //   var folio = data[i].folio;
+        //   req.session.TrackingNumber = tracking_number;
+        //   obj.push({
+        //     tracking_number: tracking_number,
+        //     user_id: user_id,
+        //     WardName: WardName,
+        //     school_name: school_name,
+        //     LgaName: LgaName,
+        //     owner_name: owner_name,
+        //     RegionName: RegionName,
+        //     created_at: created_at,
+        //     remain_days: remain_days,
+        //     folio
+        //   });
+        // }
         console.log(
           new Date() + " " + req.session.userName + ": /BadiliMmiliki"
         );
@@ -67,7 +67,7 @@ badiliMenejaRequestController.get(
           {
             req: req,
             summary: jsonData.dataSummary,
-            maombi: obj,
+            maombi: data,
             pagination: {
               total: Number(numRows),
               current: Number(page),
@@ -99,7 +99,16 @@ badiliMenejaRequestController.get(
         "POST",
         { TrackingNumber: TrackingNumber,},
       (jsonData) => {
-            var data = jsonData.data;
+              var data = jsonData.data;
+              var manager_full_name = data[0].manager_full_name
+              var former_manager_full_name = data[0].former_manager_full_name
+              var manager_phone_no = data[0].manager_phone_no;
+              var manager_email = data[0].manager_email;
+              var manager_cv = data[0].manager_cv;
+              var former_manager_phone_no = data[0].former_manager_phone_no;
+              var former_manager_email = data[0].former_manager_email;
+              var former_manager_cv = data[0].former_manager_cv;
+              var manager_full_name = data[0].manager_full_name
               var remain_days = data[0].remain_days;
               var created_at = data[0].created_at;
               var tracking_number = data[0].tracking_number;
@@ -110,7 +119,6 @@ badiliMenejaRequestController.get(
               var LgaNameMtu = data[0].LgaNameMtu;
               var RegionName = data[0].RegionName;
               var RegionNameMtu = data[0].RegionNameMtu;
-              var owner_phone_no = data[0].owner_phone_no;
               var fullname = data[0].fullname;
               var schoolCategory = data[0].schoolCategory;
               var registry = data[0].registry;
@@ -120,7 +128,6 @@ badiliMenejaRequestController.get(
               var occupationManager = data[0].occupationManager;
               var mwombajiAddress = data[0].mwombajiAddress;
               var mwombajiPhoneNo = data[0].mwombajiPhoneNo;
-              var manager_phone_number = data[0].manager_phone_number;
               var manager_email = data[0].manager_email;
               var house_number = data[0].house_number;
               var baruaPepe = data[0].baruaPepe;
@@ -139,18 +146,18 @@ badiliMenejaRequestController.get(
               var managerRegionName = data[0].managerRegionName;
               var purpose = data[0].purpose;
               var owner_email_old = data[0].owner_email_old;
-              var phone_number_old = data[0].phone_number_old;
               var authorized_person_old = data[0].authorized_person_old;
               var owner_name = data[0].owner_name;
               var owner_email = data[0].owner_email;
               var count = jsonData.maoni[0].count;
               var objAttachment = jsonData.objAttachment;
+              var objAttachment1 = jsonData.objAttachment1;
               var Maoni = jsonData.Maoni;
               var Refferes = jsonData.Refferes;
               // var maoni = JSON.parse(jsonData.maoni)
               // console.log(attachment_path)
               console.log(
-                new Date() + " " + req.session.userName + ": /ViewOmbiMmiliki"
+                new Date() + " " + req.session.userName + ": /ViewOmbiMeneja"
               );
               res.render(
                 path.join(
@@ -159,6 +166,14 @@ badiliMenejaRequestController.get(
                 ),
                 {
                   req: req,
+                  manager_full_name : manager_full_name,
+                  former_manager_full_name : former_manager_full_name,
+                  manager_phone_no: manager_phone_no,
+                  manager_email: manager_email,
+                  manager_cv : manager_cv,
+                  former_manager_phone_no: former_manager_phone_no,
+                  former_manager_email: former_manager_email,
+                  former_manager_cv : former_manager_cv,
                   muda_ombi: remain_days,
                   owner_email_old: owner_email_old,
                   authorized_person_old: authorized_person_old,
@@ -169,6 +184,7 @@ badiliMenejaRequestController.get(
                   school_name: school_name,
                   LgaName: LgaName,
                   objAttachment: objAttachment,
+                  objAttachment1 : objAttachment1,
                   RegionName: RegionName,
                   RegionNameMtu: RegionNameMtu,
                   title: title,
@@ -179,7 +195,6 @@ badiliMenejaRequestController.get(
                   manager_name: manager_name,
                   occupation: occupation,
                   mwombajiAddress: mwombajiAddress,
-                  owner_phone_no: owner_phone_no,
                   education_level: education_level,
                   mwombajiPhoneNo: mwombajiPhoneNo,
                   baruaPepe: baruaPepe,
@@ -192,7 +207,6 @@ badiliMenejaRequestController.get(
                   language: language,
                   school_size: school_size,
                   purpose: purpose,
-                  manager_phone_number: manager_phone_number,
                   area: area,
                   WardName: WardName,
                   structure: structure,
@@ -202,7 +216,6 @@ badiliMenejaRequestController.get(
                   WardNameMtu: WardNameMtu,
                   userLevel: req.user.cheo,
                   subcategory: subcategory,
-                  phone_number_old: phone_number_old,
                   count: count,
                   staffs: jsonData.staffs,
                   attachment_path: attachment_path,
@@ -210,7 +223,7 @@ badiliMenejaRequestController.get(
                   Maoni: Maoni,
                   Refferes: Refferes,
                   commentUrl: "/MenejaComment",
-                  commentRedirectUrl: "/",
+                  commentRedirectUrl: "/BadiliMeneja",
                 }
               );
             

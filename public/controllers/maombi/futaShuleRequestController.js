@@ -150,8 +150,8 @@ futaShuleRequestController.get("/FutaShuleTaarifa/:id", isAuthenticated, functio
                 objAttachment1: objAttachment1,
                 Maoni: Maoni,
                 objAttachment2: objAttachment2,
-                commentUrl: "/",
-                commentRedirectUrl: "/",
+                commentUrl: "/FutaComment",
+                commentRedirectUrl: "/FutaShule",
               }
             );
           

@@ -81,6 +81,8 @@ hamishaRequestController.get(
               var created_at = data[0].created_at;
               var tracking_number = data[0].tracking_number;
               var school_name = data[0].school_name;
+              var StreetName = data[0].StreetName;
+              var StreetNameNew = data[0].StreetNameNew;
               var LgaName = data[0].LgaName;
               var registryTypeId = data[0].registry_type_id;
               var WardNameMtu = data[0].WardNameMtu;
@@ -128,6 +130,8 @@ hamishaRequestController.get(
                   tracking_number: tracking_number,
                   school_name: school_name,
                   LgaName: LgaName,
+                  StreetName:StreetName,
+                  StreetNameNew: StreetNameNew,
                   WardNameNew: WardNameNew,
                   RegionName: RegionName,
                   RegionNameMtu: RegionNameMtu,
@@ -177,6 +181,7 @@ hamishaRequestController.get(
 
 hamishaRequestController.post(
   "/HamishaComment",
+  isAuthenticated,
   can("create-comments"),
   function (req, res) {
     console.log(req.body);
