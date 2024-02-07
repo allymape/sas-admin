@@ -478,7 +478,8 @@ module.exports = {
                 school_name,
                 school_type_id,
                 region,
-                council
+                council,
+                approved_date
               )
             : usajiliBinafsi(
                 name,
@@ -624,7 +625,7 @@ module.exports = {
   },
 };
 
-const usajiliSerikali = (name, school_name, school_type, region, council) => {
+const usajiliSerikali = (name, school_name, school_type, region, council , approved_date) => {
   return [
     `    Tafadhali rejea somo la barua hii.\n\n\n`,
     `2.  Napenda kukujulisha kuwa Wizara imekubali maombi ya Halmashauri ya Wilaya ya <b>${council}</b> ya kusajili <b>${name}</b> itakayomilikiwa na wananchi wa Halmashauri ya Wilaya ya ${council}. kwa kushirikiana na Mkoa wa ${region}\n\n`,
