@@ -409,7 +409,7 @@ module.exports = {
     approved_date,
     registration_number,
     registration_date,
-    type = "", //manager or owner
+    uthibitisho = "", //manager or owner
     owner_name = "",
     old_owner_name = "",
     manager_name = "",
@@ -450,18 +450,18 @@ module.exports = {
         break;
       case 2:
         title = `UTHIBITISHO WA ${
-          type == "mmiliki" ? "MMILIKI" : "MENEJA"
+          uthibitisho == "mmiliki" ? "MMILIKI" : "MENEJA"
         } WA ${name}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
           `2.    Ninafurahi kukufahimisha kuwa uthibitisho umetolewa kwa <b>${
-            type == "mmiliki"
+            uthibitisho == "mmiliki"
               ? owner_name.replace(/ +(?= )/g, "")
               : (str = manager_name.replace(/ +(?= )/g, ""))
           }</b>  kuwa ${
-            type == "mmiliki" ? "Mmiliki" : "Meneja"
+            uthibitisho == "mmiliki" ? "Mmiliki" : "Meneja"
           } wa ${school_type_only}<b>${school_name}</b>\n\n`,
-          `3.    Uthibitisho huu umetolewa tarehe <b>${approved_date}</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaindesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo</b> ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
+          `3.    Uthibitisho huu umetolewa tarehe <b>${approved_date}</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaiendesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo </b>ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
           `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
           `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
         ];
@@ -698,7 +698,7 @@ const formatText = (
           doc
             .font(element.nodeType === 1 ? "Helvetica-Bold" : "Helvetica")
             .fillColor("black")
-            .text($(element).text(), {
+            .text( $(element).text(), {
               lineGap: lineGap,
               continued: continued,
               align: align,

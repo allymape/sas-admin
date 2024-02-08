@@ -1,65 +1,73 @@
-$("#staffs").on('change' , function(){
-     const id = $(this).val();
-           if(['#',""].includes(id)){
-             $("#btn-tuma").addClass("d-none");
-             $("#btn-wasilisha").removeClass("d-none");
-             $("#btn-thibitisha").removeClass("d-none");
-             $("#btn-kataa").removeClass("d-none");
-             $("#btn-rudisha").removeClass("d-none");
-           }else{
-             $("#btn-wasilisha").addClass("d-none");
-             $("#btn-kataa").addClass("d-none");
-             $("#btn-thibitisha").addClass("d-none");
-             $("#btn-rudisha").addClass("d-none");
-            $("#btn-tuma").removeClass("d-none");
-           }
+// Wait for the DOM to be fully loaded
+var editorTextArray = [];
+document.addEventListener("DOMContentLoaded", function () {
+  // Array to store text from all editor instances
+  // Initialize CKEditor for the textarea with ID "editor"
+  ClassicEditor.create(document.querySelector("#editor"), {
+    removePlugins: [
+      "CKFinderUploadAdapter",
+      "CKFinder",
+      "EasyImage",
+      "Image",
+      "ImageCaption",
+      "ImageStyle",
+      "ImageToolbar",
+      "ImageUpload",
+      "MediaEmbed",
+      "Heading",
+    ],
+    height: "70px",
+  })
+    .then(function (ckEditorInstance) {
+      ckEditorInstance.ui.view.editable.element.style.height = "100px";
+
+      // Function to update text in editorTextArray
+      function updateText() {
+        editorTextArray = [ckEditorInstance.getData()];
+        // console.log(editorTextArray);
+      }
+      // Update text initially
+      updateText();
+      // Listen for changes in the editor content
+      ckEditorInstance.model.document.on("change", function () {
+        // Call updateText() whenever the content changes
+        updateText();
+      });
+    })
+    .catch(function (error) {
+      console.error(error);
+    });
+}); // $(".ck-file-dialog-button").remove();
+const staff = $("#staffs")
+staff.on("change", function () {
+  const id = $(this).val();
+  hideSomeButtons(id);
 });
-
-function tuma(commentUrl , redirectUrl) {
-  formSubmit(commentUrl, redirectUrl, "tuma", 1);
-}
-// wasilisha;
-function wasilisha(commentUrl , redirectUrl) {
-  formSubmit(commentUrl, redirectUrl, "wasilisha", 1);
-}
-// wasilisha;
-function thibitisha(commentUrl , redirectUrl) {
-  formSubmit(commentUrl, redirectUrl, "thibitisha", 2);
-}
-
-function kataa(commentUrl, redirectUrl) {
-  formSubmit(commentUrl, redirectUrl, "kataa", 3);
-}
-
-function rudisha(commentUrl , redirectUrl) {
-  formSubmit(commentUrl, redirectUrl, "rudisha", 4);
+function hideSomeButtons(id){
+  if (["#", ""].includes(id)) {
+    $("#btn-tuma").addClass("d-none");
+    $("#btn-wasilisha").removeClass("d-none");
+    $("#btn-thibitisha").removeClass("d-none");
+    $("#btn-kataa").removeClass("d-none");
+    $("#btn-rudisha").removeClass("d-none");
+  } else {
+    $("#btn-wasilisha").addClass("d-none");
+    $("#btn-kataa").addClass("d-none");
+    $("#btn-thibitisha").addClass("d-none");
+    $("#btn-rudisha").addClass("d-none");
+    $("#btn-tuma").removeClass("d-none");
+  }
 }
 
-function formSubmit(commentUrl, redirectUrl , actionName, haliombi) {
-    var coments = document.getElementById("exampleFormControlTextarea1").value;
-    // var staffs = "0-10";
-    var staffs = document.getElementById("staffs").value;
-    var trackerId = document.getElementById("trackerId").value;
-    tumaMaoniYako(
-      commentUrl,
-      {
-        coments: coments,
-        staffs: staffs,
-        haliombi: haliombi,
-        trackerId: trackerId,
-        attachment: "",
-        kiambatisho: "",
-        attach_length: "",
-      },
-      staffs,
-      coments,
-      actionName,
-      redirectUrl
-    );
+function hideElements(){
+    $("#btn-wasilisha").addClass("d-none");
+    $("#btn-kataa").addClass("d-none");
+    $("#btn-thibitisha").addClass("d-none");
+    $("#btn-rudisha").addClass("d-none");
+    $("#btn-tuma").addClass("d-none");
+    $("#staff-div").addClass("d-none");
+    $("#editor-div").addClass("d-none");
 }
-
-
-// attachments
 
 function showViambata() {
   var gamechanger = document.getElementById("gamechanger");
@@ -67,19 +75,72 @@ function showViambata() {
   var table = document.getElementById("emptbl");
   // $(".viambataDiv").removeClass('d-none');
   const kiambata = $(".viambataDiv");
-  if(kiambata.is(":visible")){
-    kiambata.addClass('d-none')
-  }else{
+  if (kiambata.is(":visible")) {
+    kiambata.addClass("d-none");
+    hideSomeButtons(staff.val());
+    $("#staff-div").removeClass("d-none")
+    $("#editor-div").removeClass("d-none");
+  } else {
     kiambata.removeClass("d-none");
+    hideElements();
   }
 }
+
+function tuma(commentUrl, redirectUrl) {
+  formSubmit(commentUrl, redirectUrl, "tuma", 1);
+}
+// wasilisha;
+function wasilisha(commentUrl, redirectUrl) {
+  formSubmit(commentUrl, redirectUrl, "wasilisha", 1);
+}
+// wasilisha;
+function thibitisha(commentUrl, redirectUrl) {
+  formSubmit(commentUrl, redirectUrl, "thibitisha", 2);
+}
+
+function kataa(commentUrl, redirectUrl) {
+  formSubmit(commentUrl, redirectUrl, "kataa", 3);
+}
+
+function rudisha(commentUrl, redirectUrl) {
+  formSubmit(commentUrl, redirectUrl, "rudisha", 4);
+}
+
+function formSubmit(commentUrl, redirectUrl, actionName, haliombi) {
+  // var coments = document.getElementById("exampleFormControlTextarea1").value;
+  // var coments = $(".ck-editor__edita:ble").html();
+  var coments = editorTextArray.length > 0 ? editorTextArray[0] : "";
+  // var staffs = "0-10";
+  var staffs = document.getElementById("staffs").value;
+  var trackerId = document.getElementById("trackerId").value;
+  tumaMaoniYako(
+    commentUrl,
+    {
+      coments: coments,
+      staffs: staffs,
+      haliombi: haliombi,
+      trackerId: trackerId,
+      attachment: "",
+      kiambatisho: "",
+      attach_length: "",
+    },
+    staffs,
+    coments,
+    actionName,
+    redirectUrl
+  );
+}
+
+// attachments
+
+
 
 function Pandisha() {
   var gamechanger = document.getElementById("gamechanger").value;
   var trackerId = document.getElementById("trackerId").value;
   var faili = document.getElementById("faili").value;
   var selectedFile = document.getElementById("failiAttached").files;
-  if (selectedFile.length > 0) {
+  if (selectedFile.length > 0 && faili.length > 0 ) {
     // Select the very first file from list
     var fileToLoad = selectedFile[0];
     // FileReader function for read the file.
@@ -118,19 +179,31 @@ function Pandisha() {
       //     //window.location.href = "/MaombiKuanzishaShule";
       //   },
       // });
-      ajaxRequest("/TumaAttachment" , "POST" , (response) => {
-           alert(response);
-      },
-      JSON.stringify({
+      ajaxRequest(
+        "/TumaAttachment",
+        "POST",
+        (response) => {
+          const {statusCode , message} = response
+          const success = statusCode == 300
+          alertMessage(success ? "Umefanikiwa" : "Haujafanikiwa" , message , success ? 'success' : 'error' , () => {
+              if(success){
+                hideSomeButtons(staff.val());
+                showViambata()
+              }
+          }  )
+        },
+        JSON.stringify({
           keyString: key,
           trackerId: trackerId,
           attachment: faili,
           kiambatisho: taachedFile[1],
         })
-      )
+      );
     };
     // Convert data to base64
     fileReader.readAsDataURL(fileToLoad);
+  }else{
+    alertMessage("Onyo" , "Tafadhali weka faili na uchague aina ya kiambatisho." , "warning")
   }
 }
 
@@ -148,11 +221,22 @@ function badili(school_name) {
 function changeName() {
   var trackingId = document.getElementById("trackingId").value;
   var newName = document.getElementById("newName").value;
-  ajaxRequest("/changeshule","POST" , (response) => {
-    const {success , message} = response
-     $("#inviteMembersModal").modal("hide");
-      alertMessage(success ? 'Umefanikiwa' : 'Haujafanikiwa',message, success ? 'success' : 'error', ()=> {
-        window.location.href = "/TaarifaOmbi/" + trackingId;
-      } , {})
-  } , JSON.stringify({ trackingId: trackingId, newName: newName }))
+  ajaxRequest(
+    "/changeshule",
+    "POST",
+    (response) => {
+      const { success, message } = response;
+      $("#inviteMembersModal").modal("hide");
+      alertMessage(
+        success ? "Umefanikiwa" : "Haujafanikiwa",
+        message,
+        success ? "success" : "error",
+        () => {
+          window.location.href = "/TaarifaOmbi/" + trackingId;
+        },
+        {}
+      );
+    },
+    JSON.stringify({ trackingId: trackingId, newName: newName })
+  );
 }

@@ -7,6 +7,8 @@ var path = require("path");
 const { sendRequest, can, isAuthenticated } = require("../../util");
 const FRONTEND_URL = process.env.FRONTEND_URL;
 const pdf2base64 = require("pdf-to-base64");
+var API_BASE_URL = process.env.API_BASE_URL;
+var pandishaHatiAPI = API_BASE_URL + "upload-attachment";
 
 attachmentController.post("/View-Attachment", isAuthenticated, function (req, res) {
     const file_path = req.body.file_path;
@@ -32,5 +34,26 @@ attachmentController.post("/View-Attachment", isAuthenticated, function (req, re
         });
     }
 });
+attachmentController.post(
+  "/TumaAttachment",
+  isAuthenticated,
+  can("create-attachments"),
+  function (req, res) {
+    const formData = {
+      keyString: req.body.keyString,
+      trackerId: req.body.trackerId,
+      attachment: req.body.attachment,
+      kiambatisho: req.body.kiambatisho,
+    };
+    sendRequest(req, res, pandishaHatiAPI, "POST", formData, (jsonData) => {
+      var { statusCode, message, success } = jsonData;
+      return res.send({
+        success,
+        statusCode,
+        message,
+      });
+    });
+  }
+);
 
 module.exports = attachmentController;

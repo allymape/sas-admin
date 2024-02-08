@@ -18,7 +18,8 @@
                     <div class="timeline-box shadow" style="margin: 5px 100px;">
                         <div class="timeline-text">
                             <h6><%= name %> (<%= rank_name %>) - <%= dateFormat(created_at , 'ddd DD/MM/YYYY HH:mm:ss') %></h6>
-                            <p class="text-muted mb-0 text-justify"><%= coments %></p>
+                            <p class="mb-0"><%- coments %></p>
+                            <!-- <hr class="text-info"> -->
                         </div>
                     </div>
                 </div>
@@ -28,7 +29,7 @@
     </div>
    <% if(permission(req , "create-comments")){%>
       <% if(Maoni.length > 0){ %>
-        <hr>
+        <hr class="text-info">
       <% } %>
    <%- include('includes/form_comment.ejs') %>
    <% } %>

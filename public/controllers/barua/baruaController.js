@@ -10,10 +10,11 @@ const baruaDetailsAPI = API_BASE_URL + "barua";
 
 baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view-letters') ,function (req, res) {
         const tracking_number = req.params.tracking_number;
-        const type = req.query.type;
+        const uthibitisho = req.query.type;
         const formData = {
-            type : type
-        }
+          type: uthibitisho,
+        };
+        // console.log(type)
         sendRequest(req , res , baruaDetailsAPI +"/"+ tracking_number , 'POST' , formData , (jsonData) => {
           const { statusCode, data, sqa_zone_region } = jsonData;
           // console.log(data)
@@ -75,8 +76,10 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
               category, // Aina ya Shule Sekendari, Msingi n.k
               createdAt,
               registration_number,
-              registration_date ? formatDate(registration_date, "DD/MM/YYYY") : "",
-              type,
+              registration_date
+                ? formatDate(registration_date, "DD/MM/YYYY")
+                : "",
+              uthibitisho,
               owner_name,
               old_owner_name,
               manager_name,
@@ -90,7 +93,7 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
               ward,
               combinations,
               number_of_students,
-              gender_types,
+              gender_types
             );
 
             const paragraphs = letter.bodyContent;

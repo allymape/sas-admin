@@ -17,7 +17,7 @@
                                     <div class="mb-2">
                                         <lord-icon src="https://cdn.lordicon.com/kbtmbyzy.json" trigger="loop" colors="primary:#405189,secondary:#02a8b5" style="width:90px;height:90px"></lord-icon>
                                     </div>
-                                    <h3 class="mb-1"><%= muda_ombi %></h3>
+                                    <h6 class="mb-1"><%= muda_ombi %></h6>
                                     <h5 class="fs-14 mb-4">Toka ombi limetumwa</h5>
                                     <div class="hstack gap-2 justify-content-center">
                                         <button class="btn btn-danger btn-sm" title="Tarehe ya kuanzishwa kwa ombi: <%= created_at %>"><i class="ri-stop-circle-line align-bottom me-1"></i> Mwanzo</button>
@@ -231,8 +231,8 @@
                                                         </tr>
                                                     </tbody>
                                                 </table>
-
-                                                 <h6 class="card-title mb-1">SEHEMU B: Taarifa za Meneja wa Sasa</h6>
+                                                <hr class="text-danger">
+                                                <h6 class="card-title mb-1">SEHEMU B: Taarifa za Meneja wa Sasa</h6>
                                                 <table class="table table-bordered align-middle mb-0">
                                                     <thead class="table-light text-muted">
                                                         <tr>
@@ -331,11 +331,10 @@
                                                        <% for(var i = 0; i < objAttachment1.length; i++){ %>
                                                         <tr>
                                                             <td>
-                                                                <%= JSON.stringify(objAttachment1[i])%>
                                                                 <div class="d-flex align-items-center">
                                                                     <div class="avatar-sm">
-                                                                        <div class="avatar-title bg-soft-primary text-primary rounded fs-20">
-                                                                            <i class="ri-file-zip-fill"></i>
+                                                                        <div class="avatar-title bg-soft-primary text-danger rounded fs-20">
+                                                                            <i class="ri-file-pdf-fill"></i>
                                                                         </div>
                                                                     </div>
                                                                     <div class="ms-3 flex-grow-1">
@@ -349,17 +348,13 @@
                                                             <td>2.22 MB</td>
                                                             <td>21 Dec, 2021</td>
                                                             <td>
-                                                                <div class="dropdown">
-                                                                    <a href="javascript:void(0);" class="btn btn-light btn-icon" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="true">
-                                                                        <i class="ri-equalizer-fill"></i>
-                                                                    </a>
-                                                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink1" data-popper-placement="bottom-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 23px);">
-                                                                        <li><a class="dropdown-item" href="javascript:void(0);"><i class="ri-eye-fill me-2 align-middle text-muted"></i>View</a></li>
-                                                                        <li><a class="dropdown-item" href="javascript:void(0);"><i class="ri-download-2-fill me-2 align-middle text-muted"></i>Download</a></li>
-                                                                        <li class="dropdown-divider"></li>
-                                                                        <li><a class="dropdown-item" href="javascript:void(0);"><i class="ri-delete-bin-5-line me-2 align-middle text-muted"></i>Delete</a></li>
-                                                                    </ul>
-                                                                </div>
+                                                                 <a class="btn btn-outline-success read-attachment" 
+                                                                    href="#showModal"
+                                                                    data-path="<%= objAttachment1[i].attachment_path %>" 
+                                                                    data-bs-toggle="modal" 
+                                                                    >
+                                                                    <i class="ri-eye-fill me-2 align-middle"></i>View
+                                                                </a>
                                                             </td>
                                                         </tr>
                                                         <% } %>
