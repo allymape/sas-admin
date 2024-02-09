@@ -82,7 +82,7 @@
                             <input class="form-check-input" type="checkbox" name="chk_child" value="option1">
                         </div>
                     </th>
-                    <td class="id"><a href="/BadiliBweni/<%= maombi[i].tracking_number %>" class="fw-medium link-primary">#<%= maombi[i].tracking_number %></a></td>
+                    <td class="id"><a href="/BadiliBweni/<%= maombi[i].tracking_number %>" class="fw-medium link-primary"><%= maombi[i].tracking_number %></a></td>
                     <td class="project_name"><a href="#" class="fw-medium link-primary"><%= maombi[i].school_name %></a></td>
                     <td>
                         <div class="d-flex">
@@ -97,9 +97,16 @@
                     <td class="client_name"><%= maombi[i].RegionName %></td>
                     <td class="due_date badge badge-soft-secondary text-uppercase"  title=" <%= maombi[i].created_at %>"> <%= maombi[i].remain_days %></td>
                     <td class="is_approved">
-                        <%= maombi[i].is_approved == 0 || maombi[i].is_approved == 1 ? 'Jipya' : '' %>
-                        <%= maombi[i].is_approved == 2 ? 'Limekubaliwa' : '' %>
-                        <%= maombi[i].is_approved == 3 ? 'Limekataliwa' : '' %>
+                         <span class="badge <%= maombi[i].is_approved == 0 ?  'bg-warning' : '' %>
+                            <%= maombi[i].is_approved == 1 ?  'bg-primary' : '' %>
+                            <%= maombi[i].is_approved == 2 ?  'bg-success' : '' %>
+                            <%= maombi[i].is_approved == 3 ?  'bg-danger' : '' %>"
+                            >
+                            <%= maombi[i].is_approved == 0 ?  'Jipya' : '' %>
+                            <%= maombi[i].is_approved == 1 ?  'Linashughulikiwa' : '' %>
+                            <%= maombi[i].is_approved == 2 ?  'Limekubaliwa' : '' %>
+                            <%= maombi[i].is_approved == 3 ?  'Limekataliwa' : '' %>
+                        </span>
                     </td>
                     <% if(status == 'approved' ){ %>
                         <td class="text-center">

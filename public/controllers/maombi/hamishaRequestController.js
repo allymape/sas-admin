@@ -38,6 +38,7 @@ hamishaRequestController.get(
         var created_at = data[i].created_at;
         var remain_days = data[i].remain_days;
         var folio = data[i].folio;
+        var is_approved = data[i].is_approved;
         req.session.TrackingNumber = tracking_number;
         obj.push({
           tracking_number: tracking_number,
@@ -47,7 +48,8 @@ hamishaRequestController.get(
           RegionName: RegionName,
           created_at: created_at,
           remain_days: remain_days,
-          folio
+          folio,
+          is_approved
         });
       }
       console.log(new Date() + " " + req.session.userName + ": /BadiliJina");
@@ -80,6 +82,7 @@ hamishaRequestController.get(
               var remain_days = data[0].remain_days;
               var created_at = data[0].created_at;
               var tracking_number = data[0].tracking_number;
+              var is_approved = data[0].is_approved;
               var school_name = data[0].school_name;
               var StreetName = data[0].StreetName;
               var StreetNameNew = data[0].StreetNameNew;
@@ -126,6 +129,7 @@ hamishaRequestController.get(
                 {
                   req: req,
                   muda_ombi: remain_days,
+                  is_approved,
                   created_at: created_at,
                   tracking_number: tracking_number,
                   school_name: school_name,

@@ -117,6 +117,7 @@ umilikinaumenejaRequestController.get(
         var owner_name = data[0].owner_name;
         var owner_email = data[0].owner_email;
         var count = jsonData.maoni[0].count;
+        var is_approved = data[0].is_approved;
         var objAttachment = jsonData.objAttachment;
         var objAttachment1 = jsonData.objAttachment1;
         var Maoni = jsonData.Maoni;
@@ -181,6 +182,7 @@ umilikinaumenejaRequestController.get(
             objAttachment1: objAttachment,
             objAttachment: objAttachment1,
             Maoni: Maoni,
+            is_approved,
             Refferes: Refferes,
             commentUrl: "/MmilikiComment",
             commentRedirectUrl: "/MaombiMmilikiShule",

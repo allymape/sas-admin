@@ -10,19 +10,12 @@ function nata() {
               <span class="badge">${total}</span>
               </div>`);
               for (var i = 0; i < data.length; i++) {
-                var row =
-                  '<tr> <th scope="row">' +
-                  '<div class="form-check">' +
-                  '<input class="form-check-input" type="checkbox" name="chk_child" value="option1">' +
-                  "</div>" +
-                  "</th>";
-                row =
-                  row +
-                  '<td class="id" id="tracker"><a href="TaarifaOmbi/' +
-                  data[i].tracking_number +
-                  '" class="fw-medium link-primary"> ' +
-                  data[i].tracking_number +
-                  " </a></td>";
+                var row = '<tr>';
+                row = row +'<td class="id" id="tracker"><a href="TaarifaOmbi/' +
+                          data[i].tracking_number +
+                          '" class="fw-medium link-primary"> ' +
+                          data[i].tracking_number +
+                          " </a></td>";
                 row =
                   row +
                   '<td class="project_name"><a href="TaarifaOmbi/' +
@@ -60,7 +53,18 @@ function nata() {
                   " </td>";
                 row =
                   row +
-                  '<td class="priority"><span class="badge bg-danger text-uppercase">Jipya</span></td>';
+                  `<td class="priority">
+                  <span class="badge ${ data[i].is_approved == 0 ?  'bg-warning' : ''}
+                        ${ data[i].is_approved == 1 ?  'bg-primary' : ''}
+                        ${ data[i].is_approved == 2 ?  'bg-success' : ''}
+                        ${ data[i].is_approved == 3 ?  'bg-danger' : ''}"
+                        >
+                        ${ data[i].is_approved == 0 ?  'Jipya' : ''}
+                        ${ data[i].is_approved == 1 ?  'Linashughulikiwa' : ''}
+                        ${ data[i].is_approved == 2 ?  'Limekubaliwa' : ''}
+                        ${ data[i].is_approved == 3 ?  'Limekataliwa' : ''}
+                  </span>
+                  </td>`;
                 if ($("#barua-column").is(":visible")) {
                   if (data[i].folio) {
                     row += `

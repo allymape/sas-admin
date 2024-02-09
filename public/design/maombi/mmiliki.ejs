@@ -57,11 +57,6 @@
     <table class="table align-middle table-nowrap mb-0" id="tasksTable">
       <thead class="table-light text-muted">
         <tr>
-          <th scope="col" style="width: 40px;">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="checkAll" value="option">
-            </div>
-          </th>
           <th class="sort" data-sort="id">Namba ya Ombi</th>
           <th class="sort" data-sort="project_name">Jina la Shule</th>
           <th class="sort" data-sort="tasks_name">Halmashauri</th>
@@ -78,14 +73,9 @@
         <% for(var i=0; i < maombi.length; i++){ %>
         <% const ombi = maombi[i]; %>
         <tr>
-          <th scope="row">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="chk_child" value="option1">
-            </div>
-          </th>
           <td class="id">
             <a href="/ViewOmbiMmilliki/<%= ombi.tracking_number %>" 
-            data-id="<%= ombi.tracking_number %>" class="fw-medium link-primary">#<%=
+            data-id="<%= ombi.tracking_number %>" class="fw-medium link-primary"><%=
                                             ombi.tracking_number %>
             </a>
            </td>
@@ -98,13 +88,20 @@
           <td class="client_name">
             <%= ombi.RegionName %>
           </td>
-          <td class="due_date" title=" <%= ombi.created_at %>">
-            <%= ombi.remain_days %>
+          <td class="due_date" title=" <%= ombi.created_at %>" data-bs-toggle="tooltip">
+            <span class="badge bg-secondary"><%= ombi.remain_days %></span>
           </td>
           <td class="is_approved">
-            <%= ombi.is_approved == 0 || ombi.is_approved == 1 ? 'Jipya' : '' %>
-            <%= ombi.is_approved == 2 ? 'Limekubaliwa' : '' %>
-            <%= ombi.is_approved == 3 ? 'Limekataliwa' : '' %>
+            <span class="badge <%= ombi.is_approved == 0 ?  'bg-warning' : '' %>
+            <%= ombi.is_approved == 1 ?  'bg-primary' : '' %>
+            <%= ombi.is_approved == 2 ?  'bg-success' : '' %>
+            <%= ombi.is_approved == 3 ?  'bg-danger' : '' %>"
+            >
+            <%= ombi.is_approved == 0 ?  'Jipya' : '' %>
+            <%= ombi.is_approved == 1 ?  'Linashughulikiwa' : '' %>
+            <%= ombi.is_approved == 2 ?  'Limekubaliwa' : '' %>
+            <%= ombi.is_approved == 3 ?  'Limekataliwa' : '' %>
+            </span>
           </td>
           <% if(status == 'approved'){ %>
                     <td class="text-center">

@@ -67,24 +67,7 @@ anzishaShuleRequestController.get("/MaombiKuanzishaShuleList", isAuthenticated ,
 anzishaShuleRequestController.get("/TaarifaOmbi/:id", isAuthenticated, function (req, res) {
        var TrackingNumber = req.params.id;
         sendRequest(req, res, ombiDetails , 'POST' , {TrackingNumber: TrackingNumber} , (jsonData) => {
-                    if (jsonData.error) {
-                      console.log(
-                        new Date() +
-                          ": fail to MaombiKuanzishaShuleJumla " +
-                          error
-                      );
-                      res.send("failed");
-                    }
-
-                    if (jsonData !== undefined) {
-                      // var jsonData = JSON.parse(body)
-                      // var jsonData = body;
-
-                      // console.log(jsonData)
-                      var message = jsonData.message;
-                      var statusCode = jsonData.statusCode;
-                      var data = jsonData.data;
-                      if (statusCode == 300) {
+                      const {data} = jsonData;
                         var remain_days = data[0].remain_days;
                         var created_at = data[0].created_at;
                         var tracking_number = data[0].tracking_number;
@@ -109,29 +92,19 @@ anzishaShuleRequestController.get("/TaarifaOmbi/:id", isAuthenticated, function 
                         var structure = data[0].structure;
                         var subcategory = data[0].subcategory;
                         var count = jsonData.maoni[0].count;
+                        var is_approved = data[0].is_approved;
                         var objAttachment = jsonData.objAttachment;
                         var objAttachment1 = jsonData.objAttachment1;
                         var objAttachment2 = jsonData.objAttachment2;
                         var Maoni = jsonData.Maoni;
-                        console.log(
-                          new Date() +
-                            " " +
-                            req.session.userName +
-                            ": /TaarifaOmbi"
-                        );
                         res.render(
                           path.join(
                             __dirname +
-                              "/../../design/maombi/details/view-ombi-details"
+                              "/../../design/maombi/details/view-ombi-kuanzisha-details"
                           ),
                           {
                             req: req,
                             muda_ombi: remain_days,
-                            // useLev: req.session.UserLevel,
-                            // userName: req.session.userName,
-                            // RoleManage: req.session.RoleManage,
-                            // userID: req.session.userID,
-                            // cheoName: req.session.cheoName,
                             created_at: created_at,
                             tracking_number: tracking_number,
                             school_name: school_name,
@@ -161,17 +134,12 @@ anzishaShuleRequestController.get("/TaarifaOmbi/:id", isAuthenticated, function 
                             objAttachment: objAttachment,
                             objAttachment1: objAttachment1,
                             Maoni: Maoni,
+                            is_approved,
                             objAttachment2: objAttachment2,
                             commentUrl: "/TumaComment",
                             commentRedirectUrl: "/MaombiKuanzishaShule",
                           }
                         );
-                      }
-                      if (statusCode == 209) {
-                        res.redirect("/");
-                      }
-                    }
-                        
                   });
 });
 

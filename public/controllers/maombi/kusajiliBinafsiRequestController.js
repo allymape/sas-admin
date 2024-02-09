@@ -44,6 +44,7 @@ kusajiliBinafsiRequestController.get(
                       var created_at = data[i].created_at;
                       var remain_days = data[i].remain_days;
                       var folio = data[i].folio;
+                      var is_approved = data[i].is_approved;
                       req.session.TrackingNumber = tracking_number;
                       obj.push({
                         tracking_number: tracking_number,
@@ -53,7 +54,8 @@ kusajiliBinafsiRequestController.get(
                         RegionName: RegionName,
                         created_at: created_at,
                         remain_days: remain_days,
-                        folio
+                        folio,
+                        is_approved
                       });
                     }
                     console.log(
@@ -128,6 +130,7 @@ kusajiliBinafsiRequestController.get("/SajiliOmbi/:id",
             var schoolCategoryID = data[0].schoolCategoryID;
             var Certificate = data[0].Certificate;
             var WardName = data[0].WardName;
+            var is_approved = data[0].is_approved;
             var teacherInformation = data[0].teacherInformation;
             var structure = data[0].structure;
             var subcategory = data[0].subcategory;
@@ -190,6 +193,7 @@ kusajiliBinafsiRequestController.get("/SajiliOmbi/:id",
                 Stream: Stream,
                 subcategory: subcategory,
                 count: count,
+                is_approved,
                 staffs: jsonData.staffs,
                 numberOfStudents: numberOfStudents,
                 status: jsonData.status,

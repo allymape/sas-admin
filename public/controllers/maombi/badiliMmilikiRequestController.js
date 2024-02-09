@@ -47,6 +47,7 @@ badiliMmilikiRequestController.get(
               var created_at = data[i].created_at;
               var remain_days = data[i].remain_days;
               var folio = data[i].folio;
+              var is_approved = data[i].is_approved;
               req.session.TrackingNumber = tracking_number;
               obj.push({
                 tracking_number: tracking_number,
@@ -58,7 +59,8 @@ badiliMmilikiRequestController.get(
                 RegionName: RegionName,
                 created_at: created_at,
                 remain_days: remain_days,
-                folio
+                folio,
+                is_approved
               });
             }
             console.log(
@@ -107,6 +109,7 @@ badiliMmilikiRequestController.get(
       (jsonData) => {
         var data = jsonData.data;
         var remain_days = data[0].remain_days;
+        var is_approved = data[0].is_approved;
         var created_at = data[0].created_at;
         var tracking_number = data[0].tracking_number;
         var school_name = data[0].school_name;
@@ -166,6 +169,7 @@ badiliMmilikiRequestController.get(
           ),
           {
             req: req,
+            is_approved,
             muda_ombi: remain_days,
             owner_email_old: owner_email_old,
             authorized_person_old: authorized_person_old,

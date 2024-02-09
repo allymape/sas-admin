@@ -78,6 +78,7 @@ kubadiliJinaRequestController.get(
               var mwombajiAddress = data[0].mwombajiAddress;
               var mwombajiPhoneNo = data[0].mwombajiPhoneNo;
               var baruaPepe = data[0].baruaPepe;
+              var is_approved = data[0].is_approved;
               var language = data[0].language;
               var school_size = data[0].school_size;
               var area = data[0].area;
@@ -102,6 +103,7 @@ kubadiliJinaRequestController.get(
                 ),
                 {
                   req: req,
+                  is_approved,
                   muda_ombi: remain_days,
                   useLev: req.session.UserLevel,
                   userName: req.session.userName,

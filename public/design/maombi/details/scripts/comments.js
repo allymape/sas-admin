@@ -193,10 +193,10 @@ function Pandisha() {
           }  )
         },
         JSON.stringify({
-          keyString: key,
-          trackerId: trackerId,
-          attachment: faili,
-          kiambatisho: taachedFile[1],
+              keyString: key,
+              trackerId: trackerId,
+              attachment: faili,
+              kiambatisho: taachedFile[1],
         })
       );
     };

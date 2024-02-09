@@ -46,6 +46,7 @@ kuongezaMikondoRequestController.get(
                       var created_at = data[i].created_at;
                       var remain_days = data[i].remain_days;
                       var folio = data[i].folio;
+                      var is_approved = data[i].is_approved;
                       req.session.TrackingNumber = tracking_number;
                       obj.push({
                         tracking_number: tracking_number,
@@ -55,7 +56,8 @@ kuongezaMikondoRequestController.get(
                         RegionName: RegionName,
                         created_at: created_at,
                         remain_days: remain_days,
-                        folio
+                        folio,
+                        is_approved
                       });
                     }
                     console.log(
@@ -119,6 +121,7 @@ kuongezaMikondoRequestController.get(
             var establishId = data[0].establishId;
             var WardName = data[0].WardName;
             var structure = data[0].structure;
+            var is_approved = data[0].is_approved;
             var subcategory = data[0].subcategory;
             // var count = jsonData.maoni[0].count;
             var objAttachment = jsonData.objAttachment;
@@ -158,6 +161,7 @@ kuongezaMikondoRequestController.get(
                 streamNew: streamNew,
                 streamOld: streamOld,
                 language: language,
+                is_approved,
                 school_size: school_size,
                 userLevel: req.user.cheo,
                 area: area,

@@ -66,6 +66,7 @@ kuongezaBweniRequestController.get(
         var data = jsonData.data;
         var remain_days = data[0].remain_days;
         var created_at = data[0].created_at;
+        var is_approved = data[0].is_approved;
         var tracking_number = data[0].tracking_number;
         var school_name = data[0].school_name;
         var LgaName = data[0].LgaName;
@@ -104,6 +105,7 @@ kuongezaBweniRequestController.get(
           {
             req: req,
             muda_ombi: remain_days,
+            is_approved,
             created_at: created_at,
             tracking_number: tracking_number,
             school_name: school_name,

@@ -112,6 +112,7 @@ kuongezaTahasusiRequestController.get(
           var WardName = data[0].WardName;
           var structure = data[0].structure;
           var subcategory = data[0].subcategory;
+          var is_approved = data[0].is_approved;
           // var count = jsonData.maoni[0].count;
           var objAttachment = jsonData.objAttachment;
           var objAttachment1 = jsonData.objAttachment1;
@@ -134,6 +135,7 @@ kuongezaTahasusiRequestController.get(
             ),
             {
               req: req,
+              is_approved,
               muda_ombi: remain_days,
               useLev: req.session.UserLevel,
               userName: req.session.userName,

@@ -34,31 +34,6 @@ badiliMenejaRequestController.get(
         const data = jsonData.dataList;
         const {numRows} = jsonData
         const obj = [];
-        // for (var i = 0; i < data.length; i++) {
-        //   var tracking_number = data[i].tracking_number;
-        //   var user_id = data[i].user_id;
-        //   var LgaName = data[i].LgaName;
-        //   var RegionName = data[i].RegionName;
-        //   var school_name = data[i].school_name;
-        //   var WardName = data[i].WardName;
-        //   var owner_name = data[i].owner_name;
-        //   var created_at = data[i].created_at;
-        //   var remain_days = data[i].remain_days;
-        //   var folio = data[i].folio;
-        //   req.session.TrackingNumber = tracking_number;
-        //   obj.push({
-        //     tracking_number: tracking_number,
-        //     user_id: user_id,
-        //     WardName: WardName,
-        //     school_name: school_name,
-        //     LgaName: LgaName,
-        //     owner_name: owner_name,
-        //     RegionName: RegionName,
-        //     created_at: created_at,
-        //     remain_days: remain_days,
-        //     folio
-        //   });
-        // }
         console.log(
           new Date() + " " + req.session.userName + ": /BadiliMmiliki"
         );
@@ -131,6 +106,7 @@ badiliMenejaRequestController.get(
               var manager_email = data[0].manager_email;
               var house_number = data[0].house_number;
               var baruaPepe = data[0].baruaPepe;
+              var is_approved = data[0].is_approved;
               var language = data[0].language;
               var school_size = data[0].school_size;
               var manager_name = data[0].manager_name;
@@ -166,6 +142,7 @@ badiliMenejaRequestController.get(
                 ),
                 {
                   req: req,
+                  is_approved,
                   manager_full_name : manager_full_name,
                   former_manager_full_name : former_manager_full_name,
                   manager_phone_no: manager_phone_no,

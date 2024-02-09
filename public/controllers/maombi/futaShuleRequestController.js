@@ -38,6 +38,7 @@ futaShuleRequestController.get(
         var remain_days = data[i].remain_days;
         var schoolId = data[i].schoolId;
         var folio = data[i].folio;
+        var is_approved = data[i].is_approved;
         req.session.TrackingNumber = tracking_number;
         obj.push({
           schoolId: schoolId,
@@ -48,7 +49,8 @@ futaShuleRequestController.get(
           RegionName: RegionName,
           created_at: created_at,
           remain_days: remain_days,
-          folio
+          folio,
+          is_approved
         });
       }
       console.log(new Date() + " " + req.session.userName + ": /BadiliJina");
@@ -75,6 +77,7 @@ futaShuleRequestController.get("/FutaShuleTaarifa/:id", isAuthenticated, functio
           var data = jsonData.data;
             var remain_days = data[0].remain_days;
             var created_at = data[0].created_at;
+            var is_approved = data[0].is_approved;
             var tracking_number = data[0].tracking_number;
             var school_name = data[0].school_name;
             var LgaName = data[0].LgaName;
@@ -113,6 +116,7 @@ futaShuleRequestController.get("/FutaShuleTaarifa/:id", isAuthenticated, functio
               ),
               {
                 req: req,
+                is_approved,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
                 userName: req.session.userName,

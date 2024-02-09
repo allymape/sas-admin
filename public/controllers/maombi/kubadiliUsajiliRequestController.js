@@ -38,6 +38,7 @@ kubadiliUsajiliRequestController.get(
         var created_at = data[i].created_at;
         var remain_days = data[i].remain_days;
         var folio = data[i].folio;
+        var is_approved = data[i].is_approved;
         req.session.TrackingNumber = tracking_number;
         obj.push({
           tracking_number: tracking_number,
@@ -47,7 +48,8 @@ kubadiliUsajiliRequestController.get(
           RegionName: RegionName,
           created_at: created_at,
           remain_days: remain_days,
-          folio
+          folio,
+          is_approved
         });
       }
 
@@ -84,6 +86,7 @@ kubadiliUsajiliRequestController.get(
             var data = jsonData.data;
             var remain_days = data[0].remain_days;
             var created_at = data[0].created_at;
+            var is_approved = data[0].is_approved;
             var tracking_number = data[0].tracking_number;
             var school_name = data[0].school_name;
             var LgaName = data[0].LgaName;
@@ -127,6 +130,7 @@ kubadiliUsajiliRequestController.get(
               ),
               {
                 req: req,
+                is_approved,
                 muda_ombi: remain_days,
                 useLev: req.session.UserLevel,
                 UserLevel: req.user.cheo,

@@ -41,6 +41,7 @@ kusajiliSerikaliRequestController.get(
                             var created_at = data[i].created_at;
                             var remain_days = data[i].remain_days;
                             var folio = data[i].folio;
+                            var is_approved = data[i].is_approved;
                             req.session.TrackingNumber = tracking_number;
                             obj.push({
                                 tracking_number: tracking_number,
@@ -50,7 +51,8 @@ kusajiliSerikaliRequestController.get(
                                 RegionName: RegionName,
                                 created_at: created_at,
                                 remain_days: remain_days,
-                                folio
+                                folio,
+                                is_approved
                             });
                 }
                 
@@ -90,9 +92,6 @@ kusajiliSerikaliRequestController.get("/SajiliOmbiSerikali/:id",
           TrackingNumber: TrackingNumber
         },
       (jsonData)  => {
-          // var jsonData = JSON.parse(body)
-          //   var jsonData = body;
-          // console.log(jsonData)
             var data = jsonData.data;
             var remain_days = data[0].remain_days;
             var created_at = data[0].created_at;
@@ -128,6 +127,7 @@ kusajiliSerikaliRequestController.get("/SajiliOmbiSerikali/:id",
             var Website = data[0].Website;
             var po_box = data[0].po_box;
             var area = data[0].area;
+            var is_approved = data[0].is_approved;
             var specialization = data[0].specialization;
             var numberOfTeachers = data[0].numberOfTeachers;
             var TeacherRatioStudent = data[0].TeacherRatioStudent;
@@ -210,6 +210,7 @@ kusajiliSerikaliRequestController.get("/SajiliOmbiSerikali/:id",
                 objAttachment: objAttachment,
                 objAttachment1: objAttachment1,
                 Maoni: Maoni,
+                is_approved,
                 commentUrl: "/SajiliComment",
                 commentRedirectUrl: "/MaombiKusajiliShuleSerikali",
               }

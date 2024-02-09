@@ -66,6 +66,7 @@
                     <th  data-sort="assignedto">Halmashauri</th>
                     <th  data-sort="due_date">Mkoa</th>
                     <th  data-sort="priority">Muda wa Ombi</th>
+                    <th  data-sort="priority">Hali ya Ombi</th>
                      <% if(status == 'approved'){ %>
                       <th class="text-center">Barua</th>
                     <% } %>
@@ -101,6 +102,18 @@
                         <%= maombi[i].RegionName %></td>
                     <td class="due_date"  title=" <%= maombi[i].created_at %>" data-bs-toggle="tooltip">
                         <span class="badge badge-soft-secondary text-uppercase"><%= remainDays(maombi[i].created_at) %></span>
+                    </td>
+                    <td class="is_approved">
+                          <span class="badge <%= maombi[i].is_approved == 0 ?  'bg-warning' : '' %>
+                            <%= maombi[i].is_approved == 1 ?  'bg-primary' : '' %>
+                            <%= maombi[i].is_approved == 2 ?  'bg-success' : '' %>
+                            <%= maombi[i].is_approved == 3 ?  'bg-danger' : '' %>"
+                            >
+                            <%= maombi[i].is_approved == 0 ?  'Jipya' : '' %>
+                            <%= maombi[i].is_approved == 1 ?  'Linashughulikiwa' : '' %>
+                            <%= maombi[i].is_approved == 2 ?  'Limekubaliwa' : '' %>
+                            <%= maombi[i].is_approved == 3 ?  'Limekataliwa' : '' %>
+                        </span>
                     </td>
                   <% if(status == 'approved' ){ %>
                         <td class="text-center">
