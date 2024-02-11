@@ -49,6 +49,10 @@ function listWorkflow() {
                   callback:
                     "window.location.href='/Workflow/'+$(this).data('id')+'?application_category_id='+$(this).data('application_category_id'); return false;",
                 },
+                deleteBtn: {
+                  show: true,
+                  callback: `deleteWorkflow(this); return false;`,
+                },
               },
               true,
               "Idadi ya mipangilio ya utendaji kazi iliyosajiliwa"
@@ -57,6 +61,26 @@ function listWorkflow() {
   });
 }
 window.onload = listWorkflow;
+
+function deleteWorkflow(element){
+     const id = $(element).data('id')
+     confirmAction(
+       () => {
+         ajaxRequest(`/Futaworkflow/${id}` , "POST" , (response) => {
+          const {statusCode , message} = response;
+               alertMessage(statusCode == 300 ? 'Umefanikiwa' : 'Haujafanikiwa' , message , statusCode == 300 ? 'success' : 'error' , () => {
+                   if(statusCode == 300){
+                      window.location.reload()
+                   }
+               })
+         });
+       },
+       "Ndio",
+       "warning",
+       "Je, una uhakika unataka kufuta workflow hii?",
+       "Thibitisha",
+     );
+}
 
 function formatWorkflow(workflow){
      if(workflow.includes(',')){
@@ -76,49 +100,4 @@ function formatWorkflow(workflow){
      }
      return workflow;
 }
-
-function badiliAlgorith(e) {
-  var id = e.getAttribute("data-id");
-  var last_number = e.getAttribute("data-last_number");
-
-  document.getElementById("id-field").value = id;
-  document.getElementById("lastnumber-field").value = last_number;
-   modal('showEditModal' , true)
-}
-
-// function futaAlgorthim(e) {
-//   var zoneid = e.getAttribute("data-id");
-//   var statusid = e.getAttribute('data-status_id');
-//      if(statusid == 1){
-//          confirmAction(
-//            () => {
-//              ajaxRequest(
-//                `/FutaAlgorithm/${zoneid}`,
-//                "POST",
-//                (response) => {
-//                  const statusCode = response.statusCode;
-//                  alertMessage(
-//                    statusCode == 300 ? "Umefanikiwa" : "Haujafanikiwa",
-//                    response.message,
-//                    statusCode == 300 ? "success" : "error",
-//                    () => {
-//                      if (statusCode == 300) {
-//                        listWorkflow();
-//                      }
-//                    }
-//                  );
-//                },
-//                {}
-//              );
-//            },
-//            "Ndio",
-//            "warning",
-//            "Je, Unataka kweli kufuta algorithm hii?",
-//            "Una uhakika?"
-//          );
-//      }else{
-//         alertMessage('Haiwezekani' , 'Hauwezi kufuta Kanda hii, ilishafutwa tayari.' , 'error')
-//      }
-// }
-
 

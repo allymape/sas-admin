@@ -195,9 +195,8 @@ workflowController.post("/Badiliworkflow/:id",  isAuthenticated, can('update-wor
 // Delete workflow
 workflowController.post("/Futaworkflow/:id",  isAuthenticated, can('delete-workflow'), function (req, res) {
   var id = Number(req.params.id);
-  sendRequest(req, res, deleteWorkflowAPI + "/" + id, "PUT", {}, (jsonData) => {
-        var statusCode = jsonData.statusCode;
-        var message = jsonData.message;
+  sendRequest(req, res, deleteWorkflowAPI + "/" + id, "DELETE", {}, (jsonData) => {
+        const {message , statusCode} = jsonData
          res.send({
            statusCode: statusCode,
            message: message,
@@ -205,47 +204,47 @@ workflowController.post("/Futaworkflow/:id",  isAuthenticated, can('delete-workf
   });
 });
 
-function getAllworkflow(req, res, edit = false, editedData = null) {
-  var obj = [];
-  var per_page = Number(req.query.per_page || 10);
-  var page = Number(req.query.page || 1);
-  var url = allWorkflowAPI + "?page=" + page + "&per_page=" + per_page;
-  var formData = {
-            browser_used: req.session.browser_used,
-            ip_address: req.session.ip_address,
-            useLevel: req.session.UserLevel,
-            office: req.session.office,
-   };
+// function getAllworkflow(req, res, edit = false, editedData = null) {
+//   var obj = [];
+//   var per_page = Number(req.query.per_page || 10);
+//   var page = Number(req.query.page || 1);
+//   var url = allWorkflowAPI + "?page=" + page + "&per_page=" + per_page;
+//   var formData = {
+//             browser_used: req.session.browser_used,
+//             ip_address: req.session.ip_address,
+//             useLevel: req.session.UserLevel,
+//             office: req.session.office,
+//    };
 
-  sendRequest(req, res, url, "GET", formData, (jsonData) => {
-     if (jsonData !== undefined) {
-       var statusCode = jsonData.statusCode;
-       var data = jsonData.data;
-       var numRows = jsonData.numRows;
-       if (statusCode == 300) {
-         res.render(path.join(__dirname + "/../design/workflow"), {
-           req: req,
-           data: data,
-           useLev: req.session.UserLevel,
-           userName: req.session.userName,
-           workflowManage: req.session.workflowManage,
-           userID: req.session.userID,
-           cheoName: req.session.cheoName,
-           edit: edit,
-           eworkflow: editedData,
-           pagination: {
-             total: Number(numRows),
-             current: Number(page),
-             per_page: Number(per_page),
-             url: "workflow",
-             pages: Math.ceil(Number(numRows) / Number(per_page)),
-           },
-         });
-       }
-       if (statusCode == 209) {
-         res.redirect("/");
-       }
-     }
-  });
-}
+//   sendRequest(req, res, url, "GET", formData, (jsonData) => {
+//      if (jsonData !== undefined) {
+//        var statusCode = jsonData.statusCode;
+//        var data = jsonData.data;
+//        var numRows = jsonData.numRows;
+//        if (statusCode == 300) {
+//          res.render(path.join(__dirname + "/../design/workflow"), {
+//            req: req,
+//            data: data,
+//            useLev: req.session.UserLevel,
+//            userName: req.session.userName,
+//            workflowManage: req.session.workflowManage,
+//            userID: req.session.userID,
+//            cheoName: req.session.cheoName,
+//            edit: edit,
+//            eworkflow: editedData,
+//            pagination: {
+//              total: Number(numRows),
+//              current: Number(page),
+//              per_page: Number(per_page),
+//              url: "workflow",
+//              pages: Math.ceil(Number(numRows) / Number(per_page)),
+//            },
+//          });
+//        }
+//        if (statusCode == 209) {
+//          res.redirect("/");
+//        }
+//      }
+//   });
+// }
 module.exports = workflowController;
