@@ -1,13 +1,22 @@
 <% var card_title = '' %> 
 <%- include('../layouts/partials/header.ejs' , {
     title : 'Audit Trail',
-    page_title : 'Audit Trail',
-    card_title : 'Audit Trail',
-    breadcrumb_main : 'Audit',
+    page_title : 'Mwenendo wa Watumiaji wa Mfumo',
+    card_title : 'Taarifa ya Matukio ya Mfumo.',
+    breadcrumb_main : 'Dashboard' 
 }) %>
   <div class="card-body">
+    <div class="ribbon-three ribbon-three-info">
+        <span class="badge"><%=`${pagination.total}`%></span>
+     </div>
     <div id="customerList">
         <div class="row g-4 mb-3">
+            <div class="col-sm-auto">
+                <div>
+                    <!-- <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"><i class="ri-add-line align-bottom me-1"></i> Sajili</button> -->
+                    <!-- <button class="btn btn-soft-danger" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button> -->
+                </div>
+            </div>
             <div class="col-sm">
                 <div class="d-flex justify-content-sm-end">
                     <div class="search-box ms-2">
@@ -19,14 +28,9 @@
         </div>
 
         <div class="table-responsive table-card mt-3 mb-1">
-            <table class="table align-middle table-nowrap" id="customerTable">
+            <table class="table align-middle table-nowrap" id="kandaTable">
                 <thead class="table-light">
                     <tr>
-                        <th scope="col" style="width: 50px;">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="checkAll" value="option">
-                            </div>
-                        </th>
                         <th class="sort" data-sort="customer_name">#</th>
                         <th class="sort" data-sort="email">Staffs</th>
                         <th class="sort" data-sort="email">Event Type</th>
@@ -38,28 +42,22 @@
                         <th class="sort" data-sort="action">Action</th>
                     </tr>
                 </thead>
-                <tbody class="list form-check-all">
+                 <tbody class="list form-check-all">
                     <% for(var i = 0; i < data.length; i++){ %>
+                    <% var text_color = data[i].event_type == 'created' ? 'text-primary' : 'text-danger' %>
                     <tr>
-                        <th scope="row">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="chk_child" value="option1">
-                            </div>
-                        </th>
-                        <td class="id"><a href="javascript:void(0);" class="fw-medium link-primary">#<%= i+1 %></a></td>
-                        <td class="phone"><span class="badge badge-soft-primary badge-border"><%= data[i].user_id %></span></td>
+                        <td class="id"><%- include('../paginations/numbering', {
+                            index : i
+                        }) %></td>
+                        <td class="phone"><%= data[i].name %></td>
                         <td class="phone">
-                            <% if(data[i].event_type == 'created'){ %>
-                            <span class="badge badge-outline-secondary"><%= data[i].event_type %></span>
-                            <% } else { %>
-                                <span class="badge badge-outline-danger"><%= data[i].event_type %></span>
-                            <% } %>
+                            <span class="text-uppercase <%= text_color %>"><%= data[i].event_type %></span>
                         </td>
                         <td class="phone"><%= data[i].ip_address %></td>
                         <!-- <td class="phone"><%= data[i].browser_used %></td> -->
-                        <td class="phone"><span class="badge bg-secondary"><%= data[i].api_router %></span></td>
+                        <td class="phone <%= text_color %>"><i><b><%= data[i].api_router %></b></i></td>
                         <td class="phone"><%= data[i].message %></td>
-                        <td class="phone"><%= data[i].created_at %></td>
+                        <td class="phone"><%= dateFormat(data[i].created_at , "ddd DD-MM-YYYY HH:mm:ss") %></td>
 
                         <td>
                             <button type="button" class="btn btn-link btn-sm text-success add-btn" 
@@ -68,44 +66,19 @@
                             id="create-btn" data-event="<%= data[i].event_type %>" data-created="<%= data[i].created_at %>"
                             data-rollId="<%= data[i].rollId %>" data-tableName="<%= data[i].tableName %>" 
                             data-ipaddress="<%= data[i].ip_address %>" data-apirouter="<%= data[i].api_router %>" 
-                            data-old="<%= data[i].old_body %>" data-new="<%= data[i].new_body %>"
+                            data-old="<%= data[i].old_body %>" 
+                            data-new="<%= data[i].new_body %>"
                             data-msg="<%= data[i].message %>"  
                             onclick="BadiliData(this); return false;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                         </button>
-                            <!-- <button type="button" class="btn btn-success add-btn" 
-                            data-bs-toggle="modal" data-id="<%= data[i].trail_id %>" 
-                            data-name="<%= data[i].event_type %>" id="create-btn" 
-                            >View</button> -->
                         </td>
                     </tr>
                     <% } %>
                 </tbody>
             </table>
-            <div class="noresult" style="display: none">
-                <div class="text-center">
-                    <lord-icon src="" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
-                    <h5 class="mt-2">Sorry! No Result Found</h5>
-                    <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
-                </div>
-            </div>
         </div>
-
-        <div class="d-flex justify-content-end">
-            <div class="pagination-wrap hstack gap-2">
-                <a class="page-item pagination-prev disabled" href="#">
-                    Previous
-                </a>
-                <ul class="pagination listjs-pagination mb-0"></ul>
-                <a class="page-item pagination-next" href="#">
-                    Next
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- end card -->
- <div class="modal fade bs-example-modal-xl" id="modal" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+         <div class="modal fade bs-example-modal-xl" id="modal" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-xl">
                             <div class="modal-content">
                                 <div class="modal-header bg-light p-3">
@@ -181,12 +154,12 @@
                             </div>
                         </div><!-- /.modal-dialog -->
                     </div><!-- /.modal -->
-<!--end card-body-->
-<%- include('../layouts/partials/footer.ejs' , {
-     card_title :  '' , 
-     pagination_script : true,
-    }) %>
-<!-- <script type="text/javascript" src="/design/layouts/scripts/anzishashule_scripts.js"></script> -->
+         <%- include('../paginations/html_pagination.ejs')%>
+    </div>
+    </div><!-- end card -->
+    
+<%- include('../layouts/partials/footer.ejs' , {card_title :  card_title}) %>
+<!-- <script type="text/javascript" src="/design/layouts/scripts/kanda_scripts.js"></script> -->
  <script>
     function BadiliData(e){
     var nameId = e.getAttribute('data-id');
@@ -218,4 +191,9 @@
 
 </script>
 </body>
+
 </html>
+
+
+
+

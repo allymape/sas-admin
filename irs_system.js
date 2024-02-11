@@ -56,6 +56,7 @@ const maombiBaruaController = require("./public/controllers/barua/maombiBaruaCon
 const baruaController = require("./public/controllers/barua/baruaController");
 const workflowController = require("./public/controllers/workflowController");
 const loginActivityController = require("./public/controllers/loginActivityController");
+const auditTrailController = require("./public/controllers/auditTrailController");
 
 // const reportRequestController = require("./public/controllers/ripoti/RipotiRequestController");
 
@@ -268,6 +269,7 @@ app.use("/", reportMabadilikoRequestController);
 app.use("/", maombiBaruaController);
 app.use("/", baruaController);
 app.use("/", loginActivityController);
+app.use("/", auditTrailController);
 
 
 app.use("/", errorController);

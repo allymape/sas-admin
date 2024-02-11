@@ -5,7 +5,7 @@ const errorController = express.Router();
 
 
 errorController.get("/403" , (req , res , next) => {
-    const statusCode = 503;
+    const statusCode = 403;
     let message = "Hauna ruhusa ya kuingia ukurasa huu.";
     let title = "Error " + statusCode;
     if (
@@ -36,7 +36,7 @@ errorController.get("/403" , (req , res , next) => {
     }
 });
 // Error handling of different status code
-errorController.use((req, res,next) => {
+errorController.use((req, res) => {
     let message = '';
     const statusCode = res.statusCode == 200 ? 404 : res.statusCode;
     let title = statusCode;
