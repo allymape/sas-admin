@@ -156,7 +156,8 @@ var dataTable = (
     otherBtn: { show: false },
   },
   hasRowNumber = true,
-  caption = "Idadi iliyopatikana"
+  caption = "Idadi iliyopatikana",
+  ribbon = true
 ) => {
   var table = $(`#${tableId}`);
   var tBody = table.find("tbody");
@@ -168,17 +169,21 @@ var dataTable = (
   var first_item = per_page * (current - 1) + 1;
   tBody.empty(); //empty table body
   $(".table-caption-header").remove();
-  table.before(
-    `<div class="table-caption-header alert alert-info h6 d-flex align-items-center justify-content-between">
-        <span>${caption} ${total}.</span> 
+  if(caption){
+    table.before(
+      `<div class="table-caption-header alert alert-info h6 d-flex align-items-center justify-content-between">
+        <span> ${caption} ${total}.</span> 
         <span class='justify-content-end'>Ukurasa ${current}  kati ya ${pages}     
         [${first_item} hadi ${first_item - 1 + data.length}] </span>
     </div>`
-  );
-  table.closest(".card-body")
-    .append(`<div class="ribbon-three ribbon-three-info">
-              <span class="badge">${total}</span>
-              </div>`);
+    );
+  }
+  if(ribbon){
+    table.closest(".card-body")
+          .append(`<div class="ribbon-three ribbon-three-info">
+                  <span class="badge">${ total }</span>
+                  </div>`);
+  }
   $.each(data, (dataKey, dataValue) => {
     var rowData = "";
     var dataAttributes = "";

@@ -36,10 +36,11 @@ userController.get("/", redirectIfAuthenticated, (req, res) => {
 // User Profile
 userController.get("/Profile", isAuthenticated , can('view-profile') , (req, res) => {
     sendRequest(req , res , myProfileAPI , "POST" , {} , (jsonData) => {
-      const { user, activities } = jsonData;
+      const { user, activities , staffs} = jsonData;
       res.render(path.join(__dirname + "/../design/profile"), {
         req: req,
         user : user,
+        staffs : staffs,
         activities : activities,
         message: "",
       });
