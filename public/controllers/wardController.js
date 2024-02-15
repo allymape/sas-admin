@@ -7,6 +7,7 @@ const path = require("path");
 const { sendRequest, isAuthenticated, can } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var wardListAPI = API_BASE_URL + "allwards";
+var wardAPI = API_BASE_URL + "lookup-wards";
 var vutaKataListAPI = API_BASE_URL + "usajiliKata";
 
 // wardController.use(
@@ -53,6 +54,20 @@ wardController.get("/WardList",  isAuthenticated, can('view-wards'), function (r
     }
   );
 });
+
+wardController.get(
+  "/LookupKata",
+  isAuthenticated,
+  function (req, res) {
+    sendRequest(req, res, wardAPI, "GET", req.query, (jsonData) => {
+      var { data, statusCode } = jsonData;
+      res.send({
+        wards: data,
+        statusCode: statusCode,
+      });
+    });
+  }
+);
 
 wardController.post("/VutaKata",  isAuthenticated, can('create-wards'), function (req, res) {
   sendRequest(req, res, vutaKataListAPI, "POST", {}, (jsonData) => {

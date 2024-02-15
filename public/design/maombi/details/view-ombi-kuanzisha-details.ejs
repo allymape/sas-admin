@@ -372,7 +372,7 @@
                                     <tr>
                                         <td class="d-flex justify-content-between">
                                             <div><b><%= school_name %></b></div>
-                                            <% if(permission(req , 'update-school-name')){ %>
+                                            <% if(permission(req , 'update-school-name') && [0,1].includes(is_approved)){ %>
                                                 <a href="#" class="btn btn-link" onclick="badili('<%= school_name %>')"
                                                 title="Kama jina la shule haliko sawa badilisha hapa" bs-data-toggle="tooltip">
                                                     <span class="bx bx-edit"></span> Badili Jina

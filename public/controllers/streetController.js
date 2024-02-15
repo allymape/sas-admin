@@ -7,8 +7,8 @@ var path = require("path");
 const { sendRequest, can, isAuthenticated } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var streetListAPI = API_BASE_URL + "allstreets";
+var streetAPI = API_BASE_URL + "lookup-streets";
 var vutaMitaaListAPI = API_BASE_URL + "usajiliMitaa";
-
 
 streetController.get(
   "/Mitaa",
@@ -43,6 +43,16 @@ streetController.get("/MitaaList", isAuthenticated, can('view-streets'), functio
       });
     }
   );
+});
+
+streetController.get("/LookupMitaa", isAuthenticated, function (req, res) {
+  sendRequest(req, res, streetAPI, "GET", req.query, (jsonData) => {
+    var { data, statusCode } = jsonData;
+    res.send({
+      streets: data,
+      statusCode: statusCode,
+    });
+  });
 });
 
 streetController.post("/VutaMitaa",  isAuthenticated, can('create-streets'), function (req, res) {

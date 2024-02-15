@@ -560,7 +560,7 @@ function getAllDistricts(regionCode, selectedDistrict = null) {
 
 function getAllWards(lgaCode, selectedWard = null) {
   ajaxRequest(
-    "/WardList",
+    "/LookupKata",
     "GET",
     (wardsResponse) => {
       if (wardsResponse.statusCode == 300) {
@@ -583,7 +583,7 @@ function getAllWards(lgaCode, selectedWard = null) {
 
 function getAllStreets(wardCode, selectedStreet = null) {
   ajaxRequest(
-    "/MitaaList",
+    "/LookupMitaa",
     "GET",
     (streetsResponse) => {
       const { streets, statusCode } = streetsResponse;
