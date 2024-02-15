@@ -7,7 +7,6 @@ var getMyNotifications = () => {
     // alert('x')
       ajaxRequest(`/MyNotifications` , 'POST' , (response) => {
            const {statusCode , data , counter , new_message_count} = response
-                
                  if(statusCode == 300){
                         if(parseInt(counter) > 0){
                             $("#notifications").removeClass('d-none');
@@ -91,7 +90,6 @@ var allMessages = (data) => {
                                     <span class="text-secondary px-2">${school_name}</span>
                                 </p>
                             </div>
-                            
                         </div>
                     </div>
                    `;

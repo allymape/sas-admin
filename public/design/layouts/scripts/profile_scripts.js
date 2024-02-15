@@ -103,6 +103,11 @@ function handovers(){
     }
   });
 }
+function clearHandoverFields(){
+   document.getElementById("handover-staff").value = "";
+   document.getElementById("handover-date").value = "";
+   document.getElementById("handover-reason").value = "";
+}
 handovers()
 // handover
 $("#btn-handover").on('click' , function(e){
@@ -123,6 +128,7 @@ $("#btn-handover").on('click' , function(e){
           statusCode == 300 ? "success" : "warning",
           () => {
             if (statusCode == 300) {
+              clearHandoverFields();
               handovers();
             }
           }
