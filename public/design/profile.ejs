@@ -1,4 +1,7 @@
-<% var card_title = '' %> 
+<% var card_title = '' 
+   const {page , per_page} = req.query 
+%> 
+<% const has_pagination = page != undefined && per_page != undefined ? page > 0 || per_page > 0  : false   %>
 <%- include('layouts/partials/header.ejs' , {
     title : 'Profile',
     page_title : 'My Profile',
@@ -240,10 +243,10 @@
                                                 <!--end row-->
                                             </form>
                                             <div class="mt-4 mb-3 border-bottom pb-2">
-                                                <!-- <div class="float-end">
-                                                    <a href="javascript:void(0);" class="link-primary">IP</a>
-                                                </div> -->
                                                 <h5 class="card-title">Last 10 Login History</h5>
+                                                 <div class="float-end">
+                                                    <a href="javascript:void(0);" class="link-primary">IP</a>
+                                                </div>
                                             </div>
                                             <% activities.forEach(item => { %>
                                             <div class="d-flex align-items-center mb-3">
@@ -268,57 +271,10 @@
                                                 </div>
                                             </div>
                                             <% }) %>
-                                            <!-- <div class="d-flex align-items-center mb-3">
-                                                <div class="flex-shrink-0 avatar-sm">
-                                                    <div
-                                                        class="avatar-title bg-light text-primary rounded-3 fs-18 shadow">
-                                                        <i class="ri-tablet-line"></i>
-                                                    </div>
-                                                </div>
-                                                <div class="flex-grow-1 ms-3">
-                                                    <h6>Apple iPad Pro</h6>
-                                                    <p class="text-muted mb-0">Washington, United States - November 06
-                                                        at 10:43AM</p>
-                                                </div>
-                                                <div>
-                                                    <a href="javascript:void(0);">Logout</a>
-                                                </div>
-                                            </div>
-                                            <div class="d-flex align-items-center mb-3">
-                                                <div class="flex-shrink-0 avatar-sm">
-                                                    <div
-                                                        class="avatar-title bg-light text-primary rounded-3 fs-18 shadow">
-                                                        <i class="ri-smartphone-line"></i>
-                                                    </div>
-                                                </div>
-                                                <div class="flex-grow-1 ms-3">
-                                                    <h6>Galaxy S21 Ultra 5G</h6>
-                                                    <p class="text-muted mb-0">Conneticut, United States - June 12 at
-                                                        3:24PM</p>
-                                                </div>
-                                                <div>
-                                                    <a href="javascript:void(0);">Logout</a>
-                                                </div>
-                                            </div>
-                                            <div class="d-flex align-items-center">
-                                                <div class="flex-shrink-0 avatar-sm">
-                                                    <div
-                                                        class="avatar-title bg-light text-primary rounded-3 fs-18 shadow">
-                                                        <i class="ri-macbook-line"></i>
-                                                    </div>
-                                                </div>
-                                                <div class="flex-grow-1 ms-3">
-                                                    <h6>Dell Inspiron 14</h6>
-                                                    <p class="text-muted mb-0">Phoenix, United States - July 26 at
-                                                        8:10AM</p>
-                                                </div>
-                                                <div>
-                                                    <a href="javascript:void(0);">Logout</a>
-                                                </div>
-                                            </div> -->
                                         </div>
                                         <div class="tab-pane" id="handover" role="tabpanel">
-                                            <form method="POST">
+                                           <div id="handover-form">
+                                             <form method="POST">
                                                 <div class="row g-2">
                                                     <div class="col-lg-3">
                                                         <div>
@@ -361,11 +317,14 @@
                                                 </div>
                                                 <!--end row-->
                                             </form>
+                                           </div>
+                                           <div id="handover-stop" class="text-center d-none">
+                                                <button type="button" class="btn  btn-danger">
+                                                    <span class="ri-stop-circle-fill"></span> ONDOA KUKAIMISHA
+                                                </button>
+                                           </div>
                                             <div class="mt-4 mb-3 border-bottom pb-2">
-                                                <div class="float-end">
-                                                    <a href="javascript:void(0);" class="link-primary">IP</a>
-                                                </div>
-                                                <h5 class="card-title">Taarifa ya Kukaimisha</h5>
+                                                <h5 class="card-title">Taarifa za Makaimisho</h5>
                                             </div>
                                             <table class="table table-striped" id="handover-table">
                                                 <thead>
@@ -377,9 +336,9 @@
                                                     <th>Hali</th>
                                                 </thead>
                                                 <tbody>
-
                                                 </tbody>
                                             </table>
+                                            <%- include('./paginations/ajax_pagination') %>
                                         </div>
                                     </div>
                                 </div>

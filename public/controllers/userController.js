@@ -110,7 +110,7 @@ userController.post("/auth", function (req, res) {
                 req.session.Token = token;
                 req.session.userID = user.id;
                 req.session.userName = user.name;
-                req.session.cheoName = user.rank_name;
+                req.session.cheoName = user.cheo.toUpperCase();
                 req.session.jukumu = user.jukumu;
                 req.session.email = user.email;
                 req.session.ip_address = ip_address;

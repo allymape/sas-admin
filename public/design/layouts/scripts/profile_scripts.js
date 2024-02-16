@@ -56,11 +56,35 @@ function update(url , data , callback) {
    JSON.stringify(data)
  );
 }
-
+function hideShowHandoverForm(active){
+      if(active){
+        $("#handover-form").addClass("d-none");
+        $("#handover-stop").removeClass("d-none");
+      }else{
+        $("#handover-form").removeClass("d-none");
+        $("#handover-stop").addClass("d-none");
+      }
+}
+// 
+$("#handover-stop button").on("click" , function(){
+     confirmAction(() => {
+       ajaxRequest("/StopHandover" , "POST" , (response) => {
+           const { statusCode , message } = response
+           const success = statusCode == 300;
+           alertMessage(success ? 'Umefanikiwa' : 'Haujafanikiwa' , message , success ? 'success' : 'error' , () => {
+               if(success){
+                  handovers();
+               }
+           })
+       });
+     } , "Ndio" , "warning" , "Je, una uhakika?" , "Thibitisha")
+});
 // 
 function handovers(){
   ajaxRequest("/MyHandover", "GET", (response) => {
-    if (response.statusCode == 300) {
+    const {statusCode , data, activeHandover} = response
+    hideShowHandoverForm(activeHandover);
+    if (statusCode == 300) {
       const fields = {
         id: { hidden : true},
         name: {},
@@ -70,8 +94,7 @@ function handovers(){
         created_at : {hidden : true},
         active: {},
       };
-      console.log(response.data)
-      response.data = response.data.map((item) => ({
+      response.data = data.map((item) => ({
         id: item.id,
         name: item.name,
         start: item.start,
@@ -82,7 +105,7 @@ function handovers(){
           : `<span class="badge bg-danger">In Active</span>`
       }));
       dataTable(
-        "MyHandover",
+        "Profile",
         "handover-table",
         fields,
         response,

@@ -7,6 +7,7 @@ const path  = require("path");
 const API_BASE_URL = process.env.API_BASE_URL;
 const handoverListAPI = API_BASE_URL + "handover-list";
 const createHandoverAPI = API_BASE_URL+"handover";
+const stopHandoverAPI = API_BASE_URL+"stop-handover";
 
 handoverController.get("/MyHandover", isAuthenticated, function (req, res) {
     const per_page = Number(req.query.per_page || 10);
@@ -16,10 +17,13 @@ handoverController.get("/MyHandover", isAuthenticated, function (req, res) {
         page
     }
     sendRequest(req , res , handoverListAPI+ "?page=" + page + "&per_page=" + per_page , "GET" , params , (jsonData) => {
-        const {handovers , numRows , statusCode} = jsonData;
+        const { handovers, activeHandover, numRows, statusCode } = jsonData;
+        // req.originalUrl = "/Profile";
+        // console.log(req.originalUrl);
         res.send({
           statusCode,
           data: statusCode == 300 ? handovers : [],
+          activeHandover : statusCode == 300 ? activeHandover : false,
           pagination: {
             total: Number(numRows),
             current: Number(page),
@@ -39,6 +43,16 @@ handoverController.post('/Handover' , isAuthenticated , (req , res) => {
             message
            });
     })
+})
+
+handoverController.post(`/StopHandover` , isAuthenticated , (req , res) => {
+       sendRequest(req, res, stopHandoverAPI , "PUT" , {} , (jsonData) => {
+           const { statusCode , message } = jsonData;
+             res.send({
+                 statusCode,
+                 message
+             });
+       });
 })
 
 module.exports = handoverController;

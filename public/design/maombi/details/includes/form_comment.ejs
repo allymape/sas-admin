@@ -45,8 +45,8 @@
       <button type="button" id="btn-tuma" onclick="tuma(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" 
         title="Kwa kubonyeza kitufe hiki unatuma ombi kwa afisa/kiongozi uliyemchagua hapo juu." data-bs-toggle="tooltip" class="btn btn-primary d-none">Tuma</button>
 
-      <% if(userLevel=='w1' ||  userLevel=='k1' || userLevel=='mus' || userLevel=='adsa' || userLevel=='ke' ){ %>
-        <% if(userLevel=='ke' ){ %>
+      <% if( ['w1','kw1' , 'k1','kk1','mus','kmus','adsa','kadsa','ke','kke'].includes(userLevel)){ %>
+        <% if(['ke','kke'].includes(userLevel) ){ %>
           <button type="button" id="btn-thibitisha" onclick="thibitisha(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" data-bs-toggle="tooltip" 
             title="Kwa kubonyeza kitufe hiki unathibitisha ombi hili" class="btn btn-success">
             Thibitisha
