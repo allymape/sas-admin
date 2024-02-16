@@ -4,7 +4,7 @@ const request = require("request");
 const umilikinaumenejaRequestController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { isAuthenticated, sendRequest, can, modifiedUrl } = require("../../../util");
+const { isAuthenticated, sendRequest, can, modifiedUrl, activeHandover } = require("../../../util");
 // const { sendRequest, isAuthenticated, can } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 
@@ -20,6 +20,7 @@ umilikinaumenejaRequestController.get(
   "/MaombiMmilikiShule",
   isAuthenticated,
   can("view-school-owners-and-managers"),
+  activeHandover,
   function (req, res) {
     const per_page = Number(req.query.per_page || 10);
     const page = Number(req.query.page || 1);
@@ -30,28 +31,21 @@ umilikinaumenejaRequestController.get(
       //  search: req.query.tafuta,
       status: req.query.status,
     };
-    sendRequest(
-      req,
-      res,
-      maommilikiShuleAPI,
-      "POST",
-      formData,
-      (jsonData) => {
-        const { dataList, dataSummary , numRows } = jsonData;
-        res.render(path.join(__dirname + "/../../design/maombi/mmiliki"), {
-          req: req,
-          summary: dataSummary,
-          maombi: dataList,
-          pagination: {
-            total: Number(numRows),
-            current: Number(page),
-            per_page: Number(per_page),
-            url: modifiedUrl(req),
-            pages: Math.ceil(Number(numRows) / Number(per_page)),
-          },
-        });
-      }
-    );
+    sendRequest(req, res, maommilikiShuleAPI, "POST", formData, (jsonData) => {
+      const { dataList, dataSummary, numRows } = jsonData;
+      res.render(path.join(__dirname + "/../../design/maombi/mmiliki"), {
+        req: req,
+        summary: dataSummary,
+        maombi: dataList,
+        pagination: {
+          total: Number(numRows),
+          current: Number(page),
+          per_page: Number(per_page),
+          url: modifiedUrl(req),
+          pages: Math.ceil(Number(numRows) / Number(per_page)),
+        },
+      });
+    });
   }
 );
 
@@ -59,6 +53,7 @@ umilikinaumenejaRequestController.get(
   "/ViewOmbiMmilliki/:id",
   isAuthenticated,
   can("view-school-owners-and-managers"),
+  activeHandover,
   function (req, res) {
     var obj = [];
     // console.log(req.params)
@@ -188,10 +183,10 @@ umilikinaumenejaRequestController.get(
             commentRedirectUrl: "/MaombiMmilikiShule",
           }
         );
-
       }
     );
-  });
+  }
+);
 
 
 umilikinaumenejaRequestController.post(

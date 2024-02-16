@@ -4,7 +4,7 @@ const request = require("request");
 const usajiliShuleReportController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { isAuthenticated, sendRequest, can } = require("../../../util");
+const { isAuthenticated, sendRequest, can, activeHandover } = require("../../../util");
 const API_BASE_URL = process.env.API_BASE_URL;
 const maousajiliShuleListAPI = API_BASE_URL + "maombi-usajili-shule";
 const ombiKusajiliDetails = API_BASE_URL + "view-ombi-kusajili-details";
@@ -15,6 +15,7 @@ usajiliShuleReportController.get(
   "/RipotiZilizosajiliwa",
   isAuthenticated,
   can("view-school-registration-private"),
+   activeHandover,
   function (req, res) {
     var formData = {
       //  is_paginated: req.query.is_paginated,

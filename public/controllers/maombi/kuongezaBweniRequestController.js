@@ -4,7 +4,7 @@ const request = require("request");
 const kuongezaBweniRequestController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { isAuthenticated, sendRequest, can, modifiedUrl } = require("../../../util");
+const { isAuthenticated, sendRequest, can, modifiedUrl, activeHandover } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var bweniDetails = API_BASE_URL + "view-bweni-details";
 var badiliBweni = API_BASE_URL + "maombi-badili-bweni";
@@ -15,6 +15,7 @@ kuongezaBweniRequestController.get(
   "/KuongezaBweni",
   isAuthenticated,
   can("view-addition-of-domitory"),
+  activeHandover,
   function (req, res) {
     var obj = [];
     const per_page = Number(req.query.per_page || 10);
@@ -24,29 +25,24 @@ kuongezaBweniRequestController.get(
       per_page,
       status: req.query.status,
     };
-    sendRequest(req, res, badiliBweni, "POST", formData,
-      function (jsonData) {
-
-        var data = jsonData.dataList;
-        var dataSummary = jsonData.dataSummary;
-        const {numRows} = jsonData
-        console.log(
-          new Date() + " " + req.session.userName + ": /KuongezaBweni"
-        );
-        res.render(path.join(__dirname + "/../../design/maombi/bweni"), {
-          req: req,
-          summary: dataSummary,
-          maombi: data,
-          pagination: {
-            total: Number(numRows),
-            current: Number(page),
-            per_page: Number(per_page),
-            url: modifiedUrl(req),
-            pages: Math.ceil(Number(numRows) / Number(per_page)),
-          },
-        });
-      }
-    );
+    sendRequest(req, res, badiliBweni, "POST", formData, function (jsonData) {
+      var data = jsonData.dataList;
+      var dataSummary = jsonData.dataSummary;
+      const { numRows } = jsonData;
+      console.log(new Date() + " " + req.session.userName + ": /KuongezaBweni");
+      res.render(path.join(__dirname + "/../../design/maombi/bweni"), {
+        req: req,
+        summary: dataSummary,
+        maombi: data,
+        pagination: {
+          total: Number(numRows),
+          current: Number(page),
+          per_page: Number(per_page),
+          url: modifiedUrl(req),
+          pages: Math.ceil(Number(numRows) / Number(per_page)),
+        },
+      });
+    });
   }
 );
 
@@ -54,6 +50,7 @@ kuongezaBweniRequestController.get(
   "/BadiliBweni/:id",
   isAuthenticated,
   can("view-addition-of-domitory"),
+  activeHandover,
   function (req, res) {
     var TrackingNumber = req.params.id;
     sendRequest(

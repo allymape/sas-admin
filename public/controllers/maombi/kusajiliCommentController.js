@@ -4,7 +4,7 @@ const request = require("request");
 const kusajiliCommentController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { isAuthenticated, sendRequest, can } = require("../../../util");
+const { isAuthenticated, sendRequest, can, activeHandover } = require("../../../util");
 const API_BASE_URL = process.env.API_BASE_URL;
 const sajiliReply = API_BASE_URL + "tuma-sajili-majibu";
 
@@ -13,6 +13,7 @@ kusajiliCommentController.post(
   "/SajiliComment",
   isAuthenticated,
   can("create-comments"),
+  activeHandover,
   function (req, res) {
     // console.log(req.body)
     var trackerId = req.body.trackerId;

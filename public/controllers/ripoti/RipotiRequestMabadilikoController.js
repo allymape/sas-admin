@@ -4,7 +4,7 @@ const request = require("request");
 const reportMabadilikoRequestController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { isAuthenticated, sendRequest, can, exportJSONToExcel } = require("../../../util");
+const { isAuthenticated, sendRequest, can, exportJSONToExcel, activeHandover } = require("../../../util");
 const API_BASE_URL = process.env.API_BASE_URL;
 const requestRiportBadiliMikondoAPI = API_BASE_URL + "ripoti-badili-mikondo";
 const requestRiportBadiliUsajiliAPI = API_BASE_URL + "ripoti-badili-usajili";
@@ -18,14 +18,21 @@ const requestRiportBadiliTahasusiAPI = API_BASE_URL + "ripoti-badili-tahasusi";
 const requestRiportBadiliBweniAPI = API_BASE_URL + "ripoti-badili-bweni";
 
 // Mikondo
-reportMabadilikoRequestController.get("/RipotiKuongezaMikondo",isAuthenticated,can("view-addition-of-streams-report"),
+reportMabadilikoRequestController.get(
+  "/RipotiKuongezaMikondo",
+  isAuthenticated,
+  can("view-addition-of-streams-report"),
+  activeHandover,
   function (req, res) {
-    const per_page = req.query.export == "true" && req.query.max ? Number(req.query.max) : Number(req.query.per_page || 10);
+    const per_page =
+      req.query.export == "true" && req.query.max
+        ? Number(req.query.max)
+        : Number(req.query.per_page || 10);
     const page = Number(req.query.page || 1);
     const status = req.query.status;
-    const tracking_number = req.query.tracking_number
-    const date_range = req.query.date_range
-    const category = req.query.category
+    const tracking_number = req.query.tracking_number;
+    const date_range = req.query.date_range;
+    const category = req.query.category;
     const ownership = req.query.ownership;
     const structure = req.query.structure;
     const region = req.query.region;
@@ -33,45 +40,53 @@ reportMabadilikoRequestController.get("/RipotiKuongezaMikondo",isAuthenticated,c
     const ward = req.query.ward;
     const street = req.query.street;
     const formData = {
-            page,
-            per_page,
-            tracking_number,
-            status,
-            date_range,
-            category,
-            ownership,
-            structure,
-            region,
-            district,
-            ward,
-            street
+      page,
+      per_page,
+      tracking_number,
+      status,
+      date_range,
+      category,
+      ownership,
+      structure,
+      region,
+      district,
+      ward,
+      street,
     };
-    sendRequest(req,res,requestRiportBadiliMikondoAPI, "GET", formData, (jsonData) => {
-        const { data , numRows, categories, structures, ownerships, regions } = jsonData;
-        if(req.query.export == 'true'){
-           data.forEach( (item) => { delete item.status })
-           exportJSONToExcel(res, data);
-        }else{
-           res.render(
-             path.join(__dirname + "/../../design/reports/mabadiliko/mikondo"),
-             {
-               req: req,
-               data: data,
-               categories,
-               structures,
-               ownerships,
-               regions,
-               pagination: {
-                 total: numRows,
-                 current: page,
-                 per_page: per_page,
-                 url: "RipotiKuongezaMikondo",
-                 pages: Math.ceil(numRows / per_page),
-               },
-             }
-           );
+    sendRequest(
+      req,
+      res,
+      requestRiportBadiliMikondoAPI,
+      "GET",
+      formData,
+      (jsonData) => {
+        const { data, numRows, categories, structures, ownerships, regions } =
+          jsonData;
+        if (req.query.export == "true") {
+          data.forEach((item) => {
+            delete item.status;
+          });
+          exportJSONToExcel(res, data);
+        } else {
+          res.render(
+            path.join(__dirname + "/../../design/reports/mabadiliko/mikondo"),
+            {
+              req: req,
+              data: data,
+              categories,
+              structures,
+              ownerships,
+              regions,
+              pagination: {
+                total: numRows,
+                current: page,
+                per_page: per_page,
+                url: "RipotiKuongezaMikondo",
+                pages: Math.ceil(numRows / per_page),
+              },
+            }
+          );
         }
-       
       }
     );
   }

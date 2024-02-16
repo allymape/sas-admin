@@ -4,7 +4,7 @@ const request = require("request");
 const ongezaDahaliaRequestController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { isAuthenticated, sendRequest, can, modifiedUrl } = require("../../../util");
+const { isAuthenticated, sendRequest, can, modifiedUrl, activeHandover } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var badiliDahalia = API_BASE_URL + "maombi-ongeza-dahalia";
 var badiliDahaliaDetalis = API_BASE_URL + "view-badili-dahalia";
@@ -15,68 +15,62 @@ ongezaDahaliaRequestController.get(
   "/KuongezaDahalia",
   isAuthenticated,
   can("view-change-of-hostel"),
+  activeHandover,
   function (req, res) {
-   const per_page = Number(req.query.per_page || 10);
-   const page = Number(req.query.page || 1);
-   const formData = {
-     page,
-     per_page,
-     //  is_paginated: req.query.is_paginated,
-     //  search: req.query.tafuta,
-     status: req.query.status,
-   };
-    sendRequest(
-      req,
-      res,
-      badiliDahalia,
-      "POST",
-      formData,
-      (jsonData) => {
-        var message = jsonData.message;
-        var statusCode = jsonData.statusCode;
-        var data = jsonData.dataList;
-        const {numRows} = jsonData
-        const obj = [];
-        for (var i = 0; i < data.length; i++) {
-          var tracking_number = data[i].tracking_number;
-          var user_id = data[i].user_id;
-          var LgaName = data[i].LgaName;
-          var RegionName = data[i].RegionName;
-          var school_name = data[i].school_name;
-          var created_at = data[i].created_at;
-          var remain_days = data[i].remain_days;
-          var folio = data[i].folio;
-          var is_approved = data[i].is_approved;
-          req.session.TrackingNumber = tracking_number;
-          obj.push({
-            tracking_number: tracking_number,
-            user_id: user_id,
-            school_name: school_name,
-            LgaName: LgaName,
-            RegionName: RegionName,
-            created_at: created_at,
-            remain_days: remain_days,
-            folio,
-            is_approved
-          });
-        }
-        console.log(
-          new Date() + " " + req.session.userName + ": /MaombiKusajiliShule"
-        );
-        res.render(path.join(__dirname + "/../../design/maombi/dahalia"), {
-          req: req,
-          summary: jsonData.dataSummary,
-          maombi: obj,
-          pagination: {
-            total: Number(numRows),
-            current: Number(page),
-            per_page: Number(per_page),
-            url: modifiedUrl(req),
-            pages: Math.ceil(Number(numRows) / Number(per_page)),
-          },
+    const per_page = Number(req.query.per_page || 10);
+    const page = Number(req.query.page || 1);
+    const formData = {
+      page,
+      per_page,
+      //  is_paginated: req.query.is_paginated,
+      //  search: req.query.tafuta,
+      status: req.query.status,
+    };
+    sendRequest(req, res, badiliDahalia, "POST", formData, (jsonData) => {
+      var message = jsonData.message;
+      var statusCode = jsonData.statusCode;
+      var data = jsonData.dataList;
+      const { numRows } = jsonData;
+      const obj = [];
+      for (var i = 0; i < data.length; i++) {
+        var tracking_number = data[i].tracking_number;
+        var user_id = data[i].user_id;
+        var LgaName = data[i].LgaName;
+        var RegionName = data[i].RegionName;
+        var school_name = data[i].school_name;
+        var created_at = data[i].created_at;
+        var remain_days = data[i].remain_days;
+        var folio = data[i].folio;
+        var is_approved = data[i].is_approved;
+        req.session.TrackingNumber = tracking_number;
+        obj.push({
+          tracking_number: tracking_number,
+          user_id: user_id,
+          school_name: school_name,
+          LgaName: LgaName,
+          RegionName: RegionName,
+          created_at: created_at,
+          remain_days: remain_days,
+          folio,
+          is_approved,
         });
       }
-    );
+      console.log(
+        new Date() + " " + req.session.userName + ": /MaombiKusajiliShule"
+      );
+      res.render(path.join(__dirname + "/../../design/maombi/dahalia"), {
+        req: req,
+        summary: jsonData.dataSummary,
+        maombi: obj,
+        pagination: {
+          total: Number(numRows),
+          current: Number(page),
+          per_page: Number(per_page),
+          url: modifiedUrl(req),
+          pages: Math.ceil(Number(numRows) / Number(per_page)),
+        },
+      });
+    });
   }
 );
 
@@ -84,6 +78,7 @@ ongezaDahaliaRequestController.get(
   "/BadiliDahalia/:id",
   isAuthenticated,
   can("view-change-of-hostel"),
+  activeHandover,
   function (req, res) {
     var obj = [];
     // console.log(req.params)
@@ -164,8 +159,8 @@ ongezaDahaliaRequestController.get(
             baruaPepe: baruaPepe,
             streamNew: streamNew,
             streamOld: streamOld,
-            oldIsHostel : oldIsHostel,
-            newIsHostel : newIsHostel,
+            oldIsHostel: oldIsHostel,
+            newIsHostel: newIsHostel,
             language: language,
             school_size: school_size,
             userLevel: req.user.cheo,

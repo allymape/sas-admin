@@ -4,7 +4,7 @@ const request = require("request");
 const badiliMmilikiRequestController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { isAuthenticated, sendRequest, can, modifiedUrl } = require("../../../util");
+const { isAuthenticated, sendRequest, can, modifiedUrl, activeHandover } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var maobadilimmilikiShuleListAPI = API_BASE_URL + "maombi-badili-mmiliki-shule";
 var badiliMmilikiDetails = API_BASE_URL + "view-ombi-badili-mmiliki-details";
@@ -14,6 +14,7 @@ badiliMmilikiRequestController.get(
   "/BadiliMmiliki",
   isAuthenticated,
   can("view-change-of-school-owner"),
+  activeHandover,
   function (req, res) {
     const per_page = Number(req.query.per_page || 10);
     const page = Number(req.query.page || 1);
@@ -31,62 +32,57 @@ badiliMmilikiRequestController.get(
       "POST",
       formData,
       (jsonData) => {
-        
-          var data = jsonData.dataList;
-          const {numRows} = jsonData;
-          const obj = [];
-            // console.log("gaiia",data)
-            for (var i = 0; i < data.length; i++) {
-              var tracking_number = data[i].tracking_number;
-              var user_id = data[i].user_id;
-              var LgaName = data[i].LgaName;
-              var RegionName = data[i].RegionName;
-              var school_name = data[i].school_name;
-              var WardName = data[i].WardName;
-              var owner_name = data[i].owner_name;
-              var created_at = data[i].created_at;
-              var remain_days = data[i].remain_days;
-              var folio = data[i].folio;
-              var is_approved = data[i].is_approved;
-              req.session.TrackingNumber = tracking_number;
-              obj.push({
-                tracking_number: tracking_number,
-                user_id: user_id,
-                WardName: WardName,
-                school_name: school_name,
-                LgaName: LgaName,
-                owner_name: owner_name,
-                RegionName: RegionName,
-                created_at: created_at,
-                remain_days: remain_days,
-                folio,
-                is_approved
-              });
-            }
-            console.log(
-              new Date() +
-                " " +
-                req.session.userName +
-                ": /BadiliMmiliki"
-            );
-            res.render(
-              path.join(__dirname + "/../../design/maombi/badili_mmiliki"),
-              {
-                req: req,
-                summary: jsonData.dataSummary,
-                maombi: obj,
-                pagination: {
-                  total: Number(numRows),
-                  current: Number(page),
-                  per_page: Number(per_page),
-                  url: modifiedUrl(req),
-                  pages: Math.ceil(Number(numRows) / Number(per_page)),
-                },
-              }
-            );
-
-        });
-    
+        var data = jsonData.dataList;
+        const { numRows } = jsonData;
+        const obj = [];
+        // console.log("gaiia",data)
+        for (var i = 0; i < data.length; i++) {
+          var tracking_number = data[i].tracking_number;
+          var user_id = data[i].user_id;
+          var LgaName = data[i].LgaName;
+          var RegionName = data[i].RegionName;
+          var school_name = data[i].school_name;
+          var WardName = data[i].WardName;
+          var owner_name = data[i].owner_name;
+          var created_at = data[i].created_at;
+          var remain_days = data[i].remain_days;
+          var folio = data[i].folio;
+          var is_approved = data[i].is_approved;
+          req.session.TrackingNumber = tracking_number;
+          obj.push({
+            tracking_number: tracking_number,
+            user_id: user_id,
+            WardName: WardName,
+            school_name: school_name,
+            LgaName: LgaName,
+            owner_name: owner_name,
+            RegionName: RegionName,
+            created_at: created_at,
+            remain_days: remain_days,
+            folio,
+            is_approved,
+          });
+        }
+        console.log(
+          new Date() + " " + req.session.userName + ": /BadiliMmiliki"
+        );
+        res.render(
+          path.join(__dirname + "/../../design/maombi/badili_mmiliki"),
+          {
+            req: req,
+            summary: jsonData.dataSummary,
+            maombi: obj,
+            pagination: {
+              total: Number(numRows),
+              current: Number(page),
+              per_page: Number(per_page),
+              url: modifiedUrl(req),
+              pages: Math.ceil(Number(numRows) / Number(per_page)),
+            },
+          }
+        );
+      }
+    );
   }
 );
 
@@ -94,6 +90,7 @@ badiliMmilikiRequestController.get(
   "/ViewOmbiMmiliki/:id",
   isAuthenticated,
   can("view-change-of-school-owner"),
+  activeHandover,
   function (req, res) {
     var obj = [];
     // console.log(req.params)

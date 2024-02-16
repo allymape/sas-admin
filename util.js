@@ -15,16 +15,19 @@ const url = require("url");
 
 const { toSwahili } = require('digits-to-swahili');
 const { level } = require("winston");
+const API_BASE_URL = process.env.API_BASE_URL;
+const myActivehandover = API_BASE_URL + "my-active-handover";
 
 
 module.exports = {
   isAuthenticated: (req, res, next) => {
     //  console.log("Hapappapappappa" , req.body);
-    const sessionToken = req.session.Token 
-    const bodyToken =  req.body.token
-    const authorization = "Bearer" + " " + ( sessionToken || bodyToken );
+    const sessionToken = req.session.Token;
+    const bodyToken = req.body.token;
+    const authorization = "Bearer" + " " + (sessionToken || bodyToken);
+
     // req.session.previousUrl = req.originalUrl;
-   
+
     if (authorization) {
       const token = authorization.slice(7, authorization.length); // Bearer XXXXXX
       jwt.verify(
@@ -33,18 +36,18 @@ module.exports = {
         (err, decode) => {
           if (err) {
             if (err.name === "TokenExpiredError") {
-              if(bodyToken){
-                 return res.send({
-                   success: false,
-                   statusCode: 402,
-                   message: "Token is expired",
-                 });
-              }else{
+              if (bodyToken) {
+                return res.send({
+                  success: false,
+                  statusCode: 402,
+                  message: "Token is expired",
+                });
+              } else {
                 req.session.destroy((error) => {
                   if (error) console.log(error);
                 });
               }
-            }else{
+            } else {
               if (bodyToken) {
                 res.status(401).send({
                   success: false,
@@ -55,7 +58,6 @@ module.exports = {
                 res.redirect("/");
               }
             }
-            
           } else {
             req.user = decode;
             const { exp } = decode;
@@ -79,7 +81,27 @@ module.exports = {
       }
     }
   },
-
+  activeHandover: (req, res, next) => {
+    const current_url = req.originalUrl;
+    if (
+      !["/Profile", "/MyHandover", "/MyNotifications"].includes(current_url)
+    ) {
+      module.exports.sendRequest(
+        req,
+        res,
+        myActivehandover,
+        "POST",
+        {},
+        (jsonData) => {
+          const { active } = jsonData;
+          if (active) {
+            return res.redirect("/Profile?tab=kaimisha");
+          }
+        }
+      );
+    }
+    next();
+  },
   redirectIfAuthenticated: (req, res, next) => {
     if (req.session.userName) {
       // let  previousUrl = req.session.previousUrl
@@ -88,45 +110,48 @@ module.exports = {
     }
     next();
   },
-  validePassword : (req , res , next) => {
-      const { oldpassword , newpassword, confirmpassword } = req.body;
-      if(!oldpassword || !newpassword || !confirmpassword){
-          res.send({
-            statusCode: 422,
-            message: "Tafadhali jaza maeneo yote kwa ukamilifu.",
-          });
-      }else if(!module.exports.isPasswordsMatched(newpassword , confirmpassword)){
-        res.send({
-          statusCode: 422,
-          message : "Tafadhali hakikisha nywila yako mpya zinafanana."
-        });
-      }else if(module.exports.isPasswordsMatched(oldpassword , newpassword)){
-        res.send({
-          statusCode: 422,
-          message: "Tafadhali hakikisha nywila yako mpya na ya zamani hazifanani.",
-        });
-      }
-      else if(!module.exports.isStrongPassword(newpassword)){
-        res.send({
-          statusCode: 422,
-          message : "Tafadhali hakikisha nywila yako mpya ina characters angalau 8 na ikiwa na mchanganyiko wa angalau herufi moja kubwa, herufi moja ndogo na special character."
-        });
-      }
-      else{
-        next();
-      }
+  validePassword: (req, res, next) => {
+    const { oldpassword, newpassword, confirmpassword } = req.body;
+    if (!oldpassword || !newpassword || !confirmpassword) {
+      res.send({
+        statusCode: 422,
+        message: "Tafadhali jaza maeneo yote kwa ukamilifu.",
+      });
+    } else if (
+      !module.exports.isPasswordsMatched(newpassword, confirmpassword)
+    ) {
+      res.send({
+        statusCode: 422,
+        message: "Tafadhali hakikisha nywila yako mpya zinafanana.",
+      });
+    } else if (module.exports.isPasswordsMatched(oldpassword, newpassword)) {
+      res.send({
+        statusCode: 422,
+        message:
+          "Tafadhali hakikisha nywila yako mpya na ya zamani hazifanani.",
+      });
+    } else if (!module.exports.isStrongPassword(newpassword)) {
+      res.send({
+        statusCode: 422,
+        message:
+          "Tafadhali hakikisha nywila yako mpya ina characters angalau 8 na ikiwa na mchanganyiko wa angalau herufi moja kubwa, herufi moja ndogo na special character.",
+      });
+    } else {
+      next();
+    }
   },
-  isPasswordsMatched : (a , b) => {
+  isPasswordsMatched: (a, b) => {
     return a === b;
   },
-  isValidLength : (str , length = 8) => {
+  isValidLength: (str, length = 8) => {
     return str.length >= length;
   },
-  isStrongPassword : (password , length = 8) => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  isStrongPassword: (password, length = 8) => {
+    const regex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     return regex.test(password);
   },
-  modifiedUrl: (req, newParams = { status : req.query.status }) => {
+  modifiedUrl: (req, newParams = { status: req.query.status }) => {
     const currentUrl = req.originalUrl;
     const parseUrl = url.parse(currentUrl, true);
     // console.log(parseUrl);
@@ -152,7 +177,7 @@ module.exports = {
     return newUrl;
   },
   sendRequest: (req, res, url, method, formData, callback) => {
-    const nameOrToken = typeof (req.session.userName || req.body.token)
+    const nameOrToken = typeof (req.session.userName || req.body.token);
     const token = req.session.Token || req.body.token;
     if (nameOrToken !== "undefined" || req.session.userName === true) {
       request(
@@ -395,7 +420,7 @@ module.exports = {
       district_box,
       district_sqa_box
     );
-    doc.pipe(res , {end : true});
+    doc.pipe(res, { end: true });
     doc.end();
   },
 

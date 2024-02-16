@@ -4,7 +4,7 @@ const request = require("request");
 const anzishaShuleBilaMajengoReportController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { isAuthenticated, sendRequest, can } = require("../../../util");
+const { isAuthenticated, sendRequest, can, activeHandover } = require("../../../util");
 const API_BASE_URL = process.env.API_BASE_URL;
 const maousajiliShuleListAPI = API_BASE_URL + "maombi-usajili-shule";
 const ombiKusajiliDetails = API_BASE_URL + "view-ombi-kusajili-details";
@@ -15,6 +15,7 @@ anzishaShuleBilaMajengoReportController.get(
   "/RipotiAnzishaBilaMajengo",
   isAuthenticated,
   can("view-school-registration-private"),
+  activeHandover,
   function (req, res) {
     var formData = {
       //  is_paginated: req.query.is_paginated,
@@ -23,7 +24,7 @@ anzishaShuleBilaMajengoReportController.get(
     var obj = [];
     var objlist = [];
     var objtotal = [];
-    var per_page =  Number(req.query.per_page || 10);
+    var per_page = Number(req.query.per_page || 10);
     var page = Number(req.query.page || 1);
     var today = new Date();
     sendRequest(
@@ -32,73 +33,73 @@ anzishaShuleBilaMajengoReportController.get(
       anzishaShuleBilaMajAPI,
       "POST",
       formData,
-      (jsonData) => { 
-                  
+      (jsonData) => {
         var message = jsonData.message;
         var statusCode = jsonData.statusCode;
         var data = jsonData.data;
-          for (var i = 0; i < data.length; i++) {
-            var tracking_number = data[i].tracking_number;
-            var user_id = data[i].user_id;
-            var LgaName = data[i].LgaName;
-            var RegionName = data[i].RegionName;
-            var WardName = data[i].WardName;
-            var school_name = data[i].school_name;
-            var created_at = data[i].created_at;
-            var remain_days = data[i].remain_days;
-            var updated_at = data[i].updated_at;
-            var schoolCategory = data[i].schoolCategory;
-            var subcategory = data[i].subcategory;
-            req.session.TrackingNumber = tracking_number;
-            var gender_type = data[i].gender_type;
-            var school_phone = data[i].school_phone;
-            var level = data[i].level;
-            var school_email = data[i].school_email;
-            var po_box = data[i].po_box;
-            obj.push({
-              tracking_number: tracking_number,
-              WardName: WardName,
-              useLev: req.session.UserLevel,
-              schoolCategory: schoolCategory,
-              subcategory: subcategory,
-              userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-              userID: req.session.userID,
-              cheoName: req.session.cheoName,
-              po_box: po_box,
-              user_id: user_id,
-              level: level,
-              school_phone: school_phone,
-              school_email: school_email,
-              school_name: school_name,
-              LgaName: LgaName,
-              RegionName: RegionName,
-              updated_at: updated_at,
-              created_at: created_at,
-              remain_days: remain_days,
-              gender_type: gender_type,
-            });
+        for (var i = 0; i < data.length; i++) {
+          var tracking_number = data[i].tracking_number;
+          var user_id = data[i].user_id;
+          var LgaName = data[i].LgaName;
+          var RegionName = data[i].RegionName;
+          var WardName = data[i].WardName;
+          var school_name = data[i].school_name;
+          var created_at = data[i].created_at;
+          var remain_days = data[i].remain_days;
+          var updated_at = data[i].updated_at;
+          var schoolCategory = data[i].schoolCategory;
+          var subcategory = data[i].subcategory;
+          req.session.TrackingNumber = tracking_number;
+          var gender_type = data[i].gender_type;
+          var school_phone = data[i].school_phone;
+          var level = data[i].level;
+          var school_email = data[i].school_email;
+          var po_box = data[i].po_box;
+          obj.push({
+            tracking_number: tracking_number,
+            WardName: WardName,
+            useLev: req.session.UserLevel,
+            schoolCategory: schoolCategory,
+            subcategory: subcategory,
+            userName: req.session.userName,
+            RoleManage: req.session.RoleManage,
+            userID: req.session.userID,
+            cheoName: req.session.cheoName,
+            po_box: po_box,
+            user_id: user_id,
+            level: level,
+            school_phone: school_phone,
+            school_email: school_email,
+            school_name: school_name,
+            LgaName: LgaName,
+            RegionName: RegionName,
+            updated_at: updated_at,
+            created_at: created_at,
+            remain_days: remain_days,
+            gender_type: gender_type,
+          });
+        }
+        console.log(
+          new Date() +
+            " " +
+            req.session.userName +
+            ": /MaombiKuanzishaShuleList"
+        );
+        res.render(
+          path.join(
+            __dirname + "/../../design/reports/ripotianzishabilamajengo"
+          ),
+          {
+            req: req,
+            total_month: data,
+            list: obj,
+            useLev: req.session.UserLevel,
+            userName: req.session.userName,
+            RoleManage: req.session.RoleManage,
+            userID: req.session.userID,
+            cheoName: req.session.cheoName,
           }
-          console.log(
-            new Date() +
-              " " +
-              req.session.userName +
-              ": /MaombiKuanzishaShuleList"
-          );
-          res.render(
-            path.join(__dirname + "/../../design/reports/ripotianzishabilamajengo"),
-            {
-              req: req,
-              total_month: data,
-              list: obj,
-              useLev: req.session.UserLevel,
-              userName: req.session.userName,
-              RoleManage: req.session.RoleManage,
-              userID: req.session.userID,
-              cheoName: req.session.cheoName,
-            }
-          );
-                  
+        );
       }
     );
   }

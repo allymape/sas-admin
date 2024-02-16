@@ -4,7 +4,7 @@ const request = require("request");
 const applicantController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { sendRequest, isAuthenticated } = require("../../util");
+const { sendRequest, isAuthenticated, can, activeHandover } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 const allApplicantsAPI = API_BASE_URL + "all-applicants";
 const findApplicantAPI = API_BASE_URL + "find-applicant";
@@ -12,32 +12,38 @@ const editApplicantAPI = API_BASE_URL + "edit-applicant";
 const lookForApplicantsAPI = API_BASE_URL + "look_for_applicants";
 const changeSchoolApplicantAPI = API_BASE_URL + "change-school-applicant";
 // Get all Applicants
-applicantController.get("/Waombaji", function (req, res) {
-  var per_page = Number(req.query.per_page || 10);
-  var page = Number(req.query.page || 1);
-  var url = allApplicantsAPI + "?page=" + page + "&per_page=" + per_page;
-  var formData = {
-    is_paginated: req.query.is_paginated,
-    search: req.query.tafuta,
-  };
-  sendRequest(req, res, url, "GET", formData, (jsonData) => {
-    var statusCode = jsonData.statusCode;
-    var data = jsonData.data;
-    var numRows = jsonData.numRows;
-    res.render(path.join(__dirname + "/../design/waombaji"), {
-      req: req,
-      statusCode: statusCode,
-      applicants: data,
-      pagination: {
-        total: numRows,
-        current: page,
-        per_page: per_page,
-        url: "Waombaji",
-        pages: Math.ceil(numRows / per_page),
-      },
+applicantController.get(
+  "/Waombaji",
+  isAuthenticated,
+  can("view-applicants"),
+  activeHandover,
+  function (req, res) {
+    var per_page = Number(req.query.per_page || 10);
+    var page = Number(req.query.page || 1);
+    var url = allApplicantsAPI + "?page=" + page + "&per_page=" + per_page;
+    var formData = {
+      is_paginated: req.query.is_paginated,
+      search: req.query.tafuta,
+    };
+    sendRequest(req, res, url, "GET", formData, (jsonData) => {
+      var statusCode = jsonData.statusCode;
+      var data = jsonData.data;
+      var numRows = jsonData.numRows;
+      res.render(path.join(__dirname + "/../design/waombaji"), {
+        req: req,
+        statusCode: statusCode,
+        applicants: data,
+        pagination: {
+          total: numRows,
+          current: page,
+          per_page: per_page,
+          url: "Waombaji",
+          pages: Math.ceil(numRows / per_page),
+        },
+      });
     });
-  });
-});
+  }
+);
 // look for applicants
 applicantController.get(
   "/LookForApplicants",
@@ -66,7 +72,7 @@ applicantController.get(
 );
 
 // show applicant by id
-applicantController.get("/Mwombaji/:id", isAuthenticated, function (req, res) {
+applicantController.get("/Mwombaji/:id", isAuthenticated, can("view-applicants"),activeHandover, function (req, res) {
   var per_page = Number(req.query.per_page || 10);
   var page = Number(req.query.page || 1);
   var formData = {
@@ -126,6 +132,8 @@ applicantController.get("/Mwombaji/:id", isAuthenticated, function (req, res) {
 applicantController.get(
   "/Mwombaji/:id/badili",
   isAuthenticated,
+  can("update-applicants"),
+  activeHandover,
   function (req, res) {
     sendRequest(
       req,
@@ -150,6 +158,8 @@ applicantController.get(
 applicantController.post(
   "/BadiliMwombaji",
   isAuthenticated,
+  can("update-applicants"),
+  activeHandover,
   function (req, res) {
     sendRequest(
       req,
