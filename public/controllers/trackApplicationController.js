@@ -17,11 +17,11 @@ trackApplicationController.get("/TrackOmbi/:id", isAuthenticated, can('view-trac
       const searchQuery = req.query;
       const encrypted_param_id =  req.params.id;
       const decryptedString = crypt().decrypt(encrypted_param_id);
+      // console.log(decryptedString);
    
       sendRequest(req , res , trackAPI+ '/'+ decryptedString + "?page=" + page + "&per_page=" + per_page , "GET" , searchQuery  , (jsonData) => {
         const { numRows } = jsonData;
         const { applications ,categories } = jsonData.data;
-        // console.log(jsonData)
         res.render(path.join(__dirname + "/../design/track"), {
           req: req,
           applications: applications,
