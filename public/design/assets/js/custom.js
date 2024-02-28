@@ -169,7 +169,7 @@ var dataTable = (
   var first_item = per_page * (current - 1) + 1;
   tBody.empty(); //empty table body
   $(".table-caption-header").remove();
-  if(caption){
+  if (caption) {
     table.before(
       `<div class="table-caption-header alert alert-info h6 d-flex align-items-center justify-content-between">
         <span> ${caption} ${total}.</span> 
@@ -178,10 +178,10 @@ var dataTable = (
     </div>`
     );
   }
-  if(ribbon){
+  if (ribbon) {
     table.closest(".card-body")
-          .append(`<div class="ribbon-three ribbon-three-info">
-                  <span class="badge">${ total }</span>
+      .append(`<div class="ribbon-three ribbon-three-info">
+                  <span class="badge">${total}</span>
                   </div>`);
   }
   $.each(data, (dataKey, dataValue) => {

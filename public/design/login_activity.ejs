@@ -32,6 +32,9 @@
                             Na.
                         </th>
                         <th >Jina la Mtumiaji</th>
+                        <th >Cheo</th>
+                        <th >Mkoa</th>
+                        <th >Halmashauri</th>
                         <th >Muda aliongia</th>
                         <th >Kifaa</th>
                         <th >IP Address</th>
@@ -40,10 +43,13 @@
                 </thead>
                 <tbody class="list form-check-all">
                     <% activities.forEach( (activity , index) => { %>
-                        <% const {name , ip , browser , device , created_at} = activity %>
+                        <% const {name, title , region, council , ip , browser , device , created_at} = activity %>
                         <tr>
                             <td><%- include('paginations/numbering.ejs' , {index}) %></td>
                             <td><%= name %></td>
+                            <td><%= title %></td>
+                            <td><%= region %></td>
+                            <td><%= council %></td>
                             <td><%= dateFormat(created_at , 'ddd DD MMM, YYYY at HH:mm:ss') %></td>
                             <td><i  class="ri-<%= device == 'Desktop' ? 'computer' : 'smartphone'%>-line text-secondary"></i> <%= device %></td>
                             <td><%= ip %></td>
