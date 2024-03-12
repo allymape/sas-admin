@@ -43,6 +43,7 @@ kusajiliSerikaliRequestController.get(
           var remain_days = data[i].remain_days;
           var folio = data[i].folio;
           var is_approved = data[i].is_approved;
+          var registration_number =  data[i].registration_number;
           req.session.TrackingNumber = tracking_number;
           obj.push({
             tracking_number: tracking_number,
@@ -52,6 +53,7 @@ kusajiliSerikaliRequestController.get(
             RegionName: RegionName,
             created_at: created_at,
             remain_days: remain_days,
+            registration_number: registration_number,
             folio,
             is_approved,
           });

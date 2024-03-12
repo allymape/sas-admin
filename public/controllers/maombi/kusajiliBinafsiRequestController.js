@@ -45,13 +45,15 @@ kusajiliBinafsiRequestController.get(
           var remain_days = data[i].remain_days;
           var folio = data[i].folio;
           var is_approved = data[i].is_approved;
-          req.session.TrackingNumber = tracking_number;
+          var registration_number = data[i].registration_number;
+          // req.session.TrackingNumber = tracking_number;
           obj.push({
             tracking_number: tracking_number,
             user_id: user_id,
             school_name: school_name,
             LgaName: LgaName,
             RegionName: RegionName,
+            registration_number: registration_number,
             created_at: created_at,
             remain_days: remain_days,
             folio,
