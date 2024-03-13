@@ -56,7 +56,8 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
               zone_box,
               region_box,
               district_box,
-              district_sqa_box
+              district_sqa_box,
+              masharti
             } = data;
             decodeSignature(base64signature, tracking_number);
             const reference = `${file_number}/${school_folio}/${folio}`;
@@ -105,7 +106,7 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
                                       school_name, 
                                       registration_number, 
                                       `${category} ${level}`, 
-                                      `Shule imesajiliwa kwa masharti ya kukamilisha maabara 03, ofisi 02, maktaba 01, jengo la utawala, nyumba za walimu na chumba maalum cha wasichana ifikapo Oktoba, 2022`],
+                                      `${masharti.replaceAll(/<\/?[^>]+(>|$)/gi, "")}`],
                                     ]
                           }
             generateLetter(

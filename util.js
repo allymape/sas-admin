@@ -723,6 +723,7 @@ const formatText = (
           doc
             .font(element.nodeType === 1 ? "Helvetica-Bold" : "Helvetica")
             .fillColor("black")
+            .fontSize(12)
             .text( $(element).text(), {
               lineGap: lineGap,
               continued: continued,
@@ -812,11 +813,12 @@ const generateHeader = (
       width: 80,
       height: 80,
     })
-    .fillColor("#444444");
+    .fillColor("#000");
   doc.moveDown();
 
   doc
     .text("Unapojibu tafadhali taja:", 30, 150, { continue: true })
+    // .fontSize(10)
     .moveDown()
     .moveDown();
   doc
@@ -832,7 +834,7 @@ const generateHeader = (
     .text(
       `${
         company ? company.toUpperCase() : company || "<Insert Company/Name>"
-      },  \n${ registry_type != 3 || registry_type == '' ? (box  || "<Insert Address>")+`,\n` : "" }`
+      },  \n${ box ? (["S.L.P","SLP"].includes(box) ? box : 'S.L.P '+box) : '' + `,\n`}`
     )
     .text(
       `${region_address ? region_address.toUpperCase() : region_address}.`,
@@ -894,7 +896,7 @@ const generateFooter = (res , doc, tracking_number, signatory, cheo) => {
     .fill("#021c27")
     .text(
       signatory ? signatory : `<Insert Name>`,
-      signatory ? doc.page.width / 2 - 350 : 50,
+      signatory ? doc.page.width / 2 - 250 : 50,
       signatureHeight + 15,
       {
         // columns: 1,
@@ -998,8 +1000,8 @@ const addTable = (doc, table) => {
   };
   doc.table(tableArray, {
     columnsSize: [40, 60, 80, 120, 230],
-    prepareHeader: () => doc.font("Helvetica-Bold").fontSize(12),
-    prepareRow: () => doc.font("Helvetica").fontSize(12),
+    prepareHeader: () => doc.font("Helvetica-Bold").fontSize(10),
+    prepareRow: () => doc.font("Helvetica").fontSize(10),
     padding: 0,
     hideHeader: false
   });

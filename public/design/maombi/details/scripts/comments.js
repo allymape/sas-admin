@@ -1,9 +1,10 @@
 // Wait for the DOM to be fully loaded
 var editorTextArray = [];
+var editorShartiTextArray = [];
 document.addEventListener("DOMContentLoaded", function () {
   // Array to store text from all editor instances
   // Initialize CKEditor for the textarea with ID "editor"
-  ClassicEditor.create(document.querySelector("#editor"), {
+  ClassicEditor.create(document.querySelector("#comment-editor"), {
     removePlugins: [
       "CKFinderUploadAdapter",
       "CKFinder",
@@ -16,10 +17,10 @@ document.addEventListener("DOMContentLoaded", function () {
       "MediaEmbed",
       "Heading",
     ],
-    height: "70px",
+    height: "50px",
   })
     .then(function (ckEditorInstance) {
-      ckEditorInstance.ui.view.editable.element.style.height = "100px";
+      ckEditorInstance.ui.view.editable.element.style.height = "50px";
 
       // Function to update text in editorTextArray
       function updateText() {
@@ -37,7 +38,46 @@ document.addEventListener("DOMContentLoaded", function () {
     .catch(function (error) {
       console.error(error);
     });
-}); // $(".ck-file-dialog-button").remove();
+}); 
+document.addEventListener("DOMContentLoaded", function () {
+  // Array to store text from all editor instances
+  // Initialize CKEditor for the textarea with ID "editor"
+  ClassicEditor.create(document.querySelector("#sharti-editor"), {
+    removePlugins: [
+      "CKFinderUploadAdapter",
+      "CKFinder",
+      "EasyImage",
+      "Image",
+      "ImageCaption",
+      "ImageStyle",
+      "ImageToolbar",
+      "ImageUpload",
+      "MediaEmbed",
+      "Heading",
+    ],
+    height: "50px",
+  })
+    .then(function (ckEditorInstance) {
+      ckEditorInstance.ui.view.editable.element.style.height = "50px";
+
+      // Function to update text in editorTextArray
+      function updateText() {
+        editorShartiTextArray = [ckEditorInstance.getData()];
+        // console.log(editorTextArray);
+      }
+      // Update text initially
+      updateText();
+      // Listen for changes in the editor content
+      ckEditorInstance.model.document.on("change", function () {
+        // Call updateText() whenever the content changes
+        updateText();
+      });
+    })
+    .catch(function (error) {
+      console.error(error);
+    });
+}); 
+
 const staff = $("#staffs")
 staff.on("change", function () {
   const id = $(this).val();
@@ -110,6 +150,7 @@ function formSubmit(commentUrl, redirectUrl, actionName, haliombi) {
   // var coments = document.getElementById("exampleFormControlTextarea1").value;
   // var coments = $(".ck-editor__edita:ble").html();
   var coments = editorTextArray.length > 0 ? editorTextArray[0] : "";
+  var conditions = editorShartiTextArray.length > 0 ? editorShartiTextArray[0] : "";
   // var staffs = "0-10";
   var staffs = document.getElementById("staffs").value;
   var trackerId = document.getElementById("trackerId").value;
@@ -117,6 +158,7 @@ function formSubmit(commentUrl, redirectUrl, actionName, haliombi) {
     commentUrl,
     {
       coments: coments,
+      conditions: conditions,
       staffs: staffs,
       haliombi: haliombi,
       trackerId: trackerId,

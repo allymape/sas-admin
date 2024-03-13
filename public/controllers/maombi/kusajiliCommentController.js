@@ -20,6 +20,7 @@ kusajiliCommentController.post(
     var from_user = req.session.userID;
     var staff = req.body.staffs;
     var coments = req.body.coments;
+    var conditions = req.body.conditions;
     var haliombi = req.body.haliombi;
     var attachment = req.body.attachment;
     var kiambatisho = req.body.kiambatisho;
@@ -39,6 +40,7 @@ kusajiliCommentController.post(
         from_user: from_user,
         staffs: staffs,
         coments: coments,
+        conditions: conditions,
         ombitype: ombitype,
         haliombi: haliombi,
         replyType: 1,
