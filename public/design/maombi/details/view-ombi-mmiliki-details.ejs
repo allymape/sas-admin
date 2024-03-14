@@ -379,7 +379,9 @@
 
                     <!-- addition -->
                      <div class="tab-pane" id="taarifa-meneja-1" role="tabpanel">
-                        <h6 class="card-title mb-4 pb-2">SEHEMU A: Taarifa Binafsi</h6>
+                        <div class="card-header">
+                            <h6 class=card-title" mb-4 pb-2">SEHEMU A: Taarifa Binafsi</h6>
+                        </div>
                         <div class="table-responsive table-card">
                             <table class="table align-middle mb-0">
                                 <thead class="table-light text-muted">
@@ -387,6 +389,8 @@
                                         <th scope="col">Jina kamili la Mwombaji</th>
                                         <th scope="col">Kazi/Shughuli ya Mwombaji</th>
                                         <th scope="col">Anuani ya mwombaji (ya kazi)</th>
+                                        <th>Wasifu</th>
+                                        <th>Cheti</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -394,6 +398,26 @@
                                         <td><b><%= manager_name %></b></td>
                                         <td><b><%= occupationManager %></b></td>
                                         <td><b>-</b></td>
+                                        <td>
+                                            <a href="#showModal" 
+                                                data-bs-toggle="modal" 
+                                                class="fw-medium link-primary read-attachment"
+                                                data-path="<%= manager_cv %>">
+                                                <% if(manager_cv ){ %>
+                                                    <i class="ri-file-pdf-fill ri-2x text-danger"></i> 
+                                                <% } %>
+                                            </a>
+                                        </td>
+                                        <td>
+                                             <a href="#showModal" 
+                                                data-bs-toggle="modal" 
+                                                class="fw-medium link-primary read-attachment"
+                                                data-path="<%= manager_certificate %>">
+                                                <% if(manager_certificate ){ %>
+                                                    <i class="ri-file-pdf-fill ri-2x text-danger"></i> 
+                                                <% } %>
+                                            </a>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>

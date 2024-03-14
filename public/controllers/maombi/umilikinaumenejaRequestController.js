@@ -93,6 +93,8 @@ umilikinaumenejaRequestController.get(
         var mwombajiPhoneNo = data[0].mwombajiPhoneNo;
         var manager_phone_number = data[0].manager_phone_number;
         var manager_email = data[0].manager_email;
+        var manager_cv = data[0].manager_cv;
+        var manager_certificate = data[0].manager_certificate;
         var house_number = data[0].house_number;
         var baruaPepe = data[0].baruaPepe;
         var language = data[0].language;
@@ -146,6 +148,8 @@ umilikinaumenejaRequestController.get(
             registry: registry,
             owner_name: owner_name,
             manager_name: manager_name,
+            manager_cv : manager_cv,
+            manager_certificate : manager_certificate,
             occupation: occupation,
             mwombajiAddress: mwombajiAddress,
             owner_phone_no: owner_phone_no,

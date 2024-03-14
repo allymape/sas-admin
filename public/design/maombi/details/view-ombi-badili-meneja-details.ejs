@@ -212,7 +212,7 @@
                                                             <th scope="col">Jina la Meneja Pendekezwa</th>
                                                             <th scope="col">Namba ya Simu</th>
                                                             <th scope="col">Barua pepe</th>
-                                                            <th scope="col">Wasifu</th>
+                                                            <th scope="col" class="text-center">Wasifu</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -239,7 +239,7 @@
                                                             <th scope="col">Jina la Meneja wa Sasa</th>
                                                             <th scope="col">Namba ya Simu</th>
                                                             <th scope="col">Barua pepe</th>
-                                                            <th scope="col">Wasifu</th>
+                                                            <th scope="col" class="text-center">Wasifu</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -247,14 +247,16 @@
                                                             <td><b><%= former_manager_full_name %></b></td>
                                                             <td><b><%= former_manager_phone_no %></b></td>
                                                             <td><b><%= former_manager_email %></b></td>
-                                                              <td class="text-center"><a href="#showModal" 
+                                                              <td class="text-center">
+                                                                <a href="#showModal" 
                                                                 data-bs-toggle="modal" 
                                                                 class="fw-medium link-primary read-attachment"
                                                                 data-path="<%= former_manager_cv %>">
                                                                 <% if(former_manager_cv ){ %>
                                                                     <i class="ri-file-pdf-line ri-2x text-danger"></i>
                                                                 <% } %>
-                                                            </a></td>
+                                                            </a>
+                                                        </td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
