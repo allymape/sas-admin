@@ -118,6 +118,7 @@ kusajiliSerikaliRequestController.get(
         var mwombajiPhoneNo = data[0].mwombajiPhoneNo;
         var isSeminary = data[0].isSeminary;
         var Stream = data[0].Stream;
+        var sharti = data[0].sharti;
         var lessons_and_courses = data[0].lessons_and_courses;
         var numberOfStudents = data[0].numberOfStudents;
         var SeminaryTitle = data[0].SeminaryTitle;
@@ -187,6 +188,7 @@ kusajiliSerikaliRequestController.get(
             mwombajiPhoneNo: mwombajiPhoneNo,
             baruaPepe: baruaPepe,
             poBox: po_box,
+            sharti : sharti,
             teacherInformation: teacherInformation,
             schoolEmail: school_email,
             numberOfTeachers: numberOfTeachers,

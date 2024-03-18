@@ -116,6 +116,7 @@ kusajiliBinafsiRequestController.get(
         var mwombajiPhoneNo = data[0].mwombajiPhoneNo;
         var isSeminary = data[0].isSeminary;
         var Stream = data[0].Stream;
+        var sharti = data[0].sharti;
         var lessons_and_courses = data[0].lessons_and_courses;
         var numberOfStudents = data[0].numberOfStudents;
         var SeminaryTitle = data[0].SeminaryTitle;
@@ -164,6 +165,7 @@ kusajiliBinafsiRequestController.get(
             schoolCategory: schoolCategory,
             genderType: genderType,
             registry: registry,
+            sharti : sharti,
             schoolPhone: schoolPhone,
             schoolCategoryID: schoolCategoryID,
             schoolCategoryId: schoolCategoryId,
