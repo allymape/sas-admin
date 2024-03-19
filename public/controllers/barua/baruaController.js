@@ -99,16 +99,23 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
             const paragraphs = letter.bodyContent;
             const title = letter.title;
             const table = {
-                            headers : [`Na.`, "Jina la Shule", "Namba ya Usajili", "Darasa", "Masharti"],
-                            rows : [
-                                      [
-                                      "1.", 
-                                      school_name, 
-                                      registration_number, 
-                                      `${category} ${level}`, 
-                                      `${masharti.replaceAll(/<\/?[^>]+(>|$)/gi, "")}`],
-                                    ]
-                          }
+              headers: [
+                `Na.`,
+                "Jina la Shule",
+                "Namba ya Usajili",
+                "Darasa",
+                "Masharti",
+              ],
+              rows: [
+                [
+                  "1.",
+                  school_name,
+                  registration_number,
+                  `${category} ${level}`,
+                  `${typeof masharti != "undefined" && masharti ? masharti.replaceAll(/<\/?[^>]+(>|$)/gi, "") : ""}`,
+                ],
+              ],
+            };
             generateLetter(
               req,
               res,
