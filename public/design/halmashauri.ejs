@@ -48,8 +48,9 @@
             <table class="table align-middle table-nowrap" id="districtTable">
                 <thead class="table-light">
                     <tr>
-                        <th class="" width="5%" >Na.</th>
-                        <th class="" >Jina la Halmashauri</th>
+                        <th width="5%" >Na.</th>
+                        <th>Jina la Halmashauri</th>
+                        <th>Ngazi</th>
                         <th >Kodi ya Halmashauri</th>
                         <th >Mkoa</th>
                         <th >Anuani Mkurugenzi</th>
@@ -89,6 +90,17 @@
                                             <label  class="form-label">Wilaya</label>
                                             <input type="text"  class="form-control" id="name-field" readonly />
                                         </div>
+                                        <div class="mb-3">
+                                            <input type="hidden" id="id-field" class="form-control" />
+                                            <label  class="form-label">Ngazi ya Halmashauri</label>
+                                            <select  class="form-control" id="ngazi-field">
+                                                <option value="">Chagua Ngazi ...</option>
+                                                <option value="Wilaya">Wilaya</option>
+                                                <option value="Mji">Mji</option>
+                                                <option value="Manispaa">Manispaa</option>
+                                                <option value="Jiji">Jiji</option>
+                                            </select>
+                                        </div>                                        
                                         <div class="mb-3">
                                             <input type="hidden" id="id-field" class="form-control" />
                                             <label for="lga-box-field" class="form-label">Anuani Mkurugenzi Wilaya (S.L.P)</label>

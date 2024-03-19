@@ -38,6 +38,7 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
               address_region,
               region,
               district,
+              ngazi_ya_wilaya,
               zone_name,
               registration_number,
               registration_date,
@@ -50,14 +51,14 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
               gender_types,
               level,
               ward,
-              signatory, 
-              base64signature , 
+              signatory,
+              base64signature,
               cheo,
               zone_box,
               region_box,
               district_box,
               district_sqa_box,
-              masharti
+              masharti,
             } = data;
             decodeSignature(base64signature, tracking_number);
             const reference = `${file_number}/${school_folio}/${folio}`;
@@ -86,6 +87,7 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
               old_manager_name,
               school_region,
               school_council,
+              ngazi_ya_wilaya,
               subcategory,
               stream,
               old_stream,
@@ -134,6 +136,7 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
               registry_type,
               region,
               district,
+              ngazi_ya_wilaya,
               zone_name,
               zone_box,
               region_box,

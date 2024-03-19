@@ -441,6 +441,7 @@ module.exports = {
     old_manager_name = "",
     region = "",
     council = "",
+    ngazi_ya_wilaya = "",
     subcategory = "",
     stream = "",
     old_stream = "",
@@ -460,13 +461,14 @@ module.exports = {
     let title = ``;
     let school_type_only = getSchoolTypeOnly(school_type_id, school_type);
     var type = school_type_id == 4 ? "Chuo" : "Shule";
+    var ngazi = ngaziWilaya(ngazi_ya_wilaya);
 
     switch (application_category_id) {
       case 1:
         title = `KIBALI CHA KUANZISHA ${name}`;
         bodyContent = [
           `       Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Ninafurahi kukufahamisha kuwa kibali cha kuanzisha ${school_type_only}<b>${school_name}</b> kimetolewa ili shule hiyo ianzishwe katika Kata ya <b>${ward}</b> Halmashauri ya Wilaya ya <b>${council}</b> Mkoa wa <b>${region}.</b> \n\n`,
+          `2.    Ninafurahi kukufahamisha kuwa kibali cha kuanzisha ${school_type_only}<b>${school_name}</b> kimetolewa ili shule hiyo ianzishwe katika Kata ya <b>${ward} </b> Halmashauri ya ${ngazi} <b>${council}</b> Mkoa wa <b>${region}.</b> \n\n`,
           `3.    Kibali hiki kimetolewa kwa mujibu wa <b>Sheria ya Elimu Sura ya 353</b>, kwa masharti kuwa utazingatia mwongozo wa Wizara wa kuanzisha na kusajili shule zisizo za Serikali. Unashauriwa kuwasiliana na <b>Msanifu wa Majengo wa Wilaya</b> kwa ushauri wa kitaalam wa kuendeleza majengo hayo kulingana na mahitaji ya Shule. Aidha, unatakiwa kuhakikisha uwepo wa miundombinu ya walemavu katika shule yako.\n\n`,
           `4.    <b>Uthibitisho huu siyo kibali cha kusajili Wanafunzi.</b>\n\n`,
           `5.    Ninakutakia utekelezaji mwema`,
@@ -494,7 +496,7 @@ module.exports = {
       case 4:
         title =
           registry_type == 3
-            ? `USAJILI WA ${name} KATIKA HALMASHAURI YA WILAYA YA ${council}`
+            ? `USAJILI WA ${name} KATIKA HALMASHAURI YA ${ngazi} ${council}`
             : `USAJILI WA ${name}`;
         bodyContent =
           registry_type == 3
@@ -504,6 +506,7 @@ module.exports = {
                 school_type_id,
                 region,
                 council,
+                ngazi_ya_wilaya,
                 approved_date
               )
             : usajiliBinafsi(
@@ -623,7 +626,7 @@ module.exports = {
         break;
 
       case 13:
-        title = `KIBALI CHA KUTOA HUDUMA YA DAHALIA KATIKA ${name} KATIKA HALMASHAURI YA ${council}`;
+        title = `KIBALI CHA KUTOA HUDUMA YA DAHALIA KATIKA ${name} KATIKA HALMASHAURI YA ${ngazi} ${council}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
           `2.    Napenda kukujulisha kuwa maombi yako ya <b>kibali cha kutoa huduma ya Dahalia</b> katika ${name}. yamekubaliwa.  Kibali kimetolewa tarehe ${approved_date}. kulaza wanafunzi ${number_of_students}. tu ambao watagharamiwa na wazazi/walezi wa wanafunzi watakao lala ndani ya dahalia na kuratibiwa na Halmashauri husika.\n\n`,
@@ -650,13 +653,36 @@ module.exports = {
   },
 };
 
-const usajiliSerikali = (name, school_name, school_type, region, council , approved_date) => {
+const ngaziWilaya = (ngazi_ya_wilaya) => {
+    var ngazi = "";
+     switch(ngazi_ya_wilaya) {
+       case "Wilaya":
+         ngazi = "Wilaya ya";
+         break;
+       case "Mji":
+         ngazi =  "Mji wa";
+         break;
+       case "Manispaa":
+         ngazi = "Manispaa ya";
+         break;
+       case "Jiji":
+         ngazi = "Jiji la";
+         break;
+       default:
+        ngazi =  "<Insert>";
+        break;
+     }
+  return ngazi;
+}
+
+const usajiliSerikali = (name, school_name, school_type, region, council , ngazi_ya_wilaya , approved_date) => {
+  var ngazi = ngaziWilaya(ngazi_ya_wilaya);
   return [
     `    Tafadhali rejea somo la barua hii.\n\n\n`,
-    `2.  Napenda kukujulisha kuwa Wizara imekubali maombi ya Halmashauri ya Wilaya ya <b>${council}</b> ya kusajili <b>${name}</b> itakayomilikiwa na wananchi wa Halmashauri ya Wilaya ya ${council}. kwa kushirikiana na Mkoa wa ${region}\n\n`,
+    `2.  Napenda kukujulisha kuwa Wizara imekubali maombi ya Halmashauri ya ${ngazi} <b>${council}</b> ya kusajili <b>${name}</b> itakayomilikiwa na wananchi wa Halmashauri ya ${ngazi} ${council}. kwa kushirikiana na Mkoa wa ${region}\n\n`,
     `3.  Mkoa unaruhusiwa kuchagua wanafunzi wa Kidato cha Kwanza kwa mwaka 2023.  Shule itakuwa ya kutwa, mchanganyiko na yenye mkondo mmoja (01). Shule hii imesajiliwa rasmi tarehe ${approved_date} na kupewa namba ya usajili kama ifuatavyo:\n\n\n`,
     `<table/>`,
-    `4.  Wizara inaiagiza Halmashauri ya Wilaya ya <b>${council}</b> kuendelea kukamilisha ujenzi wa miundombinu yote. Endapo miundombinu haitakamilika, Halmashauri haitaruhusiwa kuandikisha Wanafunzi wa kidato cha kwanza Januari 2024.\n\n`,
+    `4.  Wizara inaiagiza Halmashauri ya ${ngazi} <b>${council}</b> kuendelea kukamilisha ujenzi wa miundombinu yote. Endapo miundombinu haitakamilika, Halmashauri haitaruhusiwa kuandikisha Wanafunzi wa kidato cha kwanza Januari 2024.\n\n`,
     `5.  Mkuu wa Shule atapaswa kuifahamisha Wizara sanduku la barua la shule pindi litakapofunguliwa ili kurahisisha mawasiliano. Aidha, mfahamishe Katibu Mtendaji wa Baraza la Mitihani ni lini shule itakuwa na Wanafunzi watakaofanya Mtihani wa Taifa.\n\n\n`,
     `6.  Kwa mujibu wa Waraka wa Elimu Na. 10 wa mwaka 2011, Usajili wa shule hii utarudiwa baada ya miaka 4.\n\n\n`,
     `7.  Nakutakia utekelezaji mwema.`,
