@@ -469,8 +469,10 @@ module.exports = {
         bodyContent = [
           `       Tafadhali rejea somo la barua hii.\n\n\n`,
           `2.    Ninafurahi kukufahamisha kuwa kibali cha kuanzisha ${school_type_only}<b>${school_name}</b> kimetolewa ili shule hiyo ianzishwe katika Kata ya <b>${ward} </b> Halmashauri ya ${ngazi} <b>${council}</b> Mkoa wa <b>${region}.</b> \n\n`,
-          `3.    Kibali hiki kimetolewa kwa mujibu wa <b>Sheria ya Elimu Sura ya 353</b>, kwa masharti kuwa utazingatia mwongozo wa Wizara wa kuanzisha na kusajili shule zisizo za Serikali. Unashauriwa kuwasiliana na <b>Msanifu wa Majengo wa Wilaya</b> kwa ushauri wa kitaalam wa kuendeleza majengo hayo kulingana na mahitaji ya Shule. Aidha, unatakiwa kuhakikisha uwepo wa miundombinu ya walemavu katika shule yako.\n\n`,
-          `4.    <b>Uthibitisho huu siyo kibali cha kusajili Wanafunzi.</b>\n\n`,
+          `3.    Kibali hiki kimetolewa kwa mujibu wa <b>Sheria ya Elimu Sura ya 353</b>, kwa masharti kuwa utazingatia mwongozo wa Wizara wa kuanzisha na kusajili shule zisizo za Serikali. Unashauriwa kuwasiliana na <b>Msanifu wa Majengo wa Halmashauri ya ${ngazi} ${council} </b> kwa ushauri wa kitaalam wa kuendeleza majengo hayo kulingana na mahitaji ya Shule. Aidha, unatakiwa kuhakikisha uwepo wa miundombinu ya walemavu katika shule yako.\n\n`,
+          `4.    <b>Uthibitisho huu siyo kibali cha kusajili ${
+            type == "Chuo" ? "Wanachuo" : "Wanafunzi"
+          }.</b>\n\n`,
           `5.    Ninakutakia utekelezaji mwema`,
         ];
 
@@ -488,7 +490,7 @@ module.exports = {
           }</b>  kuwa ${
             uthibitisho == "mmiliki" ? "Mmiliki" : "Meneja"
           } wa ${school_type_only}<b>${school_name}</b>\n\n`,
-          `3.    Uthibitisho huu umetolewa tarehe <b>${approved_date}</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaiendesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo </b>ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki</b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
+          `3.    Uthibitisho huu umetolewa tarehe <b>${approved_date}</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> Utaiendesha shule hii kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo </b>ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha shule ina <b>kasiki </b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
           `4.    Uthibitisho huu siyo kibali cha kusajili Wanafunzi.\n\n\n`,
           `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
         ];

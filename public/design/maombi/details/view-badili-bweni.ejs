@@ -58,7 +58,12 @@
                                                 </tr>
                                                 <tr>
                                                     <td class="fw-medium">Aina ya Shule</td>
-                                                    <td><%= subcategory %></td>
+                                                    <% if(is_approved){ %>
+                                                        <td><%= Newsubcategory %></td>
+                                                    <% } else { %>
+                                                        <td><%= subcategory %></td>
+                                                    <% } %>
+                                                    
                                                 </tr>
                                                 <tr>
                                                     <td class="fw-medium">Ngazi ya Shule</td>
@@ -200,8 +205,13 @@
                                                     </thead>
                                                     <tbody>
                                                         <tr>
-                                                            <td><b><%= subcategory %></b></td>
-                                                            <td><b><%= Newsubcategory %></b></td>
+                                                            <% if(is_approved){ %>
+                                                                <td><b><%= subcategory %></b></td>
+                                                                <td><b><%= Newsubcategory %></b></td>
+                                                            <% } else { %>
+                                                                <td><b><%= Newsubcategory  %></b></td>
+                                                                <td><b><%= subcategory %></b></td>
+                                                            <% } %>
                                                         </tr>
                                                     </tbody>
                                                 </table>

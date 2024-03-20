@@ -2,7 +2,7 @@ const renderDataTableAttachmentTypes = () => {
   ajaxRequest("/AttachmentTypes", "GET", (response) => {
     if (response.statusCode == 300) {
       // render table
-       console.log(response.data)
+      //  console.log(response.data)
       var fields = {
         checkbox: {},
         id: {
@@ -13,11 +13,13 @@ const renderDataTableAttachmentTypes = () => {
         app_name: {},
         structure: {},
         size: { tdClass: "text-center" },
+        backend: {},
         status: { tdClass: "text-center" },
         reg_type: { hidden: true },
         structure_id: { hidden: true },
         app_cat: { hidden: true },
         status_id: { hidden: true },
+        is_backend: { hidden: true },
       };
       response.data = response.data.map((type) => ({
         checkbox: `<input type='checkbox' class='form-check-input'/>`,
@@ -28,6 +30,7 @@ const renderDataTableAttachmentTypes = () => {
           : `<span class="badge badge-label bg-info"><i class="mdi mdi-circle-medium"></i> Wote <i class="mdi mdi-circle-medium"></i></span>`,
         app_name: type.app_name,
         size: type.size,
+        backend: type.is_backend ? "Ndio" : "",
         status: type.status
           ? `<span class="ri-check-double-fill text-success"></span>`
           : `<span class="ri-close-fill text-danger"></span>`,
@@ -37,6 +40,7 @@ const renderDataTableAttachmentTypes = () => {
           : `<span class="badge badge-label bg-success"><i class="mdi mdi-circle-medium"></i> Wote <i class="mdi mdi-circle-medium"></i></span>`,
         structure_id: type.structure_id,
         status_id: type.status,
+        is_backend: type.is_backend,
         app_cat: type.application_category_id,
       }));
       dataTable(
@@ -61,6 +65,7 @@ function sajiliHati() {
   var aina_ombi = document.getElementById("application-category-field").value;
   var aina_mwombaji = document.getElementById("registration-type-field").value;
   var registration_structure_id = document.getElementById("registration-structure-field").value;
+  var is_backend = document.getElementById("backend-field").checked ? 1 : 0;
   $("#jazahati").hide();
   $("#jazaukubwa").hide();
   $("#ainaombi").hide();
@@ -88,6 +93,7 @@ function sajiliHati() {
       aina_ombi: aina_ombi,
       aina_mwombaji: aina_mwombaji,
       structure: registration_structure_id,
+      is_backend: is_backend,
     };
     ajaxRequest(
       "/tengenezaAttachmentType",
@@ -120,12 +126,12 @@ function BadiliData(e) {
   var reg_type = e.getAttribute("data-reg_type");
   var structure_id = e.getAttribute("data-structure_id");
   var status_id = e.getAttribute("data-status_id");
+  var is_backend = e.getAttribute("data-is_backend");
   document.getElementById("id-field").value = nameId;
   document.getElementById("name-field2").value = name;
   document.getElementById("size-field2").value = size;
-  document.getElementById("attachment-type-status").checked = Number(status_id)
-    ? true
-    : false;
+  document.getElementById("attachment-type-status").checked = Number(status_id)? true: false;
+  document.getElementById("backend-field2").checked = Number(is_backend) ? true :false;
 
   addApplicationCategoriesToSelectionInput(
     "application-category-field2",
@@ -203,6 +209,7 @@ function updateHati() {
   var aina_mwombaji = document.getElementById("registration-type-field2").value;
   var registration_structure_id = document.getElementById("registration-structure-field2").value;
   var fileId = document.getElementById("id-field").value;
+  var is_backend = document.getElementById("backend-field2").checked ? 1 : 0;
   var status_id = document.getElementById("attachment-type-status").checked;
   var data = {
     jina_hati: jina_hati,
@@ -212,6 +219,7 @@ function updateHati() {
     aina_mwombaji: aina_mwombaji,
     structure: registration_structure_id,
     hali: status_id ? 1 : 0,
+    is_backend: is_backend,
   };
   if (jina_hati !== "" && aina_ombi != 0 && aina_mwombaji != "") {
     ajaxRequest(
