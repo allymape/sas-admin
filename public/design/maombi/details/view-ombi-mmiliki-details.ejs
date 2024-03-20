@@ -306,14 +306,17 @@
                                    <% for(var i = 0; i < objAttachment1.length; i++){ %>
                                     <tr>
                                         <td>
-                                            <div class="d-flex align-items-center">
+                                             <div class="d-flex align-items-center">
                                                 <div class="avatar-sm">
                                                     <div class="avatar-title bg-soft-primary text-danger rounded fs-20">
                                                         <i class="ri-file-pdf-fill"></i>
                                                     </div>
                                                 </div>
                                                 <div class="ms-3 flex-grow-1">
-                                                    <h6 class="fs-15 mb-0"><a href="#showModal" data-path="<%= objAttachment1[i].attachment_path %>" data-ward="<%= objAttachment1[i].attachment_path %>" data-lga="<%= objAttachment1[i].attachment_name %>" data-region="<%= objAttachment1[i].attachment_name %>" data-date="<%= objAttachment1[i].attachment_name %>" data-name="<%= objAttachment1[i].attachment_namee %>" data-id="<%= objAttachment1[i].attachment_name %>" data-category="<%= objAttachment1[i].attachment_name %>" data-bs-toggle="modal" class="fw-medium link-primary open-AddBookDialog read-attachment"><%= objAttachment1[i].attachment_name %></a></h6>
+                                                    <h6 class="fs-15 mb-0">
+                                                        <a href="#showModal" data-path="<%= objAttachment1[i].attachment_path %>" data-ward="<%= objAttachment1[i].attachment_path %>" data-lga="<%= objAttachment1[i].attachment_name %>" data-region="<%= objAttachment1[i].attachment_name %>" data-date="<%= objAttachment1[i].attachment_name %>" data-name="<%= objAttachment1[i].attachment_namee %>" data-id="<%= objAttachment1[i].attachment_name %>" data-category="<%= objAttachment1[i].attachment_name %>" 
+                                                            data-bs-toggle="modal" 
+                                                            class="fw-medium link-primary open-AddBookDialog read-attachment"><%= objAttachment1[i].attachment_name %></a></h6>
                                                 </div>
                                             </div>
                                         </td>
@@ -321,17 +324,13 @@
                                         <td><%= objAttachment1[i].file_size %> MB</td>
                                         <td><%= objAttachment1[i].created_at %></td>
                                         <td>
-                                            <div class="dropdown">
-                                                <a href="javascript:void(0);" class="btn btn-light btn-icon" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="true">
-                                                    <i class="ri-equalizer-fill"></i>
-                                                </a>
-                                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink1" data-popper-placement="bottom-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 23px);">
-                                                    <li><a class="dropdown-item" href="javascript:void(0);"><i class="ri-eye-fill me-2 align-middle text-muted"></i>View</a></li>
-                                                    <li><a class="dropdown-item" href="javascript:void(0);"><i class="ri-download-2-fill me-2 align-middle text-muted"></i>Download</a></li>
-                                                    <li class="dropdown-divider"></li>
-                                                    <li><a class="dropdown-item" href="javascript:void(0);"><i class="ri-delete-bin-5-line me-2 align-middle text-muted"></i>Delete</a></li>
-                                                </ul>
-                                            </div>
+                                            <a class="btn btn-outline-success read-attachment" 
+                                                href="#showModal"
+                                                data-path="<%= objAttachment1[i].attachment_path %>" 
+                                                data-bs-toggle="modal" 
+                                                >
+                                                <i class="ri-eye-fill me-2 align-middle"></i>View
+                                            </a>
                                         </td>
                                     </tr>
                                     <% } %>
