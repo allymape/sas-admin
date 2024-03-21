@@ -1,5 +1,3 @@
-const { describe } = require("pm2");
-
 $("#create-btn").on("click", function () {
   modal("showModal", true);
 });
