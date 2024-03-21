@@ -937,11 +937,11 @@ const generateFooter = (res , doc, tracking_number, signatory, cheo) => {
     .fill("#021c27")
     .text(
       signatory ? signatory : `<Insert Name>`,
-      signatory ? doc.page.width / 2 - 250 : 50,
+      50,
       signatureHeight + 15,
       {
         // columns: 1,
-        columnGap: 2,
+        columnGap: 1,
         height: 2,
         // width: lineSize,
         align: "center",
