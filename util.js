@@ -380,6 +380,16 @@ module.exports = {
       margin: 72,
       size: "A4",
     };
+  // console.log(
+  //   region,
+  //   district,
+  //   zone_name,
+  //   zone_box,
+  //   region_box,
+  //   sqa_zone_region,
+  //   district_box,
+  //   district_sqa_box
+  // );
     let doc = new PDFDocument(options);
     const imagesPaths = path.join(__dirname + "/public/assets/images");
     const trackingNumber = req.params.id;
@@ -420,6 +430,7 @@ module.exports = {
       district_box,
       district_sqa_box
     );
+   
     doc.pipe(res, { end: true });
     doc.end();
   },
@@ -969,56 +980,55 @@ const generateCopies = (
   district_sqa_box
 ) => {
   const has_copies = zone_box || region_box || district_box || district_sqa_box;
-  const $copies = has_copies
-    ? `Nakala:
-  
-          ${
+  var copies = has_copies ? `Nakala:
+  ` : '';
+  // console.log(zone_box);
+  copies += zone_box ?
+          `${
             zone_box
-              ? `Mthibiti Mkuu Ubora wa Shule,
-          Kanda ya ${zone_name ? zone_box + "," : "<Insert Zone Name>"}
+              ? `
+          Mthibiti Mkuu Ubora wa Shule,
+          Kanda ya ${zone_name ? zone_name + "," : "<Insert Zone Name>"}
           S.L.P. ${zone_box ? zone_box : "<Insert Zone Address>"}, ${
                   sqa_zone_region
                     ? "<u>" + sqa_zone_region + ".</u>"
                     : "<Insert Region>"
                 }`
               : ``
-          }
-        ${
+          }` : '';
+  copies += 
           region_box
-            ? `  Afisa Elimu Mkoa,
+            ? `
+          Afisa Elimu Mkoa,
           Mkoa wa ${region ? region : "<Insert Region>"},
           S.L.P ${region_box ? region_box : "<Insert Region Address"}, ${
                 region ? "<u>" + region + ".</u>" : "<Insert Region>"
               }`
-            : ``
-        }
-          ${
-            district_box
-            ? `Afisa Elimu Sekondari
+            : '';
+  copies +=  district_box
+            ? `
+          Afisa Elimu Sekondari
           Halmashauri ya ${district ? district : "<Insert District>"},
           S.L.P ${district_box ? district_box : "<Insert District Address>"}, ${
                   region ? "<u>" + region + ".</u>" : "<Insert Region>"
                 }`
-              : ``
-          }
-          ${
-            district_sqa_box
-              ? `Mthibiti Mkuu Ubora wa Shule,
+              : ''
+  copies +=  district_sqa_box
+              ? `
+          Mthibiti Mkuu Ubora wa Shule,
           Halmashauri ya ${district ? district : "<Insert District>"},
           S.L.P ${
             district_sqa_box
               ? district_sqa_box
               : "<Insert District SQA Address>"
-          }, ${region ? "<u>" + region + ".</u>" : "<Insert Region>"}`
-              : ``
-          }
+          }, ${region ? "<u>" + region + ".</u>" : "<Insert Region>"}
+          
           `
-    : ``; //end has copies;
-
-  // console.log($copies)
+              : '';
+   //end has copies;
   has_copies
-    ? formatText($copies, doc, "left", "Helvetica", true, 0, false, true)
-    : ``;
+    ? formatText(copies, doc, "left", "Helvetica", true, 0, false, true)
+    : '';
 };
 
 const addTable = (doc, table) => {

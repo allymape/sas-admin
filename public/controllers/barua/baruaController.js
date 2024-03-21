@@ -136,7 +136,6 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
               registry_type,
               region,
               district,
-              ngazi_ya_wilaya,
               zone_name,
               zone_box,
               region_box,
