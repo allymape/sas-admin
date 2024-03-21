@@ -141,7 +141,8 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
               region_box,
               sqa_zone_region,
               district_box,
-              district_sqa_box
+              district_sqa_box,
+              school_category_id
             );
           }else{
             // res.status(404).send();
