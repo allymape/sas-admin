@@ -97,6 +97,7 @@ kusajiliSerikaliRequestController.get(
       },
       (jsonData) => {
         var data = jsonData.data;
+        // console.log()
         var remain_days = data[0].remain_days;
         var created_at = data[0].created_at;
         var tracking_number = data[0].tracking_number;
@@ -119,6 +120,8 @@ kusajiliSerikaliRequestController.get(
         var isSeminary = data[0].isSeminary;
         var Stream = data[0].Stream;
         var sharti = data[0].sharti;
+        var application_category_id = data[0].application_category_id;
+        var registry_type_id = data[0].registry_type_id;
         var lessons_and_courses = data[0].lessons_and_courses;
         var numberOfStudents = data[0].numberOfStudents;
         var SeminaryTitle = data[0].SeminaryTitle;
@@ -188,7 +191,9 @@ kusajiliSerikaliRequestController.get(
             mwombajiPhoneNo: mwombajiPhoneNo,
             baruaPepe: baruaPepe,
             poBox: po_box,
-            sharti : sharti,
+            sharti: sharti,
+            application_category_id: application_category_id,
+            registry_type_id: registry_type_id,
             teacherInformation: teacherInformation,
             schoolEmail: school_email,
             numberOfTeachers: numberOfTeachers,

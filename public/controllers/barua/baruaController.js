@@ -60,6 +60,7 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
               district_sqa_box,
               masharti,
             } = data;
+      
             decodeSignature(base64signature, tracking_number);
             const reference = `${file_number}/${school_folio}/${folio}`;
             const createdAt = approved_at != undefined ? formatDate(approved_at , 'DD/MM/YYYY'): null;

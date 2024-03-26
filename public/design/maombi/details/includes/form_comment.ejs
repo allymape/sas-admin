@@ -1,3 +1,4 @@
+
 <% if([0,1].includes(is_approved)) { %>
     <form class="mt-4">
   <div class="row g-3">
@@ -5,7 +6,7 @@
       <label for="comment-editor" class="form-label">Andika Maoni</label>
       <textarea class="ckeditor-classic" id="comment-editor" ></textarea>
     </div>
-    <% if(typeof sharti !== 'undefined' && req.user.sehemu == 'adsa'){ %>
+    <% if(typeof sharti !== 'undefined' && req.user.sehemu == 'adsa' && typeof registry_type_id !== 'undefined' && registry_type_id == 3){ %>
     <div class="col-lg-12" id="editor-div">
       <label for="sharti-editor" class="form-label">Masharti ya usajili</label>
       <textarea class="ckeditor-classic" id="sharti-editor" ><%= typeof sharti !== 'undefined' && sharti ? sharti : ''%></textarea>

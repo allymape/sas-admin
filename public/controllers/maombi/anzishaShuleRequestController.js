@@ -79,12 +79,14 @@ anzishaShuleRequestController.get(
       { TrackingNumber: TrackingNumber },
       (jsonData) => {
         const { data } = jsonData;
+        console.log(data)
         var remain_days = data[0].remain_days;
         var created_at = data[0].created_at;
         var tracking_number = data[0].tracking_number;
         var school_name = data[0].school_name;
         var LgaName = data[0].LgaName;
         var registryTypeId = data[0].registry_type_id;
+        var StreetNameMtu = data[0].StreetNameMtu;
         var WardNameMtu = data[0].WardNameMtu;
         var LgaNameMtu = data[0].LgaNameMtu;
         var RegionName = data[0].RegionName;
@@ -100,6 +102,7 @@ anzishaShuleRequestController.get(
         var school_size = data[0].school_size;
         var area = data[0].area;
         var WardName = data[0].WardName;
+        var StreetName = data[0].StreetName;
         var structure = data[0].structure;
         var subcategory = data[0].subcategory;
         var count = jsonData.maoni[0].count;
@@ -135,8 +138,10 @@ anzishaShuleRequestController.get(
             userLevel: req.user.cheo,
             area: area,
             WardName: WardName,
+            StreetName: StreetName,
             structure: structure,
             LgaNameMtu: LgaNameMtu,
+            StreetNameMtu: StreetNameMtu,
             WardNameMtu: WardNameMtu,
             subcategory: subcategory,
             count: count,

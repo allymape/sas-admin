@@ -117,6 +117,8 @@ kusajiliBinafsiRequestController.get(
         var isSeminary = data[0].isSeminary;
         var Stream = data[0].Stream;
         var sharti = data[0].sharti;
+        var application_category_id = data[0].application_category_id;
+        var registry_type_id = data[0].registry_type_id;
         var lessons_and_courses = data[0].lessons_and_courses;
         var numberOfStudents = data[0].numberOfStudents;
         var SeminaryTitle = data[0].SeminaryTitle;
@@ -165,7 +167,9 @@ kusajiliBinafsiRequestController.get(
             schoolCategory: schoolCategory,
             genderType: genderType,
             registry: registry,
-            sharti : sharti,
+            sharti: sharti,
+            application_category_id: application_category_id,
+            registry_type_id: registry_type_id,
             schoolPhone: schoolPhone,
             schoolCategoryID: schoolCategoryID,
             schoolCategoryId: schoolCategoryId,

@@ -430,7 +430,8 @@ module.exports = {
       sqa_zone_region,
       district_box,
       district_sqa_box,
-      school_type_id
+      school_type_id,
+      application_category_id
     );
 
     doc.pipe(res, { end: true });
@@ -656,8 +657,8 @@ module.exports = {
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
           `2.    Napenda kukujulisha kuwa maombi yako ya kibali cha kutoa <b>huduma ya bweni</b> katika <b>${name}</b> yamekubaliwa. \n\n`,
           `3.    Kibali kimetolewa tarehe ${approved_date} kulaza wanafunzi <b>${number_of_students} ${gender_type}</b>. Unaagizwa kuimarisha hali ya usalama wa wanafunzi ndani na nje ya bweni. Kibali hiki kimetolewa kulaza wanafunzi wa <b>${type} tu.</b> \n\n`,
-          `4.    Aidha, <b>Wathibiti Ubora wa Shule</b> watafuatilia kuhusu uwekaji vifaa vya zimamoto, viashiria moshi, makabati pamoja na sehemu ya kuteketeza taka <b>(Incinerator)</b>. Pia watafuatilia idadi halisi ya wanafunzi wanaolala ndani ya mabweni ili kuepuka <b>msongamano</b> wa wanafunzi.\n\n`,
-          `5.    Kibali hiki kimetolewa kwa mujibu wa <b>Sheria ya Elimu, Sura 353</b>. Kwa masharti kuwa utazingatia mwongozo wa Wizara wa kuanzisha na kusajili shule. \n\n\n`,
+          `4.    Aidha, <b>Wathibiti Ubora wa Shule</b> watafuatilia kuhusu uwekaji vifaa vya zimamoto, viashiria moshi, makabati pamoja na sehemu ya kuteketeza taka <b>(Incinerator)</b>.Pia watafuatilia idadi halisi ya wanafunzi wanaolala ndani ya mabweni ili kuepuka <b>msongamano</b> wa wanafunzi.\n`,
+          `5.    Kibali hiki kimetolewa kwa mujibu wa <b>Sheria ya Elimu, Sura 353</b>. Kwa masharti kuwa utazingatia mwongozo wa Wizara wa kuanzisha na kusajili shule. \n\n`,
           `6.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
@@ -938,7 +939,7 @@ const generateFooter = (res , doc, tracking_number, signatory, cheo) => {
     .text(
       signatory ? signatory : `<Insert Name>`,
       50,
-      signatureHeight + 15,
+      signatureHeight,
       {
         // columns: 1,
         columnGap: 1,
@@ -955,7 +956,7 @@ const generateFooter = (res , doc, tracking_number, signatory, cheo) => {
     .text(
       cheo ? cheo : `<Insert Title>`,
       doc.page.width / 2 - 150,
-      signatureHeight + 33,
+      signatureHeight + 20,
       {
         columns: 1,
         columnGap: 0,
@@ -980,7 +981,8 @@ const generateCopies = (
   sqa_zone_region,
   district_box,
   district_sqa_box,
-  school_type
+  school_type,
+  application_category_id
 ) => {
   const has_copies = zone_box || region_box || district_box || district_sqa_box;
   var copies = has_copies
@@ -988,6 +990,15 @@ const generateCopies = (
   `
     : "";
   // console.log(zone_box);
+  if ([4, 11, 9, 14, 12, 5].includes(application_category_id)) {
+    copies += `
+          Katibu Mkuu,
+          OR – TAMISEMI,
+          S.L.P.1923,<u>Dodoma.</u>
+          Katibu Mtendaji,
+          Baraza la Mitihani Tanzania,
+          S.L.P.2624,<u>Dar es salaam.</u>`;
+  }
   copies += zone_box
     ? `${
         zone_box
