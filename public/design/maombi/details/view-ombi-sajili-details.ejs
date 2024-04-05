@@ -267,14 +267,14 @@
                                         <tr>
                                             <th scope="col">Anwani ya Shule</th>
                                             <th scope="col">namba ya simu</th>
-                                            <th scope="col" title="Mahali shule itakapojengwa">Nukushi</th>
+                                            <!-- <th scope="col" title="Mahali shule itakapojengwa">Nukushi</th> -->
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td><b><%= schoolAddress %></b></td>
+                                            <td><b><%= ['S','P'].includes(poBox) ? poBox : 'S.L.P '+poBox %></b></td>
                                             <td><b><%= schoolPhone %></b></td>
-                                            <td><b><%= poBox %></b></td>
+                                            <!-- <td><b><%= schoolAddress %></b></td> -->
                                         </tr>
                                     </tbody>
                                 </table>
