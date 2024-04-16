@@ -407,7 +407,8 @@ module.exports = {
       company,
       box,
       region_address,
-      registry_type
+      registry_type,
+      school_type_id
     ); // Invoke `generateHeader` function.
     generateTitle(doc, title);
     paragraphs.forEach((paragraph) => {
@@ -474,7 +475,7 @@ module.exports = {
     );
     let title = ``;
     let school_type_only = getSchoolTypeOnly(school_type_id, school_type);
-    var type = school_type_id == 4 ? "Chuo" : "Shule";
+    var type = school_type_id == 4 ? "chuo" : "shule";
     var ngazi = ngaziWilaya(ngazi_ya_wilaya);
 
     switch (application_category_id) {
@@ -482,10 +483,10 @@ module.exports = {
         title = `KIBALI CHA KUANZISHA ${name}`;
         bodyContent = [
           `       Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Ninafurahi kukufahamisha kuwa kibali cha kuanzisha ${school_type_only}<b>${school_name}</b> kimetolewa ili ${type} ${ type == "Chuo" ? "hicho kianzishwe" : "hiyo ianzishwe" }  katika Kata ya <b>${ward} </b> Halmashauri ya ${ngazi} <b>${council}</b> Mkoa wa <b>${region}.</b> \n\n`,
-          `3.    Kibali hiki kimetolewa kwa mujibu wa <b>Sheria ya Elimu Sura ya 353</b>, kwa masharti kuwa utazingatia mwongozo wa Wizara wa kuanzisha na kusajili shule zisizo za Serikali. Unashauriwa kuwasiliana na <b>Msanifu wa Majengo wa Halmashauri ya ${ngazi} ${council} </b> kwa ushauri wa kitaalam wa kuendeleza majengo hayo kulingana na mahitaji ya ${type}. Aidha, unatakiwa kuhakikisha uwepo wa miundombinu ya walemavu katika ${type} ${ type == "Chuo" ? "chako" : "yako" }.\n\n`,
-          `4.    <b>Uthibitisho huu siyo kibali cha kusajili ${
-            type == "Chuo" ? "Wanachuo" : "Wanafunzi"
+          `2.    Ninafurahi kukufahamisha kuwa kibali cha kuanzisha ${school_type_only}<b>${school_name} </b> katika Kata ya <b>${ward} </b> Halmashauri ya ${ngazi} <b>${council}</b> Mkoa wa <b>${region}</b> kimetolewa.\n\n`,
+          `3.    Kibali hiki kimetolewa kwa mujibu wa <b>Sheria ya Elimu Sura ya 353</b>, kwa masharti kuwa utazingatia mwongozo wa Wizara wa kuanzisha na kusajili shule. Unashauriwa kuwasiliana na <b>Msanifu wa Majengo wa Halmashauri ya ${ngazi} ${council} </b> kwa ushauri wa kitaalam wa kuendeleza majengo hayo kulingana na mahitaji ya ${type}. Aidha, unatakiwa kuhakikisha uwepo wa miundombinu ya walemavu katika ${type} ${ type == "chuo" ? "chako" : "yako" }.\n\n`,
+          `4.     <b>Uthibitisho huu siyo kibali cha kusajili ${
+            type == "chuo" ? "Wanachuo" : "Wanafunzi"
           }.</b>\n\n`,
           `5.    Ninakutakia utekelezaji mwema`,
         ];
@@ -504,9 +505,9 @@ module.exports = {
           }</b>  kuwa ${
             uthibitisho == "mmiliki" ? "Mmiliki" : "Meneja"
           } wa ${school_type_only}<b>${school_name}</b>\n\n`,
-          `3.    Uthibitisho huu umetolewa tarehe <b>${approved_date}</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> ${ type == "Chuo" ? "Utakiendesha" : "Utaendesha" } ${type} ${ type == "Chuo" ? "hiki" : "hii" } kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo </b>ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha ${type} ${ type == "Chuo" ? "kina" : "ina" } <b>kasiki </b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
+          `3.    Uthibitisho huu umetolewa tarehe <b>${approved_date}</b> kwa mujibu wa <b>Sheria ya Elimu, Sura 353.</b> ${ type == "chuo" ? "Utakiendesha" : "Utaendesha" } ${type} ${ type == "chuo" ? "hiki" : "hii" } kwa kuzingatia <b>Sheria, Kanuni, Taratibu na Miongozo </b>ya Wizara ya Elimu, Sayansi na Teknolojia. Hakikisha ${type} ${ type == "chuo" ? "kina" : "ina" } <b>kasiki </b> kwa ajili ya kuhifadhia nyaraka nyeti.\n\n`,
           `4.    Uthibitisho huu siyo kibali cha kusajili ${
-            type == "Chuo" ? "Wanachuo" : "Wanafunzi"
+            type == "chuo" ? "Wanachuo" : "Wanafunzi"
           }.\n\n\n`,
           `5.    <b>Ninakutakia utekelezaji mwema.</b>`,
         ];
@@ -559,7 +560,7 @@ module.exports = {
             total_streams
           )} (${total_streams})</b>. Kibali kimetolewa tarehe <b>${approved_date}</b>.\n\n`,
           `3.    Hata hivyo unatakiwa kuendelea kuboresha miundombinu ya ${type} ikiwa ni pamoja na kuajiri walimu wenye sifa na kununua vitabu vya kutosha.\n\n\n`,
-          `4.    Mfahamishe Katibu Mtendaji wa Baraza la Mitihani ni lini wanafunzi walioongezeka watafanya upimaji wa darasa la IV na mtihani wa Taifa wa darasa la VII.\n\n\n`,
+          `4.    Mfahamishe Katibu Mtendaji wa Baraza la Mitihani ni lini ${type == "chuo" ? "Wanachuo" : "Wanafunzi"} walioongezeka watafanya upimaji wa darasa la IV na mtihani wa Taifa wa darasa la VII.\n\n\n`,
           `5.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
@@ -569,7 +570,7 @@ module.exports = {
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
           `2.    Napenda kukujulisha kuwa Wizara imepokea barua yako yenye <b>Kumb Na. WIPAHS/KIB/EXT/GIRLS/2023/0049</b> ya tarehe <b>24/10/2023</b> ukiomba kubadili usajili wa ${name}, kuwa ${school_type_only} ${gender_type} ya ${school_name}.\n\n`,
-          `3.    Wizara imeridhia ombi lako. Pia kibali cha bweni kimetokea kulaza wanafunzi ${number_of_students} Wavulana. Hivyo, kuanzia tarehe ya barua hii ${type} ${ type == "Chuo" ? "kitakuwa" : "itakuwa" } kutwa, bweni mchanganyiko.\n\n`,
+          `3.    Wizara imeridhia ombi lako. Pia kibali cha bweni kimetolewa kulaza ${type == "chuo" ? "Wanachuo" : "Wanafunzi"} ${number_of_students} Wavulana. Hivyo, kuanzia tarehe ya barua hii ${type} ${ type == "chuo" ? "kitakuwa" : "itakuwa" } kutwa, bweni mchanganyiko.\n\n`,
           `4.    <b>Hivyo unatakiwa kuzifahamisha mamlaka nyingine za kielimu kuhusu mabadiliko haya.</b>\n\n`,
           `5.    Ninakutakia utekelezaji mwema.`,
         ];
@@ -579,8 +580,8 @@ module.exports = {
         title = `KIBALI CHA KUBADILISHA MMILIKI WA ${type.toUpperCase()} KATIKA ${name}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Wizara inapenda kukujulisha kuwa maombi yako ya kubadili mmiliki yamekubaliwa kuanzia tarehe ya barua hii ${type} ${ type == "Chuo" ? "kitamilikiwa" : "itamilikiwa" } na ${owner_name} kutoka kwa ${old_owner_name}.\n\n`,
-          `3.    ${type} ${ type == "Chuo" ? "kitaendelea" : "itaendelea" } na namba ile ile ya zamani ya usajili ${registration_number}. Aidha, unajulishwa kufuata cheti kipya cha usajili chenye jina la mmiliki mpya mwezi mmoja tangu barua hii ilipoandikwa.\n\n`,
+          `2.    Wizara inapenda kukujulisha kuwa maombi yako ya kubadili mmiliki yamekubaliwa kuanzia tarehe ya barua hii ${type} ${ type == "chuo" ? "kitamilikiwa" : "itamilikiwa" } na ${owner_name} kutoka kwa ${old_owner_name}.\n\n`,
+          `3.    ${type} ${ type == "chuo" ? "kitaendelea" : "itaendelea" } na namba ile ile ya zamani ya usajili ${registration_number}. Aidha, unajulishwa kufuata cheti kipya cha usajili chenye jina la mmiliki mpya mwezi mmoja tangu barua hii ilipoandikwa.\n\n`,
           `4.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
@@ -601,7 +602,7 @@ module.exports = {
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
           `2.    Wizara ya Elimu, Sayansi na Teknolojia imepokea barua yenye <b>Kumb. Na. HMW/SMJ/EL/EM/41/43</b> ya tarehe <b>20/09/2023 </b> kuhusu maombi ya mabadiliko ya jina la  <b>${old_name} </b> kuwa <b>${name}</b>\n\n`,
-          `3.    Ninafurahi kukufahamisha kuwa maombi ya mabadiliko ya jina la ${type} yamekubaliwa. Hivyo, kuanzia tarehe ya barua hii, ${type} ${ type == "Chuo" ? "hiki" : "hii" } itatambulika kwa jina la <b>${name}</b>\n\n`,
+          `3.    Ninafurahi kukufahamisha kuwa maombi ya mabadiliko ya jina la ${type} yamekubaliwa. Hivyo, kuanzia tarehe ya barua hii, ${type} ${ type == "chuo" ? "hiki" : "hii" } itatambulika kwa jina la <b>${name}</b>\n\n`,
           `4.    Unaagizwa kuzijulisha Mamlaka zote za kielimu juu ya mabadiliko ya jina la ${type}.\n\n\n`,
           `5.    Ninakutakia utekelezaji mwema.`,
         ];
@@ -612,8 +613,8 @@ module.exports = {
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
           `2.    Wizara ya Elimu, Sayansi na Teknolojia imepokea barua ya maombi ya kibali cha kuhamisha ${name}.\n\n`,
-          `3.    Kamishna wa Elimu ameridhia  ${type} ${ type == "Chuo" ? "hicho" : "hiyo" } ihamie katika eneo jipya.  \n\n`,
-          `4.    ${type} ${ type == "Chuo" ? "kitahama" : "itahama" } na namba ya usajili ${registration_number} na itakuwa katika eneo ………… la Kiutawala.\n\n`,
+          `3.    Kamishna wa Elimu ameridhia  ${type} ${ type == "chuo" ? "hicho" : "hiyo" } ihamie katika eneo jipya.  \n\n`,
+          `4.    ${type} ${ type == "chuo" ? "kitahama" : "itahama" } na namba ya usajili ${registration_number} na itakuwa katika eneo ………… la Kiutawala.\n\n`,
           `5.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
@@ -638,7 +639,7 @@ module.exports = {
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
           `2.    Nafurahi kukujulisha kuwa Wizara imekubali kutoa kibali cha kuanzisha tahasusi za <b>${combinations}</b> mkondo mmoja <b>(01)</b> kwa kila tahasusi kwa ${gender_type} pekee. Kibali hiki kimetolewa tarehe <b>${approved_date}</b>\n\n`,
           `3.    Hata hivyo, unatakiwa kuendelea kuboresha miundombinu ya ${type} pamoja na kununua samani na vitabu vya kutosha.\n\n`,
-          `4.    Aidha, mfahamishe <b>Katibu Mtendaji Baraza la Mitihani Tanzania</b> ni lini ${type} ${ type == "Chuo" ? "kitakuwa" : "itakuwa" } na <b>Wanafunzi watakaofanya Mtihani wa Taifa kidato cha sita kwa tahasusi husika</b>.\n\n\n`,
+          `4.    Aidha, mfahamishe <b>Katibu Mtendaji Baraza la Mitihani Tanzania</b> ni lini ${type} ${ type == "chuo" ? "kitakuwa" : "itakuwa" } na <b>Wanafunzi watakaofanya Mtihani wa Taifa kidato cha sita kwa tahasusi husika</b>.\n\n\n`,
           `5.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
@@ -721,7 +722,7 @@ const usajiliBinafsi = (
     `    Tafadhali rejea somo la barua hii.\n\n\n`,
     `2.  Ninafurahi kukujulisha kuwa ${name} imesajiliwa tarehe <b>${registration_date}</b> kwa mujibu wa Sheria ya Elimu, Sura ya 353.\n\n\n`,
     `3.  ${type} ${school_type == 4 ? 'kimipewa' : 'imepewa'} namba ya Usajili <b>${registration_number}</b> kuwa ${type} ${school_type == 4 ? 'cha' : 'ya'} ${subcategory} na jina <b>${school_name} </b> limeidhinishwa. ${type} ${school_type == 4 ? 'hiki' : 'hii'} ni ${school_type == 4 ? 'cha' : 'ya'} ${subcategory} na imeidhinishwa kuwa na Mkondo ${stream} inayotumia lugha ya ${language} kufundishia na kujifunzia. \n\n`,
-    `4.	 Kufuatana na Sheria ya Elimu, Sura 353, cheti cha Usajili kiwekwe bayana na Uongozi wa ${type} uwe tayari kukionesha iwapo kitatakiwa. Hakikisha kuwa Kamati ya ${type} inaundwa katika muda wa miezi sita baada ya usajili. Kulingana na Waraka wa Elimu Na. 10 wa mwaka 2011 usajili wa ${type} ${ type == "Chuo" ? "hiki" : "hii" } utarudiwa baada ya miaka 4.\n\n\n`,
+    `4.	 Kufuatana na Sheria ya Elimu, Sura 353, cheti cha Usajili kiwekwe bayana na Uongozi wa ${type} uwe tayari kukionesha iwapo kitatakiwa. Hakikisha kuwa Kamati ya ${type} inaundwa katika muda wa miezi sita baada ya usajili. Kulingana na Waraka wa Elimu Na. 10 wa mwaka 2011 usajili wa ${type} ${ type == "chuo" ? "hiki" : "hii" } utarudiwa baada ya miaka 4.\n\n\n`,
     `5.	 Mmiliki wa ${type} atatakiwa kuja kuchukua cheti  cha usajili  wa ${type} akiwa  na kitambulisho  chake  mwezi  mmoja baada ya kupokea  barua hii.\n\n\n`,
     `6.  Ninakutakia utekelezaji mwema.`,
   ];
@@ -739,9 +740,9 @@ const getSchoolType = (school_type_id, school_type, school_name) => {
 const getSchoolTypeOnly = (school_type_id, school_type) => {
   var name = '';
   if ([1, 2, 3].includes(school_type_id)) {
-    name = `Shule ya ${school_type} `;
+    name = `shule ya ${school_type} `;
   } else {
-    name = `Chuo cha Ualimu `;
+    name = `chuo cha ualimu `;
   }
   return name;
 };
@@ -814,7 +815,8 @@ const generateHeader = (
   company,
   box,
   region_address,
-  registry_type
+  registry_type,
+  school_type_id
 ) => {
   doc
     .font("Helvetica-Bold")
@@ -873,12 +875,29 @@ const generateHeader = (
     .moveDown();
 
   // Addressee
-  doc
+
+  // Kama Chuo ni cha Serikali
+  if(registry_type == 3 && school_type_id == 4){
+    doc
+    .font("Helvetica-Bold")
+    .text(
+      `${
+        "Wizara ya Elimu, Sayansi na Teknolojia"
+      },  \n${'S.L.P 10'},\n`
+    )
+    .text(
+      `${'DODOMA'}.`,
+      { underline: true }
+    )
+    .moveDown()
+    .moveDown();
+  }else{
+    doc
     .font("Helvetica-Bold")
     .text(
       `${
         company ? company.toUpperCase() : company || "<Insert Company/Name>"
-      },  \n${ box ? (["S.L.P","SLP"].includes(box) ? box : 'S.L.P '+box) : '' + `,\n`}`
+      },  \n${ (box ? (["S.L.P","SLP"].includes(box) ? box : 'S.L.P '+box) : '') + `,\n`}`
     )
     .text(
       `${region_address ? region_address.toUpperCase() : region_address}.`,
@@ -886,12 +905,14 @@ const generateHeader = (
     )
     .moveDown()
     .moveDown();
+  }
+  
 };
 // Title
 const generateTitle = (doc, title) => {
   doc
     .font("Helvetica-Bold")
-    .text(`Yah: ${title.toUpperCase()}`, { underline: true, align: "center" })
+    .text(`Yah. ${title.toUpperCase()}`, { underline: true, align: "center" })
     .moveDown();
 }
 // Body
@@ -1023,16 +1044,16 @@ const generateCopies = (
         region ? "<u>" + region + ".</u>" : "<Insert Region>"
       }`
     : "";
-  copies += district_box
-    ? `
-          Afisa Elimu ${[1, 2].includes(school_type) ? "Msingi" : ""}${
-        [3, 4].includes(school_type) ? "Sekondari" : ""
-      }
-          Halmashauri ya ${district ? district : "<Insert District>"},
-          S.L.P ${district_box ? district_box : "<Insert District Address>"}, ${
-        region ? "<u>" + region + ".</u>" : "<Insert Region>"
-      }`
-    : "";
+  // copies += district_box
+  //   ? `
+  //         Afisa Elimu ${[1, 2].includes(school_type) ? "Msingi" : ""}${
+  //       [3, 4].includes(school_type) ? "Sekondari" : ""
+  //     }
+  //         Halmashauri ya ${district ? district : "<Insert District>"},
+  //         S.L.P ${district_box ? district_box : "<Insert District Address>"}, ${
+  //       region ? "<u>" + region + ".</u>" : "<Insert Region>"
+  //     }`
+  //   : "";
   copies += district_sqa_box
     ? `
           Mthibiti Mkuu Ubora wa Shule,
