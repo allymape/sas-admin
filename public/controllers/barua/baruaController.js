@@ -26,6 +26,7 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
               manager_name,
               old_manager_name,
               category,
+              old_category,
               approved_at,
               file_number,
               school_folio,
@@ -48,7 +49,7 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
               language,
               combinations,
               number_of_students,
-              gender_types,
+              gender_type,
               level,
               ward,
               signatory,
@@ -96,7 +97,9 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
               ward,
               combinations,
               number_of_students,
-              gender_types
+              gender_type,
+              category,
+              old_category
             );
 
             const paragraphs = letter.bodyContent;
@@ -114,7 +117,7 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
                   "1.",
                   school_name,
                   registration_number,
-                  `${category} ${level}`,
+                  `${category} (${level})`,
                   `${typeof masharti != "undefined" && masharti ? masharti.replaceAll(/<\/?[^>]+(>|$)/gi, "") : ""}`,
                 ],
               ],
@@ -143,7 +146,8 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
               sqa_zone_region,
               district_box,
               district_sqa_box,
-              school_category_id
+              school_category_id,
+              ngazi_ya_wilaya
             );
           }else{
             // res.status(404).send();
