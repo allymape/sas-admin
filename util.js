@@ -16,6 +16,7 @@ const url = require("url");
 
 const { toSwahili } = require('digits-to-swahili');
 const { level } = require("winston");
+const { capitalCase } = require("../sas-api/utils");
 const API_BASE_URL = process.env.API_BASE_URL;
 const myActivehandover = API_BASE_URL + "my-active-handover";
 
@@ -601,12 +602,12 @@ module.exports = {
       case 7:
         title = `KIBALI CHA KUBADILI MMILIKI WA ${name}`;
         bodyContent = [
-          `      Tafadhali rejea somo la barua hii.\n\n\n`,
+          `      Tafadhali rejea somo la barua hii.\n\n`,
           `2.    Wizara inapenda kukujulisha kuwa maombi ya kubadili mmiliki wa ${name} yamekubaliwa kuanzia tarehe ya barua hii. ${sentenceCase(
             type
           )} ${
             type == "chuo" ? "kitamilikiwa" : "itamilikiwa"
-          } na ${owner_name} kutoka kwa ${old_owner_name}.\n\n`,
+          } na ${capitalCase(owner_name)} kutoka kwa ${capitalCase(old_owner_name)}.\n\n`,
           `3.    ${sentenceCase(type)} ${
             type == "chuo" ? "kitaendelea" : "itaendelea"
           } na namba ile ile ya zamani ya usajili ${registration_number}. Aidha, unajulishwa kufuata cheti kipya cha usajili chenye jina la mmiliki mpya mwezi mmoja tangu barua hii ilipoandikwa.\n\n`,
@@ -617,9 +618,9 @@ module.exports = {
       case 8:
         title = `KIBALI CHA KUBADILI MENEJA WA ${name}`;
         bodyContent = [
-          `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Wizara imepokea barua yako yenye/isiyo na kumbukumbu namba ya tarehe ………………………… ukiomba kibali cha kubadili Meneja wa ${name}.\n\n`,
-          `3.    Ninafurahi kukujulisha kuwa ombi lako limekubaliwa.  Kwa mamlaka niliyonayo na kwa Sheria ya Elimu, Sura 353 nafuta uthibitisho wa ndugu ${old_manager_name}. Aliyekuwa meneja wa ${name}  Kuanzia tarehe ya barua hii ${approved_date} siyo meneja wa ${name}.\n\n`,
+          `      Tafadhali rejea somo la barua hii.\n\n`,
+          `2.    Wizara imepokea ombi lako la kubadili Meneja wa ${name}.\n\n`,
+          `3.    Ninafurahi kukujulisha kuwa ombi lako limekubaliwa.  Kwa mamlaka niliyonayo na kwa Sheria ya Elimu, Sura 353 nafuta uthibitisho wa ndugu ${capitalCase(old_manager_name)}, aliyekuwa meneja wa ${name}  Kuanzia tarehe ya barua hii ${approved_date} siyo meneja wa ${name} na kumthibitisha ndugu ${capitalCase(manager_name)}.\n\n`,
           `3.    Unatakiwa kuzitaarifu Mamlaka nyingine za kielimu juu ya mabadiliko yaliyofanyika.\n\n`,
           `5.    Ninakutakia utekelezaji mwema.`,
         ];
