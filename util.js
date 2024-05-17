@@ -5,6 +5,7 @@ const dateAndTime = require("date-and-time");
 const {
   titleCase, lowerCase,
   sentenceCase,
+  capitalCase
 } = require("text-case");
 const fs = require("fs");
 const json2xls = require("json2xls");
@@ -16,7 +17,6 @@ const url = require("url");
 
 const { toSwahili } = require('digits-to-swahili');
 const { level } = require("winston");
-const { capitalCase } = require("../sas-api/utils");
 const API_BASE_URL = process.env.API_BASE_URL;
 const myActivehandover = API_BASE_URL + "my-active-handover";
 
