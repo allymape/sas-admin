@@ -486,7 +486,7 @@ module.exports = {
 
     switch (application_category_id) {
       case 1:
-        title = `KIBALI CHA KUANZISHA ${name}`;
+        title = `KIBALI CHA KUANZISHA ${titleCase(name.toLowerCase())}`;
         bodyContent = [
           `       Tafadhali rejea somo la barua hii.\n\n\n`,
           `2.    Ninafurahi kukufahamisha kuwa kibali cha kuanzisha ${school_type_only}<b>${school_name} </b> katika Kata ya <b>${ward} </b> Halmashauri ya ${ngazi} <b>${council}</b> Mkoa wa <b>${region}</b> kimetolewa.\n\n`,
@@ -503,7 +503,7 @@ module.exports = {
       case 2:
         title = `UTHIBITISHO WA ${
           uthibitisho == "mmiliki" ? "MMILIKI" : "MENEJA"
-        } WA ${name}`;
+        } WA ${titleCase(name.toLowerCase())}`;
        
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
@@ -532,8 +532,8 @@ module.exports = {
       case 4:
         title =
           registry_type == 3
-            ? `USAJILI WA ${name} KATIKA HALMASHAURI YA ${ngazi} ${council}`
-            : `USAJILI WA ${name}`;
+            ? `USAJILI WA ${titleCase(name.toLowerCase())} KATIKA HALMASHAURI YA ${ngazi} ${council}`
+            : `USAJILI WA ${titleCase(name.toLowerCase())}`;
         bodyContent =
           registry_type == 3
             ? usajiliSerikali(
@@ -568,7 +568,7 @@ module.exports = {
           stream ?? 0
         }) ILI IWE ${mikondo_text(
           total_streams
-        )} (${total_streams}) KWA ${name}`;
+        )} (${total_streams}) KWA ${titleCase(name.toLowerCase())}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
           `2.    Napenda kukufahamisha kuwa Wizara imekubali ombi lako la kuongeza ${mikondo_text(
@@ -589,21 +589,22 @@ module.exports = {
         break;
 
       case 6:
-        new_school_category_text =  (type == "chuo" ? "chuo cha ualimu " : "shule ya "+old_category+" ")+school_name
-        title = `KIBALI CHA KUBADILI USAJILI WA ${new_school_category_text} KUWA ${category}`;
+        new_school_category_text =  (category.toLowerCase() == "chuo cha ualimu" ? "chuo cha ualimu " : "shule ya "+category.toLowerCase()+" ") +sentenceCase(school_name.toLowerCase())
+        old_school_category_text =  (old_category.toLowerCase() == "chuo cha ualimu" ? "chuo cha ualimu " : "shule ya "+old_category.toLowerCase()+" ") +sentenceCase(school_name.toLowerCase())
+        title = `KIBALI CHA KUBADILI USAJILI WA ${old_school_category_text} KUWA ${new_school_category_text}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n`,
-          `2.    Napenda kukujulisha kuwa Wizara imeridhia maombi yako ya kubadili usajili wa ${new_school_category_text} kuwa ${category}.\n\n`,
+          `2.    Napenda kukujulisha kuwa Wizara imeridhia maombi yako ya kubadili usajili wa ${old_school_category_text} kuwa ${new_school_category_text}.\n\n`,
           `3.    <b>Hivyo unatakiwa kuzifahamisha mamlaka nyingine za kielimu kuhusu mabadiliko haya.</b>\n\n`,
           `4.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
 
       case 7:
-        title = `KIBALI CHA KUBADILI MMILIKI WA ${name}`;
+        title = `KIBALI CHA KUBADILI MMILIKI WA ${titleCase(name.toLowerCase())}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n`,
-          `2.    Wizara inapenda kukujulisha kuwa maombi ya kubadili mmiliki wa ${name} yamekubaliwa kuanzia tarehe ya barua hii. ${sentenceCase(
+          `2.    Wizara inapenda kukujulisha kuwa maombi ya kubadili mmiliki wa ${titleCase(name.toLowerCase())} yamekubaliwa kuanzia tarehe ya barua hii. ${sentenceCase(
             type
           )} ${
             type == "chuo" ? "kitamilikiwa" : "itamilikiwa"
@@ -616,11 +617,11 @@ module.exports = {
         break;
 
       case 8:
-        title = `KIBALI CHA KUBADILI MENEJA WA ${name}`;
+        title = `KIBALI CHA KUBADILI MENEJA WA ${titleCase(name.toLowerCase())}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n`,
-          `2.    Wizara imepokea ombi lako la kubadili Meneja wa ${name}.\n\n`,
-          `3.    Ninafurahi kukujulisha kuwa ombi lako limekubaliwa.  Kwa mamlaka niliyonayo na kwa Sheria ya Elimu, Sura 353 nafuta uthibitisho wa ndugu ${capitalCase(old_manager_name)}, aliyekuwa meneja wa ${name}  Kuanzia tarehe ya barua hii ${approved_date} siyo meneja wa ${name} na kumthibitisha ndugu ${capitalCase(manager_name)}.\n\n`,
+          `2.    Wizara imepokea ombi lako la kubadili Meneja wa ${titleCase(name.toLowerCase())}.\n\n`,
+          `3.    Ninafurahi kukujulisha kuwa ombi lako limekubaliwa.  Kwa mamlaka niliyonayo na kwa Sheria ya Elimu, Sura 353 nafuta uthibitisho wa ndugu ${capitalCase(old_manager_name)}, aliyekuwa meneja wa ${titleCase(name.toLowerCase())}  Kuanzia tarehe ya barua hii ${approved_date} siyo meneja wa ${titleCase(name.toLowerCase())} na kumthibitisha ndugu ${capitalCase(manager_name)}.\n\n`,
           `3.    Unatakiwa kuzitaarifu Mamlaka nyingine za kielimu juu ya mabadiliko yaliyofanyika.\n\n`,
           `5.    Ninakutakia utekelezaji mwema.`,
         ];
@@ -640,36 +641,31 @@ module.exports = {
         break;
 
       case 10:
-        title = `KIBALI CHA KUHAMISHA  ${name} `;
+        title = `KIBALI CHA KUHAMISHA  ${titleCase(name.toLowerCase())} `;
         bodyContent = [
-          `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Wizara ya Elimu, Sayansi na Teknolojia imepokea barua ya maombi ya kibali cha kuhamisha ${name}.\n\n`,
-          `3.    Kamishna wa Elimu ameridhia  ${type} ${
-            type == "chuo" ? "hicho" : "hiyo"
-          } ihamie katika eneo jipya.  \n\n`,
-          `4.    ${type} ${
-            type == "chuo" ? "kitahama" : "itahama"
-          } na namba ya usajili ${registration_number} na itakuwa katika eneo ………… la Kiutawala.\n\n`,
+          `      Tafadhali rejea somo la barua hii.\n\n`,
+          `2.    Wizara ya Elimu, Sayansi na Teknolojia imepokea maombi ya kibali cha kuhamisha ${titleCase(name.toLowerCase())} kutoka .... kwenda....\n\n`,
+          `3.    Kwa mamlaka niliyonayo nitatoa kibali cha kuhamisha ${type.toLowerCase()} kuanzia tarehe ya barua hii.  \n\n`,
+          `4.    Aidha, ${type} ${
+            type == "chuo" ? "kitaendelea" : "itaendelea"
+          } kutumia namba ya usajili wake wa mwanzo.\n\n`,
           `5.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
 
       case 11:
-        title = ` KUFUTA USAJILI WA ${name}`;
+        title = ` KUFUTA USAJILI WA ${titleCase(name.toLowerCase())}`;
         bodyContent = [
-          `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Rejea barua yenye Kumb. Na. ......... ya tarehe ........ iliyohusu kusudio la kufuta usajili wa ${name}.\n\n`,
-          `3.    Kwa kuwa umewasilisha cheti halisi cha usajaili wa ${name}.inaonesha umeridhia ${type} kufutwa. Kwa mamlaka niliyopewa na Sheria ya Elimu, Sura 353, ninafuta usajili ${registration_number}, kuanzia tarehe ya barua hii ${type} ${
-            school_type_id == 4 ? "hiki kinafutwa" : "hii inafutwa"
-          } kutoka katika kanzi data ya ${
-            school_type_id == 4 ? "Vyuo vya Ualimu vilivyopo" : "Shule zilizopo"
-          } nchini Tanzania Bara.\n\n`,
-          `4.    Ninakutakia utekelezaji mwema`,
+          `      Tafadhali rejea somo la barua hii.\n\n`,
+          `2.    Wizara imepokea ombi la kufuta usajili wa ${titleCase(name.toLowerCase())}.\n\n`,
+          `3.    Kwa mujibu wa masharti ya <b>Sheria ya Elimu, Sura ya 353 </b>ninaifutia rasmi usajili ${titleCase(name.toLowerCase())} kuanzia tarehe ya barua hii.\n\n`,
+          `4.    Aidha, unatakiwa kuzitaarifu mammlaka nyingine za kielimu juu ya mabadiliko hayo.\n\n`,
+          `5.    Ninakutakia utekelezaji mwema`,
         ];
         break;
 
       case 12:
-        title = `KIBALI CHA KUONGEZA TAHASUSI ZA ${combinations}, KATIKA ${name}`;
+        title = `KIBALI CHA KUONGEZA TAHASUSI ZA ${combinations}, KATIKA ${titleCase(name.toLowerCase())}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
           `2.    Nafurahi kukujulisha kuwa Wizara imekubali kutoa kibali cha kuanzisha tahasusi za <b>${combinations}</b> mkondo mmoja <b>(01)</b> kwa kila tahasusi kwa ${gender_type} pekee. Kibali hiki kimetolewa tarehe <b>${approved_date}</b>\n\n`,
@@ -682,20 +678,20 @@ module.exports = {
         break;
 
       case 13:
-        title = `KIBALI CHA KUTOA HUDUMA YA DAHALIA KATIKA ${name} KATIKA HALMASHAURI YA ${ngazi} ${council}`;
+        title = `KIBALI CHA KUTOA HUDUMA YA DAHALIA KATIKA ${titleCase(name.toLowerCase())} KATIKA HALMASHAURI YA ${ngazi} ${council}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Napenda kukujulisha kuwa maombi yako ya <b>kibali cha kutoa huduma ya Dahalia</b> katika ${name}. yamekubaliwa.  Kibali kimetolewa tarehe ${approved_date}. kulaza wanafunzi ${number_of_students}. tu ambao watagharamiwa na wazazi/walezi wa wanafunzi watakao lala ndani ya dahalia na kuratibiwa na Halmashauri husika.\n\n`,
+          `2.    Napenda kukujulisha kuwa maombi yako ya <b>kibali cha kutoa huduma ya Dahalia</b> katika ${titleCase(name.toLowerCase())}. yamekubaliwa.  Kibali kimetolewa tarehe ${approved_date}. kulaza wanafunzi ${number_of_students}. tu ambao watagharamiwa na wazazi/walezi wa wanafunzi watakao lala ndani ya dahalia na kuratibiwa na Halmashauri husika.\n\n`,
           `3.    Aidha, Serikali haitahusika na gharama za uendeshaji wa dahalia.\n\n\n`,
           `4.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
 
       case 14:
-        title = `KIBALI CHA KUTOA HUDUMA YA BWENI KWA ${name}`;
+        title = `KIBALI CHA KUTOA HUDUMA YA BWENI KWA ${titleCase(name.toLowerCase())}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Napenda kukujulisha kuwa maombi yako ya kibali cha kutoa <b>huduma ya bweni</b> katika <b>${name}</b> yamekubaliwa. \n\n`,
+          `2.    Napenda kukujulisha kuwa maombi yako ya kibali cha kutoa <b>huduma ya bweni</b> katika <b>${titleCase(name.toLowerCase())}</b> yamekubaliwa. \n\n`,
           `3.    Kibali kimetolewa tarehe ${approved_date} kulaza wanafunzi <b>${number_of_students} ${gender_type}</b>. Unaagizwa kuimarisha hali ya usalama wa wanafunzi ndani na nje ya bweni. Kibali hiki kimetolewa kulaza wanafunzi wa <b>${type} tu.</b> \n\n`,
           `4.    Aidha, <b>Wathibiti Ubora wa Shule</b> watafuatilia kuhusu uwekaji vifaa vya zimamoto, viashiria moshi, makabati pamoja na sehemu ya kuteketeza taka <b>(Incinerator)</b>.Pia watafuatilia idadi halisi ya wanafunzi wanaolala ndani ya mabweni ili kuepuka <b>msongamano</b> wa wanafunzi.\n`,
           `5.    Kibali hiki kimetolewa kwa mujibu wa <b>Sheria ya Elimu, Sura 353</b>. Kwa masharti kuwa utazingatia mwongozo wa Wizara wa kuanzisha na kusajili ${type}. \n\n`,
@@ -749,7 +745,7 @@ const usajiliSerikali = (
     school_type == 4 ? "mwaka wa kwanza" : (school_type == 3 ? "kidato cha kwanza" : (school_type == 2 ? "darasa la kwanza" : "darasa la awali"));
   return [
     `    Tafadhali rejea somo la barua hii.\n\n`,
-    `2.  Napenda kukujulisha kuwa Wizara imekubali maombi ya Halmashauri ya ${ngazi} <b>${council}</b> ya kusajili <b>${name}</b> itakayomilikiwa na wananchi wa Halmashauri ya ${ngazi} ${council} kwa kushirikiana na Mkoa wa ${region}\n\n`,
+    `2.  Napenda kukujulisha kuwa Wizara imekubali maombi ya Halmashauri ya ${ngazi} <b>${council}</b> ya kusajili <b>${titleCase(name.toLowerCase())}</b> itakayomilikiwa na wananchi wa Halmashauri ya ${ngazi} ${council} kwa kushirikiana na Mkoa wa ${region}\n\n`,
     `3.  ${type == "chuo" ? "Wizara" : "Mkoa"} ${type == "chuo" ? "inaruhusiwa" : "unaruhusiwa"} kuchagua ${school_type == 4 ? 'Wanachuo' : 'Wanafunzi'} wa ${wanafunzi_wapya_text}.  ${sentenceCase(type)} itakuwa ya ${subcategory}, ${gender_type} na yenye ${stream < 2 ? 'mkondo' : 'mikondo'} ${numberToWord(stream)} (${stream}). ${sentenceCase(type)} ${type == "chuo" ? "hiki kimesajiliwa" : "hii imesajiliwa"} rasmi tarehe ${approved_date} na kupewa namba ya usajili kama ifuatavyo:\n\n`,
     `<table/>`,
     `4.  Wizara inaiagiza Halmashauri ya ${ngazi} <b>${council}</b> kuendelea kukamilisha ujenzi wa miundombinu yote. Endapo miundombinu haitakamilika, Halmashauri haitaruhusiwa kuandikisha ${school_type == 4 ? 'Wanachuo' : 'Wanafunzi'} wa ${wanafunzi_wapya_text}.\n\n`,
@@ -773,7 +769,7 @@ const usajiliBinafsi = (
   // ${school_type == 4 ? 'cha' : 'ya'}
   return [
     `    Tafadhali rejea somo la barua hii.\n\n`,
-    `2.  Ninafurahi kukujulisha kuwa ${name} imesajiliwa tarehe <b>${registration_date}</b> kwa mujibu wa Sheria ya Elimu, Sura ya 353.\n\n`,
+    `2.  Ninafurahi kukujulisha kuwa ${titleCase(name.toLowerCase())} imesajiliwa tarehe <b>${registration_date}</b> kwa mujibu wa Sheria ya Elimu, Sura ya 353.\n\n`,
     `3.  ${type} ${
       school_type == 4 ? "kimipewa" : "imepewa"
     } namba ya Usajili <b>${registration_number}</b> kuwa ya  ${subcategory} ${gender_type} na jina <b>${school_name} </b> limeidhinishwa. ${type} ${
