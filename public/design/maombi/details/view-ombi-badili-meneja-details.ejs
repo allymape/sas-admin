@@ -213,6 +213,7 @@
                                                             <th scope="col">Namba ya Simu</th>
                                                             <th scope="col">Barua pepe</th>
                                                             <th scope="col" class="text-center">Wasifu</th>
+                                                            <th scope="col" class="text-center">Cheti</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -224,10 +225,20 @@
                                                                 data-bs-toggle="modal" 
                                                                 class="fw-medium link-primary read-attachment"
                                                                 data-path="<%= manager_cv %>">
-                                                                <% if(manager_cv ){ %>
-                                                                    <i class="ri-file-pdf-line ri-2x text-danger"></i>
-                                                                <% } %>
-                                                            </a></td>
+                                                                        <% if(manager_cv ){ %>
+                                                                            <i class="ri-file-pdf-line ri-2x text-danger"></i>
+                                                                        <% } %>
+                                                                 </a>
+                                                            </td>
+                                                            <td class="text-center"><a href="#showModal" 
+                                                                data-bs-toggle="modal" 
+                                                                class="fw-medium link-primary read-attachment"
+                                                                data-path="<%= manager_certificate %>">
+                                                                        <% if(manager_certificate ){ %>
+                                                                            <i class="ri-file-pdf-line ri-2x text-danger"></i>
+                                                                        <% } %>
+                                                                 </a>
+                                                            </td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
@@ -240,6 +251,7 @@
                                                             <th scope="col">Namba ya Simu</th>
                                                             <th scope="col">Barua pepe</th>
                                                             <th scope="col" class="text-center">Wasifu</th>
+                                                            <th scope="col" class="text-center">Cheti</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -247,7 +259,7 @@
                                                             <td><b><%= former_manager_full_name %></b></td>
                                                             <td><b><%= former_manager_phone_no %></b></td>
                                                             <td><b><%= former_manager_email %></b></td>
-                                                              <td class="text-center">
+                                                            <td class="text-center">
                                                                 <a href="#showModal" 
                                                                 data-bs-toggle="modal" 
                                                                 class="fw-medium link-primary read-attachment"
@@ -255,8 +267,18 @@
                                                                 <% if(former_manager_cv ){ %>
                                                                     <i class="ri-file-pdf-line ri-2x text-danger"></i>
                                                                 <% } %>
-                                                            </a>
-                                                        </td>
+                                                                </a>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <a href="#showModal" 
+                                                                data-bs-toggle="modal" 
+                                                                class="fw-medium link-primary read-attachment"
+                                                                data-path="<%= former_manager_certificate %>">
+                                                                <% if(former_manager_certificate ){ %>
+                                                                    <i class="ri-file-pdf-line ri-2x text-danger"></i>
+                                                                <% } %>
+                                                                </a>
+                                                            </td>
                                                         </tr>
                                                     </tbody>
                                                 </table>

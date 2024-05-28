@@ -318,14 +318,19 @@
                             <table class="table align-middle mb-0">
                                 <thead class="table-light text-muted">
                                     <tr>
-                                        <th scope="col">Jina la Shule la Sasa</th>
-                                        <th scope="col">Jina la Shule Linalopendekezwa</th>
+                                        <th scope="col">Kutoka</th>
+                                        <th scope="col">Kuwa</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
+                                        <% if(is_approved){ %>
+                                        <td><b><%= school_name_new %></b></td>
+                                        <td><b><%= school_name %></b></td>
+                                        <% } else { %>
                                         <td><b><%= school_name %></b></td>
                                         <td><b><%= school_name_new %></b></td>
+                                        <% } %>
                                     </tr>
                                 </tbody>
                             </table>

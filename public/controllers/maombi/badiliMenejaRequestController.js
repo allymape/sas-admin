@@ -81,10 +81,12 @@ badiliMenejaRequestController.get(
         var former_manager_full_name = data[0].former_manager_full_name;
         var manager_phone_no = data[0].manager_phone_no;
         var manager_email = data[0].manager_email;
-        var manager_cv = data[0].manager_cv;
         var former_manager_phone_no = data[0].former_manager_phone_no;
         var former_manager_email = data[0].former_manager_email;
+        var manager_cv = data[0].manager_cv;
         var former_manager_cv = data[0].former_manager_cv;
+        var manager_certificate = data[0].manager_certificate;
+        var former_manager_certificate = data[0].former_manager_certificate;
         var manager_full_name = data[0].manager_full_name;
         var remain_days = data[0].remain_days;
         var created_at = data[0].created_at;
@@ -149,10 +151,12 @@ badiliMenejaRequestController.get(
             former_manager_full_name: former_manager_full_name,
             manager_phone_no: manager_phone_no,
             manager_email: manager_email,
-            manager_cv: manager_cv,
             former_manager_phone_no: former_manager_phone_no,
             former_manager_email: former_manager_email,
+            manager_cv: manager_cv,
             former_manager_cv: former_manager_cv,
+            manager_certificate: manager_certificate,
+            former_manager_certificate: former_manager_certificate,
             muda_ombi: remain_days,
             owner_email_old: owner_email_old,
             authorized_person_old: authorized_person_old,
