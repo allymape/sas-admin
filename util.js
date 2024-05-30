@@ -659,7 +659,7 @@ module.exports = {
           `      Tafadhali rejea somo la barua hii.\n\n`,
           `2.    Wizara imepokea ombi la kufuta usajili wa ${titleCase(name.toLowerCase())}.\n\n`,
           `3.    Kwa mujibu wa masharti ya <b>Sheria ya Elimu, Sura ya 353 </b>${type=="chuo" ? "ninakifutia" : "ninaifutia"} rasmi usajili ${titleCase(name.toLowerCase())} kuanzia tarehe ya barua hii.\n\n`,
-          `4.    Aidha, unatakiwa kuzitaarifu mammlaka nyingine za kielimu juu ya mabadiliko hayo.\n\n`,
+          `4.    Aidha, unatakiwa kuzitaarifu mamlaka nyingine za kielimu juu ya mabadiliko hayo.\n\n`,
           `5.    Ninakutakia utekelezaji mwema`,
         ];
         break;
