@@ -78,8 +78,7 @@ anzishaShuleRequestController.get(
       "POST",
       { TrackingNumber: TrackingNumber },
       (jsonData) => {
-        const { data } = jsonData;
-        console.log(data)
+        const { data, } = jsonData;
         var remain_days = data[0].remain_days;
         var created_at = data[0].created_at;
         var tracking_number = data[0].tracking_number;
