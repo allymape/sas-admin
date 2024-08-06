@@ -67,6 +67,7 @@ app.use(cookieParser())
 app.use(flash());
 // Create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
+app.set("trust proxy", 1);
 app.use(
   session({
     secret: "secret",
