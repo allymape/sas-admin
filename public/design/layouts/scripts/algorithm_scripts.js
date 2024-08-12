@@ -80,7 +80,7 @@ function listAlgorithms() {
                 },
               },
               true,
-              "Idadi ya Kanda Zilizopatikana"
+              "Idadi ya algorithm iliyopatikana"
             );
        }
   });
