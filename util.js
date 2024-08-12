@@ -19,17 +19,14 @@ const { toSwahili } = require('digits-to-swahili');
 const { level } = require("winston");
 const API_BASE_URL = process.env.API_BASE_URL;
 const myActivehandover = API_BASE_URL + "my-active-handover";
-
+const refreshTokenApi = API_BASE_URL + "refresh_token";
 
 module.exports = {
   isAuthenticated: (req, res, next) => {
-    //  console.log("Hapappapappappa" , req.body);
     const sessionToken = req.session.Token;
     const bodyToken = req.body.token;
     const authorization = "Bearer" + " " + (sessionToken || bodyToken);
-
     // req.session.previousUrl = req.originalUrl;
-
     if (authorization) {
       const token = authorization.slice(7, authorization.length); // Bearer XXXXXX
       jwt.verify(
@@ -64,8 +61,9 @@ module.exports = {
             req.user = decode;
             const { exp } = decode;
             const timestamp = Math.round(Date.now() / 1000, 0);
-            if (exp - timestamp > 0) {
-              console.log("refresh Token");
+            if (exp - timestamp < 300) {
+              module.exports.refreshToken(req, res)
+              console.log("Refresh token");
             }
             next();
           }
@@ -82,6 +80,21 @@ module.exports = {
         res.redirect("/");
       }
     }
+  },
+  refreshToken: (req, res) => {
+    module.exports.sendRequest(
+      req,
+      res,
+      refreshTokenApi,
+      "POST",
+      {},
+      (jsonData) => {
+        const { statusCode, token } = jsonData;
+        if(statusCode == 300){
+          req.session.Token = token;
+        }
+      }
+    );
   },
   activeHandover: (req, res, next) => {
     const current_url = req.originalUrl;
