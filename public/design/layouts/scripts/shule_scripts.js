@@ -133,6 +133,7 @@ function edit(e){
              document.getElementById('category-field').value = category
              document.getElementById('ownership-field').value = ownership
              document.getElementById('tracking-number').innerText = " - "+ tracking_number
+             document.getElementById("registration-date-field").value = "";
              setDatePicker("registration-date-field", registration_date);
              getRegions(selectedRegion);
             if(selectedRegion){
