@@ -27,7 +27,12 @@
 </head>
 
 <body>
-
+<!-- <div class="d-flex justify-content-center">
+  <div class="spinner-border" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div> -->
+    <%- include("includes/loading.ejs") %>
     <div class="auth-page-wrapper pt-5">
         <!-- auth page bg -->
         <div class="auth-one-bg-position auth-one-bg" id="auth-particles">
@@ -80,7 +85,7 @@
                                     <% } %>
                                 </div>
                                 <div class="p-2 mt-4">
-                                    <form action="/auth" method="POST">
+                                    <form action="/auth" method="POST" onsubmit="loading()">
 
                                         <div class="mb-3">
                                             <label for="username" class="form-label">Barua pepe</label>
@@ -167,8 +172,8 @@
     <script src="design/assets/js/pages/particles.app.js"></script>
     <!-- password-addon init -->
     <script src="design/assets/js/pages/password-addon.init.js"></script>
+    <script src="design/assets/js/loading.js"></script>
 </body>
-
 
 <!-- Mirrored from themesbrand.com/velzon/html/default/auth-signin-basic.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 02 Sep 2022 10:10:19 GMT -->
 </html>
