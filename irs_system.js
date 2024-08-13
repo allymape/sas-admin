@@ -1,4 +1,3 @@
-var session = require("express-session");
 var express = require("express");
 var path = require("path");
 var bodyParser = require("body-parser");
@@ -67,21 +66,41 @@ app.use(cookieParser())
 app.use(flash());
 // Create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
+
+// var session = require("cookie-session");
+const session = require("express-session");
+const RedisStore = require("connect-redis").default;
+const { createClient } = require("redis");
+// Create a Redis client
+const redisClient = createClient({
+  url: 'redis://localhost:6379',
+  legacyMode: false, // Enable legacy mode if you're using Redis v4+
+});
+
+redisClient.connect(console.log("Redis connected successfully.")).catch(console.error);
+
 app.set("trust proxy", 1);
+// app.use(
+//   session({
+//     store: new RedisStore({ client: redisClient }),
+//     secret: "your-secret-key",
+//     resave: false,
+//     saveUninitialized: false,
+//   })
+// );
 app.use(
   session({
-    secret: "secret",
+    secret: "201-S3cr3t@#",
     resave: true,
     saveUninitialized: true,
-    httpOnly: true,  // dont let browser javascript access cookie ever
+    httpOnly: true, // dont let browser javascript access cookie ever
     secure: true, // only use cookie over https
     ephemeral: true,
-      cookie: {
-
-        // Session expires after 1 min of inactivity.
-        // expires: 900000
-        maxAge: 20 * 60 * 1000
-    }
+    store: new RedisStore({ client: redisClient }),
+    // cookie: {
+    //   secure: true,
+    //   maxAge: 20 * 60 * 1000,
+    // },
   })
 );
 
