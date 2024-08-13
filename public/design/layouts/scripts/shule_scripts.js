@@ -7,7 +7,7 @@ function setDatePicker(inputId, defaultDateValue = null) {
   });
 }
 //list of zones
-function renderDataTableWards(){
+function renderDataTable(){
   setUrlSearchParams();
   ajaxRequest("/SchoolList", "GET", (response) => {
     // render table
@@ -44,7 +44,7 @@ function renderDataTableWards(){
   });
 }
 // , 5000);
-window.onload = renderDataTableWards;
+window.onload = renderDataTable;
 $("#btn-migrate-schools").on("click", function () {
   confirmAction(
     PullSchools,
@@ -63,7 +63,7 @@ function PullSchools() {
           statusCode == 300 ? "success" : "error",
           () => {
             if (statusCode == 300) {
-              renderDataTableWards();
+              renderDataTable();
             }
           }
         );
@@ -108,7 +108,6 @@ function resetFields(){
 }
 function edit(e){
   const id = e.getAttribute("data-id") ? e.getAttribute("data-id") : document.getElementById('search-school').value;
-        
   if(id){
       $("#school-form").attr("action", `/UpdateShule/${id}`);
       hideOwnerAndAddressFields()
@@ -120,7 +119,7 @@ function edit(e){
              const selectedLga = data.lga;
              const selectedWard = data.ward;
              const selectedStreet = data.street;
-             const registration_date = data.registration_date;
+             const registration_date = data.registration_date == "0000-00-00" ? null : data.registration_date;
              const category = data.category;
              const ownership = data.ownership;
              const registration_number = data.registration_number;
@@ -203,7 +202,7 @@ $("#school-form").on('submit' , function(e){
                       statusCode == 300 ? "success" : "error",
                       () => {
                         if(statusCode == 300){
-                          renderDataTableWards(); 
+                          renderDataTable(); 
                           if(action == 'create'){
                             resetFields();
                           }
