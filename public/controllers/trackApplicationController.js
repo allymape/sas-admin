@@ -4,24 +4,41 @@ const request = require("request");
 const trackApplicationController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { sendRequest, isAuthenticated, can, crypt, modifiedUrl } = require("../../util");
+const { sendRequest, isAuthenticated, can, crypt, modifiedUrl, activeHandover } = require("../../util");
 const API_BASE_URL = process.env.API_BASE_URL;
 const trackAPI = API_BASE_URL + "track_applications";
 const updatePaymentAPI = API_BASE_URL + "update_payment";
 const Cryptr = require("cryptr");
 
 // Display zones page
-trackApplicationController.get("/TrackOmbi/:id", isAuthenticated, can('view-track-application'), (req, res) => {
-      var per_page = Number(req.query.per_page || 10);
-      var page = Number(req.query.page || 1);
-      const searchQuery = req.query;
-      const encrypted_param_id =  req.params.id;
-      const decryptedString = crypt().decrypt(encrypted_param_id);
-      // console.log(decryptedString);
-   
-      sendRequest(req , res , trackAPI+ '/'+ decryptedString + "?page=" + page + "&per_page=" + per_page , "GET" , searchQuery  , (jsonData) => {
+trackApplicationController.get(
+  "/TrackOmbi/:id",
+  isAuthenticated,
+  can("view-track-application"),
+  activeHandover,
+  (req, res) => {
+    var per_page = Number(req.query.per_page || 10);
+    var page = Number(req.query.page || 1);
+    const searchQuery = req.query;
+    const encrypted_param_id = req.params.id;
+    const decryptedString = crypt().decrypt(encrypted_param_id);
+    // console.log(decryptedString);
+
+    sendRequest(
+      req,
+      res,
+      trackAPI +
+        "/" +
+        decryptedString +
+        "?page=" +
+        page +
+        "&per_page=" +
+        per_page,
+      "GET",
+      searchQuery,
+      (jsonData) => {
         const { numRows } = jsonData;
-        const { applications ,categories } = jsonData.data;
+        const { applications, categories } = jsonData.data;
         res.render(path.join(__dirname + "/../design/track"), {
           req: req,
           applications: applications,
@@ -35,8 +52,10 @@ trackApplicationController.get("/TrackOmbi/:id", isAuthenticated, can('view-trac
             url: modifiedUrl(req),
           },
         });
-      });
-});
+      }
+    );
+  }
+);
 
 trackApplicationController.post("/ChangePayment/:tracking_number", isAuthenticated, can('view-track-application'), (req, res) => {
         const tracking_number = req.params.tracking_number

@@ -2,12 +2,12 @@ require("dotenv").config();
 const express = require("express");
 
 const loginActivityController = express.Router();
-const { sendRequest, modifiedUrl, isAuthenticated } = require("../../util");
+const { sendRequest, modifiedUrl, isAuthenticated, activeHandover } = require("../../util");
 const path  = require("path");
 const API_BASE_URL = process.env.API_BASE_URL;
 const loginActivityAPI = API_BASE_URL + "login-activity";
 
-loginActivityController.get("/LoginActivity", isAuthenticated, function (req, res) {
+loginActivityController.get("/LoginActivity", isAuthenticated, activeHandover , function (req, res) {
     const per_page = Number(req.query.per_page || 10);
     const page = Number(req.query.page || 1);
     const params = {

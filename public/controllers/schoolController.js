@@ -4,7 +4,7 @@ const request = require("request");
 const schoolController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { sendRequest, isAuthenticated, can } = require("../../util");
+const { sendRequest, isAuthenticated, can, activeHandover } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var allSchoolListAPI = API_BASE_URL + "all-schools";
 var schoolListAPI = API_BASE_URL + "look_for_schools";
@@ -16,7 +16,7 @@ var schoolFiltersAPI = API_BASE_URL + "school-filters";
 var changeShuleAPI = API_BASE_URL + "change-shule";
 
 // Page
-schoolController.get('/Shule' , isAuthenticated , can('view-schools') , (req , res) => {
+schoolController.get('/Shule' , isAuthenticated , can('view-schools'), activeHandover , (req , res) => {
     sendRequest(req , res , schoolFiltersAPI , "GET" , {}, (jsonData) => {
         var {ownerships , categories} = jsonData.data;
         res.render(path.join(__dirname + "/../design/schools"), {

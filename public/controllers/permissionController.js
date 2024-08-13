@@ -4,7 +4,7 @@ const request = require("request");
 const permissionController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { sendRequest, can, isAuthenticated } = require("../../util");
+const { sendRequest, can, isAuthenticated, activeHandover } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var allPermissionsAPI   = API_BASE_URL + "allPermissions";
 var tengenezaPermissionAPI = API_BASE_URL + "addPermission";
@@ -14,9 +14,15 @@ var deletePermissionAPI = API_BASE_URL + "deletePermission";
 
 
 // Get all permissions
-permissionController.get("/Permissions",  isAuthenticated, can('view-permissions'), function (req, res) {
-  getAllPermissions(req, res);
-});
+permissionController.get(
+  "/Permissions",
+  isAuthenticated,
+  can("view-permissions"),
+  activeHandover,
+  function (req, res) {
+    getAllPermissions(req, res);
+  }
+);
 
 // Store Permission
 permissionController.post("/tengenezaPermission",  isAuthenticated, can('create-permissions'), function (req, res) {

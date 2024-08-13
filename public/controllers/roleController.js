@@ -4,7 +4,7 @@ const request = require("request");
 const roleController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { sendRequest, can, isAuthenticated, modifiedUrl } = require("../../util");
+const { sendRequest, can, isAuthenticated, modifiedUrl, activeHandover } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var allRolesAPI = API_BASE_URL + "allRoles";
 var rolesAPI = API_BASE_URL + "roles";
@@ -66,7 +66,7 @@ roleController.post("/LookupRoles", isAuthenticated, (req, res) => {
 });
 
 // Store Role
-roleController.post("/tengenezaRole",  isAuthenticated, can('create-roles'), function (req, res) {
+roleController.post("/tengenezaRole",  isAuthenticated, can('create-roles'), activeHandover, function (req, res) {
     var formData = {
         roleName: req.body.role_name,
         permissions: req.body.permissions,

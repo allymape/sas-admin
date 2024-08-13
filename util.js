@@ -109,6 +109,10 @@ module.exports = {
         {},
         (jsonData) => {
           const { active } = jsonData;
+          const {is_password_changed} = req.user
+          if (!is_password_changed){
+            return res.redirect("/Profile?tab=change_password");
+          }
           if (active) {
             return res.redirect("/Profile?tab=kaimisha");
           }
