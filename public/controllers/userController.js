@@ -47,7 +47,35 @@ userController.get("/Profile", isAuthenticated , can('view-profile') , (req, res
     })
 });
 
-
+userController.get("/PasswordReset", function (req, res) {
+  res.render(path.join(__dirname + "/../design/password_reset") , {req});
+});
+userController.post("/Reset", function (req, res) {
+  request(
+    {
+      url: sendMailAPI,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      json: req.body,
+    },
+    (err, jsonData) => {
+      if(err){
+        req.flash.message = "Kuna tatizo wasiliana na Msimamizi wa Mfumo";
+        res.redirect(`/PasswordReset`);
+      }
+      const { statusCode, message } = jsonData.body;
+      if (statusCode == 300) {
+        req.flash.message = message;
+        res.redirect("/");
+      } else {
+        req.flash.message = message
+        res.redirect(`/PasswordReset`);
+      }
+    }
+  );
+});
 userController.post("/auth", function (req, res) {
   const {username , password} = req.body;
   const clientIp = requestIp.getClientIp(req);
@@ -143,7 +171,6 @@ userController.post("/auth", function (req, res) {
 });
 // Get TOKEN for barua
 userController.post('/BaruaAuthentication' , (req , res) =>{
-
   request(
     {
       url: baruaAuthAPI,
@@ -300,7 +327,6 @@ userController.post(
 // Disable account
 userController.post("/DisableUser/:id", isAuthenticated, can('delete-users'), function (req, res) { 
     const id = req.params.id;
-
     sendRequest(req, res , disableMtumiajiAPI + `/${id}` , "PUT" , {} ,(jsonData) => {
           const {statusCode , message} = jsonData;
             res.send({
