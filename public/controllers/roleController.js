@@ -69,17 +69,19 @@ roleController.post("/LookupRoles", isAuthenticated, (req, res) => {
 roleController.post("/tengenezaRole",  isAuthenticated, can('create-roles'), function (req, res) {
     var formData = {
         roleName: req.body.role_name,
-        displayName: req.body.display_name,
+        permissions: req.body.permissions,
         };
     sendRequest(req, res, storeRoleAPI, "POST", formData, (body) => {
       var statusCode = body.statusCode;
       var message = body.message;
-      req.flash(statusCode == 300 ? "success" : "error", message);
-      res.redirect("/Roles");
+      res.send({
+        statusCode,
+        message
+      });
     });
 });
 
-// Edit Role
+// form
 roleController.get("/CreateRole", isAuthenticated, function (req, res) {
     sendRequest(req , res , createRoleAPI,"GET", {} , 
     function (jsonData) {
@@ -91,7 +93,7 @@ roleController.get("/CreateRole", isAuthenticated, function (req, res) {
       }
     );
 });
-
+// Edit Role
 roleController.get("/EditRole/:id", isAuthenticated, function (req, res) {
     const role_id = req.params.id;
     sendRequest(req, res , editRoleAPI + `/${role_id}`, "GET",{},function (jsonData) {

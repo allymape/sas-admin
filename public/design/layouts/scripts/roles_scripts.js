@@ -34,18 +34,23 @@ function  createRole() {
       values.push(checkboxes[i].value);
     }
   }
-
   if (role_name.length <= 0) {
     alert("Jina la Role haliwezi kuwa null");
   } else {
      ajaxRequest(
-       "/tengenezaRoles",
+       "/tengenezaRole",
        "POST",
        (response) => {
+        const {statusCode , message} = response
          alertMessage(
-           response.statusCode == 300 ? "Success" : "Fail",
-           response.message,
-           response.statusCode == 300 ? "success" : "error"
+           statusCode == 300 ? "Success" : "Fail",
+           message,
+           statusCode == 300 ? "success" : "error",
+           () => {
+              if(statusCode == 300){
+                window.location.href = "/CreateRole";
+              }
+           }
          );
        },
        JSON.stringify({ role_name: role_name, permissions: values })
@@ -67,7 +72,6 @@ function updateRole() {
                 values.push(checkboxes[i].value);
             }
         }
-
         if (role_name.length <= 0) {
         alert("Jina la Role haliwezi kuwa null");
         } else {
