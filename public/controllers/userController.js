@@ -90,7 +90,7 @@ userController.post("/auth", function (req, res) {
     browser,
     device
   }
-
+  console.log(clientIp);
   request(
     {
       url: loginAPI,
