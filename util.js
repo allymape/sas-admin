@@ -61,6 +61,7 @@ module.exports = {
             req.user = decode;
             const { exp } = decode;
             const timestamp = Math.round(Date.now() / 1000, 0);
+            console.log(exp - timestamp);
             if (exp - timestamp < 300) {
               module.exports.refreshToken(req, res)
               console.log("Refresh token");
@@ -91,7 +92,8 @@ module.exports = {
       (jsonData) => {
         const { statusCode, token } = jsonData;
         if(statusCode == 300){
-          req.session.Token = token;
+          if(token) req.session.Token = token;
+          // console.log(req.user)
         }
       }
     );
@@ -111,10 +113,10 @@ module.exports = {
           const { active } = jsonData;
           const {is_password_changed} = req.user
           if (!is_password_changed){
-            return res.redirect("/Profile?tab=change_password");
+            res.redirect("/Profile?tab=change_password");
           }
           if (active) {
-            return res.redirect("/Profile?tab=kaimisha");
+            res.redirect("/Profile?tab=kaimisha");
           }
         }
       );
