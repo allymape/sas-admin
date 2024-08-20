@@ -15,12 +15,13 @@ const fs = require("fs");
 const axios = require("axios");
 // Custom HTTPS agent with SSL verification
 const agent = new https.Agent({
-  ca: fs.readFileSync("/etc/ssl/certs/ca-certificates.crt"),
-  rejectUnauthorized: true, // Ensures SSL verification
+  // ca: fs.readFileSync("certs/sas_certificate.crt"),
+  rejectUnauthorized: false, // Ensures SSL verification
 });
 
 async function pdfbase64(url) {
   try {
+    console.log(url)
     const response = await axios.get(url, {
       responseType: "arraybuffer",
       httpsAgent: agent,
@@ -38,19 +39,20 @@ async function pdfbase64(url) {
 attachmentController.post("/View-Attachment", isAuthenticated, function (req, res) {
     const file_path = req.body.file_path;
     if(file_path){
-        pdfbase64('https://accredit.moe.go.tz:8009/attachments/20240820114852HbHtPxuTf5.pdf')
-        .then( (response) => {
-                // console.log(response);
-                res.send({
-                  statusCode: 300,
-                  data: response,
-                });
-        }).catch( (error) => {
+        pdfbase64(`${FRONTEND_URL}attachments`)
+          .then((response) => {
+            // console.log(response);
+            res.send({
+              statusCode: 300,
+              data: response,
+            });
+          })
+          .catch((error) => {
             res.send({
               statusCode: 500,
               data: error,
             });
-        });
+          });
             
     }else{
         res.send({
