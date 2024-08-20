@@ -15,7 +15,7 @@ const fs = require("fs");
 const axios = require("axios");
 // Custom HTTPS agent with SSL verification
 const agent = new https.Agent({
-  // ca: fs.readFileSync("certs/sas_certificate.crt"),
+  ca: fs.readFileSync("/etc/nginx/ssl/sas_certificate.crt"),
   rejectUnauthorized: true, // Ensures SSL verification
 });
 
