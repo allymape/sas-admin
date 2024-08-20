@@ -21,7 +21,7 @@ const agent = new https.Agent({
 
 async function pdfbase64(url) {
   try {
-    console.log(url)
+    console.log(url);
     const response = await axios.get(url, {
       responseType: "arraybuffer",
       httpsAgent: agent,
@@ -36,31 +36,34 @@ async function pdfbase64(url) {
     throw error;
   }
 }
-attachmentController.post("/View-Attachment", isAuthenticated, function (req, res) {
+attachmentController.post(
+  "/View-Attachment",
+  isAuthenticated,
+  function (req, res) {
     const file_path = req.body.file_path;
-    if(file_path){
-        pdfbase64(`${FRONTEND_URL}attachments`)
-          .then((response) => {
-            // console.log(response);
-            res.send({
-              statusCode: 300,
-              data: response,
-            });
-          })
-          .catch((error) => {
-            res.send({
-              statusCode: 500,
-              data: error,
-            });
+    if (file_path) {
+      pdfbase64(`${FRONTEND_URL + file_path}`)
+        .then((response) => {
+          // console.log(response);
+          res.send({
+            statusCode: 300,
+            data: response,
           });
-            
-    }else{
-        res.send({
-            statusCode : 404,
-            data : null
+        })
+        .catch((error) => {
+          res.send({
+            statusCode: 500,
+            data: error,
+          });
         });
+    } else {
+      res.send({
+        statusCode: 404,
+        data: null,
+      });
     }
-});
+  }
+);
 attachmentController.post(
   "/TumaAttachment",
   isAuthenticated,
