@@ -43,7 +43,7 @@ $(".read-attachment").click(function () {
             `Samahani! Kuna tatizo kwenye kusoma kiambata hiki. Wasiliana na Msimamizi wa Mfumo`,
             "error",
             () => {
-              window.location.href = urlRedirection;
+              // window.location.href = urlRedirection;
             }
           );
         }
