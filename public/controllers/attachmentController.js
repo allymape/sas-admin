@@ -15,8 +15,8 @@ const fs = require("fs");
 const axios = require("axios");
 // Custom HTTPS agent with SSL verification
 const agent = new https.Agent({
-  ca: fs.readFileSync("sas_certificate.crt"),
-  rejectUnauthorized: true, // Ensures SSL verification
+  // ca: fs.readFileSync("sas_certificate.crt"),
+  rejectUnauthorized: false, // Ensures SSL verification
 });
 
 async function pdfbase64(url) {
