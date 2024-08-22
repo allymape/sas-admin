@@ -28,36 +28,13 @@ $("#kata-field").on("change", function () {
 $(".read-attachment").click(function () {
   const file_path = $(this).attr("data-path");
   const iframe = document.getElementById("pdfdoc");
-                 document.getElementById("iframediv").css="background:url(/assets/images/ajax-loader.gif) center center no-repeat;";
+    document.getElementById("iframediv").css="background:url(/assets/images/ajax-loader.gif) center center no-repeat;";
     iframe.src = "about:blank";
-    if (file_path.includes(".pdf")) {
-    ajaxRequest(
-      `/View-Attachment`,
-      "POST",
-      (response) => {
-        const { statusCode, data } = response;
-        if (statusCode == 300) {
-          iframe.src = `data:application/pdf;base64, ${data}`;
-        } else {
-          alertMessage(
-            `Alert`,
-            `Samahani! Kuna tatizo kwenye kusoma kiambata hiki. Wasiliana na Msimamizi wa Mfumo`,
-            "error",
-            () => {
-              // window.location.href = urlRedirection;
-            }
-          );
-        }
-      },
-      JSON.stringify({
-        file_path: file_path,
-      })
-    );
+  if (file_path.includes(".pdf")) {
+     iframe.src = `${document.location.origin}/View-Attachment${file_path}`;
   } else {
     if (file_path) {
-      document.getElementById(
-        "pdfdoc"
-      ).src = `data:application/pdf;base64, ${file_path}`;
+      iframe.src = `data:application/pdf;base64, ${file_path}`;
     }
   }
 });

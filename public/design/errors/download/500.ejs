@@ -1,0 +1,34 @@
+ <html>
+            <head>
+              <style>
+                body {
+                  font-family: Arial, sans-serif;
+                  background-color: #f4f4f4;
+                  color: #333;
+                  text-align: center;
+                  padding: 50px;
+                }
+                .error-message {
+                  display: inline-block;
+                  padding: 20px;
+                  background-color: #ffdddd;
+                  border: 1px solid #ff5c5c;
+                  border-radius: 5px;
+                }
+                h1 {
+                  color: #d9534f;
+                }
+                p {
+                  font-size: 18px;
+                }
+              </style>
+            </head>
+            <body>
+              <div class="error-message">
+                <h1>Oops! Something Went Wrong</h1>
+                <p>We encountered an error while processing your request.</p>
+                <p>Error Details: <%=error.message%></p>
+                <p>Please try again later or contact support.</p>
+              </div>
+            </body>
+          </html>

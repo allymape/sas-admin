@@ -1,8 +1,6 @@
 require("dotenv").config();
 const express = require("express");
-const request = require("request");
 const attachmentController = express.Router();
-var session = require("express-session");
 var path = require("path");
 const { sendRequest, can, isAuthenticated } = require("../../util");
 const FRONTEND_URL = process.env.FRONTEND_URL;
@@ -19,48 +17,32 @@ const agent = new https.Agent({
   rejectUnauthorized: false, // Ensures SSL verification
 });
 
-async function pdfbase64(url) {
-  try {
-    console.log(url);
-    const response = await axios.get(url, {
-      responseType: "arraybuffer",
-      httpsAgent: agent,
-    });
-    const base64 = Buffer.from(response.data).toString("base64");
-    return base64;
-  } catch (error) {
-    console.error(
-      "Error downloading or converting PDF to base64:",
-      error.message
-    );
-    throw error;
-  }
-}
-attachmentController.post(
-  "/View-Attachment",
+attachmentController.get(
+  "/View-Attachment/attachments/:path",
   isAuthenticated,
-  function (req, res) {
-    const file_path = req.body.file_path;
+  async function (req, res) {
+    const file_path = req.params.path;
     if (file_path) {
-      pdfbase64(`${FRONTEND_URL + file_path}`)
-        .then((response) => {
-          // console.log(response);
-          res.send({
-            statusCode: 300,
-            data: response,
-          });
-        })
-        .catch((error) => {
-          res.send({
-            statusCode: 500,
-            data: error,
-          });
+      try {
+        // const url = `https://accredit.moe.go.tz:8009/attachments/20240821130537bxsaM29zy.pdf`;
+        const url = `${FRONTEND_URL}/attachments/${file_path}`;
+        const response = await axios.get(url, {
+          responseType: "stream", // Stream the PDF file directly
+          httpsAgent: agent,
         });
+        // Set the response headers for PDF
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", "inline"); // Inline to view in browser; change to 'attachment' to force download
+
+        // Pipe the response directly to the client
+        response.data.pipe(res);
+      } catch (error) {
+        console.error("Error downloading or serving PDF:", error.message);
+        // Send a beautiful error message as HTML
+        res.render(path.join(__dirname + "/../design/errors/download/500"), {error});
+      }
     } else {
-      res.send({
-        statusCode: 404,
-        data: null,
-      });
+        res.render(path.join(__dirname + "/../design/errors/download/404"));
     }
   }
 );
