@@ -27,6 +27,8 @@ $("#kata-field").on("change", function () {
 
 $(".read-attachment").click(function () {
   const file_path = $(this).attr("data-path");
+  const iframe = document.getElementById("pdfdoc");
+                 document.getElementById("iframediv").css="background:url(/assets/images/ajax-loader.gif) center center no-repeat;";
   if (file_path.includes(".pdf")) {
     ajaxRequest(
       `/View-Attachment`,
@@ -34,9 +36,7 @@ $(".read-attachment").click(function () {
       (response) => {
         const { statusCode, data } = response;
         if (statusCode == 300) {
-          document.getElementById(
-            "pdfdoc"
-          ).src = `data:application/pdf;base64, ${data}`;
+          iframe.src = `data:application/pdf;base64, ${data}`;
         } else {
           alertMessage(
             `Alert`,
