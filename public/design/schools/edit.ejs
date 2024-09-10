@@ -1,0 +1,40 @@
+<% var card_title = '' %>
+<%- include('../layouts/partials/header.ejs' , {
+    title : 'Shule',
+    page_title : 'Orodha ya Shule',
+    card_title : 'Badili Taarifa za Shule'
+}) %>
+<div class="col-xl-12">
+  <div class="card">
+    <!-- <div class="card-header">
+                <h4 class="card-title mb-0">Arrow Nav Steps</h4>
+            </div> -->
+    <!-- end card header -->
+    <div class="card-body form-steps">
+      <form action="#">
+        <div class="step-arrow-nav mb-4">
+          <ul class="nav nav-pills custom-nav nav-justified" role="tablist">
+            <%- include('./includes/buttons.ejs') %>
+          </ul>
+        </div>
+
+        <div class="tab-content">
+          <%- include('./includes/school_info.ejs') %>
+          <!-- end tab pane -->
+           <%- include('./includes/owner.ejs') %>
+          <!-- end tab pane -->
+           <%- include('./includes/manager.ejs') %>
+          <!-- end tab pane -->
+        </div>
+        <!-- end tab content -->
+      </form>
+    </div>
+    <!-- end card body -->
+  </div>
+  <!-- end card -->
+</div>
+<%- include('../layouts/partials/footer.ejs' , {card_title :  card_title}) %>
+<script type="text/javascript" src="/design/layouts/scripts/shule_scripts.js"></script>
+</body>
+
+</html>

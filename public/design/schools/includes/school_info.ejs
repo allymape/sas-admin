@@ -1,0 +1,34 @@
+<div class="tab-pane show active" id="steparrow-gen-info" role="tabpanel" aria-labelledby="steparrow-gen-info-tab">
+  <div>
+    <div class="row">
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="steparrow-gen-info-email-input">Name</label>
+          <input type="text" value="<%=school_info.school_name%>" class="form-control" id="steparrow-gen-info-email-input" placeholder="Enter School Name">
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="steparrow-gen-info-email-input">Registration Number</label>
+          <input type="text" value="<%=school_info.registration_number%>" class="form-control" id="steparrow-gen-info-email-input" placeholder="Enter School Name">
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="steparrow-gen-info-email-input">Registration Date</label>
+          <input type="text" value="<%=dateFormat(school_info.registration_date , 'DD/MM/YYYY')%>" class="form-control" id="steparrow-gen-info-email-input" placeholder="Enter School Name">
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="steparrow-gen-info-email-input">Opening Date</label>
+          <input type="text" value="<%=dateFormat(school_info.school_opening_date , 'DD/MM/YYYY')%>" class="form-control" id="steparrow-gen-info-email-input" placeholder="Enter School Name">
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  <div class="d-flex align-items-start gap-3 mt-4">
+    <button type="button" class="btn btn-success btn-label right ms-auto nexttab nexttab" data-nexttab="steparrow-description-info-tab"><i class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Go to more info</button>
+  </div>
+</div>

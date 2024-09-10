@@ -26,7 +26,9 @@ function renderDataTable(){
       updated_at: {},
       status: {},
     };
-
+    response.data = response.schools.filter( (item) => {
+      return  item.name = `<a href="/Shule/${item.id}/Edit">${item.name}</a>`;
+    })
     response.data = response.schools.filter( (item) => {
         return item.status = `<span class='badge bg-${item.reg_status == 1 ? "success" : (reg_status == 2 ? "danger" : "warning")}'>${item.status}</span>`;        
     })

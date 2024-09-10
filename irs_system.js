@@ -71,6 +71,7 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false });
 const session = require("express-session");
 const RedisStore = require("connect-redis").default;
 const { createClient } = require("redis");
+const updateSchoolDetailController = require("./public/controllers/updateShoolDetailController");
 // Create a Redis client
 const redisClient = createClient({
   url: 'redis://localhost:6379',
@@ -273,6 +274,7 @@ app.use("/", applicationCategoryController)
 app.use("/", registrationTypeController)
 app.use("/", applicantController)
 app.use("/", schoolController)
+app.use("/", updateSchoolDetailController)
 app.use("/", biasController)
 app.use("/", combinationController)
 app.use("/", feeController)
@@ -293,7 +295,15 @@ app.use("/", loginActivityController);
 app.use("/", auditTrailController);
 app.use("/", handoverController);
 
-
+app.use((err, req, res, next) => {
+    console.error(err.stack); // Log the error stack trace for debugging purposes
+    // Customize the response based on the type of error or status code
+    if (res.headersSent) {
+        return next(err);
+    }
+    // Respond with a generic message
+    res.redirect("/404");
+});
 app.use("/", errorController);
 app.listen(port, () => {
   console.log(`Hello IRS, Client Server is running at ${url}${port ? ':'+port : ''} on ${new Date()} `);
