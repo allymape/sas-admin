@@ -110,7 +110,7 @@ const currentCategory = categories.filter( (item) => item.id == decrypted_param_
             <td class="">
               <%  if(payment_status_id == 2){ %>
                 <span class="badge bg-<%= status == 1 || status == '' ? `info` : ( status == 2 ? 'success' : (status == 3 ? 'danger' : 'warning'))%>">
-                    <%= status == 1 || status == '' ? `Linashughulikiwa` : ( status == 2 ? 'Limethibitishwa' : (status == 3 ? 'Limekatiliwa' : 'Limerudishwa')) %>
+                    <%= status == 1 || status == 0 || status == '' ? `Linashughulikiwa` : ( status == 2 ? 'Limethibitishwa' : (status == 3 ? 'Limekatiliwa' : 'Limerudishwa')) %>
                 </span>
               <% } %>
             </td>

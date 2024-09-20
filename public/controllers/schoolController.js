@@ -4,7 +4,7 @@ const request = require("request");
 const schoolController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { sendRequest, isAuthenticated, can, activeHandover } = require("../../util");
+const { sendRequest, isAuthenticated, can, activeHandover, hasPermission } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var allSchoolListAPI = API_BASE_URL + "all-schools";
 var schoolListAPI = API_BASE_URL + "look_for_schools";
@@ -20,9 +20,9 @@ schoolController.get('/Shule' , isAuthenticated , can('view-schools'), activeHan
     sendRequest(req , res , schoolFiltersAPI , "GET" , {}, (jsonData) => {
         var {ownerships , categories} = jsonData.data;
         res.render(path.join(__dirname + "/../design/schools"), {
-            req,
-            categories : categories,
-            ownerships : ownerships
+          req,
+          categories: categories,
+          ownerships: ownerships,
         });
     } );
     
@@ -47,6 +47,7 @@ schoolController.get(
         var numRows = jsonData.numRows;
         res.send({
           schools: data,
+          canEdit: hasPermission(req, "update-schools"),
           pagination: {
             total: numRows,
             current: page,

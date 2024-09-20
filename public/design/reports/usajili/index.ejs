@@ -153,10 +153,10 @@
          <div class="ribbon-three ribbon-three-danger">
             <span class="badge"><%=`${pagination.total}`%></span>
         </div>
-        <div class="table-responsive table-card mb-4">
+        <div class="table-responsive mb-4">
              <div class="alert alert-danger">
                     <h6 class="text-primary text-uppercase">Jumla <%= pagination.total %></h6>
-                </div>
+            </div>
             <table class="table align-middle table-nowrap mb-0" id="tasksTable">
                 <thead class="table-light text-muted">
                     <tr>
@@ -188,7 +188,7 @@
                         <td> <%= item.tracking_number %> </td>
                         <td> <%= item.school_name %> </td>
                         <td> <%= item.registration_number %> </td>
-                        <td> <%= item.registration_date %> </td>
+                        <td> <%= item.registration_date ? dateFormat(item.registration_date , 'DD-MM-YYYY') : '' %> </td>
                         <td> <%= item.stream %> </td>
                         <td> <%= item.category %> </td>
                         <td> <%= item.language %> </td>
@@ -201,7 +201,7 @@
                         <td> <%= item.district %> </td>
                         <td> <%= item.ward %> </td>
                         <td> <%= item.street %> </td>
-                        <td> <%= item.approved_at %> </td>
+                        <td> <%= item.approved_at ? dateFormat(item.approved_at , 'DD-MM-YYYY HH:mm:ss') : '' %> </td>
                         <td> 
                            <span class="badge bg-<%= item.status == 2 ? 'success' : 'danger' %>" >
                              <%= item.status == 2 ? 'Limethibitshwa' : '' %> 

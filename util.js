@@ -294,6 +294,31 @@ module.exports = {
       }
     };
   },
+  hasPermission : (req , permission_name) => {
+    if (req && permission_name) {
+      const pluck = (arr, key) => arr.map((i) => i[key].toLowerCase());
+      const permissions = req.session.RoleManage;
+      if (permissions.length > 0) {
+        const user_permissions = pluck(permissions, "permission_name");
+        // {{id : 1 , name : 'view-users'} , {id : 2 , name : 'create-users'} }  =>  ['view-users','create-user'];
+        // Check permission name has separated by | and loop through to
+        // check if user has at least one permission,
+        // | is conjuction or
+        if (permission_name.includes("|")) {
+          var found = false;
+          permission_name.split("|").forEach(function (p) {
+            if (p && user_permissions.includes(p.trim().toLowerCase())) {
+              found = true;
+              return true;
+            }
+          });
+          return found;
+        }
+        return user_permissions.includes(permission_name.toLowerCase());
+      }
+    }
+    return false;
+  },
   titleCase: (text) => {
     //Title Case
     return titleCase(text);

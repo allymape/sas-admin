@@ -16,7 +16,7 @@ const attachmentTypeController = require("./public/controllers/attachmentTypeCon
 const applicationCategoryController = require("./public/controllers/applicationCategoryController");
 const registrationTypeController = require("./public/controllers/registrationTypeController");
 const errorController = require("./public/controllers/errorController");
-const { titleCase, lowerCase, sumAssociativeArray, formatDate, crypt } = require("./util");
+const { titleCase, lowerCase, sumAssociativeArray, formatDate, crypt, hasPermission } = require("./util");
 const dashboardController = require("./public/controllers/dashboardController");
 const designationController = require("./public/controllers/designationController");
 const applicantController = require("./public/controllers/applicantController");
@@ -150,29 +150,7 @@ global.routeIs =  (url_segments, currentUrl) => {
 };
 
 global.permission = (req , permission_name) => {
-       if(req && permission_name){
-        const pluck = (arr , key) => arr.map(i => i[key].toLowerCase());
-        const permissions = req.session.RoleManage;
-            if(permissions.length > 0){
-              const user_permissions = pluck(permissions , 'permission_name');
-              // {{id : 1 , name : 'view-users'} , {id : 2 , name : 'create-users'} }  =>  ['view-users','create-user'];
-              // Check permission name has separated by | and loop through to 
-              // check if user has at least one permission,
-              // | is conjuction or
-              if(permission_name.includes("|")){
-                 var found = false;
-                  permission_name.split('|').forEach( function(p){
-                        if(p && user_permissions.includes(p.trim().toLowerCase())){
-                            found = true;
-                            return true;
-                        }
-                  });
-                  return found;
-              }
-              return user_permissions.includes(permission_name.toLowerCase());
-            }
-       }
-       return false;
+       return hasPermission(req,permission_name);
 }
 
 var modifyUrl = function(currentUrl){

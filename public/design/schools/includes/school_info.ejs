@@ -4,31 +4,203 @@
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="steparrow-gen-info-email-input">Name</label>
-          <input type="text" value="<%=school_info.school_name%>" class="form-control" id="steparrow-gen-info-email-input" placeholder="Enter School Name">
+          <input type="text" disabled readonly value="<%=school_info.school_name%>" class="form-control" id="steparrow-gen-info-email-input" placeholder="Enter School Name">
         </div>
       </div>
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="steparrow-gen-info-email-input">Registration Number</label>
-          <input type="text" value="<%=school_info.registration_number%>" class="form-control" id="steparrow-gen-info-email-input" placeholder="Enter School Name">
+          <input type="text" readonly disabled value="<%=school_info.registration_number%>" class="form-control" id="steparrow-gen-info-email-input" placeholder="Enter School Name">
         </div>
       </div>
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="steparrow-gen-info-email-input">Registration Date</label>
-          <input type="text" value="<%=dateFormat(school_info.registration_date , 'DD/MM/YYYY')%>" class="form-control" id="steparrow-gen-info-email-input" placeholder="Enter School Name">
+          <input type="text" readonly disabled value="<%=dateFormat(school_info.registration_date , 'DD/MM/YYYY')%>" class="form-control" id="steparrow-gen-info-email-input" placeholder="Enter School Name">
         </div>
       </div>
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="steparrow-gen-info-email-input">Opening Date</label>
-          <input type="text" value="<%=dateFormat(school_info.school_opening_date , 'DD/MM/YYYY')%>" class="form-control" id="steparrow-gen-info-email-input" placeholder="Enter School Name">
+          <input type="text" disabled readonly value="<%=dateFormat(school_info.school_opening_date , 'DD/MM/YYYY')%>" class="form-control" id="steparrow-gen-info-email-input" placeholder="Enter School Name">
         </div>
       </div>
-      
     </div>
-  </div>
-  <div class="d-flex align-items-start gap-3 mt-4">
-    <button type="button" class="btn btn-success btn-label right ms-auto nexttab nexttab" data-nexttab="steparrow-description-info-tab"><i class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Go to more info</button>
+    <div class="row">
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="steparrow-gen-info-email-input">School Category</label>
+          <select   class="form-control" disabled readonly name="school_category_id" id="steparrow-gen-info-email-input" placeholder="School Category">
+            <option value="">-- Select Category --</option>
+            <% for (let index = 0; index < school_categories.length; index++) { %>
+            <% const element = school_categories[index]; %>
+              <option value="<%= element.id %>" <%= element.id == school_info.school_category_id ? 'selected' : '' %> 
+                >
+              <%= element.name %>
+              </option>
+            <% } %>
+            </select>
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="steparrow-gen-info-email-input">School Sub Category</label>
+          <select   class="form-control" name="school_sub_category_id" id="steparrow-gen-info-email-input" placeholder="School Sub Category">
+            <option value="">-- Select School Sub Category --</option>
+            <% for (let index = 0; index < school_sub_categories.length; index++) { %>
+            <% const element = school_sub_categories[index]; %>
+              <option value="<%= element.id %>" <%= element.id == school_info.school_sub_category_id ? 'selected' : '' %> 
+                >
+              <%= element.name %>
+              </option>
+            <% } %>
+            </select>
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="steparrow-gen-info-email-input">Registration Structure</label>
+          <select   class="form-control" name="registration_structure_id" id="steparrow-gen-info-email-input" placeholder="Structure">
+            <option value="">-- Select Structure --</option>
+            <% for (let index = 0; index < registration_structures.length; index++) { %>
+            <% const element = registration_structures[index]; %>
+              <option value="<%= element.id %>" <%= element.id == school_info.registration_structure_id ? 'selected' : '' %> 
+                >
+              <%= element.name %>
+              </option>
+            <% } %>
+            </select>
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="steparrow-gen-info-email-input">Building Structure</label>
+         <select   class="form-control" name="building_structure_id" id="steparrow-gen-info-email-input" placeholder="Building Structure">
+            <option value="">-- Select Building Structure --</option>
+            <% for (let index = 0; index < building_structures.length; index++) { %>
+            <% const element = building_structures[index]; %>
+              <option value="<%= element.id %>" <%= element.id == school_info.building_structure_id ? 'selected' : '' %> 
+                >
+              <%= element.name %>
+              </option>
+            <% } %>
+            </select>
+        </div>
+      </div>
+    </div>
+     <div class="row">
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="steparrow-gen-info-email-input">Gender</label>
+          <select   class="form-control" name="school_gender_id" id="steparrow-gen-info-email-input" placeholder="School Gender">
+            <option value="">-- Select School Gender Type --</option>
+            <% for (let index = 0; index < genders.length; index++) { %>
+            <% const element = genders[index]; %>
+              <option value="<%= element.id %>" <%= element.id == school_info.school_gender_type_id ? 'selected' : '' %> 
+                >
+              <%= element.name %>
+              </option>
+            <% } %>
+            </select>
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="steparrow-gen-info-email-input">Media of Communication</label>
+          <select   class="form-control" name="language_id" id="steparrow-gen-info-email-input" placeholder="School Sub Category">
+            <option value="">-- Select Media of Communication --</option>
+            <% for (let index = 0; index < languages.length; index++) { %>
+            <% const element = languages[index]; %>
+              <option value="<%= element.id %>" <%= element.id == school_info.language_id ? 'selected' : '' %> 
+                >
+              <%= element.name %>
+              </option>
+            <% } %>
+            </select>
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="steparrow-gen-info-email-input">Specialization</label>
+          <select   class="form-control" name="school_specialization_id" id="steparrow-gen-info-email-input" placeholder="Specialization">
+            <option value="">-- Select Speciliazation --</option>
+            <% for (let index = 0; index < specializations.length; index++) { %>
+            <% const element = specializations[index]; %>
+              <option value="<%= element.id %>" <%= element.id == school_info.school_specialization_id ? 'selected' : '' %> 
+                >
+              <%= element.name %>
+              </option>
+            <% } %>
+            </select>
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="steparrow-gen-info-email-input">Curriculum</label>
+         <select   class="form-control" name="curriculum_id" id="steparrow-gen-info-email-input" placeholder="Building Structure">
+            <option value="">-- Select Curriculum --</option>
+            <% for (let index = 0; index < curriculums.length; index++) { %>
+            <% const element = curriculums[index]; %>
+              <option value="<%= element.id %>" <%= element.id == school_info.curriculum_id ? 'selected' : '' %> 
+                >
+              <%= element.name %>
+              </option>
+            <% } %>
+            </select>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="steparrow-gen-info-email-input">Certificate</label>
+          <select   class="form-control" name="certificate_id" id="steparrow-gen-info-email-input" placeholder="Certificate">
+            <option value="">-- Select Certificate --</option>
+            <% for (let index = 0; index < certificates.length; index++) { %>
+            <% const element = certificates[index]; %>
+              <option value="<%= element.id %>" <%= element.id == school_info.certificate_type_id ? 'selected' : '' %> 
+                >
+              <%= element.name %>
+              </option>
+            <% } %>
+            </select>
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="steparrow-gen-info-email-input">Religion Sect</label>
+          <select   class="form-control" name="sect_name_id" id="steparrow-gen-info-email-input" placeholder="Religion Sect">
+            <option value="">-- Select Religion Sect --</option>
+            <% for (let index = 0; index < sect_names.length; index++) { %>
+            <% const element = sect_names[index]; %>
+              <option value="<%= element.id %>" <%= element.id == school_info.sect_name_id ? 'selected' : '' %> 
+                >
+              <%= element.name %>
+              </option>
+            <% } %>
+            </select>
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="steparrow-gen-info-email-input">Idadi ya Mikondo</label>
+          <input type="number"  name="stream" value="<%=school_info.stream%>" class="form-control" id="steparrow-gen-info-email-input" placeholder="Enter number of stream">
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <div class="form-check mt-3"> <br>
+            <label class="form-label" for="dahalia">
+              <input type="checkbox"  name="is_hostel"
+              class="form-check-input" id="dahalia" 
+              placeholder="Dahalia"
+              <%= school_info.is_hostel ? 'checked' : '' %>
+              >
+              Ina Dahalia 
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
