@@ -1105,7 +1105,7 @@ const generateFooter = (res , doc, tracking_number, signatory, cheo) => {
     .fill("#021c27")
     .text(
       signatory ? signatory : `<Insert Name>`,
-      50,
+      80,
       signatureHeight,
       {
         // columns: 1,
@@ -1122,7 +1122,7 @@ const generateFooter = (res , doc, tracking_number, signatory, cheo) => {
     .fill("#021c27")
     .text(
       cheo ? cheo : `<Insert Title>`,
-      doc.page.width / 2 - 150,
+      doc.page.width / 2 - 130,
       signatureHeight + 20,
       {
         columns: 1,
