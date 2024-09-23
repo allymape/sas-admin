@@ -57,9 +57,9 @@ const workflowController = require("./public/controllers/workflowController");
 const loginActivityController = require("./public/controllers/loginActivityController");
 const auditTrailController = require("./public/controllers/auditTrailController");
 const handoverController = require("./public/controllers/handoverController");
-
+const updateSchoolDetailController = require("./public/controllers/updateShoolDetailController");
 // const reportRequestController = require("./public/controllers/ripoti/RipotiRequestController");
-
+const handleSessionController = require("./public/controllers/handleSessionController");
 const app = express();
 app.use(helmet.frameguard())
 app.use(cookieParser())
@@ -71,8 +71,8 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false });
 const session = require("express-session");
 const RedisStore = require("connect-redis").default;
 const { createClient } = require("redis");
-const updateSchoolDetailController = require("./public/controllers/updateShoolDetailController");
-const handleSessionController = require("./public/controllers/HandleSessionController");
+
+
 // Create a Redis client
 const redisClient = createClient({
   url: 'redis://localhost:6379',
