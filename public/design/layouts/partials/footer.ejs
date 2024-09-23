@@ -86,6 +86,64 @@
            hideLoadingSpinner()
         }
         function formatState(e){return e.id?$('<span><img src="assets/images/flags/select2/'+e.element.value.toLowerCase()+'.png" class="img-flag rounded" height="18" /> '+e.text+"</span>"):e.text}function formatState(e){var t;return e.id?((t=$('<span><img class="img-flag rounded" height="18" /> <span></span></span>')).find("span").text(e.text),t.find("img").attr("src","assets/images/flags/select2/"+e.element.value.toLowerCase()+".png"),t):e.text}$(document).ready(function(){$(".js-example-basic-single").select2(),$(".js-example-basic-multiple").select2();$(".js-example-data-array").select2({data:[{id:0,text:"enhancement"},{id:1,text:"bug"},{id:2,text:"duplicate"},{id:3,text:"invalid"},{id:4,text:"wontfix"}]})}),$(".js-example-templating").select2({templateResult:formatState}),$(".select-flag-templating").select2({templateSelection:formatState}),$(".js-example-disabled").select2(),$(".js-example-disabled-multi").select2(),$(".js-programmatic-enable").on("click",function(){$(".js-example-disabled").prop("disabled",!1),$(".js-example-disabled-multi").prop("disabled",!1)}),$(".js-programmatic-disable").on("click",function(){$(".js-example-disabled").prop("disabled",!0),$(".js-example-disabled-multi").prop("disabled",!0)});
+        $(function(){
+            setInterval(() => {
+                $.ajax({
+                    url : '/CheckSessionExpire',
+                    type : 'post',
+                    data : {},
+                    success : (response) => {
+                        var { remain_seconds } = response
+                        if(remain_seconds < 120){
+                            confirmAction( 
+                             () => {
+                                 $.ajax({
+                                      url : '/ExtendSession',
+                                      type : 'post',
+                                      data : {},
+                                      success : (response) => {
+                                        const {statusCode , message} = response
+                                            if(statusCode == 300){
+                                                alertMessage('Alert' , message , statusCode == 300 ? 'success' : 'error' , () => {} , null)
+                                            }else{
+                                                window.location.reload()
+                                            }
+                                      },
+                                       error : (xhr , xhrStatus , xhrText) => {
+                                            console.log(xhr , xhrStatus , xhrText);
+                                      }
+                                 })
+                            } , //call function
+                            'Extend Session' , 
+                            'warning' , 
+                            `` , 
+                            'Are you still here?',
+                            `Your session is about to expire in <strong><span id="timer">${remain_seconds}</span></strong> seconds.`,
+                            () => {
+                                    const interval = setInterval(() => {
+                                            remain_seconds--; // Decrease the time left
+                                            Swal.getHtmlContainer().querySelector('#timer').textContent = remain_seconds; // Update the timer in SweetAlert
+                                            // If time runs out, reload the page
+                                            if (remain_seconds <= 0) {
+                                                    clearInterval(interval);
+                                                    Swal.close(); // Close the SweetAlert
+                                                    setTimeout( () => {
+                                                        window.location.reload(); 
+                                                    }, 1000)
+                                                    // Reload the page to simulate session expiry
+                                            }
+                                        }, 1000);
+                            }
+                        );
+                     }
+                    },
+                    error : (xhr , xhrStatus , xhrText) => {
+                        console.log(xhr , xhrStatus , xhrText);
+                        window.location.reload()
+                    }
+                 })
+            }, 20000);
+        })
     </script>
     
   

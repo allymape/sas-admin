@@ -62,7 +62,7 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
               masharti,
             } = data;
       
-            decodeSignature(base64signature, tracking_number);
+            // decodeSignature(base64signature, tracking_number);
             const reference = `${file_number}/${school_folio}/${folio}`;
             const createdAt = approved_at != undefined ? formatDate(approved_at , 'DD/MM/YYYY'): null;
             const box = address_box;
@@ -125,7 +125,7 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
             generateLetter(
               req,
               res,
-              tracking_number,
+              base64signature,
               application_category_id, //Aina ya Ombi Kuanzisha, Umiliki na Meneja
               reference,
               createdAt,

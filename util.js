@@ -43,7 +43,8 @@ module.exports = {
                 });
               } else {
                 req.session.destroy((error) => {
-                  if (error) console.log(error);
+                if (error) console.log(error);
+                res.redirect('/')
                 });
               }
             } else {
@@ -61,11 +62,16 @@ module.exports = {
             req.user = decode;
             const { exp } = decode;
             const timestamp = Math.round(Date.now() / 1000, 0);
-            console.log(exp - timestamp);
-            if (exp - timestamp < 300) {
-              module.exports.refreshToken(req, res)
-              console.log("Refresh token");
-            }
+            const timeLeft = exp - timestamp
+            console.log(timeLeft);
+            const current_url = req.originalUrl;
+              if (
+                !["/CheckSessionExpire", "/ExtendSession"].includes(current_url)
+              )
+                if (timeLeft > 0 && timeLeft <= 300) {
+                  module.exports.refreshToken(req, res);
+                  console.log("Refresh token");
+                }
             next();
           }
         }
@@ -400,7 +406,7 @@ module.exports = {
   generateLetter: (
     req,
     res,
-    tracking_number,
+    base64Image,
     application_category_id,
     reference,
     created_at,
@@ -467,7 +473,7 @@ module.exports = {
         generateBody(doc, paragraph);
       }
     });
-    generateFooter(res, doc, tracking_number, signatory, cheo);
+    generateFooter(res, doc, base64Image, signatory, cheo);
     generateCopies(
       doc,
       region,
@@ -1066,23 +1072,24 @@ const generateBody = (doc, bodyContent) => {
 }
 
 // 
-const generateFooter = (res , doc, tracking_number, signatory, cheo) => {
+const generateFooter = (res , doc, base64Image, signatory, cheo) => {
   const lineSize = 174;
   const signatureHeight = doc.y + 100;
-
-  const startLine1 = doc.page.width / 2 - 100;
-  const endLine1 = doc.page.width / 2 - 100 + lineSize;
-
+  if(base64Image.startsWith("data:image/png;base64")){
+    var signature = Buffer.from(base64Image.split(',')[1], "base64"); 
+  }else{
+    var signature = Buffer.from(base64Image, "base64"); 
+  }
   // SIGNATURE
-  const signature = `${__dirname + "/tmp/signature_" + tracking_number}.png`;
-  if (fs.existsSync(signature)) {
+  // const signature = `${__dirname + "/tmp/signature_" + tracking_number}.png`;
+  
+  //Buffer.from(base64Image.split(",")[1], "base64");
+  // if (fs.existsSync(signature)) {
+  if (signature) {
     doc.image(signature, doc.page.width / 2 - 50, signatureHeight - 70, {
       width: 120,
       height: 80,
     });
-    fs.unlinkSync(signature)
-    //  .fillColor("#444444");
-    //  doc.moveDown();
   }else{
     doc.text(
       `<Insert Signature>`,

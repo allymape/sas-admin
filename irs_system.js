@@ -72,6 +72,7 @@ const session = require("express-session");
 const RedisStore = require("connect-redis").default;
 const { createClient } = require("redis");
 const updateSchoolDetailController = require("./public/controllers/updateShoolDetailController");
+const handleSessionController = require("./public/controllers/HandleSessionController");
 // Create a Redis client
 const redisClient = createClient({
   url: 'redis://localhost:6379',
@@ -272,6 +273,7 @@ app.use("/", baruaController);
 app.use("/", loginActivityController);
 app.use("/", auditTrailController);
 app.use("/", handoverController);
+app.use("/", handleSessionController);
 
 app.use((err, req, res, next) => {
     console.error(err.stack); // Log the error stack trace for debugging purposes
