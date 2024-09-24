@@ -537,17 +537,16 @@ module.exports = {
       case 1:
         title = `KIBALI CHA KUANZISHA ${titleCase(name.toLowerCase())}`;
         bodyContent = [
-          `       Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Ninafurahi kukufahamisha kuwa kibali cha kuanzisha ${school_type_only}<b>${school_name}</b> katika Kata ya <b>${ward}</b> Halmashauri ya ${ ngazi } <b>${council}</b> Mkoa wa <b>${region}</b> kimetolewa.\n\n`,
-          `3.    Kibali hiki kimetolewa kwa mujibu wa <b>Sheria ya Elimu Sura ya 353</b>, kwa masharti kuwa utazingatia mwongozo wa Wizara wa kuanzisha na kusajili shule. Unashauriwa kuwasiliana na <b>Msanifu wa Majengo wa Halmashauri ya ${ngazi} ${council} </b> kwa ushauri wa kitaalam wa kuendeleza majengo hayo kulingana na mahitaji ya ${type}. Aidha, unatakiwa kuhakikisha uwepo wa miundombinu ya walemavu katika ${type} ${
+          `       Tafadhali rejea somo la barua hii.\n\n`,
+          `2.    Ninafurahi kukufahamisha kuwa kibali cha kuanzisha ${school_type_only}<b>${school_name}</b> katika Kata ya <b>${ward}</b> Halmashauri ya ${ ngazi } <b>${council}</b> Mkoa wa <b>${region}</b> kimetolewa\n\n`,
+          `3.   Kibali hiki kimetolewa kwa mujibu wa <b>Sheria ya Elimu Sura ya 353</b>, kwa masharti kuwa utazingatia mwongozo wa Wizara wa kuanzisha na kusajili shule. Unashauriwa kuwasiliana na <b>Msanifu wa Majengo wa Halmashauri ya ${ngazi} ${council} </b> kwa ushauri wa kitaalam wa kuendeleza majengo hayo kulingana na mahitaji ya ${type}. Aidha, unatakiwa kuhakikisha uwepo wa miundombinu ya walemavu katika ${type} ${
             type == "chuo" ? "chako" : "yako"
           }.\n\n`,
-          `4.     <b>Uthibitisho huu siyo kibali cha kusajili ${
+          `4.  <b>Uthibitisho huu siyo kibali cha kusajili ${
             type == "chuo" ? "Wanachuo" : "Wanafunzi"
           }.</b>\n\n`,
-          `5.    Ninakutakia utekelezaji mwema`,
+          `5.   Ninakutakia utekelezaji mwema`,
         ];
-
         break;
       case 2:
         title = `UTHIBITISHO WA ${
@@ -931,7 +930,7 @@ const formatText = (
       .contents()
       .each((index , element) => {
           const myText = $(element).text();
-          console.log(is_bold ? font_family : `${font_family}-Bold`);
+          // console.log(is_bold ? font_family : `${font_family}-Bold`);
              doc
                .font(
                  is_bold && element.nodeType === 1
@@ -1063,10 +1062,44 @@ const generateTitle = (doc, title) => {
     .font("Helvetica-Bold")
     .text(`Yah. ${title.toUpperCase()}`, { underline: true, align: "center" })
     .moveDown();
+//   const prefix = "Yah. ";
+//   const mainTitle =
+//     (title +
+//     "kuwasiliana na Msanifu wa Majengo wa Halmashauri ya Manyoni kwa ushauri wa"
+// ).toUpperCase()
+//       .trim();
+//   // Calculate the width of the prefix text with a trailing space
+//   const prefixWidth = doc.widthOfString(prefix + "");
+//   // Calculate the width of the main title
+//   const mainTitleWidth = doc.widthOfString(mainTitle);
+//   // Calculate the total width of the entire title
+//   const totalWidth = prefixWidth + mainTitleWidth;
+//   // Calculate the starting position to center the entire title
+//   const startX = (doc.page.width - totalWidth) / 2;
+//   // Print the prefix at the calculated position
+//   doc
+//     .font("Helvetica-Bold")
+//     .text(prefix, startX, doc.y, { underline: false, continued: true });
+//   // Print the main title next to the prefix
+//   // Print the main title next to the prefix
+//   if (totalWidth > doc.page.width) {
+//     // Handle text wrapping
+//     doc
+//       .text(mainTitle, {
+//         underline: true,
+//         continued: false,
+//         width: doc.page.width - startX - doc.page.margins.right,
+//       })
+//       .moveDown();
+//   } else {
+//     doc.text(mainTitle, { underline: true, continued: false }).moveDown();
+//   }
+//   //  doc.text('', 30 , doc.y , {continue: true})
+//   // Reset the starting point after generating the title
+//   doc.text("", 30, doc.y);
 }
 // Body
 const generateBody = (doc, bodyContent) => {
-  
   formatText(bodyContent, doc);
 }
 
