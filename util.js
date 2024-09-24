@@ -533,13 +533,12 @@ module.exports = {
     let school_type_only = getSchoolTypeOnly(school_type_id, school_type);
     var type = school_type_id == 4 ? "chuo" : "shule";
     var ngazi = ngaziWilaya(ngazi_ya_wilaya);
-
     switch (application_category_id) {
       case 1:
         title = `KIBALI CHA KUANZISHA ${titleCase(name.toLowerCase())}`;
         bodyContent = [
           `       Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Ninafurahi kukufahamisha kuwa kibali cha kuanzisha ${school_type_only}<b>${school_name} </b> katika Kata ya <b>${ward} </b> Halmashauri ya ${ngazi} <b>${council}</b> Mkoa wa <b>${region}</b> kimetolewa.\n\n`,
+          `2.    Ninafurahi kukufahamisha kuwa kibali cha kuanzisha ${school_type_only}<b>${school_name}</b> katika Kata ya <b>${ward}</b> Halmashauri ya ${ ngazi } <b>${council}</b> Mkoa wa <b>${region}</b> kimetolewa.\n\n`,
           `3.    Kibali hiki kimetolewa kwa mujibu wa <b>Sheria ya Elimu Sura ya 353</b>, kwa masharti kuwa utazingatia mwongozo wa Wizara wa kuanzisha na kusajili shule. Unashauriwa kuwasiliana na <b>Msanifu wa Majengo wa Halmashauri ya ${ngazi} ${council} </b> kwa ushauri wa kitaalam wa kuendeleza majengo hayo kulingana na mahitaji ya ${type}. Aidha, unatakiwa kuhakikisha uwepo wa miundombinu ya walemavu katika ${type} ${
             type == "chuo" ? "chako" : "yako"
           }.\n\n`,
