@@ -1060,7 +1060,7 @@ const generateHeader = (
 const generateTitle = (doc, title) => {
   doc
     .font("Helvetica-Bold")
-    .text(`Yah. ${title.toUpperCase()}`, { underline: true, align: "center" })
+    .text(`Yah. ${title.toUpperCase().trim()}`, { underline: true, align: "center" })
     .moveDown();
 //   const prefix = "Yah. ";
 //   const mainTitle =
