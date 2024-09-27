@@ -19,7 +19,6 @@ dashboardController.get("/Dashboard" ,
     (req, res) => {
     sendRequest(req, res, schoolSummariesAPI , "GET" , {} , (jsonData) => {
           const {registrations , owners , categories , applications , structures} = jsonData.data;
-          // console.log(jsonData);
           res.render(path.join(__dirname + "/../design/dashboard"), {
             req,
             greating : greating(req.session.userName),

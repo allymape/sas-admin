@@ -373,8 +373,8 @@
                                 <% for (let index = 0; index < schoolsSummaryByOwners.length; index++) { const element = schoolsSummaryByOwners[index]; %>
                                     <% var ratio = totalOwners > 0 ? numberFormat((element.total / totalOwners) * 100 , '0.00') : 0 %>
                                     <% var color = ratio > 50 ? 'success' : (ratio > 25 ? 'primary' : 'danger'); %>
-                                    <p class="mb-3"><%= element.owner %>  (<%= element.total %>)</p>
-                                    <div class="d-flex align-items-center pb-2 mb-lg-4 border-bottom border-gray-100" title="Idadi: <%= element.total %>" data-bs-toggle="tooltip">
+                                    <p class="mb-3"><%= element.owner %>  (<%= numberFormat(element.total) %>)</p>
+                                    <div class="d-flex align-items-center pb-2 mb-lg-4 border-bottom border-gray-100" title="Idadi: <%= numberFormat(element.total) %>" data-bs-toggle="tooltip">
                                             <div class="flex-shrink-0 me-3">
                                                 <div class="avatar-xs">
                                                     <div class="avatar-title bg-light rounded-circle text-muted fs-18">

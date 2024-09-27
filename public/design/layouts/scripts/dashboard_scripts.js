@@ -35,7 +35,7 @@ const displaySchoolByCategoriesChat = (selector , callback) => {
       const sekondariData = [];
       const vyuoData = [];
       const formattedResults = response.data;
-      const schoolTypes = ['Shule za Awali Pekee', "Shule za Awali na Msingi" , "Shule za Sekondari", "Vyuo vya Ualimu"];
+      const schoolTypes = ['Shule za Awali', "Shule za Awali na Msingi" , "Shule za Sekondari", "Vyuo vya Ualimu"];
       const pieChartData = [];
       const listByLabel = $('#list-by-label')
             listByLabel.empty();
@@ -60,7 +60,6 @@ const displaySchoolByCategoriesChat = (selector , callback) => {
                             </li>`);
         for (const category in regionData.categories) {
           const categoryCount = regionData.categories[category];
-          //  console.log(category , categoryCount);
           switch (Number(category)) {
             case 1:
               awaliData.push(categoryCount);
@@ -83,7 +82,7 @@ const displaySchoolByCategoriesChat = (selector , callback) => {
           }
         }
       }
-     
+      
       const series = [
         {
           name: "Shule Zote",
