@@ -1,17 +1,30 @@
 $("#create-btn").on("click", function () {
   modal("showModal", true);
 });
-function BadiliData(e) {
-  var id = e.getAttribute("data-id");
-  var name = e.getAttribute("data-name");
-  var description = e.getAttribute("data-description");
-  var level = e.getAttribute("data-level");
-  var status = e.getAttribute("data-status");
-  document.getElementById("id-field").value = id;
-  document.getElementById("name2-field").value = name;
-  document.getElementById("description2-field").value = description;
-  document.getElementById("uongozi2-field").value = level;
-  document.getElementById("status-field").checked = status == 1 ? true : false;
+function BadiliData(button) {
+  const rowData = JSON.parse(button.getAttribute("data-row"));
+  var id = rowData.id;
+  var name = rowData.name;
+  var description = rowData.description;
+  var level = rowData.level;
+  var status = rowData.status ? true : false;
+ 
+  if (document.getElementById("id-field")) {
+    document.getElementById("id-field").value = id;
+  }
+  if (document.getElementById("name2-field")) {
+    document.getElementById("name2-field").value = name;
+  }
+  if (document.getElementById("description2-field")) {
+    document.getElementById("description2-field").value = description;
+  }
+  if (document.getElementById("uongozi2-field")) {
+    document.getElementById("uongozi2-field").value = level;
+  }
+  const statusField = document.getElementById("status-field");
+  if (statusField) {
+    statusField.checked = status;
+  }
   modal("showEditModal" , true);
 }
 
@@ -39,7 +52,7 @@ function sajiliHati() {
           statusCode == 300 ? "success" : "error",
           () => {
             if (statusCode == 300) {
-              window.location.reload();
+              $("#datatable").DataTable().ajax.reload();
             }
           }
         );
@@ -90,7 +103,7 @@ function sasishaHati() {
           statusCode == 300 ? "success" : "error",
           () => {
             if (statusCode == 300) {
-              window.location.reload();
+              $('#datatable').DataTable().ajax.reload();
             }
           }
         );
@@ -103,18 +116,6 @@ function sasishaHati() {
       })
     );
   }
-//   $.ajax({
-//     url: "/BadiliCheo",
-//     type: "POST",
-//     data: JSON.stringify({ name: name, level: location, cheoId: cheoId }),
-//     contentType: "application/json",
-//     success: function (response) {
-//       alert("response");
-//       $("#showModal").modal("hide");
-//       //nata();
-//       window.location.href = "/Vyeo";
-//       // if(typeof(response) === "string"){response = JSON.parse(response)}
-//     },
-//   });
+
 }
 

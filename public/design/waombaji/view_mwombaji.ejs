@@ -3,7 +3,11 @@ F<% var card_title = '' %>
 title : 'Mwombaji',
 page_title : '',
 card_title : '',
-breadcrumb_main : 'Mipangilio' 
+breadcrumb_main : 'Mipangilio' ,
+styles : [
+          { href: '/css/datatables/dataTables.dataTables.css' },
+          { href: '/css/datatables/buttons.dataTables.css' }
+    ]
 }) %>
 
 <div class="profile-foreground position-relative mx-n4 mt-n4">
@@ -41,7 +45,7 @@ breadcrumb_main : 'Mipangilio'
             <p class="fs-14 mb-0">Followers</p>
           </div>
         </div> -->
-        <div class="col-lg-12 col-4">
+        <div class="col-md-12 col-4">
           <div class="p-2">
             <h4 class="text-white mb-1"><%= numberFormat(applicant[0].total) %></h4>
             <p class="fs-14 mb-0">Jumla ya Maombi</p>
@@ -56,7 +60,7 @@ breadcrumb_main : 'Mipangilio'
 </div>
 
 <div class="row">
-  <div class="col-lg-12">
+  <div class="col-md-12">
     <div>
       <div class="d-flex">
         <!-- Nav tabs -->
@@ -71,11 +75,11 @@ breadcrumb_main : 'Mipangilio'
               <i class="ri-list-unordered d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Schools</span>
             </a>
           </li>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link fs-14 <%=  req.query.tab == 'documents' ? 'active' : '' %>" data-bs-toggle="tab" href="#documents" role="tab">
               <i class="ri-folder-4-line d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Documents</span>
             </a>
-          </li>
+          </li> -->
         </ul>
         <div class="flex-shrink-0">
           <a href="/Mwombaji/<%=applicant[0].id%>/badili" class="btn btn-success">
@@ -135,7 +139,7 @@ breadcrumb_main : 'Mipangilio'
             <!--end col-->
             <div class="col-xxl-9">
               <div class="row">
-                <div class="col-lg-12">
+                <div class="col-md-12">
                   <div class="card ribbon-box right">
                     <div class="card-header align-items-center d-flex">
                       <h4 class="card-title mb-0  me-2">Recent Activity</h4>
@@ -214,8 +218,9 @@ breadcrumb_main : 'Mipangilio'
                           <span class="badge"><%=`${numberFormat(schools_pagination.total)}`%></span>
               </div>
               <h5 class="card-title mb-3">Shule</h5>
-              <div class="acitivity-timeline">
-                <table class="table">
+              <div class="col-md-12">
+                <div class="table-responsive"></div>
+                <table class="table table-striped" id="datatable">
                   <thead>
                     <tr>
                       <th>Na.</th>
@@ -228,60 +233,13 @@ breadcrumb_main : 'Mipangilio'
                       <th>Halmashauri</th>
                       <th>Kata</th>
                       <th>Mtaa</th>
-                      <th></th>
+                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <% for (let index = 0; index < schools.length; index++) { %>
-                      <% const item = schools[index]; %>
-                      <tr>
-                        <td><%- include('../paginations/numbering.ejs' , {
-                                index : index , 
-                                pagination : schools_pagination
-                          }) %></td>
-                        <td><span class="badge badge-outline-light text-dark"><%= item.tracking_number %></span></td>
-                        <td><%= item.name %></td>
-                        <td><%= item.reg_number %></td>
-                        <td><%= item.type %></td>
-                        <td><span class="badge badge-soft-info text-black"><%= item.registration_date %></span></td>
-                        <td><%= item.region %></td>
-                        <td><%= item.district %></td>
-                        <td><%= item.ward %></td>
-                        <td><%= item.village %></td>
-                        <td>
-                          <div class="dropdown">
-                              <a href="javascript:void(0);" class="btn btn-light btn-icon" id="dropdownMenuLink15" data-bs-toggle="dropdown" aria-expanded="true">
-                                <i class="ri-equalizer-fill"></i>
-                              </a>
-                              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink15">
-                                <li>
-                                   <a class="dropdown-item transfer-school"
-                                    href="javascript:void(0);"
-                                    data-tracking_number="<%=item.tracking_number%>"
-                                    data-school_name="<%=item.name%>"
-                                    data-registration_number="<%= item.reg_number %>"
-                                    data-current_applicant_email="<%= applicant[0].email %>"
-                                    >
-                                    <i class="ri-file-transfer-line me-2 align-middle text-muted"></i>
-                                    Transfer
-                                  </a>
-                                </li>
-                                <!-- <li><a class="dropdown-item" href="javascript:void(0);"><i class="ri-download-2-fill me-2 align-middle text-muted"></i>Download</a>
-                                </li>
-                                <li class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="javascript:void(0);"><i class="ri-delete-bin-5-line me-2 align-middle text-muted"></i>Delete</a>
-                                </li> -->
-                              </ul>
-                            </div>
-                        </td>
-                      </tr>
-                    <% } %>
                   </tbody>
                 </table>
-                <%- include('../paginations/html_pagination.ejs' , {
-                  pagination : schools_pagination,
-                  tab : req.query.tab
-                }) %>
+              </div>
               </div>
             </div>
             <!--end card-body-->
@@ -300,7 +258,6 @@ breadcrumb_main : 'Mipangilio'
                         </div>
             <div class="modal-header">
                 <!-- <h5 class="modal-title" id="varyingcontentModalLabel">New message</h5> -->
-              
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -349,7 +306,7 @@ breadcrumb_main : 'Mipangilio'
                 </div> -->
               </div>
               <div class="row">
-                <div class="col-lg-12">
+                <div class="col-md-12">
                   <div class="table-responsive">
                     <table class="table table-borderless mb-0">
                       <thead class="table-light">
@@ -435,8 +392,67 @@ breadcrumb_main : 'Mipangilio'
 <%- include('../layouts/partials/footer.ejs' , {
 card_title :  card_title , 
 pagination_script : false,
+scripts : [
+          {src : '/design/layouts/scripts/waombaji_scripts.js'},
+            { src : '/js/datatables/dataTables.js'},
+            { src : '/js/datatables/dataTables.buttons.js'},
+            { src : '/js/datatables/buttons.dataTables.js'},
+            { src : '/js/datatables/buttons.html5.min.js'},
+            { src : '/js/datatables/jszip.min.js'},
+            { src : '/js/datatables/pdfmake.min.js'},
+            { src : '/js/datatables/vfs_fonts.js'},
+            { src : '/js/datatables/buttons.print.min.js'},
+        ]
 }) %>
-<script type="text/javascript" src="../design/layouts/scripts/waombaji_scripts.js"></script>
+<script>
+    $(document).ready(function() {
+        tableData('datatable' , '/ApplicantSchools/<%=applicant_id%>' , 'POST',
+            [
+                    { data: null, render : (data , type , row , meta) => {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    } },
+                    { data: "tracking_number", name: "tracking_number" },
+                     { data: "name", name: "name" },
+                    { data: "reg_number", name: "reg_number" },
+                    { data: "type", name: "type" },
+                    { data: "registration_date", name: "registration_date" ,  render: (data , type , row) => {
+                        return data ? changeOnlyDateFormat(data) : ''
+                    }},
+                    { data: "region", name: "region" },
+                    { data: "district", name: "district" },
+                    { data: "ward", name: "ward" },
+                    { data: "village", name: "village" },
+                    {
+                    data: null, // No data source for this column
+                    render: function (data, type, row) {
+                          return `<div class="dropdown">
+                              <a href="javascript:void(0);" class="btn btn-light btn-icon" id="dropdownMenuLink15" data-bs-toggle="dropdown" aria-expanded="true">
+                                <i class="ri-equalizer-fill"></i>
+                              </a>
+                              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink15">
+                                <li>
+                                   <a class="dropdown-item transfer-school"
+                                    href="javascript:void(0);"
+                                    data-tracking_number="${row.tracking_number}"
+                                    data-school_name="${row.name}"
+                                    data-registration_number="${row.reg_number }"
+                                    data-current_applicant_email="<%= applicant[0].email %>"
+                                    >
+                                    <i class="ri-file-transfer-line me-2 align-middle text-muted"></i>
+                                    Transfer
+                                  </a>
+                                </li>
+                              </ul>
+                            </div>`;
+                    },
+                    orderable: false, // Disable sorting for the action buttons column
+                    class : 'text-center'
+                    },
+            ],
+        );
+    });
+</script>
+<!-- <script type="text/javascript" src="../design/layouts/scripts/waombaji_scripts.js"></script> -->
 </body>
 
 </html>

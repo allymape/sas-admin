@@ -15,13 +15,15 @@ function PullCouncils(){
               }
      });
 }
-function editDistrict(e) {
-  const id = e.getAttribute("data-id");
-  const name = e.getAttribute("data-lganame");
-  const lgaBox = e.getAttribute("data-lgaaddress");
-  const sqaBox = e.getAttribute("data-sqaaddress");
-  const ngazi = e.getAttribute("data-ngazi");
-  document.getElementById("id-field").value = id;
+function editDistrict(button) {
+  
+  const rowData = JSON.parse(button.getAttribute("data-row"));
+  const name = rowData.LgaName;
+  const lgaBox = rowData.lga_box;
+  const sqaBox = rowData.sqa_box;
+  const ngazi = rowData.ngazi;
+  
+  document.getElementById("id-field").value = rowData.id;
   document.getElementById("name-field").value = name;
   document.getElementById("ngazi-field").value = ngazi;
   document.getElementById("sqa-box-field").value = sqaBox == 0 ? "" : sqaBox;
@@ -48,7 +50,7 @@ function updateLga(e){
       success: function (response) {
         if (response.statusCode == 300) {
           alertMessage("Success", response.message, "success", () => {
-            renderDataTableDistricts();
+             $("#datatable").DataTable().ajax.reload();
           });
         }
         if (response.statusCode == 306) {
@@ -109,4 +111,4 @@ function renderDataTableDistricts(){
                 );
   })
 }
-window.onload = renderDataTableDistricts;
+// window.onload = renderDataTableDistricts;

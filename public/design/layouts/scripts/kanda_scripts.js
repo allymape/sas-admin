@@ -115,7 +115,7 @@ function listZones() {
        }
   });
 }
-window.onload = listZones;
+// window.onload = listZones;
 
 function badiliKanda(e) {
   var nameId = e.getAttribute("data-id");

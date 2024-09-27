@@ -28,10 +28,11 @@ $("#kata-field").on("change", function () {
 $(".read-attachment").click(function () {
   const file_path = $(this).attr("data-path");
   const iframe = document.getElementById("pdfdoc");
-    document.getElementById("iframediv").css="background:url(/assets/images/ajax-loader.gif) center center no-repeat;";
-    iframe.src = "about:blank";
+  document.getElementById("iframediv").css =
+    "background:url(/assets/images/ajax-loader.gif) center center no-repeat;";
+  iframe.src = "about:blank";
   if (file_path.includes(".pdf")) {
-     iframe.src = `${document.location.origin}/View-Attachment${file_path}`;
+    iframe.src = `${document.location.origin}/View-Attachment${file_path}`;
   } else {
     if (file_path) {
       iframe.src = `data:application/pdf;base64, ${file_path}`;
@@ -331,6 +332,37 @@ function formatDate(date) {
   return;
 }
 
+function changeDateFormat(dateStr) {
+  // Create a new Date object
+  const dateObj = new Date(dateStr);
+  // Format it for the desired timezone (e.g., +3 GMT)
+  const options = {
+    timeZone: "Africa/Dar_es_Salaam", // Eastern Africa Time (EAT)
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false, // Use 24-hour format
+  };
+  // Format using toLocaleString
+  const formattedDate = dateObj.toLocaleString("en-US", options);
+  return formattedDate;
+}
+
+function changeOnlyDateFormat(dateStr) {
+  // Create a new Date object
+  const dateObj = new Date(dateStr);
+  // Extract day, month, and year
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+  const year = dateObj.getFullYear();
+  // Format to DD-MM-YYYY
+  const formattedDate = `${day}-${month}-${year}`;
+  return formattedDate;
+}
+
 function showLoadingSpinner() {
   $("#loading").fadeIn();
   var opts = {
@@ -426,14 +458,15 @@ function getAllHierarchies(rankId, user = null, selectedHierarchy = null) {
   }
 }
 function getAllDesignations(hierarchyId, selectedDesignation = null) {
+
   if (hierarchyId) {
     ajaxRequest(
       "/LookupDesignations",
       "GET",
       (response) => {
-        if (response.statusCode == 300) {
-          var data = response.data;
-          // console.log(response)
+        const {statusCode , data} = response;
+        console.log(statusCode)
+        if (statusCode == 300) {
           appendSelectionOption(
             "cheo-field",
             data.map((item, index) => ({
@@ -955,5 +988,122 @@ function tumaMaoniYako(
     }
   } else {
     alertMessage("Tahadhari", "Weka maoni yako kwanza.", "warning", () => {});
+  }
+}
+
+function tableData(tableId ,url, type, columns , data = null) {
+  $(`#${tableId}`).DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+      url: url,
+      type: type,
+      data: function (d) {
+        // You can add any necessary data processing here if needed
+        // Example: Adding custom parameters to the request
+        // d.customParam1 = "value1";
+        // d.customParam2 = "value2";
+        if(typeof data === 'object' && data !== null) {
+          data.forEach((item) => {
+            d[item.name] = item.value;
+          } );
+        }
+      },
+    },
+    columns: columns,
+    layout: {
+      topStart: {
+        buttons: [
+          "pageLength",
+          [
+            {
+              extend: "copyHtml5",
+              footer: false,
+              exportOptions: { columns: ":not(:last-child)" },
+            },
+            {
+              extend: "excelHtml5",
+              footer: false,
+              text: "Export Excel",
+              exportOptions: { columns: ":not(:last-child)" },
+            },
+            {
+              extend: "csvHtml5",
+              footer: false,
+              text: "Export CSV",
+              exportOptions: { columns: ":not(:last-child)" },
+            },
+            {
+              extend: "pdfHtml5",
+              footer: false,
+              text: "Export PDF",
+              exportOptions: { columns: ":not(:last-child)" },
+              orientation: "landscape",
+              pageSize: "A4",
+              customize: function (doc) {
+                var colCount = new Array();
+                $(`#${tableId}`)
+                  .find("thead tr:first-child th")
+                  .each(function () {
+                    if ($(this).attr("colspan")) {
+                      for (var i = 1; i <= $(this).attr("colspan"); i++) {
+                        colCount.push("*");
+                      }
+                    } else {
+                      colCount.push("*");
+                    }
+                  });
+                // doc.content[1].table.widths = colCount;
+              },
+            },
+            {
+              extend: "print",
+              footer: false,
+              exportOptions: { columns: ":not(:last-child)" },
+            },
+          ],
+        ],
+      },
+    },
+    // columnDefs: [
+    //   {
+    //     targets: [4, 5],
+    //     visible: false,
+    //   },
+    // ],
+    lengthMenu: [
+      [10, 25, 50, 100, 500, -1],
+      ["10 rows", "25 rows", "50 rows", "100 rows", "500 rows", "Show all"],
+    ],
+  });
+}
+
+function actionButtons(row, elements) {
+  if (typeof elements == "object") {
+    let tags = ``;
+    elements.forEach(element => {
+      if (element.show) {
+        if (element.type == 'button') {
+          tags += `<button type="button"
+                          ${element.moreAttributes ? element.moreAttributes : '' }
+                          ${row ? "data-row='" + JSON.stringify(row) + "'" : ""} 
+                          class="${element.class ? element.class : ""}" 
+                          onclick="${element.function ? element.function + "(this); return false;" : ""}"
+                      >
+                        <span class="${element.icon ? element.icon : ""}"></span> ${element.btnText ? element.btnText : ""}
+                    </button>`;
+        } else {
+          tags += `<a href="${element.link ? element.link : '#'}" 
+                        ${element.moreAttributes ? element.moreAttributes : '' }
+                        ${row ? "data-row='" + JSON.stringify(row) + "'" : ""} 
+                        class="${element.class ? element.class : ''}" 
+                        onclick="${element.function ? element.function + '(this); return false;' : ''}"
+                     >
+                        <span class="${element.icon ? element.icon : ''}"></span> ${element.btnText ? element.btnText : ""}
+                    </a>`;
+        }
+      }
+    });
+    return tags;
   }
 }

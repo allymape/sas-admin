@@ -46,9 +46,9 @@ const currentCategory = categories.filter( (item) => item.id == decrypted_param_
         </div>
       </div>
     </div>
-
-    <div class="table-responsive table-card mt-3 mb-1">
-      <table class="table align-middle table-nowrap" id="customerTable">
+    <div class="col-md-12">
+      <div class="table-responsive mt-3 mb-1"></div>
+      <table class="table table-striped" id="customerTable">
         <thead class="table-light">
           <tr>
             <th class="" data-sort="">Na.</th>
@@ -137,6 +137,7 @@ const currentCategory = categories.filter( (item) => item.id == decrypted_param_
           <% } %>
         </tbody>
       </table>
+    </div>
     </div>
     <%- include('paginations/html_pagination.ejs') %>
   </div>

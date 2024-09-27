@@ -3,11 +3,15 @@
     title : 'Vyeo',
     page_title : 'Orodha ya Vyeo',
     card_title : 'Vyeo vilivyopo',
-    breadcrumb_main : 'Mipangilio' 
+    breadcrumb_main : 'Mipangilio',
+    styles : [
+                { href: '/css/datatables/dataTables.dataTables.css' },
+                { href: '/css/datatables/buttons.dataTables.css' }
+            ]
 }) %>
 <div class="card-body">
 <div class="ribbon-three ribbon-three-info">
-    <span class="badge"><%=`${pagination.total}`%></span>
+   
 </div>
 <div id="customerList">
     <div class="row g-4 mb-3">
@@ -19,9 +23,9 @@
                 <!-- <button class="btn btn-soft-danger" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button> -->
             </div>
         </div>
-        <div class="col-sm">
+        <!-- <div class="col-sm">
             <div class="d-flex justify-content-sm-end">
-                <div class="search-box ms-2">
+                <div class="search-role ms-2">
                     <form action="/Vyeo" method="GET" class="d-flex gap-2">
                     <input type="text" value="<%=req.query.tafuta%>" name="tafuta" class="form-control search" placeholder="Tafuta...">
                     <i class="ri-search-line search-icon"></i>
@@ -31,41 +35,36 @@
                     </form>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 
-    <div class="table-responsive table-card mt-3 mb-1">
-        <table class="table align-middle table-nowrap" id="customerTable">
+    <div class="col-md-12">
+        <div class="table-responsive table-card mt-3 mb-1"></div>
+        <table class="table align-middle table-nowrap" id="datatable">
             <thead class="table-light">
                 <tr>
-                    <!-- <th scope="col" style="width: 50px;">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="checkAll" value="option">
-                        </div>
-                    </th> -->
                     <th  width="5%">Na.</th>
-                    <!-- <th class="">Jina</th> -->
                     <th class="">Cheo</th>
                      <th class="">Kirefu</th>
                     <th class="">Sehemu</th>
+                    <th class="">Imetengenezwa</th>
+                    <th class="">Imesasishwa</th>
                     <th class="text-center">Status</th>
-                    <th class="sort text-center" data-sort="action" width="10%">Action</th>
+                    <th class=" text-center" width="5%">Action</th>
                 </tr>
             </thead>
             <tbody class="list form-check-all">
-                <% for(var i = 0; i < designations.length; i++){ %>
+                <!-- <% for(var i = 0; i < designations.length; i++){ %>
                 <tr>
                     <td class="id">
-                      <%- include('paginations/numbering.ejs' , {
-                        index : i
-                      }) %>
+                     
                     </td>
                     <td class="phone"><%= designations[i].name %></td>
                     <td class="phone"><%= designations[i].description %></td>
                     <td class="phone"><%= designations[i].role %></td>
                     <td class="text-center">
                         <% var status = designations[i].status %>
-                        <span class="<%= status ? 'ri ri-checkbox-circle-line text-success' : 'ri ri-close-fill text-danger' %>"></span>
+                        <span class="<%= status ? 'ri ri-checkrole-circle-line text-success' : 'ri ri-close-fill text-danger' %>"></span>
                     </td>
                     <td class="text-center">
                         <button type="button" class="btn btn-link btn-sm" 
@@ -75,17 +74,11 @@
                         data-level="<%= designations[i].level %>" 
                         data-status="<%= designations[i].status %>" 
                         onclick="BadiliData(this); return false;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewrole="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                     </button>
-                    <!-- <button type="button" class="btn btn-link btn-sm text-danger" 
-                        data-bs-toggle="modal" data-id="<%= designations[i].rolesId %>" 
-                        
-                        onclick="AddZone1(this); return false;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-                    </button> -->
                     </td>
                 </tr>
-                <% } %>
+                <% } %> -->
             </tbody>
         </table>
         <div class="noresult" style="display: none">
@@ -96,8 +89,9 @@
             </div>
         </div>
     </div>
+    </div>
     <!-- Pagination and page length -->
-            <%- include('paginations/html_pagination.ejs'); %>
+            
     <!-- End pagination and page length -->
 </div>
 </div><!-- end card -->
@@ -184,7 +178,7 @@
                     <div class="hstack gap-2 justify-content-end">
                         <button type="button" class="btn btn-light" data-bs-dismiss="modal">Funga</button>
                         <button type="button" class="btn btn-success" onclick="sasishaHati()" id="add-btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewrole="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                         </button>
                     </div>
                 </div>
@@ -193,9 +187,74 @@
     </div>
 </div>
 <%- include('layouts/partials/footer.ejs' , {
-     card_title :  card_title , 
-     pagination_script : false,
+    card_title :  card_title,
+    scripts : [
+            {src : '/design/layouts/scripts/vyeo_scripts.js'},
+            { src : '/js/datatables/dataTables.js'},
+            { src : '/js/datatables/dataTables.buttons.js'},
+            { src : '/js/datatables/buttons.dataTables.js'},
+            { src : '/js/datatables/buttons.html5.min.js'},
+            { src : '/js/datatables/jszip.min.js'},
+            { src : '/js/datatables/pdfmake.min.js'},
+            { src : '/js/datatables/vfs_fonts.js'},
+            { src : '/js/datatables/buttons.print.min.js'},
+          ]
     }) %>
-<script type="text/javascript" src="design/layouts/scripts/vyeo_scripts.js"></script>
+<script>
+    $(document).ready(function() {
+        tableData('datatable' ,'/VyeoList' , 'POST',
+            [
+                    { data: null, // No data source for this column
+                        render: function (data, type, row , meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    },
+                    { data: "name", name: "name" },
+                    { data: "description", name: "description" },
+                    { data: "role", name: "role" },
+                    {
+                      data: "created_at", name: "created_at",
+                            render: (data, type, row) => {
+                                if(data ){
+                                    return changeDateFormat(data);
+                                }
+                                return data;
+                            },
+                    },
+                    {
+                    data: "updated_at", name: "updated_at",
+                            render: (data, type, row) => {
+                                if(data ){
+                                    return changeDateFormat(data);
+                                }
+                                return data
+                            },
+                    },
+                      { data: "status", render : (data , type, row) => {
+                        return data == 1 ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Deleted</span>';
+                    }},
+                    {
+                    data: null, // No data source for this column
+                    render: function (data, type, row) {
+                        const elements = [
+                                            {
+                                                show : true,
+                                                type : 'link',
+                                                class : 'btn btn-sm btn-outline-primary me-1',
+                                                icon : 'bx bx-pencil me-1',
+                                                function : 'BadiliData',
+                                                btnText : 'Edit'
+                                            },
+                                        ]
+                        return actionButtons(row , elements);
+                    },
+                    orderable: false, // Disable sorting for the action buttons column
+                    searchable: false, // Disable searching for the action buttons column,
+                    },
+            ]
+        );
+    });
+</script>
+<!-- <script type="text/javascript" src="design/layouts/scripts/vyeo_scripts.js"></script> -->
 </body>
 </html>

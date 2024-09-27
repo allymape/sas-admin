@@ -1,21 +1,21 @@
-$(".transfer-school").on("click" , function(){
-    const school = $(this);
-    const school_name = school.data('school_name');
-    const reg_number = school.data('registration_number');
-    const tracking_number = school.data('tracking_number');
-    const search = school.data("current_applicant_email");
-          $('#school-name').val(school_name)
-          $('#registration-number').val(reg_number)
-          $('#tracking-number').val(tracking_number)
-          modal("varyingcontentModal", true);
-    ajaxSelect2(
-      "applicant-name",
-      "/LookForApplicants",
-      "Type Name or Email",
-      "varyingcontentModal",
-      null,
-      search
-    );
+$(document).on("click", ".transfer-school", function () {
+  const school = $(this);
+  const school_name = school.data("school_name");
+  const reg_number = school.data("registration_number");
+  const tracking_number = school.data("tracking_number");
+  const search = school.data("current_applicant_email");
+  $("#school-name").val(school_name);
+  $("#registration-number").val(reg_number);
+  $("#tracking-number").val(tracking_number);
+  modal("varyingcontentModal", true);
+  ajaxSelect2(
+    "applicant-name",
+    "/LookForApplicants",
+    "Type Name or Email",
+    "varyingcontentModal",
+    null,
+    search
+  );
 });
 
 $('#applicant-name').on('change' , function(){
@@ -30,7 +30,7 @@ $("#btn-update-applicant").on("click" , function(){
                     alertMessage(statusCode == 300 ? 'Hongera' : 'Samahani!' , 
                     response.message , statusCode == 300 ? 'success' : 'error' , () => {
                            if(statusCode == 300){
-                            window.location.reload();
+                              $('#datatable').DataTable().ajax.reload();
                            }
                     } )
         } , JSON.stringify({

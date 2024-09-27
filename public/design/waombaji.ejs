@@ -3,42 +3,19 @@
     title : 'Waombaji',
     page_title : 'Orodha ya Waombaji',
     card_title : 'Waombaji Waliopo',
-    breadcrumb_main : 'Mipangilio' 
+    breadcrumb_main : 'Mipangilio',
+     styles : [
+                { href: '/css/datatables/dataTables.dataTables.css' },
+                { href: '/css/datatables/buttons.dataTables.css' }
+            ]
+
 }) %>
 <div class="card-body">
-    <div class="ribbon-three ribbon-three-info">
-        <span class="badge"><%=`${pagination.total}`%></span>
-    </div>
-<div id="applicantsList">
-    <div class="row g-4 mb-3">
-        <!-- <div class="col-sm-auto">
-            <div>
-                <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn" data-bs-target="#showModal">
-                    <i class="ri-add-line align-bottom me-1"></i> Sajili</button>
-                <button class="btn btn-soft-danger" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button>
-            </div>
-        </div> -->
-        <div class="col-sm">
-            <div class="d-flex justify-content-sm-end">
-                <div class="search-box ms-2 d-flex">
-                   <form action="" method="/Waombaji">
-                     <input type="text" name="tafuta" 
-                     value="<%= req.query.tafuta ? req.query.tafuta : ''%>"
-                     class="form-control search" placeholder="Tafuta...">
-                    <i class="ri-search-line search-icon"></i>
-                   </form>
-                   <% if(req.query.tafuta){ %> 
-                    <a href="/Waombaji" class="btn btn-link">
-                        <i class="ri-delete-back-2-line text-danger"></i>
-                   </a>
-                   <% } %>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="table-responsive table-card mt-3 mb-1">
-        <table class="table align-middle table-nowrap" id="customerTable">
+<div id="applicantsList">
+    <div class="col-md-12">
+        <div class="table-responsive table-card mt-3 mb-1"></div>
+        <table class="table table-striped" id="datatable">
             <thead class="table-light">
                 <tr>
                     <th>#</th>
@@ -47,42 +24,10 @@
                     <th>Imetengezwa</th>
                     <th>Imesasishwa</th>
                     <th>Maombi</th>
-                    <th class="text-right"></th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody class="list form-check-all">
-                <% for(var i = 0; i < applicants.length; i++){ %>
-                    <tr>
-                        <td class="id">
-                             <%- include('paginations/numbering.ejs' , {
-                                index : i
-                             }) %>
-                        </td>
-                        <td class="name">
-                            <%= nameCase(applicants[i].name) %>
-                        </td>
-                        <td class="email"><%= applicants[i].email %></td>
-                        <td class="date"><%= applicants[i].created_at %></td>
-                        <td class="date"><%= applicants[i].updated_at %></td>
-                        <td class="text-right">
-                            <span class="badge badge-label bg-<%=applicants[i].total_applications > 0 ? 'success' : 'danger'%>">
-                                <%= numberFormat(applicants[i].total_applications) %>
-                            </span>
-                        </td>
-                        <td class="text-center">
-                                <div class="dropdown">
-                                    <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="ri-more-2-fill"></i>
-                                    </a>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                        <li><a class="dropdown-item" href="/Mwombaji/<%=applicants[i].id%>">View</a></li>
-                                        <li><a class="dropdown-item" href="/Mwombaji/<%=applicants[i].id%>/badili">Edit</a></li>
-                                        <li><a class="dropdown-item" href="#">Delete</a></li>
-                                    </ul>
-                                </div>
-                        </td>
-                    </tr>
-                <% } %>
             </tbody>
         </table>
         <div class="noresult" style="display: none">
@@ -93,13 +38,67 @@
             </div>
         </div>
     </div>
-    <%- include('paginations/html_pagination.ejs') %>
+    </div>
+
 </div>
 </div><!-- end card -->
 <%- include('layouts/partials/footer.ejs' , {
-     card_title :  card_title , 
-     pagination_script : false,
+    card_title :  card_title,
+    scripts : [
+            {src : '/design/layouts/scripts/waombaji_scripts.js'},
+            { src : '/js/datatables/dataTables.js'},
+            { src : '/js/datatables/dataTables.buttons.js'},
+            { src : '/js/datatables/buttons.dataTables.js'},
+            { src : '/js/datatables/buttons.html5.min.js'},
+            { src : '/js/datatables/jszip.min.js'},
+            { src : '/js/datatables/pdfmake.min.js'},
+            { src : '/js/datatables/vfs_fonts.js'},
+            { src : '/js/datatables/buttons.print.min.js'},
+          ]
     }) %>
-<script type="text/javascript" src="design/layouts/scripts/waombaji_scripts.js"></script>
+<script>
+    $(document).ready(function() {
+        tableData('datatable' , '/ApplicantList' , 'POST',
+            [
+                    { data: null, render : (data , type , row , meta) => {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    } },
+                    { data: "name", name: "name" },
+                    { data: "email", name: "email" },
+                    {data: 'created_at' , name: 'created_at' , render: (data , type , row) => {
+                        return data ? changeDateFormat(data) : ''
+                    }},
+                    {data: 'updated_at' , name: 'updated_at' , render: (data , type , row) => {
+                        return data ? changeDateFormat(data) : ''
+                    }},
+                    { data: "total_applications", name: "total_applications" ,  render: (data , type , row) => {
+                        return `<span class="badge badge-label bg-${ data > 0 ? 'success' : 'danger'}">${data}</span>`
+                        },
+                    class : 'text-center'
+                    },
+                    {
+                    data: null, // No data source for this column
+                    render: function (data, type, row) {
+                          const elements = [
+                                            {
+                                                show : true,
+                                                type : 'link',
+                                                link : `/Mwombaji/${row.id}`,
+                                                class : 'btn btn-sm btn-outline-success me-1',
+                                                icon : 'bx bx-show me-1',
+                                                function : '',
+                                                btnText : 'View'
+                                            }
+                                        ]
+                        return actionButtons(row , elements);
+                    },
+                    orderable: false, // Disable sorting for the action buttons column
+                    class : 'text-center'
+                    },
+            ],
+        );
+    });
+</script>
+<!-- <script type="text/javascript" src="design/layouts/scripts/waombaji_scripts.js"></script> -->
 </body>
 </html>

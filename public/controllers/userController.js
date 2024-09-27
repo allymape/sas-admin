@@ -21,7 +21,7 @@ var baruaAuthAPI = API_BASE_URL + "authenticate-barua";
 var watumiajiAPI = API_BASE_URL + "users";
 var createUserAPI = API_BASE_URL + "create-user";
 var updateUserAPI = API_BASE_URL + "update-user";
-var disableMtumiajiAPI = API_BASE_URL + "disable-user";
+var activateDeactivateUserAPI = API_BASE_URL + "activate-deactivate-user";
 var sendMailAPI = API_BASE_URL + "reset-user-password";
 const myProfileAPI = API_BASE_URL + "my-profile";
 const changeMyPasswordAPI = API_BASE_URL+ "change-my-password"
@@ -213,8 +213,113 @@ userController.get(
   }
 );
 // get list of users
+userController.post(
+  "/UserList",
+  isAuthenticated,
+  can("view-users"),
+  function (req, res) {
+    let draw = req.body.draw;
+    let start = req.body.start;
+    let length = req.body.length;
+    var per_page = Number(length || 10);
+    var page = Number(start / length) + 1;
+    sendRequest(
+      req,
+      res,
+      watumiajiAPI + "?page=" + page + "&per_page=" + per_page,
+      "GET",
+      req.body,
+      (jsonData) => {
+        let totalRecords = jsonData.numRows;
+        const dataToSend = jsonData.data.map((item) => ({
+          ...item,
+          login_user_id: req.user.id, // Add the user ID to each data row
+        }));
+        res.send({
+          draw: draw,
+          recordsTotal: totalRecords,
+          recordsFiltered: totalRecords,
+          data: dataToSend,
+        });
+      }
+    );
+  });
+// // get list of users
+// userController.post(
+//   "/UserList",
+//   isAuthenticated,
+//   can("view-users"),
+//   function (req, res) {
+//     var per_page = Number(req.query.per_page || 10);
+//     var page = Number(req.query.page || 1);
+//     var query = req.query;
+//     sendRequest(
+//       req,
+//       res,
+//       watumiajiAPI + "?page=" + page + "&per_page=" + per_page,
+//       "GET",
+//       query,
+//       (jsonData) => {
+//         var data = jsonData.data;
+//         var numRows = jsonData.numRows;
+//         res.send({
+//           statusCode: jsonData.statusCode,
+//           data: data,
+//           pagination: {
+//             total: numRows,
+//             current: page,
+//             per_page: per_page,
+//             pages: Math.ceil(numRows / per_page),
+//           },
+//         });
+//       }
+//     );
+//   }
+// );
+// Get TOKEN for barua
+userController.post('/BaruaAuthentication' , (req , res) =>{
+  request(
+    {
+      url: baruaAuthAPI,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      json: req.body,
+    },
+    (err, response, body) => {
+      // console.log(response)
+      if(err) console.log(err);
+      if(body != undefined){
+        const {success , statusCode , message , token} = body;
+          res.send({
+            success,
+            message,
+            statusCode,
+            token
+          })
+      }else{
+         res.send({
+           success : false,
+           message : "No content",
+           statusCode : 404,
+         });
+      }
+    })
+});
 userController.get(
-  "/Users",
+  "/Watumiaji",
+  isAuthenticated,
+  can("view-users"),
+  function (req, res) {
+    res.render(path.join(__dirname + "/../design/watumiaji"), {
+      req: req,
+    });
+  }
+);
+// get list of users
+userController.post(
+  "/UserList",
   isAuthenticated,
   can("view-users"),
   function (req, res) {
@@ -329,7 +434,7 @@ userController.post(
 // Disable account
 userController.post("/DisableUser/:id", isAuthenticated, can('delete-users'), function (req, res) { 
     const id = req.params.id;
-    sendRequest(req, res , disableMtumiajiAPI + `/${id}` , "PUT" , {} ,(jsonData) => {
+    sendRequest(req, res , activateDeactivateUserAPI + `/${id}` , "PUT" , {} ,(jsonData) => {
           const {statusCode , message} = jsonData;
             res.send({
               message: message,

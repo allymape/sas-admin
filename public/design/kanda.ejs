@@ -3,7 +3,11 @@
     title : 'Kanda',
     page_title : 'Orodha ya Kanda',
     card_title : 'Kanda zilizopo',
-    breadcrumb_main : 'Mipangilio' 
+    breadcrumb_main : 'Mipangilio',
+     styles : [
+                { href: '/css/datatables/dataTables.dataTables.css' },
+                { href: '/css/datatables/buttons.dataTables.css' }
+            ]
 }) %>
   <div class="card-body">
     <div id="customerList">
@@ -23,9 +27,9 @@
                 </div>
             </div>
         </div>
-
-        <div class="table-responsive table-card mt-3 mb-1">
-            <table class="table align-middle table-nowrap" id="kandaTable">
+        <div class="col-md-12">
+            <div class="table-responsive table-card mt-3 mb-1"></div>
+            <table class="table align-middle table-nowrap table-striped" id="datatable">
                 <thead class="table-light">
                     <tr>
                         <th scope="col" width="5%">
@@ -34,8 +38,10 @@
                         <th class="sort" data-sort="customer_name">Jina la Kanda</th>
                         <th class="sort" data-sort="email">Kodi ya Kanda</th>
                         <th class="sort" data-sort="email">Anuani</th>
+                        <th class="sort" data-sort="email">Imetengenezwa</th>
+                        <th class="sort" data-sort="email">Imesasishwa</th>
                         <th class="sort" data-sort="email">Hali</th>
-                        <th class="sort text-center" width="10%"  data-sort="action">Action</th>
+                        <th class="text-center" width="10%"  data-sort="action">Action</th>
                     </tr>
                 </thead>
                 <tbody class="list form-check-all">
@@ -49,7 +55,8 @@
                 </div>
             </div>
         </div>
-        <%- include('paginations/ajax_pagination.ejs') %>
+        </div>
+        <!-- <%- include('paginations/ajax_pagination.ejs') %> -->
     </div>
     </div><!-- end card -->
 
@@ -151,7 +158,64 @@
                             </div>
                         </div>
                     </div>
-<%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
-<script type="text/javascript" src="/design/layouts/scripts/kanda_scripts.js"></script>
+<%- include('layouts/partials/footer.ejs' , {
+    card_title :  card_title,
+    scripts : [
+            {src : '/design/layouts/scripts/kanda_scripts.js'},
+            { src : '/js/datatables/dataTables.js'},
+            { src : '/js/datatables/dataTables.buttons.js'},
+            { src : '/js/datatables/buttons.dataTables.js'},
+            { src : '/js/datatables/buttons.html5.min.js'},
+            { src : '/js/datatables/jszip.min.js'},
+            { src : '/js/datatables/pdfmake.min.js'},
+            { src : '/js/datatables/vfs_fonts.js'},
+            { src : '/js/datatables/buttons.print.min.js'},
+          ]
+    }) %>
+<script>
+    $(document).ready(function() {
+        tableData('datatable' ,'/Zones' , 'POST',
+            [
+                    { data: null, // No data source for this column
+                        render: function (data, type, row , meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    },
+                    { data: "zone_name", name: "zone_name" },
+                    { data: "zone_code", name: "zone_code" },
+                    { data: "box", name: "box" },
+                    {
+                      data: "created_at", name: "created_at",
+                            render: (data, type, row) => {
+                                return changeDateFormat(data);
+                            },
+                    },
+                    {
+                    data: "updated_at", name: "updated_at",
+                            render: (data, type, row) => {
+                                if(data ){
+                                    return changeDateFormat(data);
+                                }
+                                return data
+                            },
+                    },
+                    { data: "status_id", render: (data, type, row) => {
+                        return data == 1 
+                            ? '<span class="badge bg-success">Active</span>' 
+                            : '<span class="badge bg-danger">Inactive</span>';
+                    } },
+                    {
+                    data: null, // No data source for this column
+                    render: function (data, type, row) {
+                             return actionButtons(row , edit=true, del=true)
+                    },
+                    orderable: false, // Disable sorting for the action buttons column
+                    searchable: false, // Disable searching for the action buttons column
+                    },
+            ]
+        );
+    });
+</script>
+<!-- <script type="text/javascript" src="/design/layouts/scripts/kanda_scripts.js"></script> -->
 </body>
 </html>

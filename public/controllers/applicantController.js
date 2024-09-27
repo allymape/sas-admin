@@ -1,49 +1,42 @@
 require("dotenv").config();
 const express = require("express");
-const request = require("request");
 const applicantController = express.Router();
-var session = require("express-session");
 var path = require("path");
 const { sendRequest, isAuthenticated, can, activeHandover } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 const allApplicantsAPI = API_BASE_URL + "all-applicants";
 const findApplicantAPI = API_BASE_URL + "find-applicant";
+const applicantSchoolsAPI = API_BASE_URL + "applicant-schools";
 const editApplicantAPI = API_BASE_URL + "edit-applicant";
 const lookForApplicantsAPI = API_BASE_URL + "look_for_applicants";
 const changeSchoolApplicantAPI = API_BASE_URL + "change-school-applicant";
 // Get all Applicants
-applicantController.get(
-  "/Waombaji",
-  isAuthenticated,
-  can("view-applicants"),
-  activeHandover,
-  function (req, res) {
-    var per_page = Number(req.query.per_page || 10);
-    var page = Number(req.query.page || 1);
-    var url = allApplicantsAPI + "?page=" + page + "&per_page=" + per_page;
-    var formData = {
-      is_paginated: req.query.is_paginated,
-      search: req.query.tafuta,
-    };
-    sendRequest(req, res, url, "GET", formData, (jsonData) => {
-      var statusCode = jsonData.statusCode;
-      var data = jsonData.data;
-      var numRows = jsonData.numRows;
+applicantController.get("/Waombaji",isAuthenticated,can("view-applicants"),activeHandover, function (req, res) {
       res.render(path.join(__dirname + "/../design/waombaji"), {
         req: req,
-        statusCode: statusCode,
-        applicants: data,
-        pagination: {
-          total: numRows,
-          current: page,
-          per_page: per_page,
-          url: "Waombaji",
-          pages: Math.ceil(numRows / per_page),
-        },
+        applicants : [],
       });
-    });
-  }
-);
+  });
+// Post all Applicants
+applicantController.post("/ApplicantList",isAuthenticated,can("view-applicants"),activeHandover,function (req, res) {
+    let draw = req.body.draw;
+    let start = req.body.start;
+    let length = req.body.length;
+    var per_page = Number(length || 10);
+    var page = Number(start / length) + 1;
+    sendRequest(req,res, allApplicantsAPI + "?page=" + page + "&per_page=" + per_page,"GET",req.body,(jsonData) => {
+        let totalRecords = jsonData.numRows;
+        const dataToSend = jsonData.data
+        res.send({
+          draw: draw,
+          recordsTotal: totalRecords,
+          recordsFiltered: totalRecords,
+          data: dataToSend,
+        });
+      }
+    );
+  });
+
 // look for applicants
 applicantController.get(
   "/LookForApplicants",
@@ -78,18 +71,8 @@ applicantController.get("/Mwombaji/:id", isAuthenticated, can("view-applicants")
   var formData = {
     search: req.query.tafuta,
   };
-  sendRequest(
-    req,
-    res,
-    findApplicantAPI +
-      "/" +
-      req.params.id +
-      "?page=" +
-      page +
-      "&per_page=" +
-      per_page,
-    "GET",
-    formData,
+  var applicant_id = req.params.id;
+  sendRequest(req,res,findApplicantAPI +"/" +req.params.id +"?page=" +page +"&per_page=" +per_page,"GET",formData,
     (jsonData) => {
       var statusCode = jsonData.statusCode;
       var data = jsonData.data;
@@ -100,6 +83,7 @@ applicantController.get("/Mwombaji/:id", isAuthenticated, can("view-applicants")
         req: req,
         statusCode: statusCode,
         applicant: data.applicant,
+        applicant_id: applicant_id,
         applications: data.applications,
         schools: data.schools,
         attachments: data.attachments,
@@ -128,6 +112,36 @@ applicantController.get("/Mwombaji/:id", isAuthenticated, can("view-applicants")
     }
   );
 });
+applicantController.post(
+  "/ApplicantSchools/:id",
+  isAuthenticated,
+  can("view-applicants"),
+  function (req, res) {
+     let draw = req.body.draw;
+     let start = req.body.start;
+     let length = req.body.length;
+     var per_page = Number(length || 10);
+     var page = Number(start / length) + 1;
+     var applicant_id = req.params.id;
+     sendRequest(
+       req,
+       res,
+       applicantSchoolsAPI+'/'+applicant_id + "?page=" + page + "&per_page=" + per_page,
+       "GET",
+       req.body,
+       (jsonData) => {
+         let totalRecords = jsonData.numRows;
+         const dataToSend = jsonData.data;
+         res.send({
+           draw: draw,
+           recordsTotal: totalRecords,
+           recordsFiltered: totalRecords,
+           data: dataToSend,
+         });
+       }
+     );
+  }
+);
 // edit applicant by id
 applicantController.get(
   "/Mwombaji/:id/badili",

@@ -20,30 +20,54 @@ streetController.get(
     });
   }
 );
-streetController.get("/MitaaList", isAuthenticated, can('view-streets'), function (req, res) {
-  var per_page = Number(req.query.per_page || 10);
-  var page = Number(req.query.page || 1);
+streetController.post("/MitaaList", isAuthenticated, can('view-streets'), function (req, res) {
+  let draw = req.body.draw;
+  let start = req.body.start;
+  let length = req.body.length;
+  var per_page = Number(length || 10);
+  var page = Number(start / length) + 1;
   sendRequest(
     req,
     res,
     streetListAPI + "?page=" + page + "&per_page=" + per_page,
     "GET",
-    req.query,
+    req.body,
     (jsonData) => {
-      const {data , numRows , statusCode} = jsonData;
+      let dataToSend = jsonData.data;
+      let totalRecords = jsonData.numRows;
       res.send({
-        statusCode : statusCode,
-        streets: data,
-        pagination: {
-          total: numRows,
-          current: page,
-          per_page: per_page,
-          pages: Math.ceil(numRows / per_page),
-        },
+        draw: draw,
+        recordsTotal: totalRecords,
+        recordsFiltered: totalRecords,
+        data: dataToSend,
       });
     }
   );
 });
+// streetController.get("/MitaaList", isAuthenticated, can('view-streets'), function (req, res) {
+//   var per_page = Number(req.query.per_page || 10);
+//   var page = Number(req.query.page || 1);
+//   sendRequest(
+//     req,
+//     res,
+//     streetListAPI + "?page=" + page + "&per_page=" + per_page,
+//     "GET",
+//     req.query,
+//     (jsonData) => {
+//       const {data , numRows , statusCode} = jsonData;
+//       res.send({
+//         statusCode : statusCode,
+//         streets: data,
+//         pagination: {
+//           total: numRows,
+//           current: page,
+//           per_page: per_page,
+//           pages: Math.ceil(numRows / per_page),
+//         },
+//       });
+//     }
+//   );
+// });
 
 streetController.get("/LookupMitaa", isAuthenticated, function (req, res) {
   sendRequest(req, res, streetAPI, "GET", req.query, (jsonData) => {

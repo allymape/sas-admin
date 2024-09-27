@@ -40,4 +40,4 @@ function renderDataTableWards(){
   })
 }
 // , 5000);
-window.onload = renderDataTableWards;
+// window.onload = renderDataTableWards;

@@ -32,7 +32,12 @@
        <!-- quill css -->
     <link href="/design/assets/libs/quill/quill.core.css" rel="stylesheet" type="text/css" />
     <link href="/design/assets/libs/quill/quill.bubble.css" rel="stylesheet" type="text/css" />
-    <link href="/design/assets/libs/quill/quill.snow.css" rel="stylesheet" type="text/css" />  
+    <link href="/design/assets/libs/quill/quill.snow.css" rel="stylesheet" type="text/css" />
+<% if(typeof styles !== 'undefined' && Array.isArray(styles)){ %>
+<% styles.forEach(element => { %>
+    <link href="<%= element.href %>" rel="stylesheet" type="text/css" />
+<% }); %>
+<% } %>
 </head>
 
 <body>

@@ -43,4 +43,4 @@ function renderDataTableStreets(){
   })
 }
 // , 5000);
-window.onload = renderDataTableStreets;
+// window.onload = renderDataTableStreets;

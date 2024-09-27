@@ -2,7 +2,11 @@
 <%- include('layouts/partials/header.ejs' , {
     title : 'Mitaa',
     page_title : 'Orodha ya Mitaa',
-    card_title : 'Mitaa iliyopo'
+    card_title : 'Mitaa iliyopo',
+     styles : [
+                { href: '/css/datatables/dataTables.dataTables.css' },
+                { href: '/css/datatables/buttons.dataTables.css' }
+            ]
 }) %>
 <div class="card-body">
     <div id="customerList">
@@ -28,25 +32,15 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm">
-                <div class="d-flex justify-content-sm-end">
-                    <div class="search-box ms-2">
-                        <input type="text" class="form-control search" placeholder="Tafuta...">
-                        <i class="ri-search-line search-icon"></i>
-                    </div>
-                </div>
-            </div>
         </div>
 
-        <div class="table-responsive table-card mt-3 mb-1">
-            
-            <table class="table align-middle table-nowrap" id="streetTable">
+        <div class="col-md-12">
+            <div class="table-responsive table-card mt-3 mb-1"></div>
+            <table class="table align-middle table-nowrap table-striped" id="datatable">
                 <thead class="table-light">
                     <tr>
                         <th scope="col" style="width: 50px;">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="checkAll" value="option">
-                            </div>
+                               Na.
                         </th>
                         <th >Jina la Mtaa</th>
                         <th >Kodi ya Mtaa</th>
@@ -70,12 +64,56 @@
                 </div>
             </div>
         </div>
+        </div>
         <!-- Pagination and page length -->
-        <%- include('paginations/ajax_pagination.ejs') %>
+        <!-- <%- include('paginations/ajax_pagination.ejs') %> -->
         <!-- End pagination and page length -->
     </div>
 </div><!-- end card -->
-<%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
-<script type="text/javascript" src="design/layouts/scripts/mitaa_scripts.js"></script>
+<%- include('layouts/partials/footer.ejs' , {card_title :  card_title , 
+    scripts : [
+            {src : '/design/layouts/scripts/mitaa_scripts.js'},
+            { src : '/js/datatables/dataTables.js'},
+            { src : '/js/datatables/dataTables.buttons.js'},
+            { src : '/js/datatables/buttons.dataTables.js'},
+            { src : '/js/datatables/buttons.html5.min.js'},
+            { src : '/js/datatables/jszip.min.js'},
+            { src : '/js/datatables/pdfmake.min.js'},
+            { src : '/js/datatables/vfs_fonts.js'},
+            { src : '/js/datatables/buttons.print.min.js'},
+          ] 
+        }) 
+    %>
+    <script>
+    $(document).ready(function() {
+        tableData('datatable' ,'/MitaaList' , 'POST',
+            [
+                    { data: null, // No data source for this column
+                        render: function (data, type, row , meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    },
+                    { data: "StreetName", name: "StreetName" },
+                    { data: "StreetCode", name: "StreetCode" },
+                    { data: "WardName", name: "WardName" },
+                    { data: "LgaName", name: "LgaName" },
+                    { data: "RegionName", name: "RegionName" },
+                    {
+                      data: "CreatedAt", name: "CreatedAt",
+                            render: (data, type, row) => {
+                                return changeDateFormat(data);
+                            },
+                    },
+                    {
+                    data: "UpdatedAt", name: "UpdatedAt",
+                            render: (data, type, row) => {
+                                return changeDateFormat(data);
+                            },
+                    },
+            ]
+        );
+    });
+</script>
+<!-- <script type="text/javascript" src="design/layouts/scripts/mitaa_scripts.js"></script> -->
 </body>
 </html>

@@ -61,13 +61,11 @@
     <% } %>
     <!-- Sweet Alerts js -->
     <script src="/design/assets/libs/sweetalert2/sweetalert2.min.js"></script>
-
     <!-- App js -->
     <script src="/design/assets/js/app.js"></script>
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
     <script src="/design/assets/js/pages/notifications.init.js"></script>
       <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
-   
     <script src="/../js/select2.min.js"></script>
     <script src="/design/assets/js/pagination.js"></script>
     <script src="/design/assets/js/alert/confirm.js"></script>
@@ -76,10 +74,7 @@
     <script src="/design/assets/js/custom.js"></script>
     <script src="../js/checkboxes.js"></script>
     <script src="/design/assets/js/alert/notifications.js"></script>
-    <!-- quill js -->
-    <!-- <script src="/design/assets/libs/quill/quill.min.js"></script> -->
-    <!-- init js -->
-    <!-- <script src="/design/assets/js/pages/form-editor.init.js"></script> -->
+
     <script>
         showLoadingSpinner()
         window.onload = () => {
@@ -145,6 +140,10 @@
             }, 780000);
         })
     </script>
-    
+    <% if(typeof scripts !== 'undefined' && scripts){ %>
+<% scripts.forEach(element => { %>
+        <script type="text/javascript" src="<%=element.src%>"></script>
+<% }); %>
+<% } %>
   
    

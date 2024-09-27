@@ -1,18 +1,19 @@
 
-    function AddZone(e){
-        var regionId = e.getAttribute('data-id');
-        var zoneId = e.getAttribute('data-zone');
-        var box = e.getAttribute("data-address");
-        var hasSqaOffice = e.getAttribute("data-has_sqa_office");
-        document.getElementById("regionId").value = regionId;
-       
+    function editRegion(button){
+      const rowData = JSON.parse(button.getAttribute('data-row'));
+        var regionId = rowData.regionId;
+        var zoneId = rowData.zoneCode;
+        console.log(rowData)
+        var box = rowData.box ? rowData.box : "";
+        var hasSqaOffice = rowData.sqa_zone ? 1 : 0;
+        document.getElementById("regionId").value = rowData.regionId;
         $("#zone-field").val(zoneId)
         $("#box-field").val(box)
         $("#sqa-zone-field").prop("checked", hasSqaOffice ? true : false);
         $('#showModalZone').modal('show');
     }
 
-    function sajiliHati(){
+    function updateRegion(){
         var regionId = document.getElementById('regionId').value;
         var kanda = document.getElementById('zone-field').value;
         var box = document.getElementById("box-field").value;
@@ -30,7 +31,7 @@
           success: function (response) {
             if (response.statusCode == 300) {
               alertMessage("Success", response.message, "success", () => {
-                renderDataTableRegions();
+                $('#dataTable').DataTable().ajax.reload();  
               });
             }
             if (response.statusCode == 306) {
@@ -110,4 +111,4 @@ function renderDataTableRegions() {
                         }, true , 'Idadi ya Mikoa iliyopatikana ' );
   })
 }
-window.onload = renderDataTableRegions;
+// window.onload = renderDataTableRegions;

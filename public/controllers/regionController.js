@@ -10,8 +10,7 @@ var mikoaListAPI      = API_BASE_URL + "regions";
 var regionsAPI = API_BASE_URL + "lookup-regions";
 var VutaMikoaListAPI  = API_BASE_URL + "usajiliMikoa";
 var mkoaKandaAPI      = API_BASE_URL + "assign-region-zone";
-var zonesApi      = API_BASE_URL + "allZones";
-
+var zonesApi = API_BASE_URL + "lookup-zones";
 
 regionController.get("/Mikoa", isAuthenticated, can('view-regions'), function (req, res) {
             sendRequest(req , res , zonesApi , 'GET' , { is_paginated : false } , (jsonData) => {
@@ -19,35 +18,33 @@ regionController.get("/Mikoa", isAuthenticated, can('view-regions'), function (r
                   res.render(path.join(__dirname + "/../design/mikoa"), {
                   req: req,
                   zones: jsonData.data,
-                  useLev: req.session.UserLevel,
-                  userName: req.session.userName,
-                  RoleManage: req.session.RoleManage,
-                  userID: req.session.userID,
-                  cheoName: req.session.cheoName,
+                //   useLev: req.session.UserLevel,
+                //   userName: req.session.userName,
+                //   RoleManage: req.session.RoleManage,
+                //   userID: req.session.userID,
+                //   cheoName: req.session.cheoName,
                 });
                 }
             }); 
 });
 
-regionController.get("/MikoaList", isAuthenticated, can('view-regions'), function (req, res) {
-    var per_page = Number(req.query.per_page || 10);
-    var page = Number(req.query.page || 1);
-   
-    sendRequest(req, res, mikoaListAPI + "?page=" + page + "&per_page=" + per_page, "GET", req.query , (jsonData) => {
-        var data = jsonData.data;
-        var numRows = jsonData.numRows;
-        // console.log(data);
+regionController.post("/MikoaList", isAuthenticated, can('view-regions'), function (req, res) {
+    let draw = req.body.draw;
+    let start = req.body.start;
+    let length = req.body.length;
+    var per_page = Number(length || 10);
+    var page = Number(start / length) + 1;
+    sendRequest(req,res,mikoaListAPI + "?page=" + page + "&per_page=" + per_page,"GET",req.body,(jsonData) => {
+        let dataToSend = jsonData.data;
+        let totalRecords = jsonData.numRows;
         res.send({
-        statusCode: jsonData.statusCode,
-        regions: data,
-        pagination: {
-            total: numRows,
-            current: page,
-            per_page: per_page,
-            pages: Math.ceil(numRows / per_page),
-        },
+          draw: draw,
+          recordsTotal: totalRecords,
+          recordsFiltered: totalRecords,
+          data: dataToSend,
         });
-  });
+      }
+    );
 });
 
 regionController.get("/LookupRegion", isAuthenticated, function (req, res) {

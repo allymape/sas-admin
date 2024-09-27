@@ -1,4 +1,4 @@
-getUsers();
+// getUsers();
 //   Populate list of users to a table
 function getUsers() {
   ajaxRequest("users", "GET", (response) => {
@@ -91,8 +91,9 @@ $("#btn-create-user").on("click", function () {
   $("#id-field").remove();
 });
 // Edit User
-function editUser(e) {
-  var userId = e.getAttribute("data-id");
+function editUser(button) {
+  const rowData = JSON.parse(button.getAttribute("data-row"));
+  var userId = rowData.userId;
   $("#id-field").remove();
   $("#user-form").prepend(`<input type='hidden' id='id-field' />`);
   resetAllFields();
@@ -458,7 +459,7 @@ function ajaxSaveUser(url , data) {
       var code = response.statusCode;
       var message = response.message;
       if (code == 300) {
-        getUsers();
+        $('#datatable').DataTable().ajax.reload();
         alertMessage("Umefanikiwa", message, "success", () => {
           $("#sign-field").val("");
           var elementId = document.getElementById("id-field");
@@ -709,20 +710,30 @@ function ValidateEmail() {
   }
 }
 
-function AddZone1(e) {
-  var nameId = e.getAttribute("data-id");
-  var name = e.getAttribute("data-name");
+function activateDeactivateUser(button) {
+  const rowData = JSON.parse(button.getAttribute("data-row"));
+  var nameId = rowData.userId;
+  var name = rowData.name;
   document.getElementById("code-field-edit").value = nameId;
   document.getElementById("ada-field-edit").value = name;
-  document.getElementById("ada-field-edit").value = name;
+  document.getElementById("btn-enable-disable").innerHTML = rowData.user_status ? 'Deactivate' : 'Activate';
+  document
+    .getElementById("btn-enable-disable")
+    .setAttribute(
+      "class",
+      rowData.user_status ? "btn btn-danger" : "btn btn-success"
+    );
+    document.getElementById('confirm-title').innerText = (rowData.user_status ? 'Ondoa ' : 'Rudisha ')
+    document.getElementById('confirm-text').innerText = (rowData.user_status ? 'kumuondoa ' : 'kumrudisha ')+rowData.name
   // var kanda = document.getElementById("ada-field").value;
-  $("#deleteRecordModal").modal("show");
+  $("#enableDisableUserModal").modal("show");
 }
-function ResetPassword(e) {
+function ResetPassword(button) {
+  const rowData = JSON.parse(button.getAttribute("data-row"));
   modal("resetPasswordModal", true);
-  var nameId = e.getAttribute("data-id");
-  var name = e.getAttribute("data-name");
-  var email = e.getAttribute("data-email");
+  var nameId = rowData.userId;
+  var name = rowData.name;
+  var email = rowData.email;
   var email_length = email.length;
   var first_four_letter = email.substr(0, 4);
   var rest_letters_len = email.substr(email_length - 4, email_length);
@@ -739,7 +750,7 @@ function ResetPassword(e) {
   $("#resetPasswordModal").modal("show");
 }
 
-function deleteUser() {
+function enableDisableUser() {
   var id = document.getElementById("code-field-edit").value;
      ajaxRequest(`/DisableUser/${id}` , "POST" , (response) => {
          const {statusCode , message} = response;
@@ -747,7 +758,8 @@ function deleteUser() {
                        message,
                        statusCode == 300 ? 'success' : 'error' , () => {});
             if(statusCode == 300){
-              getUsers()
+              $("#enableDisableUserModal").modal("hide");
+              $('#datatable').DataTable().ajax.reload();
             }
      } , {});
 }
