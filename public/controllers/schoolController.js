@@ -29,32 +29,42 @@ schoolController.get('/Shule' , isAuthenticated , can('view-schools'), activeHan
 });
 
 // List of Schools
-schoolController.get(
+schoolController.post(
   "/SchoolList",
   isAuthenticated,
   can("view-schools"),
   function (req, res) {
-    var per_page = Number(req.query.per_page || 10);
-    var page = Number(req.query.page || 1);
-    sendRequest(
-      req,
-      res,
-      allSchoolListAPI + "?page=" + page + "&per_page=" + per_page,
-      "GET",
-      req.query,
+    let draw = req.body.draw;
+    let start = req.body.start;
+    let length = req.body.length;
+    var per_page = Number(length || 10);
+    var page = Number(start / length) + 1;
+    sendRequest(req,res,allSchoolListAPI + "?page=" + page + "&per_page=" + per_page,"GET",req.body,
       (jsonData) => {
-        var data = jsonData.data;
-        var numRows = jsonData.numRows;
-        res.send({
-          schools: data,
+        let totalRecords = jsonData.numRows;
+        const dataToSend = jsonData.data.map((item) => ({
+          ...item,
           canEdit: hasPermission(req, "update-schools"),
-          pagination: {
-            total: numRows,
-            current: page,
-            per_page: per_page,
-            pages: Math.ceil(numRows / per_page),
-          },
+        }));
+        // console.log(dataToSend)
+        res.send({
+          draw: draw,
+          recordsTotal: totalRecords,
+          recordsFiltered: totalRecords,
+          data: dataToSend,
         });
+        // var data = jsonData.data;
+        // var numRows = jsonData.numRows;
+        // res.send({
+        //   schools: data,
+        //   canEdit: hasPermission(req, "update-schools"),
+        //   pagination: {
+        //     total: numRows,
+        //     current: page,
+        //     per_page: per_page,
+        //     pages: Math.ceil(numRows / per_page),
+        //   },
+        // });
       }
     );
   }

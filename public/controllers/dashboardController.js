@@ -17,6 +17,7 @@ dashboardController.get("/Dashboard" ,
     can('view-dashboard') ,
     activeHandover,
     (req, res) => {
+    
     sendRequest(req, res, schoolSummariesAPI , "GET" , {} , (jsonData) => {
           const {registrations , owners , categories , applications , structures} = jsonData.data;
           res.render(path.join(__dirname + "/../design/dashboard"), {

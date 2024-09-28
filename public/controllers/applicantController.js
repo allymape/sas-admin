@@ -77,36 +77,22 @@ applicantController.get("/Mwombaji/:id", isAuthenticated, can("view-applicants")
       var statusCode = jsonData.statusCode;
       var data = jsonData.data;
       var applicationNumRows = data.applicationsNumRows;
-      var schoolsNumRows = data.schoolsNumRows;
-      var attachmentsNumRows = data.attachmentsNumRows;
+      // var schoolsNumRows = data.schoolsNumRows;
+      // var attachmentsNumRows = data.attachmentsNumRows;
       res.render(path.join(__dirname + "/../design/waombaji/view_mwombaji"), {
         req: req,
         statusCode: statusCode,
         applicant: data.applicant,
         applicant_id: applicant_id,
         applications: data.applications,
-        schools: data.schools,
-        attachments: data.attachments,
+        // schools: data.schools,
+        // attachments: data.attachments,
         applications_pagination: {
           total: applicationNumRows,
           current: page,
           per_page: per_page,
           url: "Mwombaji/" + req.params.id,
           pages: Math.ceil(applicationNumRows / per_page),
-        },
-        schools_pagination: {
-          total: schoolsNumRows,
-          current: page,
-          per_page: per_page,
-          url: "Mwombaji/" + req.params.id,
-          pages: Math.ceil(schoolsNumRows / per_page),
-        },
-        attachments_pagination: {
-          total: attachmentsNumRows,
-          current: page,
-          per_page: per_page,
-          url: "Mwombaji/" + req.params.id,
-          pages: Math.ceil(attachmentsNumRows / per_page),
         },
       });
     }

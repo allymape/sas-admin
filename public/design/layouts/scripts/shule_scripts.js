@@ -49,7 +49,7 @@ function renderDataTable(){
   });
 }
 // , 5000);
-window.onload = renderDataTable;
+// window.onload = renderDataTable;
 $("#btn-migrate-schools").on("click", function () {
   confirmAction(
     PullSchools,
@@ -68,7 +68,7 @@ function PullSchools() {
           statusCode == 300 ? "success" : "error",
           () => {
             if (statusCode == 300) {
-              renderDataTable();
+              $('#datatable').DataTable().ajax.reload();
             }
           }
         );
@@ -161,7 +161,7 @@ function edit(e){
 }
 function getRegions(selectedRegion){
   ajaxRequest(
-            "/MikoaList",
+            "/LookupRegion",
             "GET",
             (regionsResponse) => {
               if (regionsResponse.statusCode == 300) {
@@ -177,7 +177,7 @@ function getRegions(selectedRegion){
                 );
               }
             },
-            { is_paginated: false}
+            { is_paginated: false}, 
           );
 }
 $("#school-form").on('submit' , function(e){
@@ -207,7 +207,7 @@ $("#school-form").on('submit' , function(e){
                       statusCode == 300 ? "success" : "error",
                       () => {
                         if(statusCode == 300){
-                          renderDataTable(); 
+                           $("#datatable").DataTable().ajax.reload();
                           if(action == 'create'){
                             resetFields();
                           }

@@ -62,7 +62,6 @@
     <!-- Sweet Alerts js -->
     <script src="/design/assets/libs/sweetalert2/sweetalert2.min.js"></script>
     <!-- App js -->
-    <script src="/design/assets/js/app.js"></script>
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
     <script src="/design/assets/js/pages/notifications.init.js"></script>
       <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
@@ -145,5 +144,94 @@
         <script type="text/javascript" src="<%=element.src%>"></script>
 <% }); %>
 <% } %>
-  
-   
+<!-- <script>
+    !(function () {
+  // Existing code...
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute("data-layout-mode", theme);
+    localStorage.setItem("theme", theme);
+  }
+
+  function toggleTheme() {
+    const currentTheme =
+      document.documentElement.getAttribute("data-layout-mode");
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
+    applyTheme(newTheme);
+  }
+
+  function initializeTheme() {
+    const savedTheme = localStorage.getItem("theme") || "light";
+    applyTheme(savedTheme);
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    initializeTheme();
+
+    const lightDarkModeButton = document.querySelector(".light-dark-mode");
+    if (lightDarkModeButton) {
+      lightDarkModeButton.addEventListener("click", function (e) {
+        e.preventDefault();
+        toggleTheme();
+      });
+    }
+
+    // Existing code...
+  });
+
+  // Existing code...
+})();
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    initializeTheme();
+alert('x')
+    const lightDarkModeButton = document.querySelector(".light-dark-mode");
+    if (lightDarkModeButton) {
+        lightDarkModeButton.addEventListener("click", function (e) {
+            e.preventDefault();
+            toggleTheme();
+        });
+    }
+
+    const hamburgerIcon = document.querySelector(".hamburger-icon");
+    if (hamburgerIcon) {
+        hamburgerIcon.addEventListener("click", function () {
+            hamburgerIcon.classList.toggle("open");
+        });
+    }
+});
+
+function w() {
+    var e = document.documentElement.clientWidth;
+    if (e > 767) {
+        document.querySelector(".hamburger-icon").classList.toggle("open");
+    }
+    if (document.documentElement.getAttribute("data-layout") === "horizontal") {
+        document.body.classList.toggle("menu");
+    } else if (document.documentElement.getAttribute("data-layout") === "vertical") {
+        if (e < 1025 && e > 767) {
+            document.body.classList.add("vertical-sidebar-enable");
+            if (document.documentElement.getAttribute("data-sidebar-size") === "sm") {
+                document.documentElement.setAttribute("data-sidebar-size", "");
+            } else {
+                document.documentElement.setAttribute("data-sidebar-size", "sm");
+            }
+        } else if (e > 1025) {
+            document.body.classList.add("vertical-sidebar-enable");
+            if (document.documentElement.getAttribute("data-sidebar-size") === "lg") {
+                document.documentElement.setAttribute("data-sidebar-size", "sm");
+            } else {
+                document.documentElement.setAttribute("data-sidebar-size", "lg");
+            }
+        } else if (e <= 767) {
+            document.body.classList.add("vertical-sidebar-enable");
+            document.documentElement.setAttribute("data-sidebar-size", "lg");
+        }
+    } else if (document.documentElement.getAttribute("data-layout") === "twocolumn") {
+        document.body.classList.toggle("twocolumn-panel");
+    }
+}
+
+</script>    -->
+<script src="/design/assets/js/app.js"></script>

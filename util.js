@@ -149,7 +149,7 @@ module.exports = {
     ) {
       res.send({
         statusCode: 422,
-        message: "Tafadhali hakikisha nywila yako mpya zinafanana.",
+        message: "Tafadhali hakikisha nywila yako mpya na unayoirudia zinafana.",
       });
     } else if (module.exports.isPasswordsMatched(oldpassword, newpassword)) {
       res.send({

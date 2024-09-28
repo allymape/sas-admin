@@ -2,7 +2,11 @@
 <%- include('../layouts/partials/header.ejs' , {
     title : 'Shule',
     page_title : 'Orodha ya Shule',
-    card_title : 'Shule zilizopo'
+    card_title : 'Shule zilizopo',
+    styles : [
+            { href: '/css/datatables/dataTables.dataTables.css' },
+            { href: '/css/datatables/buttons.dataTables.css' }
+        ]
 }) %>
     <div class="card-body">
        
@@ -10,11 +14,11 @@
             <div class="row g-4 mb-3">
                 <div class="col-sm-auto">
                     <div class="d-flex">
-                        <div id="firstbtn">
+                        <!-- <div id="firstbtn">
                             <button type="button" class="btn btn-outline-danger add-btn"  id="btn-migrate-schools">
                                 <i class="ri-download-2-line align-bottom me-1"></i>Vuta Shule (Existing Schools)
                             </button>
-                        </div>
+                        </div> -->
                         <div class="ms-2">
                             <button type="button" class="btn btn-info" id="add-school"> + Sajili</button>
                         </div>
@@ -23,16 +27,16 @@
               <div class="col-sm">
                 <div class="d-flex justify-content-sm-end">
                     <form class="d-flex" action="/Shule" method="GET">
-                         <div class="" style="width: 100px;">
+                         <!-- <div class="" style="width: 100px;">
                                 <select class="form-control" name="sign"  >
                                     <option value="=" <%= req.query.sign == '=' ? 'selected' : ''%> >=</option>
                                     <option value="LIKE" <%= !req.query.sign || req.query.sign == 'LIKE' ? 'selected' : ''%>>Like</option>
                                 </select>
                         </div>
-                        <div>&nbsp;</div>
-                        <div class="search-box ms-2">
+                        <div>&nbsp;</div> -->
+                        <!-- <div class="search-box ms-2">
                             <input type="text" name="tafuta" value="<%= req.query.tafuta || '' %>" class="form-control search" placeholder="Tafuta...">
-                        </div>
+                        </div> -->
                         <div>&nbsp;</div>
                         <div class="" style="width: 200px;">
                                 <select class="form-control" name="aina"  >
@@ -75,13 +79,13 @@
                 </div>
             </div>
             </div>
-            <div class="table-responsive table-card mt-3 mb-1">
-                <table class="table align-middle table-nowrap" id="schoolsTable" width="100%">
+            <div class="table-responsive mt-3 mb-1">
+                <table class="table align-middle table-nowrap" id="datatable" width="100%">
                     <thead class="table-light">
                         <tr>
                             <th style="width: 10px;">Na.</th>
                             <th>Jina la Shule</th>
-                            <th class=" text-wrap">Namba ya Usajili</th>
+                            <th class=" text-wrap">Namba</th>
                             <th>Umiliki</th>
                             <th>Aina</th>
                             <th>Tarehe Usajil</th>
@@ -240,7 +244,85 @@
                 </div>
         </div>
   </div>
-<%- include('../layouts/partials/footer.ejs' , {card_title :  card_title}) %>
-<script type="text/javascript" src="/design/layouts/scripts/shule_scripts.js"></script>
+<%- include('../layouts/partials/footer.ejs' , {
+    card_title :  card_title,
+    scripts : [
+            {src : '/design/layouts/scripts/shule_scripts.js'},
+            { src : '/js/datatables/dataTables.js'},
+            { src : '/js/datatables/dataTables.buttons.js'},
+            { src : '/js/datatables/buttons.dataTables.js'},
+            { src : '/js/datatables/buttons.html5.min.js'},
+            { src : '/js/datatables/jszip.min.js'},
+            { src : '/js/datatables/pdfmake.min.js'},
+            { src : '/js/datatables/vfs_fonts.js'},
+            { src : '/js/datatables/buttons.print.min.js'},
+          ]
+    }) %>
+<script>
+    $(document).ready(function() {
+        var params = [];
+        var urlParams = new URLSearchParams(window.location.search);
+        urlParams.forEach(function(value, key) {
+            params.push({name : key , value : value});
+        });
+       
+        tableData('datatable' , '/SchoolList' , 'POST',
+            [
+                    { data: null, render : (data , type , row , meta) => {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    } },
+                    { data: "name", name: "name"  , render : (data , type , row) => {
+                        if(row.canEdit){
+                            return `<a href="/ShuleDetails/${row.id}/Edit" title='More Edit' data-bs-toggle="tooltip" class="edit-school">${data}</a>`;
+                        }
+                        return data;
+                    }},
+                    { data: "reg_no", name: "reg_no" },
+                    { data: "ownership", name: "ownership" },
+                    { data: "category", name: "category" },
+                    { data: 'reg_date' , name: 'reg_date' , render: (data , type , row) => {
+                        return data ? changeOnlyDateFormat(data) : ''
+                    }},
+                    { data: 'opening_date' , name: 'opening_date' , render: (data , type , row) => {
+                        return data ? changeOnlyDateFormat(data) : ''
+                    }},
+                    { data: "region", name: "regio" },
+                    { data: "lga", name: "lga" },
+                    { data: "ward", name: "ward" },
+                    { data: "street", name: "street" },
+                    { data: 'updated_at' , name: 'updated_at' , render: (data , type , row) => {
+                        var updated_at = data ? changeDateFormat(data) : ''
+                        if(updated_at == 'Invalid Date') return '';
+                        return updated_at
+                    }},
+                    { data: 'status' , name: 'status' , render: (data , type , row) => {
+                         return `<span class="badge bg-${data ? 'success':'danger'}">${data}</span>`;
+                    }},
+                    {
+                    data: null, // No data source for this column
+                    render: function (data, type, row) {
+                          const elements = [
+                                            {
+                                                show : row.canEdit,
+                                                type : 'button',
+                                                class : 'btn btn-sm btn-outline-primary me-1',
+                                                icon : 'bx bx-show me-1',
+                                                function : 'edit',
+                                                btnText : 'Edit',
+                                                moreAttributes : `data-id="${row.id}"`
+                                            }
+                                        ]
+                                row = null
+                        return actionButtons(row , elements);
+                    },
+                    orderable: false, // Disable sorting for the action buttons column
+                    class : 'text-center'
+                    },
+            ],
+            params   //search query
+        );
+    });
+</script>
+<!-- <script type="text/javascript" src="/design/layouts/scripts/shule_scripts.js"></script> -->
 </body>
 </html>

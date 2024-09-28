@@ -991,6 +991,24 @@ function tumaMaoniYako(
   }
 }
 
+
+// Remove empty parameters from the URL
+    var cleanUrl = function(url) {
+        var urlObj = new URL(url);
+        urlObj.searchParams.forEach((value, key) => {
+            if (!value) {
+                urlObj.searchParams.delete(key);
+            }
+        });
+        return urlObj.toString();
+    };
+
+    // Update the URL without reloading the page
+    if (window.history.replaceState) {
+        var cleanHref = cleanUrl(window.location.href);
+        window.history.replaceState(null, null, cleanHref);
+    }
+
 function tableData(tableId ,url, type, columns , data = null) {
   $(`#${tableId}`).DataTable({
     processing: true,
@@ -1003,10 +1021,10 @@ function tableData(tableId ,url, type, columns , data = null) {
         // Example: Adding custom parameters to the request
         // d.customParam1 = "value1";
         // d.customParam2 = "value2";
-        if(typeof data === 'object' && data !== null) {
+        if (typeof data === "object" && data !== null) {
           data.forEach((item) => {
             d[item.name] = item.value;
-          } );
+          });
         }
       },
     },
@@ -1075,6 +1093,9 @@ function tableData(tableId ,url, type, columns , data = null) {
       [10, 25, 50, 100, 500, -1],
       ["10 rows", "25 rows", "50 rows", "100 rows", "500 rows", "Show all"],
     ],
+    language: {
+      searchPlaceholder: "Search Here ...",
+    },
   });
 }
 
