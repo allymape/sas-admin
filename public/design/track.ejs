@@ -1,171 +1,165 @@
-
-<% 
-var card_title = ''
-const currentCategory = categories.filter( (item) => item.id == decrypted_param_id )
-%>
+<% var card_title = '' 
+%> 
 <%- include('layouts/partials/header.ejs' , {
         title : 'Fuatilia Maombi',
         page_title : 'Fuatilia Maombi',
-        card_title : `Maombi ${currentCategory[0].name }`,
-        breadcrumb_main : 'Track' 
+        card_title : `Maombi `,
+        breadcrumb_main : 'Track',
+        styles : [
+              { href: '/css/datatables/dataTables.dataTables.css' },
+              { href: '/css/datatables/buttons.dataTables.css' },
+          ]
 }) %>
 <div class="card-body">
-  <div class="ribbon-three ribbon-three-info">
-    <span class="badge"><%=`${pagination.total}`%></span>
-  </div>
   <div id="customerList">
-    <div class="row g-4 mb-3">
-      <div class="col-sm">
-        <div class="d-flex">
-                <div class="ms-2">
-                      <select  class="form-control" id="application-category">
-                        <!-- <option value="">Chagua Aina</option> -->
-                        <% for (let i = 0; i < categories.length; i++) { %>
-                        <% const item = categories[i]; %>
-                            <option value="<%= crypt().encrypt(item.id) %>" 
-                                <%= decrypted_param_id == item.id ? 'selected' : '' %>
-                                ><%= item.name %></option>
-                        <% } %>
-                    </select>
-                </div>
-          <form method="GET" action="/TrackOmbi/<%= req.params.id %>" class="d-flex">
-                <div class="search-box ms-4">
-                    <input type="text" name="tafuta" value="<%= req.query.tafuta %>" class="form-control search" placeholder="Tafuta...">
-                    <i class="ri-search-line search-icon"></i>
-                </div>
-               
-                <div class="ms-2">
-                    <button type="submit" class="btn btn-outline-primary">Tafuta</button>
-                </div>
-                <% if(req.query.tafuta || req.query.category){ %>
-                   <div class="ms-2">
-                     <a href="/TrackOmbi/<%= req.params.id %>" class="btn btn-outline-danger">Clear</a>
-                   </div>
-                <% } %>
-          </form>
-        </div>
-      </div>
-    </div>
     <div class="col-md-12">
-      <div class="table-responsive mt-3 mb-1"></div>
-      <table class="table table-striped" id="customerTable">
+      <div class="table-responsive mt-3 mb-1">
+      <table class="table table-striped" id="datatable">
         <thead class="table-light">
           <tr>
-            <th class="" data-sort="">Na.</th>
-            <th class="" data-sort="">Namba ya Ombi</th>
-            <th class="" data-sort="">Jina la Shule</th>
-            <th class="" data-sort="">Aina</th>
-            <th class="" data-sort="">Mkoa</th>
-            <th class="" data-sort="">Halmashauri</th>
-            <th class="" data-sort="">Kata</th>
-            <th class="" data-sort="">Mtaa</th>
-            <th class="" data-sort="">Mwombaji</th>
-            <th class="" data-sort="">Limeombwa</th>
-            <th class="" data-sort="">Mahali lilipo</th>
-            <th class="" data-sort="">Limetumwa</th>
-            <th class="" data-sort="">Hali ya Ombi</th>
-            <th class="" data-sort="">Malipo</th>
-            <th></th>
+             <th width="5%">Na.</th>
+            <th width="10%">Action</A></th>
+            <th>Aina ya Ombi</th>
+            <th>Namba ya Ombi</th>
+            <th>Jina</th>
+            <th>Aina ya Shule</th>
+            <th>Mkoa</th>
+            <th>Halmashauri</th>
+            <th>Kata</th>
+            <th>Mtaa</th>
+            <th>Mwombaji</th>
+            <th>Limeombwa</th>
+            <th>Mahali lilipo</th>
+            <th>Limetumwa</th>
+            <th>Hali ya Ombi</th>
+            <th>Malipo</th>
           </tr>
         </thead>
         <tbody class="list form-check-all">
-          <% for(var i = 0; i < applications.length; i++){  %>
-          <%  const item = applications[i]; %>
-          <%  const {status , payment_status , payment_status_id , reg_status} = item; %>
-          <tr>
-            <td class="id">
-              <%- include('paginations/numbering.ejs' , {
-                index : i }) 
-              %>
-            </td>
-            <td class="">
-              <%= item.tracking_number %>
-            </td>
-            <td class="">
-              <%= item.school_name %>
-            </td>
-            <td class="">
-              <%= item.category %>
-            </td>
-            <td class="">
-              <%= item.region_name %> 
-            </td>
-            <td class="">
-              <%= item.district_name %> 
-            </td>
-            <td class="">
-              <%= item.ward_name %>
-            </td>
-            <td class="">
-              <%= item.street_name %>
-            </td>
-            <td class=""><%=item.applicant_name %></td>
-            <td class=""><%= dateFormat(item.application_created_at , "DD/MM/YYYY HH:mm:ss") %></td>
-            <td class="">
-                <% if(status == 1 || status == 0) {%>
-                <%= item.title ? item.title : 'W1' %> %>
-                <% } %>
-            </td>
-            <td class=""><%= dateFormat(item.submitted_created_at , "DD/MM/YYYY HH:mm:ss") %></td>
-            <td class="">
-              <%  if(payment_status_id == 2){ %>
-                <span class="badge bg-<%= status == 1 || status == '' ? `info` : ( status == 2 ? 'success' : (status == 3 ? 'danger' : 'warning'))%>">
-                    <%= status == 1 || status == 0 || status == '' ? `Linashughulikiwa` : ( status == 2 ? 'Limethibitishwa' : (status == 3 ? 'Limekatiliwa' : 'Limerudishwa')) %>
-                </span>
-              <% } %>
-            </td>
-            <td>
-                <span class="<%= payment_status_id == 1 ? 'badge bg-danger' : (payment_status_id == 2 ? 'badge bg-success' : '')%>">
-                    <%=payment_status%>
-                </span>
-                <% if(!payment_status){ %>
-                  <button type="button" class="btn btn-sm btn-soft-primary btn-make-payment" 
-                  onclick="makePayment(this)" data-tracking_number="<%= item.tracking_number %>" >Lipa</button>
-                <% } %>
-            </td>
-              <td class="text-center">
-                  <!-- <div class="dropdown">
-                      <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                          <i class="ri-more-2-fill"></i>
-                      </a>
-                      <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                          <li><a class="dropdown-item" href="/Barua/<%= item.tracking_number %>">Barua</a></li>
-                      </ul>
-                  </div> -->
-              </td>
-          </tr>
-          <% } %>
         </tbody>
       </table>
     </div>
     </div>
-    <%- include('paginations/html_pagination.ejs') %>
   </div>
 </div><!-- end card -->
-<div class="modal fade" id="reassign-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
+<div class="modal fade" id="comments-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content">
       <div class="modal-header bg-light p-3">
-        <h5 class="modal-title" id="exampleModalLabel"></h5>
+        <h5 class="modal-title" id="commentModalTitle"></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
       </div>
       <div class="modal-body">
-        <div class="form-group">
-             <div>
-                  <select name="staff" id="watumiaji" class="form-control">
-                  </select>
-             </div>
-        </div>
       </div>
     </div>
   </div>
 </div>
 
 <%- include('layouts/partials/footer.ejs' , {
-                card_title :  card_title , 
-                pagination_script : false,
-}) %>
-<script type="text/javascript" src="/design/layouts/scripts/track_ombi_scripts.js"></script>
+    card_title :  card_title,
+    scripts : [
+            {src : '/design/layouts/scripts/track_ombi_scripts.js'},
+            { src : '/js/datatables/dataTables.js'},
+            { src : '/js/datatables/dataTables.buttons.js'},
+            { src : '/js/datatables/buttons.dataTables.js'},
+            { src : '/js/datatables/buttons.html5.min.js'},
+            { src : '/js/datatables/jszip.min.js'},
+            { src : '/js/datatables/pdfmake.min.js'},
+            { src : '/js/datatables/vfs_fonts.js'},
+            { src : '/js/datatables/buttons.print.min.js'},
+          ]
+    }) %>
+<script>
+    $(document).ready(function() {
+        tableData('datatable' ,'/TrackList' , 'POST',
+            [
+              { data: null, render : (data , type , row , meta) => {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+              },
+              searchable : false,
+              orderable: false
+            },
+              {
+                    data: null, // No data source for this column
+                    render: function (data, type, row) {
+                            const elements = [{
+                                                show : true,
+                                                type : 'button',
+                                                class : 'btn btn-sm btn-outline-secondary me-1',
+                                                icon : 'bx bx-comment me-1',
+                                                function : 'viewComments',
+                                                btnText : 'Maoni',
+                                                moreAttributes : `title='View Maoni' data-bs-toggle='tooltip'`
+                                            },
+                                        ]
+                        return actionButtons(row , elements);
+                    },
+                    orderable: false, // Disable sorting for the action buttons column
+                    searchable : false,
+                    class : 'text-center text-nowrap'
+                    },
+                    
+                    { data: "application_category", name: "application_category" , class : 'text-nowrap' , render : (data , type , row) => {
+                          return `<strong>${data.toUpperCase()}</strong>`
+                    } },
+                    { data: "tracking_number", name: "tracking_number" ,  class : 'text-nowrap', render : (data , type , row) => {
+                          return `<strong>${data.toUpperCase()}</strong>`
+                    } },
+                    { data: "school_name", name: "school_name" ,  class : 'text-nowrap' },
+                    { data: "category", name: "category" ,  class : 'text-nowrap' },
+                    { data: "region_name", name: "region_name" },
+                    { data: "district_name", name: "district_name" },
+                    { data: "ward_name", name: "ward_name" },
+                    { data: "street_name", name: "street_name" },
+                    { data: "applicant_name", name: "applicant_name" },
+                    {
+                      data: "application_created_at", name: "application_created_at",
+                            render: (data, type, row) => {
+                                return changeDateFormat(data);
+                            },
+                    },
+                    { data: "title", name: "title"  , render : (data , type , row) => {
+                          var location = ''
+                          const rank = row.rank
+                          if(row.status == 1 || row.status == 0) {
+                              location += data ? (rank == 2 ? data +' - '+zone_name : (rank == 3 ? data + ' - '+row.district_name : data)) : 'W1 - '+ row.district_name
+                          }
+                          if(row.status == 4){
+                            location += `<span class='text-danger'>Mwombaji</span>`;
+                          }
+                          return `<strong>${location}</strong>`;
+                    }},
+                    {
+                      data: "submitted_created_at", name: "submitted_created_at",
+                            render: (data, type, row) => {
+                                return changeDateFormat(data);
+                            },
+                    },
+                    { data: "status", name: "status"  , render : (data , type , row) => {
+                         if(row.payment_status_id == 2){ 
+                          return `<span class="badge bg-${ data == 1 || data == '' ? `info` : ( data == 2 ? 'success' : (data == 3 ? 'danger' : 'warning'))}">
+                                    ${data == 1 || data == 0 || data == '' ? 'Linashughulikiwa' : ( data == 2 ? 'Limethibitishwa' : (data == 3 ? 'Limekatiliwa' : 'Limerudishwa'))}
+                                </span>`
+                        } 
+                    }
+                    },
+                    { data: "payment_status", name: "payment_status"  , render : (data , type , row) => {
+                       
+                          if(!data){ 
+                            return `<button type="button" class="btn btn-sm btn-outline-primary btn-make-payment" 
+                            onclick="makePayment(this)" data-tracking_number="${row.tracking_number }" >Lipa</button>`
+                          }else{
+                            return `<span class="${row.payment_status_id == 1 ? 'badge bg-danger' : (row.payment_status_id == 2 ? 'badge bg-success' : '')}">
+                                        ${data}
+                                       </span>`
+                          }
+                      }
+                    },
+            ]
+        );
+    });
+</script>
+<!-- <script type="text/javascript" src="/design/layouts/scripts/track_ombi_scripts.js"></script> -->
 </body>
 
 </html>

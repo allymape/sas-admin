@@ -17,10 +17,10 @@ document.addEventListener("DOMContentLoaded", function () {
       "MediaEmbed",
       "Heading",
     ],
-    height: "50px",
+    height: "30px",
   })
     .then(function (ckEditorInstance) {
-      ckEditorInstance.ui.view.editable.element.style.height = "50px";
+      ckEditorInstance.ui.view.editable.element.style.height = "30px";
 
       // Function to update text in editorTextArray
       function updateText() {
@@ -55,10 +55,10 @@ document.addEventListener("DOMContentLoaded", function () {
       "MediaEmbed",
       "Heading",
     ],
-    height: "50px",
+    height: "30px",
   })
     .then(function (ckEditorInstance) {
-      ckEditorInstance.ui.view.editable.element.style.height = "50px";
+      ckEditorInstance.ui.view.editable.element.style.height = "30px";
 
       // Function to update text in editorTextArray
       function updateText() {

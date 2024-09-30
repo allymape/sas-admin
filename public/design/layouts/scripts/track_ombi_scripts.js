@@ -23,3 +23,19 @@ $("#application-category").on('change' , function(){
           window.location.href = `/TrackOmbi/${id}`;
         }
 });
+
+function viewComments(button){
+  const rowData = JSON.parse(button.getAttribute("data-row"));
+  const tracking_number = rowData.tracking_number
+  const modal = $("#comments-modal");
+  const body = modal.find(".modal-body");
+    $("#commentModalTitle").text(
+      `${rowData.application_category.toUpperCase()} : ${rowData.school_name} ( ${tracking_number} )`
+    );
+    body.empty();
+    ajaxRequest("/ApplicationComments/"+tracking_number , 'POST' , (response) => {
+          const { htmlComments } = response;
+          body.html(htmlComments)
+          modal.modal("show");
+    } , {} , true);
+}
