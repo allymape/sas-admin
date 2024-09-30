@@ -38,7 +38,6 @@ trackApplicationController.post(
     sendRequest(req,res,trackAPI +"?page=" +page +"&per_page=" +per_page,"GET",req.body,(jsonData) => {
         let totalRecords = jsonData.numRows;
         const dataToSend = jsonData.data;
-        console.log(dataToSend, totalRecords);
         res.send({
           draw: draw,
           recordsTotal: totalRecords,
