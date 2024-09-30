@@ -363,6 +363,23 @@ function changeOnlyDateFormat(dateStr) {
   return formattedDate;
 }
 
+// Function to calculate the difference in days from now to a specified datetime
+function findDiffDaysFromNow(targetDate) {
+  // Check if the targetDate is a valid date
+  const endDate = new Date(targetDate);
+  if (isNaN(endDate)) {
+    throw new Error("Invalid date format");
+  }
+  // Get the current date
+  const now = new Date();
+  // Calculate the difference in milliseconds
+  const diffTime = now - endDate;
+  // Convert milliseconds to days
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)); // 1000 ms in a second, 60 seconds in a minute, 60 minutes in an hour, 24 hours in a day
+  return diffDays;
+}
+
+
 function showLoadingSpinner() {
   $("#loading").fadeIn();
   var opts = {
