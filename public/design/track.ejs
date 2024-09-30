@@ -122,7 +122,7 @@
                           var location = ''
                           const rank = row.ngazi
                           if(row.status == 1 || row.status == 0) {
-                              location += data ? (rank == 2 ? data +' - '+zone_name : (rank == 3 ? data + ' - '+row.district_name : data)) : 'W1 - '+ row.district_name
+                              location += data ? (rank == 2 ? data +' - '+row.zone_name : (rank == 3 ? data + ' - '+row.district_name : data)) : 'W1 - '+ row.district_name
                           }
                           if(row.status == 4){
                             location += `<span class='text-danger'>Mwombaji</span>`;
