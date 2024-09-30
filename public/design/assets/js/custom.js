@@ -1100,18 +1100,31 @@ function tableData(tableId ,url, type, columns , data = null) {
 }
 
 function actionButtons(row, elements) {
+  const escapedRow = JSON.stringify(row).replace(/'/g, "\\'");
   if (typeof elements == "object") {
     let tags = ``;
     elements.forEach(element => {
       if (element.show) {
         if (element.type == 'button') {
           tags += `<button type="button"
-                          ${element.moreAttributes ? element.moreAttributes : '' }
-                          ${row ? "data-row='" + JSON.stringify(row) + "'" : ""} 
+                          ${
+                            element.moreAttributes ? element.moreAttributes : ""
+                          }
+                          ${
+                            row
+                              ? "data-row='" + JSON.stringify(escapedRow) + "'"
+                              : ""
+                          } 
                           class="${element.class ? element.class : ""}" 
-                          onclick="${element.function ? element.function + "(this); return false;" : ""}"
+                          onclick="${
+                            element.function
+                              ? element.function + "(this); return false;"
+                              : ""
+                          }"
                       >
-                        <span class="${element.icon ? element.icon : ""}"></span> ${element.btnText ? element.btnText : ""}
+                        <span class="${
+                          element.icon ? element.icon : ""
+                        }"></span> ${element.btnText ? element.btnText : ""}
                     </button>`;
         } else {
           tags += `<a href="${element.link ? element.link : '#'}" 
