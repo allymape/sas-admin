@@ -1100,19 +1100,21 @@ function tableData(tableId ,url, type, columns , data = null) {
 }
 
 function actionButtons(row, elements) {
-  const escapedRow = JSON.stringify(row).replace(/'/g, "\\'");
+  const escapedRow = JSON.stringify(row)
+    .replace(/"/g, "&quot;") // escape double quotes
+    .replace(/'/g, "&#39;"); // escape single quotes
   if (typeof elements == "object") {
     let tags = ``;
-    elements.forEach(element => {
+    elements.forEach((element) => {
       if (element.show) {
-        if (element.type == 'button') {
+        if (element.type == "button") {
           tags += `<button type="button"
                           ${
                             element.moreAttributes ? element.moreAttributes : ""
                           }
                           ${
                             row
-                              ? "data-row='" + JSON.stringify(escapedRow) + "'"
+                              ? `data-row="${escapedRow}"`
                               : ""
                           } 
                           class="${element.class ? element.class : ""}" 
@@ -1127,13 +1129,19 @@ function actionButtons(row, elements) {
                         }"></span> ${element.btnText ? element.btnText : ""}
                     </button>`;
         } else {
-          tags += `<a href="${element.link ? element.link : '#'}" 
-                        ${element.moreAttributes ? element.moreAttributes : '' }
+          tags += `<a href="${element.link ? element.link : "#"}" 
+                        ${element.moreAttributes ? element.moreAttributes : ""}
                         ${row ? "data-row='" + JSON.stringify(row) + "'" : ""} 
-                        class="${element.class ? element.class : ''}" 
-                        onclick="${element.function ? element.function + '(this); return false;' : ''}"
+                        class="${element.class ? element.class : ""}" 
+                        onclick="${
+                          element.function
+                            ? element.function + "(this); return false;"
+                            : ""
+                        }"
                      >
-                        <span class="${element.icon ? element.icon : ''}"></span> ${element.btnText ? element.btnText : ""}
+                        <span class="${
+                          element.icon ? element.icon : ""
+                        }"></span> ${element.btnText ? element.btnText : ""}
                     </a>`;
         }
       }
