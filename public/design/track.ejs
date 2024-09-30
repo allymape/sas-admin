@@ -120,7 +120,7 @@
                     },
                     { data: "title", name: "title"  , render : (data , type , row) => {
                           var location = ''
-                          const rank = row.rank
+                          const rank = row.ngazi
                           if(row.status == 1 || row.status == 0) {
                               location += data ? (rank == 2 ? data +' - '+zone_name : (rank == 3 ? data + ' - '+row.district_name : data)) : 'W1 - '+ row.district_name
                           }
