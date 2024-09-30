@@ -19,10 +19,11 @@
           <tr>
              <th width="5%">Na.</th>
             <th width="10%">Action</A></th>
-            <th>Aina ya Ombi</th>
+            <th>Ombi</th>
             <th>Namba ya Ombi</th>
             <th>Jina</th>
-            <th>Aina ya Shule</th>
+            <th>Aina</th>
+            <th>Umiliki</th>
             <th>Mkoa</th>
             <th>Halmashauri</th>
             <th>Kata</th>
@@ -67,6 +68,7 @@
             { src : '/js/datatables/pdfmake.min.js'},
             { src : '/js/datatables/vfs_fonts.js'},
             { src : '/js/datatables/buttons.print.min.js'},
+            { src : '/js/datatables/buttons.colVis.min.js'},
           ]
     }) %>
 <script>
@@ -107,6 +109,7 @@
                     } },
                     { data: "school_name", name: "school_name" ,  class : 'text-nowrap' },
                     { data: "category", name: "category" ,  class : 'text-nowrap' },
+                    { data: "registry", name: "registry" ,  class : 'text-nowrap' },
                     { data: "region_name", name: "region_name" },
                     { data: "district_name", name: "district_name" },
                     { data: "ward_name", name: "ward_name" },
@@ -157,6 +160,13 @@
                           }
                       }
                     },
+            ],
+            null,
+            [
+              {
+                targets: [7 , 8 , 9 , 10 , 11 , 16],
+                visible: false,
+              },
             ]
         );
     });

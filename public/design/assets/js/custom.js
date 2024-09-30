@@ -1026,7 +1026,7 @@ function tumaMaoniYako(
         window.history.replaceState(null, null, cleanHref);
     }
 
-function tableData(tableId ,url, type, columns , data = null) {
+function tableData(tableId ,url, type, columns , data = null , columnDefs = []) {
   $(`#${tableId}`).DataTable({
     processing: true,
     serverSide: true,
@@ -1097,15 +1097,11 @@ function tableData(tableId ,url, type, columns , data = null) {
               exportOptions: { columns: ":not(:last-child)" },
             },
           ],
+          "colvis",
         ],
       },
     },
-    // columnDefs: [
-    //   {
-    //     targets: [4, 5],
-    //     visible: false,
-    //   },
-    // ],
+    columnDefs: columnDefs,
     lengthMenu: [
       [10, 25, 50, 100, 500, -1],
       ["10 rows", "25 rows", "50 rows", "100 rows", "500 rows", "Show all"],
