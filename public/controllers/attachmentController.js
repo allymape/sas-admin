@@ -49,7 +49,7 @@ attachmentController.get(
 attachmentController.post(
   "/TumaAttachment",
   isAuthenticated,
-  can("create-attachments"),
+  can("upload-attachments"),
   function (req, res) {
     const formData = {
       keyString: req.body.keyString,
@@ -57,6 +57,7 @@ attachmentController.post(
       attachment: req.body.attachment,
       kiambatisho: req.body.kiambatisho,
     };
+    
     sendRequest(req, res, pandishaHatiAPI, "POST", formData, (jsonData) => {
       var { statusCode, message, success } = jsonData;
       return res.send({
