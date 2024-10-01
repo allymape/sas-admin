@@ -136,8 +136,10 @@
                       data: "submitted_created_at", name: "submitted_created_at",
                             render: (data, type, row) => {
                                 const diff = findDiffDaysFromNow(data);
-                                var overdue =  diff > 5 && row.status != 4 ? ` <span class='badge bg-danger' title='Ombi hili limekaa zaidi ya siku 5'>Overdue</span>` : ''; 
-                                return changeDateFormat(data) + overdue;
+                                var overdue =  diff > row.overdue && row.status != 4 ? 
+                                            ` <span class='badge bg-danger' title='Ombi hili limekaa zaidi ya siku ${row.overdue}' data-bs-toggle='tooltip'>Overdue</span>` :
+                                             ''; 
+                                return changeDateFormat(data) + overdue 
                             },
                     },
                     { data: "status", name: "status"  , render : (data , type , row) => {

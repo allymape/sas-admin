@@ -18,11 +18,6 @@ regionController.get("/Mikoa", isAuthenticated, can('view-regions'), function (r
                   res.render(path.join(__dirname + "/../design/mikoa"), {
                   req: req,
                   zones: jsonData.data,
-                //   useLev: req.session.UserLevel,
-                //   userName: req.session.userName,
-                //   RoleManage: req.session.RoleManage,
-                //   userID: req.session.userID,
-                //   cheoName: req.session.cheoName,
                 });
                 }
             }); 

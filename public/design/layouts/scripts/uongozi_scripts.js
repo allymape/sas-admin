@@ -5,10 +5,12 @@ function BadiliData(e) {
   var id = e.getAttribute("data-id");
   var name = e.getAttribute("data-name");
   var rankid = e.getAttribute("data-rank-level");
+  var overdue = e.getAttribute("data-overdue");
   var statusid = e.getAttribute("data-status");
   document.getElementById("id-field").value = id;
   document.getElementById("rank-name2-field").value = name;
   document.getElementById("ranks2-field").value = rankid
+  document.getElementById("overdue2-field").value = overdue
   document.getElementById("status-field").checked = (statusid == 1 ? true : false)
   modal("showEditModal", true)
 }
@@ -16,6 +18,7 @@ function BadiliData(e) {
 function sajiliHati() {
   var name = document.getElementById("rank-name-field").value;
   var rank = document.getElementById("ranks-field").value;
+  var overdue = document.getElementById("overdue-field").value;
 
   if (name.length > 0 && rank > 0) {
             ajaxRequest(
@@ -36,7 +39,8 @@ function sajiliHati() {
             },
             JSON.stringify({
                 name: name,
-                rank : rank
+                rank : rank,
+                overdue : overdue
             })
             );
   }
@@ -45,6 +49,7 @@ function sasishaHati() {
   var id = document.getElementById("id-field").value;
   var name = document.getElementById("rank-name2-field").value;
   var rank = document.getElementById("ranks2-field").value;
+  var overdue = document.getElementById("overdue2-field").value;
   var status = document.getElementById("status-field").checked;
   if(name.length > 0 && rank.length > 0){
      ajaxRequest(
@@ -66,6 +71,7 @@ function sasishaHati() {
         JSON.stringify({
             name: name,
             rank : rank,
+            overdue : overdue,
             status : status ? 1 : 0
         })
         );
