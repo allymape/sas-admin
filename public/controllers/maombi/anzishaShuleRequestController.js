@@ -48,8 +48,6 @@ anzishaShuleRequestController.get("/MaombiKuanzishaShuleList", isAuthenticated ,
                         "MaombiKuanzishaShuleList",
                         "MaombiKuanzishaShule"
                       );
-        console.log(req.originalUrl);
-        console.log(data);
           res.send({
             message,
             statusCode,
