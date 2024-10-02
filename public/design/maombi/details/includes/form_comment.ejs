@@ -44,13 +44,16 @@
               <button type="button" class="btn btn-success btn-sm" onclick="Pandisha()">Pandisha</button>
               <button type="button" class="btn btn-danger btn-sm ml-4" onclick="showViambata()">Ghairi</button>
             </div>
-      </div>
     </div>
 
-    <div class="col-12 text-start">
+    </div>
+    <div class="col-12">
       <button type="button" onclick="showViambata()" class="btn btn-outline-secondary btn-sm" title="ambatisha kiambatisho kwenye ombi hili">
-        <i class="ri-attachment-line fs-12"></i> Weka Faili
+        <i class="ri-attachment-line fs-12"></i> Bonyeza hapa kuweka Taarifa
       </button>
+    </div>
+    <hr>
+    <div class="col-6">      
       <button type="button" id="btn-tuma" onclick="tuma(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" 
         title="Kwa kubonyeza kitufe hiki unatuma ombi kwa afisa/kiongozi uliyemchagua hapo juu." data-bs-toggle="tooltip" class="btn btn-primary d-none">Tuma</button>
 
@@ -60,6 +63,7 @@
             title="Kwa kubonyeza kitufe hiki unathibitisha ombi hili" class="btn btn-success">
             Thibitisha
           </button>
+          &nbsp;&nbsp;
           <button type="button" id="btn-kataa" onclick="kataa(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" data-bs-toggle="tooltip" 
             title="Kwa kubonyeza kitufe hiki unakataa ombi hili" 
             class="btn btn-danger">Kataa</button>
@@ -69,8 +73,9 @@
            Wasilisha
           </button>
         <% }  %>
-          <button type="button" id="btn-rudisha" onclick="rudisha(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" data-bs-toggle="tooltip" 
-            title="Kwa kubonyeza kitufe hiki unalirudisha ombi kwa mwombaji" class="btn btn-info">Rudisha kwa
+          <button type="button" id="btn-rudisha" onclick="rudisha(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" 
+            data-bs-toggle="tooltip" 
+            title="Kwa kubonyeza kitufe hiki unalirudisha ombi kwa mwombaji" class="btn btn-warning float-end">Rudisha kwa
               Mwombaji
           </button>
       <% } %>

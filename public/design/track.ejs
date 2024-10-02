@@ -101,15 +101,15 @@
                     class : 'text-center text-nowrap'
                     },
                     
-                    { data: "application_category", name: "application_category" , class : 'text-nowrap' , render : (data , type , row) => {
+                    { data: "application_category", name: "application_category" , class : 'text-primary' , render : (data , type , row) => {
                           return `<strong>${data.toUpperCase()}</strong>`
                     } },
                     { data: "tracking_number", name: "tracking_number" ,  class : 'text-nowrap', render : (data , type , row) => {
                           return `<strong>${data.toUpperCase()}</strong>`
                     } },
-                    { data: "school_name", name: "school_name" ,  class : 'text-nowrap' },
+                    { data: "school_name", name: "school_name" ,  class : 'text-dark' },
                     { data: "category", name: "category" ,  class : 'text-nowrap' },
-                    { data: "registry", name: "registry" ,  class : 'text-nowrap' },
+                    { data: "registry", name: "registry" ,  class : '' },
                     { data: "region_name", name: "region_name" },
                     { data: "district_name", name: "district_name" },
                     { data: "ward_name", name: "ward_name" },
@@ -131,7 +131,7 @@
                             location += `<span class='text-danger'>Mwombaji</span>`;
                           }
                           return `<strong>${location}</strong>`;
-                    }},
+                    } , class : 'text-nowrap'},
                     {
                       data: "submitted_created_at", name: "submitted_created_at",
                             render: (data, type, row) => {
