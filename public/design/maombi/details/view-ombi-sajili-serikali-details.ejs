@@ -228,7 +228,7 @@
                                         <td><b><%= school_name %></b></td>
                                         <td><b><%= area %></b></td>
                                         <td><b><%= schoolCategory %></b></td>
-                                        <td><b><%= schoolOpeningDate %></b></td>
+                                        <td><b><%= schoolOpeningDate ? dateFormat(schoolOpeningDate , 'DD-MM-YYYY') : '' %></b></td>
                                     </tr>
                                 </tbody>
                             </table>

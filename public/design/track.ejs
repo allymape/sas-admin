@@ -85,7 +85,7 @@
                     data: null, // No data source for this column
                     render: function (data, type, row) {
                             const elements = [{
-                                                show : true,
+                                                show : row.office == 1 ? true : false,
                                                 type : 'button',
                                                 class : 'btn btn-sm btn-outline-secondary me-1',
                                                 icon : 'bx bx-comment me-1',
