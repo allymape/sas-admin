@@ -194,7 +194,6 @@ function Pandisha() {
       // Print data in console
       // alert(base64);
       var taachedFile = base64.split(",");
-
       var keyString = trackerId + "-" + faili + "-" + new Date();
       let hash = 0;
       for (charIndex = 0; charIndex < keyString.length; ++charIndex) {
@@ -205,22 +204,6 @@ function Pandisha() {
       hash += hash << 3;
       hash ^= hash >> 11;
       var key = (((hash + (hash << 15)) & 4294967295) >>> 0).toString(16);
-      // $.ajax({
-      //   url: "/TumaAttachment",
-      //   type: "POST",
-      //   data: JSON.stringify({
-      //     keyString: key,
-      //     trackerId: trackerId,
-      //     attachment: faili,
-      //     kiambatisho: taachedFile[1],
-      //   }),
-      //   contentType: "application/json",
-      //   success: function (response) {
-      //     // if(typeof(response) === "string"){response = JSON.parse(response)}
-      //     alert(response);
-      //     //window.location.href = "/MaombiKuanzishaShule";
-      //   },
-      // });
       ajaxRequest(
         "/TumaAttachment",
         "POST",
@@ -231,6 +214,7 @@ function Pandisha() {
               if(success){
                 hideSomeButtons(staff.val());
                 showViambata()
+                window.location.reload()
               }
           }  )
         },

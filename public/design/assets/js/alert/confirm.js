@@ -30,7 +30,7 @@ function confirmAction(
   });
 }
 
-function alertMessage(title = "Deleted!" , text='Your file has been deleted.' , icon = 'success' , callback , data = null) {
+function alertMessage(title = "" , text='' , icon = 'success' , callback , data = null) {
   Swal.fire({
     title: title,
     text: text,
