@@ -46,7 +46,7 @@ function nata() {
                   " </span></td>";
                 row =
                   row +
-                  ' <td class="due_date  text-uppercase"  title=" ' +
+                  ' <td class="due_date  text-uppercase text-secondary"  title=" ' +
                   data[i].created_at +
                   ' "> ' +
                   diffForHumans(data[i].created_at) +

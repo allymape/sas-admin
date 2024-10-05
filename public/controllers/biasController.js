@@ -109,7 +109,7 @@ biasController.post("/BadiliBias/:id",  isAuthenticated, can('update-biases'), f
 });
 
 // Delete Bias
-biasController.post("/FutaBias/:id",  isAuthenticated, can('delete-biass'), function (req, res) {
+biasController.post("/FutaBias/:id",  isAuthenticated, can('delete-biases'), function (req, res) {
   var id = Number(req.params.id);
   sendRequest(req, res, deleteBiasAPI + "/" + id, "PUT", {}, (jsonData) => {
         var statusCode = jsonData.statusCode;

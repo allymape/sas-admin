@@ -914,8 +914,10 @@ function diffForHumans(date) {
       fuzzy = "Dak " + Math.floor(delta / minute);
     } else if (Math.floor(delta / hour) < 24) {
       fuzzy = "Saa " + Math.floor(delta / hour);
-    } else if (delta > day) {
+    } else if (Math.floor(delta / day) <= 30) {
       fuzzy = "Siku " + Math.floor(delta / day);
+    } else if (Math.floor(delta / day) > 30) {
+      return changeDateFormat(date);
     }
     return fuzzy;
   }

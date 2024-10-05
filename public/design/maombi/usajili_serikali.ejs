@@ -90,7 +90,7 @@
                         </div>
                     </td>
                     <td class="client_name"><%= maombi[i].RegionName %></td>
-                    <td class="due_date badge badge-soft-secondary text-uppercase"  title=" <%= maombi[i].created_at %>"> <%= maombi[i].remain_days %></td>
+                    <td class="due_date text-secondary text-uppercase"  title=" <%= maombi[i].created_at %>"> <%= maombi[i].remain_days %></td>
                     <td class="is_approved">
                          <span class="badge <%= maombi[i].is_approved == 0 ?  'bg-warning' : '' %>
                             <%= maombi[i].is_approved == 1 ?  'bg-primary' : '' %>

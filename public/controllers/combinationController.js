@@ -110,7 +110,7 @@ combinationController.post("/BadiliCombination/:id",  isAuthenticated, can('upda
 });
 
 // Delete Combination
-combinationController.post("/FutaCombination/:id",  isAuthenticated, can('delete-combination'), function (req, res) {
+combinationController.post("/FutaCombination/:id",  isAuthenticated, can('delete-combinations'), function (req, res) {
   var id = Number(req.params.id);
   sendRequest(req, res, deleteCombinationAPI + "/" + id, "PUT", {}, (jsonData) => {
         var statusCode = jsonData.statusCode;

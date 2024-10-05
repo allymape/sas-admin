@@ -13,7 +13,32 @@ function BadiliData(e) {
   modal("showEditModal" , true);
 }
 
-
+function deleteRestoreTahasusi(e) {
+  const id = e.getAttribute("data-id");
+  const status = e.getAttribute("data-status");
+  confirmAction(
+    () => {
+      ajaxRequest(`/FutaCombination/${id}`, "POST", (response) => {
+        const statusCode = response.statusCode;
+        alertMessage(
+          statusCode == 300 ? "Umefanikiwa" : "Haujafanikiwa",
+          response.message,
+          statusCode == 300 ? "success" : "error",
+          () => {
+            if (statusCode == 300) {
+              window.location.reload();
+            }
+          }
+        );
+      });
+    },
+    (confirmBtnText = "Endelea"),
+    (icon = `${status == 1 ? 'error' : 'warning'}`),
+    (text = `${status == 1 ? 'You want to delete this?You can restore it back!' : 'You want to restore this?'}`),
+    (title = "Are you sure?"),
+    (html = "")
+  );
+}
 function sajiliTahasusi() {
   var name = document.getElementById("name-field").value;
   var specialization = document.getElementById("specialization-field").value;
