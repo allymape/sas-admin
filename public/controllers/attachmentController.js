@@ -6,8 +6,8 @@ const { sendRequest, can, isAuthenticated } = require("../../util");
 const FRONTEND_URL = process.env.FRONTEND_URL;
 const pdf2base64 = require("pdf-to-base64");
 var API_BASE_URL = process.env.API_BASE_URL;
-// var pandishaHatiAPI = API_BASE_URL + "upload-attachment";
-var pandishaHatiAPI = FRONTEND_URL + "api/school-establishment/upload-attachments";
+var pandishaHatiAPI = API_BASE_URL + "upload-attachment";
+// var pandishaHatiAPI = FRONTEND_URL + "api/school-establishment/upload-attachments";
 // process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 const https = require("https");
 const fs = require("fs");
@@ -54,65 +54,65 @@ attachmentController.post(
   isAuthenticated,
   can("upload-attachments"),
   function (req, res) {
-    // const formData = {
-    //   keyString: req.body.keyString,
-    //   trackerId: req.body.trackerId,
-    //   attachment: req.body.attachment,
-    //   kiambatisho: req.body.kiambatisho,
-    // };
-    // console.log(formData);
-    // sendRequest(req, res, pandishaHatiAPI, "POST", formData, (jsonData) => {
-    //   console.log(jsonData);
-    //   var { statusCode, message, success } = jsonData;
-    //   return res.send({
-    //     success,
-    //     statusCode,
-    //     message,
-    //   });
-    // });
     const formData = {
-      // keyString: req.body.keyString,
-      tracking_number: req.body.trackerId,
-      staff_id : req.user.id,
-      attachments: [
-        {
-          attachment_type: req.body.attachment,
-          attachment_path: req.body.kiambatisho,
-        },
-      ],
-      // kiambatisho: req.body.kiambatisho,
+      keyString: req.body.keyString,
+      trackerId: req.body.trackerId,
+      attachment: req.body.attachment,
+      kiambatisho: req.body.kiambatisho,
     };
-    const token = process.env.FRONT_END_TOKEN;
-    try {
-      request(
-        {
-          url: pandishaHatiAPI,
-          method: "POST",
-          headers: {
-            Authorization: "Bearer" + " " + token,
-            "Content-Type": "application/json",
-          },
-          json: formData,
-        },
-        (error, response, body) => {
-          if (error) {
-            console.log("error", error);
-          }
-          const { statusCode, message } = body;
-          return res.status(response.statusCode).send({
-            success: statusCode ? true : false,
-            statusCode: statusCode ? 300 : 306,
-            message : message ? message : "Kuna shida tafadhali hakiki ukubwa wa faili lako.",
-          });
-        }
-      );
-    } catch (error) {
-        return res.status(response.statusCode).send({
-          success: false,
-          statusCode:306,
-          message : 'Kuna tatizo wasiliana na Msimamizi wa mfumo.',
-        });
-    }
+    console.log(formData);
+    sendRequest(req, res, pandishaHatiAPI, "POST", formData, (jsonData) => {
+      console.log(jsonData);
+      var { statusCode, message, success } = jsonData;
+      return res.send({
+        success,
+        statusCode,
+        message,
+      });
+    });
+    // const formData = {
+    //   // keyString: req.body.keyString,
+    //   tracking_number: req.body.trackerId,
+    //   staff_id : req.user.id,
+    //   attachments: [
+    //     {
+    //       attachment_type: req.body.attachment,
+    //       attachment_path: req.body.kiambatisho,
+    //     },
+    //   ],
+    //   // kiambatisho: req.body.kiambatisho,
+    // };
+    // const token = process.env.FRONT_END_TOKEN;
+    // try {
+    //   request(
+    //     {
+    //       url: pandishaHatiAPI,
+    //       method: "POST",
+    //       headers: {
+    //         Authorization: "Bearer" + " " + token,
+    //         "Content-Type": "application/json",
+    //       },
+    //       json: formData,
+    //     },
+    //     (error, response, body) => {
+    //       if (error) {
+    //         console.log("error", error);
+    //       }
+    //       const { statusCode, message } = body;
+    //       return res.status(response.statusCode).send({
+    //         success: statusCode ? true : false,
+    //         statusCode: statusCode ? 300 : 306,
+    //         message : message ? message : "Kuna shida tafadhali hakiki ukubwa wa faili lako.",
+    //       });
+    //     }
+    //   );
+    // } catch (error) {
+    //     return res.status(response.statusCode).send({
+    //       success: false,
+    //       statusCode:306,
+    //       message : 'Kuna tatizo wasiliana na Msimamizi wa mfumo.',
+    //     });
+    // }
   }
 );
 
