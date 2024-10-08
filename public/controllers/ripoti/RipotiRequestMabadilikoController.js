@@ -511,7 +511,7 @@ reportMabadilikoRequestController.get("/RipotiKuongezaTahasusi", isAuthenticated
 );
 
 // Dahalia
-reportMabadilikoRequestController.get("/RipotiKuongezaDahalia",isAuthenticated,can("view-addition-of-combinations-report"),
+reportMabadilikoRequestController.get("/RipotiKuongezaDahalia",isAuthenticated,can("view-addition-of-hostel-report"),
   function (req, res) {
     const per_page = req.query.export == "true" && req.query.max ? Number(req.query.max) : Number(req.query.per_page || 10);
     const page = Number(req.query.page || 1);

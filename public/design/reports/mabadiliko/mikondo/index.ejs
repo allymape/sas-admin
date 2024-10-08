@@ -155,11 +155,11 @@
          <div class="ribbon-three ribbon-three-info">
             <span class="badge"><%=`${pagination.total}`%></span>
         </div>
-        <div class="table-responsive table-card mb-4">
+        <div class="table-responsive mb-4">
              <div class="alert alert-success">
                     <h6 class="text-primary text-uppercase">Jumla <%= pagination.total %></h6>
                 </div>
-            <table class="table align-middle table-nowrap mb-0" id="tasksTable">
+            <table class="table align-middle  mb-0" id="tasksTable">
                 <thead class="table-light text-muted">
                     <tr>
                         <th class="sort" data-sort="id">Namba ya Ombi</th>
@@ -193,7 +193,7 @@
                         <td> <%= item.district %> </td>
                         <td> <%= item.ward %> </td>
                         <td> <%= item.street %> </td>
-                        <td> <%= item.approved_at %> </td>
+                        <td> <%= dateFormat(item.approved_at) %> </td>
                         <td> 
                            <span class="badge bg-<%= item.status == 2 ? 'success' : 'danger' %>" >
                              <%= item.status == 2 ? 'Limethibitshwa' : '' %> 
