@@ -38,6 +38,8 @@ kusajiliBinafsiRequestController.get(
         for (var i = 0; i < data.length; i++) {
           var tracking_number = data[i].tracking_number;
           var user_id = data[i].user_id;
+          var StreetName = data[i].StreetName;
+          var WardName = data[i].WardName;
           var LgaName = data[i].LgaName;
           var RegionName = data[i].RegionName;
           var school_name = data[i].school_name;
@@ -51,6 +53,8 @@ kusajiliBinafsiRequestController.get(
             tracking_number: tracking_number,
             user_id: user_id,
             school_name: school_name,
+            StreetName: StreetName,
+            WardName: WardName,
             LgaName: LgaName,
             RegionName: RegionName,
             registration_number: registration_number,
@@ -100,6 +104,8 @@ kusajiliBinafsiRequestController.get(
         var created_at = data[0].created_at;
         var tracking_number = data[0].tracking_number;
         var school_name = data[0].school_name;
+        var StreetName = data[0].StreetName;
+        var WardName = data[0].WardName;
         var LgaName = data[0].LgaName;
         var WardNameMtu = data[0].WardNameMtu;
         var LgaNameMtu = data[0].LgaNameMtu;
@@ -160,6 +166,8 @@ kusajiliBinafsiRequestController.get(
             tracking_number: tracking_number,
             schoolOpeningDate: schoolOpeningDate,
             school_name: school_name,
+            StreetName: StreetName,
+            WardName: WardName,
             LgaName: LgaName,
             RegionName: RegionName,
             RegionNameMtu: RegionNameMtu,
