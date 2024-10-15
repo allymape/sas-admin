@@ -32,7 +32,9 @@ $(".read-attachment").click(function () {
     "background:url(/assets/images/ajax-loader.gif) center center no-repeat;";
   iframe.src = "about:blank";
   if (file_path.includes(".pdf")) {
-    iframe.src = `${document.location.origin}/View-Attachment${file_path}`;
+    var path = file_path.split("/");
+    const filePath = path[path.length - 1];
+    iframe.src = `${document.location.origin}/View-Attachment/${filePath}`;
   } else {
     if (file_path) {
       iframe.src = `data:application/pdf;base64, ${file_path}`;
@@ -65,25 +67,31 @@ function ajaxRequest(url, method, callback, formData = {}, loading = true) {
       }
       var msg = "";
       if (xhr.status === 0) {
-        msg = "Not connect.\n Verify Network.";
+        msg = "Haujaunganishwa.\n Hakiki mtandao wako.";
       } else if (xhr.status == 404) {
-        msg = "Requested page not found. [404]";
-      } else if (xhr.status == 500) {
-        msg = "Internal Server Error [500].";
+        msg = "Ukurasa haujapatikana.";
+      } else if (xhr.status == 401) {
+        msg = "Hauna ruhusa ya kufanya kitendo hiki.";
+      } 
+      else if (xhr.status == 500) {
+        msg = "Kuna tatizo la kifundi.";
       } else if (exception === "parsererror") {
         window.location.reload();
         // msg = "Requested JSON parse failed.";
-        msg = "Kuna shida tafadhali wasiliana na Msimamizi wa Mfumo";
+        msg = "Kuna shida tafadhali.";
       } else if (exception === "timeout") {
-        msg = "Time out error.";
+        msg = "Muda umekishwa.";
       } else if (exception === "abort") {
-        msg = "Ajax request aborted.";
+        msg = "Ombi limeghairishwa.";
       } else {
         msg = "Error:" + xhr.status + " ";
       }
-      console.log(text);
-      text = "";
-      alertMessage(text, msg, "error", () => {});
+      alertMessage(
+        `Kuna Tatizo [Error Code: ${xhr.status}]`,
+        msg + "Wasiliana na Msimamizi wa Mfumo",
+        "error",
+        () => {}
+      );
     },
   });
 }
