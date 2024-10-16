@@ -6,6 +6,7 @@ const { sendRequest, can, isAuthenticated } = require("../../util");
 const FRONTEND_URL = process.env.FRONTEND_URL;
 const pdf2base64 = require("pdf-to-base64");
 var API_BASE_URL = process.env.API_BASE_URL;
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 // var pandishaHatiAPI = API_BASE_URL + "upload-attachment";
 var pandishaHatiAPI = FRONTEND_URL + "api/school-establishment/upload-attachments";
 // process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
