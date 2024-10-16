@@ -98,7 +98,7 @@ attachmentController.post(
           if (error) {
             console.log("error", error);
           }
-          console.log(body)
+          console.log("Hapaaaaa",body)
           if(response.statusCode == 200){
             const { statusCode, message } = body;
               return res.status(response.statusCode).send({
