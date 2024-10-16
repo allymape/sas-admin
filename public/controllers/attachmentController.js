@@ -97,22 +97,30 @@ attachmentController.post(
         (error, response, body) => {
           if (error) {
             console.log("error", error);
-          }
-          console.log("Hapaaaaa",body)
-          if(response.statusCode == 200){
-            const { statusCode, message } = body;
+            return res.status(response.statusCode).send({
+              success: false,
+              statusCode: 306,
+              message: "Kuna tatizo wasiliana na Msimamizi wa mfumo.",
+            });
+          }else{
+            if (response.statusCode == 200) {
+              const { statusCode, message } = body;
               return res.status(response.statusCode).send({
                 success: statusCode ? true : false,
                 statusCode: statusCode ? 300 : 306,
-                message : message ? message : "Kuna shida tafadhali hakiki ukubwa wa faili lako.",
+                message: message
+                  ? message
+                  : "Kuna shida tafadhali hakiki ukubwa wa faili lako.",
               });
-            }else{
+            } else {
               return res.status(response.statusCode).send({
                 success: false,
-                statusCode:306,
-                message : 'Kuna tatizo wasiliana na Msimamizi wa mfumo.',
+                statusCode: 306,
+                message: "Kuna tatizo wasiliana na Msimamizi wa mfumo.",
               });
             }
+          }
+          
         }
       );
     } catch (error) {
