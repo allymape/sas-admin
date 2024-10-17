@@ -13,26 +13,30 @@ auditTrailController.get(
   can("view-audit"),
   activeHandover,
   (req, res) => {
-    var per_page = Number(req.query.per_page || 10);
-    var page = Number(req.query.page || 1);
-    sendRequest(
-      req,
-      res,
-      auditAPI + "?page=" + page + "&per_page=" + per_page,
-      "GET",
-      {},
-      (jsonData) => {
-        const { data, numRows } = jsonData;
-        res.render(path.join(__dirname + "/../../public/design/audits/audit"), {
+     res.render(path.join(__dirname + "/../../public/design/audits/audit"), {
           req: req,
-          data: data,
-          pagination: {
-            total: Number(numRows),
-            current: Number(page),
-            per_page: Number(per_page),
-            url: modifiedUrl(req),
-            pages: Math.ceil(Number(numRows) / Number(per_page)),
-          },
+        });
+      }
+);
+auditTrailController.post(
+  "/AuditTrailList",
+  isAuthenticated,
+  can("view-audit"),
+  activeHandover,
+  (req, res) => {
+    let draw = req.body.draw;
+    let start = req.body.start;
+    let length = req.body.length;
+    var per_page = Number(length || 10);
+    var page = Number(start / length) + 1;
+    sendRequest(req,res,auditAPI + "?page=" + page + "&per_page=" + per_page,"GET",req.body,(jsonData) => {
+        let dataToSend = jsonData.data;
+        let totalRecords = jsonData.numRows;
+        res.send({
+          draw: draw,
+          recordsTotal: totalRecords,
+          recordsFiltered: totalRecords,
+          data: dataToSend,
         });
       }
     );
