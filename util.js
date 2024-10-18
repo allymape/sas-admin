@@ -446,8 +446,8 @@ module.exports = {
     // );
     let doc = new PDFDocument(options);
     const imagesPaths = path.join(__dirname + "/public/assets/images");
-    const trackingNumber = req.params.id;
-    const filename = encodeURIComponent(trackingNumber) + ".pdf";
+    const trackingNumber = req.params.tracking_number;
+    const filename = encodeURIComponent(module.exports.formatDate(new Date() , 'DD_MM_YYYY-HH_mm_ss-') + trackingNumber) + ".pdf";
     // for downloading set the content-dispostion to (download, attachment)
     res.setHeader("Content-disposition", 'inline; filename="' + filename + '"');
     res.setHeader("Content-type", "application/pdf");
