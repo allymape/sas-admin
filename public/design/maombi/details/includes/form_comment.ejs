@@ -59,14 +59,16 @@
 
       <% if( ['w1','kw1' , 'k1','kk1','mus','kmus','adsa','kadsa','ke','kke'].includes(userLevel)){ %>
         <% if(['ke','kke'].includes(userLevel) ){ %>
-          <button type="button" id="btn-thibitisha" onclick="thibitisha(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" data-bs-toggle="tooltip" 
-            title="Kwa kubonyeza kitufe hiki unathibitisha ombi hili" class="btn btn-success">
-            Thibitisha
-          </button>
-          &nbsp;&nbsp;
-          <button type="button" id="btn-kataa" onclick="kataa(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" data-bs-toggle="tooltip" 
-            title="Kwa kubonyeza kitufe hiki unakataa ombi hili" 
-            class="btn btn-danger">Kataa</button>
+              <% if(has_adsa_commented){ %>
+                <button type="button" id="btn-thibitisha" onclick="thibitisha(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" data-bs-toggle="tooltip" 
+                  title="Kwa kubonyeza kitufe hiki unathibitisha ombi hili" class="btn btn-success">
+                  Thibitisha
+                </button>
+                &nbsp;&nbsp;
+                <button type="button" id="btn-kataa" onclick="kataa(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" data-bs-toggle="tooltip" 
+                  title="Kwa kubonyeza kitufe hiki unakataa ombi hili" 
+                  class="btn btn-danger">Kataa</button>
+            <% } %>
         <% }else{ %>
           <button type="button" id="btn-wasilisha" onclick="wasilisha(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" data-bs-toggle="tooltip" 
             title="Kwa kubonyeza kitufe hiki unaliwasisha ombi hili ngazi ya juu" class="btn btn-success">

@@ -4,8 +4,10 @@
    <!-- <h5 class="card-title">Maoni</h5> -->
      <div class="timeline-2">
         <div class="timeline-continue">
+    <% has_adsa_commented = false; %>
    <% for(var i = 0; i < Maoni.length; i++){ %>
-    <% const {name , name_to, rank_name_to, coments , created_at , rank_name} = Maoni[i]; %>
+    <% const {name , name_to, rank_name_to, coments, title , created_at , rank_name} = Maoni[i]; %>
+    <% has_adsa_commented = title == 'adsa' || title == 'kadsa' ? true : false %>
             <div class="row timeline-right">
                 <div class="col-12" style="position: absolute;">
                     <div class="timeline-year">
@@ -35,7 +37,9 @@
       <% if(Maoni.length > 0){ %>
         <hr class="text-info">
       <% } %>
-   <%- include('includes/form_comment.ejs') %>
+   <%- include('includes/form_comment.ejs' , {
+    'has_adsa_commented' : has_adsa_commented
+   }) %>
    <% } %>
  </div>
  <% } %>
