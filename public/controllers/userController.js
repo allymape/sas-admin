@@ -80,7 +80,7 @@ userController.post("/Reset", function (req, res) {
 userController.post("/auth", function (req, res) {
   const {username , password} = req.body;
   // const clientIp = requestIp.getClientIp(req);
-  const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;;
+  const clientIp = requestIp.getClientIp(req);
   const browser = req.headers['user-agent'];
   const device = req.device.type;
   const body = {
@@ -90,7 +90,7 @@ userController.post("/auth", function (req, res) {
     browser,
     device
   }
-  console.log(clientIp);
+
   request(
     {
       url: loginAPI,
