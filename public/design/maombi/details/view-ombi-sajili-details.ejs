@@ -409,14 +409,14 @@
                                                     <h6 class="fs-15 mb-0"><a href="#showModal" 
                                                         data-path="<%= objAttachment[i].attachment_path %>" 
                                                         data-bs-toggle="modal" class="fw-medium link-primary open-AddBookDialog read-attachment">
-                                                        <%= objAttachment1[i].attachment_name %></a>
+                                                        <%= objAttachment[i].attachment_name %></a>
                                                     </h6>
                                                 </div>
                                             </div>
                                             </td>
                                             <td><%= objAttachment[i].file_format %></td>
                                             <td><%= objAttachment[i].file_size %> MB</td>
-                                            <td><%= objAttachment[i].created_at %></td>
+                                            <td><%= dateFormat(objAttachment[i].created_at) %></td>
                                             <td>
                                                 <a class="btn btn-outline-success read-attachment" 
                                                 href="#showModal"

@@ -106,6 +106,7 @@ kusajiliBinafsiRequestController.get(
         var school_name = data[0].school_name;
         var StreetName = data[0].StreetName;
         var WardName = data[0].WardName;
+        var WardName = data[0].WardName;
         var LgaName = data[0].LgaName;
         var WardNameMtu = data[0].WardNameMtu;
         var LgaNameMtu = data[0].LgaNameMtu;
@@ -147,7 +148,7 @@ kusajiliBinafsiRequestController.get(
         var teacherInformation = data[0].teacherInformation;
         var structure = data[0].structure;
         var subcategory = data[0].subcategory;
-        var count = jsonData.maoni[0].count;
+        // var count = jsonData.maoni[0].count;
         var objAttachment = jsonData.objAttachment;
         var objAttachment1 = jsonData.objAttachment1;
         var Maoni = jsonData.Maoni;
@@ -207,7 +208,7 @@ kusajiliBinafsiRequestController.get(
             SeminaryTitle: SeminaryTitle,
             Stream: Stream,
             subcategory: subcategory,
-            count: count,
+            // count: count,
             is_approved,
             staffs: jsonData.staffs,
             numberOfStudents: numberOfStudents,
