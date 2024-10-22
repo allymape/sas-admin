@@ -89,6 +89,7 @@ $("#btn-create-user").on("click", function () {
   resetAllFields();
   getLookUpData();
   $("#id-field").remove();
+  $("#change-password-checkbox").closest(".row").addClass("d-none");
 });
 // Edit User
 function editUser(button) {
@@ -97,6 +98,7 @@ function editUser(button) {
   $("#id-field").remove();
   $("#user-form").prepend(`<input type='hidden' id='id-field' />`);
   resetAllFields();
+   $("#change-password-checkbox").closest(".row").removeClass("d-none");
   getUser(userId);
 }
 function getUser(userId) {
@@ -313,6 +315,7 @@ function resetAllFields() {
     dropdownParent: $("#showModal"),
     //   theme: "classic",
   });
+  $("#change-password-checkbox").prop("checked", false);
 }
 
 $("#show-password-checkbox").on("change", function () {
@@ -371,7 +374,9 @@ function validateUserForm(){
    
   var zoneField = $("#kanda-field");
   var lgaField = $("#lga-field");
-
+  if ($("#change-password-checkbox").prop("checked")) {
+    data["has_to_change_password_changed"] = true;
+  }
   if ($("#password-field").is(":visible")) {
     if (password == "" || repassword == "") {
       alertMessage(

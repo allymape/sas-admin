@@ -50,6 +50,7 @@
                         <th>Ofisi</th>
                         <th>Kuingia</th>
                         <th>Sign</th>
+                        <th>Amebadili Nywila?</th>
                         <th>Hai</th>
                         <th class="sort text-center" width="10%" >Action</th>
                     </tr>
@@ -183,6 +184,16 @@
                             <select class="form-control select2-hidden-accessible" data-trigger name="lga" id="lga-field" disabled>
                                 <option value="">Chagua Mkoa kwanza</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                         <div class="col-xxl-12 mb-3">
+                            <div class="form-check  form-check-info">
+                                <label class="form-check-label" for="change-password-checkbox">
+                                <input type="checkbox" class="form-check-input" id="change-password-checkbox"/>  
+                                    <span class="text-uppercase text-body">Je, Anapaswa kubadili Nywila baada ya kuingia kwenye Mfumo?</span>
+                                </label>
+                            </div>
                         </div>
                     </div>
                     <div class="row">
@@ -330,6 +341,13 @@
                         return data ? `<span title="Sahihi ya muhusika imeingizwa" data-bs-toggle=tooltip class="myTooltip las la-signature la-2x"></span>`
                                     : ""
                     }},
+                    {
+                        data : 'is_password_changed' , name : 'is_password_changed' , render : (data , type , row) => {
+                            return data ? `<span title="Ndiyo" data-bs-toggle=tooltip class="myTooltip las la-check la-x text-success"></span>`
+                                        : `<span title="Hapana" data-bs-toggle=tooltip class="myTooltip las la-times la-x text-danger"></span>`
+                        },
+                        class : 'text-center'
+                    },
                     { data: "user_status", name: "user_status" ,  render: (data , type , row) => {
                         return data ? `<span class="badge bg-success" title="Active" data-bs-toggle="tooltip">Active</span>` : `<span class="badge bg-danger" title="In-active" data-bs-toggle="tooltip">In Active</span>`;
                         },
