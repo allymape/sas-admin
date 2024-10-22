@@ -72,13 +72,14 @@ function ajaxRequest(url, method, callback, formData = {}, loading = true) {
         msg = "Ukurasa haujapatikana.";
       } else if (xhr.status == 401) {
         msg = "Hauna ruhusa ya kufanya kitendo hiki.";
+        window.location.reload();
       } 
       else if (xhr.status == 500) {
         msg = "Kuna tatizo la kifundi.";
       } else if (exception === "parsererror") {
+         msg = "Kuna shida tafadhali.";
         window.location.reload();
         // msg = "Requested JSON parse failed.";
-        msg = "Kuna shida tafadhali.";
       } else if (exception === "timeout") {
         msg = "Muda umekishwa.";
       } else if (exception === "abort") {
