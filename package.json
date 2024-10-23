@@ -42,6 +42,7 @@
     "jsdom": "^23.0.1",
     "json2xls": "^0.1.2",
     "jsonwebtoken": "^9.0.0",
+    "leaflet": "^1.9.4",
     "moment": "^2.29.1",
     "mssql": "^11.0.1",
     "nice-invoice": "^1.0.5",

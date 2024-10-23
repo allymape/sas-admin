@@ -5,8 +5,11 @@ const dashboardController = express.Router();
 // var session = require("express-session");
 var path = require("path");
 const { sendRequest, can, isAuthenticated, greating, activeHandover } = require("../../util");
+const { dash } = require("pdfkit");
+const { send } = require("process");
 var API_BASE_URL = process.env.API_BASE_URL;
-var dashboardAPI = API_BASE_URL + "dashboard";
+var mapDataAPI = API_BASE_URL + "map-data";
+var dashboardFilterAPI = API_BASE_URL + "dashboard-filters";
 var schoolByCategoriesAPI = API_BASE_URL+ "schools-summary-by-regions-and-categories"
 var schoolSummariesAPI = API_BASE_URL + "school-summaries";
 var numberOfSchoolByYearsAPI = API_BASE_URL + "number-of-schools-by-year-of-regitration";
@@ -32,7 +35,30 @@ dashboardController.get("/Dashboard" ,
     });
       
 });
-
+//Map View
+dashboardController.get("/Map", isAuthenticated, can("view-dashboard"), activeHandover, (req, res) => {
+ 
+  sendRequest(req, res, dashboardFilterAPI, "GET", {}, (jsonData) => {
+        const { categories, ownerships, regions } = jsonData.data;
+        res.render(path.join(__dirname + "/../design/map"), {
+          req : req,
+          categories,
+          ownerships,
+          regions
+        });
+  })
+});
+//Map data
+dashboardController.post("/MapData", isAuthenticated, can("view-dashboard"), activeHandover, (req, res) => { 
+  sendRequest(req, res, mapDataAPI, "GET", req.body , (jsonData) => {
+    const { data, statusCode, message } = jsonData;
+    res.send({
+      statusCode: statusCode,
+      data: data,
+      message: message,
+    })
+  });
+});
 // Registered Schools by Regions by ownership
 dashboardController.get(
   "/SchoolsSummaryByRegionAndCategories",

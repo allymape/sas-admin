@@ -1,0 +1,231 @@
+
+<%- include('../layouts/partials/header.ejs' , {
+    title : "Map Data",
+    page_title : "Map",
+    card_title :  "Map",
+    breadcrumb_main : 'Dashibodi',
+     styles : [
+                { href: '/css/map/leaflet.css' },
+            ]
+}) %>
+<style>
+  #map {
+      height: 600px; /* Set the height of the map */
+      width: 100%; /* Optional, but ensures it takes up full width */
+  }
+</style>
+<div class="card-body">
+     <div class="ribbon-three ribbon-three-danger">
+        <span class="badge" id="total-school">0</span>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <form class="" style="z-index: 10000;">
+            <div class="row g-3">
+                <div class="col-xxl-3 col-sm-12">
+                    <div class="search-box">
+                        <input type="hidden" name="search" value="true">
+                        <input type="text" name="name_or_reg" 
+                        value="<%= req.query.name_or_reg %>" class="form-control search bg-light border-light" placeholder="Jina au namba ya usajili ...">
+                        <i class="ri-search-line search-icon"></i>
+                    </div>
+                </div>
+                <!--end col-->
+
+                <div class="col-xxl-3 col-sm-4">
+                    <input type="date" class="form-control bg-light border-light" 
+                    id="demo-datepicker" data-provider="flatpickr" 
+                    data-date-format="d M, Y" data-range-date="true" 
+                    name="date_range"
+                    data-default-date="<%= req.query.date_range %>"
+                    placeholder="Chagua tarehe ya usajili">
+                </div>
+                 <!--end col-->
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select class="form-control" placeholder="Aina ..."  name="category">
+                            <option value=""> Aina ...</option>
+                            <% for (let index = 0; index < categories.length; index++) { %>
+                            <% const item = categories[index]; %>
+                                <option value="<%= item.id %>" <%= req.query.category == item.id ? 'selected' : '' %>>
+                                     <%= item.name %>
+                                </option>
+                            <% } %>
+                            
+                        </select>
+                    </div>
+                </div>
+
+                 <!--end col-->
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select class="form-control" placeholder="Umiliki ..."  name="ownership">
+                            <option value=""> Umiliki ...</option>
+                            <% for (let index = 0; index < ownerships.length; index++) { %>
+                            <% const item = ownerships[index];
+                            %>
+                                <option value="<%= item.id %>" <%= req.query.ownership == item.id ? 'selected' : '' %>>
+                                     <%= item.name %>
+                                </option>
+                            <% } %>
+                            
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select id="mkoa-field"  data-choices-search-true class="form-control" placeholder="Mkoa ..."  name="region">
+                            <option value=""> Chagua Mkoa ...</option>
+                            <% for (let index = 0; index < regions.length; index++) { %>
+                            <% const item = regions[index]; %>
+                                <option value="<%= item.id %>" <%= req.query.region == item.id ? 'selected' : '' %>>
+                                     <%= item.name %>
+                                </option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+                  <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select id="lga-field" class="form-control" placeholder="Halmashauri ..."  name="district">
+                            <option value=""> Chagua Halmashauri ...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select id="kata-field" class="form-control" placeholder="Kata ..."  name="ward">
+                            <option value=""> Chagua Kata ...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select id="mtaa-field" class="form-control" placeholder="Mtaa ..."  name="street">
+                            <option value=""> Chagua Mtaa ...</option>
+                        </select>
+                    </div>
+                </div>
+                <!--end col-->
+                <div class="col-xxl-2 col-sm-4 d-flex gap-2">
+                    <button title="" type="submit" class="btn btn-primary w-100"> 
+                        <!-- <i class="ri-equalizer-fill me-1 align-bottom"></i> -->
+                        Filter
+                    </button>
+                     <% if(typeof req.query.search != undefined && req.query.search == "true") { %>
+                     <a href="/Map" class="btn btn-danger w-100">
+                        <!-- <i class="ri-equalizer-fill me-1 align-bottom"></i> -->
+                        Futa
+                     </a>
+                     <% } %>
+                </div>
+                <div class="col-xxl-8 col-sm-8"></div>
+                <!--end col-->
+            </div>
+            <!--end row-->
+        </form>
+        </div>
+    </div>
+    <hr class="mb-3"/>
+    <div class="row" style="z-index: 900;">
+        <div class="col-md-12">
+            <div id="map"></div>
+        </div>
+    </div>
+</div>
+<%- include('../layouts/partials/footer.ejs' , {
+    card_title :  '',
+    scripts : [
+        {src : '/js/map/leaflet.js'},
+        {src : '/js/map/leaflet.markercluster.js'},
+    ]
+    }) 
+%>
+<%- include('../includes/locations') %>
+<!-- <script type="text/javascript" src="design/layouts/scripts/kata_scripts.js"></script> -->
+  <script>
+
+        const map = L.map('map').setView([-6.1630, 35.7516], 6);
+        // Add OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            // attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        // Create a layer group for markers
+        const markers = L.markerClusterGroup(); // Use marker clustering for better performance
+
+        map.addLayer(markers); // Add the marker layer to the map
+
+     //Lazy load markers
+     function loadMarkers(){
+        const params = new URLSearchParams(window.location.search);
+         const bounds = map.getBounds();
+         const zoomLevel = map.getZoom();
+                    ajaxRequest('/MapData', 'POST', (response) => {
+                    const {data , statusCode} = response;
+                    if(statusCode == 300){
+                        // Clear the current markers
+                        markers.clearLayers();
+                        // Add markers to the map
+                        $("#total-school").text(data.length);
+                        data.forEach((item) => {
+                            const {latitude, longitude , name , category , registration_number , region , district , ward, street} = item;
+                            const marker =  L.marker([latitude, longitude])
+                                    .addTo(map)
+                                    .bindPopup(`<b>${name} ${category}</b>
+                                                <br>Lat     : ${latitude}, Lon: ${longitude}
+                                                <br>Reg     : <b>${registration_number}</b>
+                                                <br>Region  : ${region}
+                                                <br>District: ${district}
+                                                <br>Ward    : ${ward}
+                                                <br>Street  : ${street}
+                                                `);
+                                    // .openPopup();
+                            markers.addLayer(marker)
+                        });
+                    }
+                },
+                JSON.stringify({
+                    southWestLat: bounds.getSouthWest().lat,
+                    southWestLng: bounds.getSouthWest().lng,
+                    northEastLat: bounds.getNorthEast().lat,
+                    northEastLng: bounds.getNorthEast().lng,
+                    zoom: zoomLevel,
+                    date_range: params.get('date_range'),
+                    search: params.get('search'),
+                    name_or_reg: params.get('name_or_reg'),
+                    category: params.get('category'),
+                    ownership: params.get('ownership'),
+                    region: params.get('region'),
+                    district: params.get('district'),
+                    ward: params.get('ward'),
+                    street: params.get('street'),
+                })
+            );
+     }
+     
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const context = this;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), wait);
+    };
+}
+map.on('moveend', debounce(loadMarkers, 300));
+
+var cleanHref = cleanUrl(window.location.href);
+window.history.replaceState(null, null, cleanHref);
+if($('#mkoa-field').val() || 
+   $("input[name='name_or_reg']").val() ||
+   $("select[name='category']").val() ||
+   $("select[name='ownership']").val() ||
+   $("input[name='date_range']").val()
+){
+    loadMarkers()
+}else{
+   loadMarkers()
+}
+</script>
+</body>
+</html>
