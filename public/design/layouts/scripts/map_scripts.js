@@ -29,19 +29,50 @@
                         // Add markers to the map
                         $("#total-school").text(data.length);
                         data.forEach((item) => {
-                            const {latitude, longitude ,tracking_number, name , category , registration_number , region , district , ward, street} = item;
-                            const marker =  L.marker([latitude, longitude] , 
-                                {draggable: hasPermission}
-                            )
-                                    .addTo(map)
-                                    .bindPopup(`<b>${name.toUpperCase()} ${category.toUpperCase()}</b>
-                                                <br>Lat     : ${latitude}, Lon: ${longitude}
-                                                <br>Reg     : <b>${registration_number}</b>
-                                                <br>Region  : ${region}
-                                                <br>District: ${district}
-                                                <br>Ward    : ${ward}
-                                                <br>Street  : ${street}
-                                                `)
+                            const {
+                              latitude,
+                              longitude,
+                              tracking_number,
+                              name,
+                              ownership,
+                              category,
+                              registration_number,
+                              region,
+                              district,
+                              ward,
+                              street,
+                            } = item;
+                            const marker = L.marker([latitude, longitude], {
+                              draggable: hasPermission,
+                            }).addTo(map).bindPopup(`
+                                                <div class="col-md-12">
+                                                <label>Lat: ${latitude}, Lon: ${longitude}</label>
+                                                </div>
+                                                <div class="border-top border-border-top-dashed text-primary mb-2"></div>
+                                                <div class="col-md-12">
+                                                    <label class="col-md-3 text-primary">Name</label><span class="col-md-9 font-bold">: ${name.toUpperCase()}</span>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <label class="col-md-3 text-primary">Type</label><span class="col-md-9">: ${category.toUpperCase()}</span>
+                                                <div class="col-md-12">
+                                                    <label class="col-md-3 text-primary">Reg #</label><span class="col-md-9">: ${registration_number}</span>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <label class="col-md-3 text-primary">Owner</label><span class="col-md-9">: ${ownership}</span>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <label class="col-md-3 text-primary">Region</label><span class="col-md-9">: ${region}</span>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <label class="col-md-3 text-primary">District</label><span class="col-md-9">: ${district}</span>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <label class="col-md-3 text-primary">Ward</label><span class="col-md-9">: ${ward}</span>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <label class="col-md-3 text-primary">Street</label><span class="col-md-9">: ${street}</span>
+                                                </div>
+                                                `);
                                     // .openPopup();
                             markers.addLayer(marker)
                              marker.on("dragend", function (e) {
