@@ -70,7 +70,7 @@ attachmentController.post(
     //     message,
     //   });
     // });
-    console.log(req.body.kiambatisho);
+    // console.log(req.body.kiambatisho);
     try {
       const formData = {
         // keyString: req.body.keyString,
