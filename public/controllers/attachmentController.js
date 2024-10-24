@@ -85,6 +85,7 @@ attachmentController.post(
         // kiambatisho: req.body.kiambatisho,
       };
       const token = process.env.FRONT_END_TOKEN;
+      console.log("url", pandishaHatiAPI);
       request(
         {
           url: pandishaHatiAPI,
@@ -96,12 +97,13 @@ attachmentController.post(
           json: formData,
         },
         (error, response, body) => {
+          console.log("Code: ", response.statusCode);
           if (error) {
             console.log("error", error);
             return res.status(response.statusCode).send({
               success: false,
               statusCode: 306,
-              message: "Kuna tatizo wasiliana na Msimamizi wa mfumo.",
+              message: "Kuna tatizo wasiliana na Msimamizi wa mfumo ......",
             });
           }else{
             if (response.statusCode == 200) {
