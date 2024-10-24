@@ -4,11 +4,12 @@ const request = require("request");
 const dashboardController = express.Router();
 // var session = require("express-session");
 var path = require("path");
-const { sendRequest, can, isAuthenticated, greating, activeHandover } = require("../../util");
+const { sendRequest, can, isAuthenticated, greating, activeHandover, hasPermission } = require("../../util");
 const { dash } = require("pdfkit");
 const { send } = require("process");
 var API_BASE_URL = process.env.API_BASE_URL;
 var mapDataAPI = API_BASE_URL + "map-data";
+var updateMarkerAPI = API_BASE_URL + "update-marker";
 var dashboardFilterAPI = API_BASE_URL + "dashboard-filters";
 var schoolByCategoriesAPI = API_BASE_URL+ "schools-summary-by-regions-and-categories"
 var schoolSummariesAPI = API_BASE_URL + "school-summaries";
@@ -55,9 +56,20 @@ dashboardController.post("/MapData", isAuthenticated, can("view-dashboard"), act
     res.send({
       statusCode: statusCode,
       data: data,
+      hasPermission : hasPermission(req , "update-school-marker"),
       message: message,
     })
   });
+});
+//Update Maerker
+dashboardController.post("/UpdateMarker", isAuthenticated, can("update-school-marker"), activeHandover, (req, res) => { 
+      sendRequest(req, res, updateMarkerAPI, "POST", req.body , (jsonData) => {
+        const { statusCode, message } = jsonData;
+        res.send({
+          statusCode: statusCode,
+          message: message,
+        })
+      });
 });
 // Registered Schools by Regions by ownership
 dashboardController.get(

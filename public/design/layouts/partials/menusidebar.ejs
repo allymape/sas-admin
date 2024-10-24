@@ -3,21 +3,42 @@ const pluck = (arr , key) => arr.map(i => i[key]);
 const menuItems = [
 // dashibodi
     {
-        label : "Dashboard",
-        url  : "Dashboard",
+        label : "Dashibodi",
+        url  : "#sidebarDashboards",
         menuTitle : 'Menu',
         icon : "ri-dashboard-2-line",
         // menuId : "",
-        pattern : "Dashboard",
+        // pattern : "Dashboard",
+        menuId  : "sidebarDashboards",
         hasPermissionTo : permission(req , 'view-dashboard'),
+        subMenus : [
+             {
+                label : "Overview",
+                url  : "Dashboard",
+                icon : "",
+                counterId : "", 
+                pattern : "Dashboard",
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-initiate-schools'),
+            },
+             {
+                label : "Map View",
+                url  : "Map",
+                icon : "",
+                counterId : "",
+                pattern : "Map",
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-initiate-schools'),
+            },
+        ]
    },
 //    MAOMBI
     {
         label : "Maombi",
-        url  : "#sidebarDashboards",
+        url  : "#sidebarMaombi",
         menuTitle : '',
         icon : "ri-git-pull-request-line",
-        menuId : "sidebarDashboards",
+        menuId : "sidebarMaombi",
         subMenus : [
             {
                 label : "Kuanzisha Shule",

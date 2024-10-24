@@ -5,7 +5,8 @@ function confirmAction(
   text = `You won't be able to revert this!`,
   title = "Are you sure?",
   html = "",
-  callback_open = () => {}
+  callback_open = () => {},
+  cancelCallback = () => {}
 ) {
   Swal.fire({
     title: `${title}`,
@@ -23,10 +24,16 @@ function confirmAction(
     buttonsStyling: !1,
     showCloseButton: !0,
     didOpen: () => {
-       callback_open();
+      callback_open();
     },
   }).then(function (t) {
-    t.value && callback();
+    if (t.isConfirmed) {
+      // When confirmed (user clicked on the confirm button)
+      callback();
+    } else if (t.isDismissed) {
+      // When canceled or dismissed
+      cancelCallback(); // Call the cancel callback
+    }
   });
 }
 

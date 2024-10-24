@@ -243,38 +243,7 @@ userController.post(
       }
     );
   });
-// // get list of users
-// userController.post(
-//   "/UserList",
-//   isAuthenticated,
-//   can("view-users"),
-//   function (req, res) {
-//     var per_page = Number(req.query.per_page || 10);
-//     var page = Number(req.query.page || 1);
-//     var query = req.query;
-//     sendRequest(
-//       req,
-//       res,
-//       watumiajiAPI + "?page=" + page + "&per_page=" + per_page,
-//       "GET",
-//       query,
-//       (jsonData) => {
-//         var data = jsonData.data;
-//         var numRows = jsonData.numRows;
-//         res.send({
-//           statusCode: jsonData.statusCode,
-//           data: data,
-//           pagination: {
-//             total: numRows,
-//             current: page,
-//             per_page: per_page,
-//             pages: Math.ceil(numRows / per_page),
-//           },
-//         });
-//       }
-//     );
-//   }
-// );
+
 // Get TOKEN for barua
 userController.post('/BaruaAuthentication' , (req , res) =>{
   request(
