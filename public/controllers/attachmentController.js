@@ -97,7 +97,7 @@ attachmentController.post(
           json: formData,
         },
         (error, response, body) => {
-          console.log("Code: ", response, body);
+          // console.log("Code: ", response, body);
           if (error) {
             console.log("error", error);
             return res.status(response.statusCode).send({
@@ -106,9 +106,9 @@ attachmentController.post(
               message: "Kuna tatizo wasiliana na Msimamizi wa mfumo ......",
             });
           }else{
+            const { statusCode, message } = body;
             if (response.statusCode == 200) {
-              const { statusCode, message } = body;
-              return res.status(response.statusCode).send({
+              res.status(response.statusCode).send({
                 success: statusCode ? true : false,
                 statusCode: statusCode ? 300 : 306,
                 message: message
@@ -116,10 +116,10 @@ attachmentController.post(
                   : "Kuna shida tafadhali hakiki ukubwa wa faili lako.",
               });
             } else {
-              return res.status(response.statusCode).send({
+              res.status(response.statusCode).send({
                 success: false,
                 statusCode: 306,
-                message: "Kuna tatizo wasiliana na Msimamizi wa mfumo.",
+                message: `${message} Wasiliana na Msimamizi wa mfumo.`,
               });
             }
           }
