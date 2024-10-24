@@ -4,7 +4,7 @@ const request = require("request");
 const schoolController = express.Router();
 var session = require("express-session");
 var path = require("path");
-const { sendRequest, isAuthenticated, can, activeHandover, hasPermission } = require("../../util");
+const { sendRequest, isAuthenticated, can, activeHandover, hasPermission, validateGeoLocation } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var allSchoolListAPI = API_BASE_URL + "all-schools";
 var schoolListAPI = API_BASE_URL + "look_for_schools";
@@ -132,7 +132,7 @@ schoolController.get("/EditShule/:id" , isAuthenticated, function(req, res){
      });
 });
 // Update School
-schoolController.post("/UpdateShule/:id" , isAuthenticated , function(req , res){
+schoolController.post("/UpdateShule/:id" , isAuthenticated , validateGeoLocation, function(req , res){
       const id = req.params.id;
        sendRequest(req, res, updateSchoolAPI + `/${id}` , 'PUT', req.body , (body) => {
            if(body !== 'undefined'){

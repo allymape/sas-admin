@@ -4,7 +4,7 @@ const request = require("request");
 const dashboardController = express.Router();
 // var session = require("express-session");
 var path = require("path");
-const { sendRequest, can, isAuthenticated, greating, activeHandover, hasPermission } = require("../../util");
+const { sendRequest, can, isAuthenticated, greating, activeHandover, hasPermission, validateGeoLocation } = require("../../util");
 const { dash } = require("pdfkit");
 const { send } = require("process");
 var API_BASE_URL = process.env.API_BASE_URL;
@@ -62,7 +62,7 @@ dashboardController.post("/MapData", isAuthenticated, can("view-dashboard"), act
   });
 });
 //Update Maerker
-dashboardController.post("/UpdateMarker", isAuthenticated, can("update-school-marker"), activeHandover, (req, res) => { 
+dashboardController.post("/UpdateMarker", isAuthenticated, validateGeoLocation, can("update-school-marker"), activeHandover, (req, res) => { 
       sendRequest(req, res, updateMarkerAPI, "POST", req.body , (jsonData) => {
         const { statusCode, message } = jsonData;
         res.send({

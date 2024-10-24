@@ -2,6 +2,7 @@ require("dotenv").config();
 const request = require("request");
 const jwt = require("jsonwebtoken");
 const dateAndTime = require("date-and-time");
+const turf = require("@turf/turf");
 const {
   titleCase, lowerCase,
   sentenceCase,
@@ -17,10 +18,71 @@ const url = require("url");
 
 const { toSwahili } = require('digits-to-swahili');
 const { level } = require("winston");
+const { polygon } = require("pdfkit");
 const API_BASE_URL = process.env.API_BASE_URL;
 const myActivehandover = API_BASE_URL + "my-active-handover";
 const refreshTokenApi = API_BASE_URL + "refresh_token";
+// Example boundary for Tanzania (simplified for the example)
+const tanzaniaBoundary = turf.polygon([
+  [
+    [29.61, -1.19], 
+    [33.84, -1.00], 
+    [37.30, -4.50],
+    [40.44, -6.82], 
+    [39.00, -10.45], 
+    [30.42, -7.27],
+    [29.61, -1.19]
+  ]
+]);
 
+const waterBodies = [
+  {
+    name: "Lake Victoria",
+    polygon: turf.polygon([
+      [
+        [33.9037111971, -0.95],
+        [33.8939216953, 0.1098135371],
+        [33.39, 0.64],
+        [32.759375, 1.2834375],
+        [31.866875, -1.5834375],
+        [31.33875, 1.5834375],
+        [30.89375, 1.4084375],
+        [30.23375, 0.7584375],
+        [29.579375, 0.7596875],
+        [29.423125, 0.240625],
+        [29.673125, -0.0265625],
+        [30.015625, -1.3021875],
+        [30.65375, -1.2846875],
+        [31.220625, -1.290625],
+        [31.866875, -1.1453125],
+        [32.8875, -1.333125],
+        [33.73125, -1.329375],
+        [33.9037111971, -0.95],
+      ],
+    ]),
+  },
+  {
+    name: "Indian Ocean",
+    polygon: turf.polygon([
+      [[40.662598, -6.55096], // Southernmost point near the border with Mozambique
+      [40.773857, -6.138639], // Point near the border with Mozambique
+      [40.797682, -5.880763], // Coastal point north of Mtwara
+      [40.763554, -5.716557], // Point near Mikindani
+      [40.613762, -5.645846], // Point near Ruangwa
+      [39.950005, -5.525243], // Point near Lindi
+      [39.702871, -5.259751], // Point near Kilwa
+      [39.617202, -5.151873], // Point near Kilwa Kisiwani
+      [39.6501, -4.953865], // Point near Dar es Salaam
+      [39.636364, -4.883319], // Point near Dar es Salaam
+      [39.71275, -4.566111], // Point near Bagamoyo
+      [39.790295, -4.366155], // Point near Saadani National Park
+      [39.907341, -4.105874], // Point near Tanga
+      [40.073879, -4.006203], // Point near Tanga
+      [40.662598, -6.55096], // Closing the polygon by returning to the starting point
+    ]
+    ]),
+  },
+];
 module.exports = {
   isAuthenticated: (req, res, next) => {
     const sessionToken = req.session.Token;
@@ -136,6 +198,43 @@ module.exports = {
       res.redirect("/Dashboard");
     }
     next();
+  },
+isInTanzaniaAndNotInWater : (latitude, longitude) => {
+  const point = turf.point([longitude, latitude]);
+
+  // Check if the point is within Tanzania's boundaries
+  const isInTanzania = turf.booleanPointInPolygon(point, tanzaniaBoundary);
+  
+  if (!isInTanzania) {
+    return { valid: false, reason: 'Points are outside Tanzania' };
+  }
+
+  // Check if the point is in any water body
+  for (let waterBody of waterBodies) {
+    const isInWater = turf.booleanPointInPolygon(point, waterBody.polygon);
+    if (isInWater) {
+      return { valid: false, reason: `Poins are in water: ${waterBody.name}` };
+    }
+  }
+
+  // Point is within Tanzania and not in any water body
+  return { valid: true , reason : ''};
+},
+
+validateGeoLocation : (req , res, next) => {
+      const {latitude , longitude } = req.body
+      if(latitude || longitude){
+        const lat = parseFloat(latitude);
+        const long = parseFloat(longitude);
+        const {valid , reason} = module.exports.isInTanzaniaAndNotInWater(lat, long);
+        if (!valid) {
+          return res.send({
+            statusCode: 306,
+            message: reason,
+          });
+        }
+      }
+      next();
   },
   validePassword: (req, res, next) => {
     const { oldpassword, newpassword, confirmpassword } = req.body;

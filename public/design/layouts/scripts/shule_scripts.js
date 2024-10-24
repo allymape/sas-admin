@@ -85,12 +85,15 @@ function writeOwnerField(){
   const lga = $("#lga-field option:selected").text();
         ownership_id == 3 ? $("#owner-name-field").val(`DED ${lga}`) : $("#owner-name-field").val("")
 }
-
+const defaultLatitude = $("#latitude-field").data("latitude");
+const defaultLongitude = $("#longitude-field").data("longitude");
 $("#add-school").on('click' , function(){
      modal("schoolModal", true);
      $("#school-form").find("button[type='submit']").text('Create');
      $("#school-form").attr("action" , "AddShule");
      resetFields();
+     $("#latitude-field").val(defaultLatitude);
+     $("#longitude-field").val(defaultLongitude);
      showOwnerAndAddressFields()
      getRegions(null);
 });
@@ -126,6 +129,8 @@ function edit(e){
              const selectedStreet = data.street;
              const registration_date = data.registration_date == "0000-00-00" ? null : data.registration_date;
              const category = data.category;
+             const latitude = data.latitude;
+             const longitude = data.longitude;
              const ownership = data.ownership;
              const registration_number = data.registration_number;
             //  const payment = data.payment;
@@ -138,6 +143,9 @@ function edit(e){
              document.getElementById('ownership-field').value = ownership
              document.getElementById('tracking-number').innerText = " - "+ tracking_number
              document.getElementById("registration-date-field").value = "";
+             document.getElementById("latitude-field").value = latitude ? latitude : defaultLatitude;
+             document.getElementById("longitude-field").value = longitude ? longitude : defaultLongitude;
+             
              setDatePicker("registration-date-field", registration_date);
              getRegions(selectedRegion);
             if(selectedRegion){
@@ -223,4 +231,24 @@ $("#school-form").on('submit' , function(e){
 });
 
 ajaxSelect2("search-school", "LookForSchools", "Tafuta Shule", "schoolModal");
+
+function showMap(button) {
+  const rowData = JSON.parse(button.getAttribute("data-row"));
+  const registration_number = rowData.reg_no;
+  const region = rowData.region;
+  const district = rowData.lga;
+  const ward = rowData.ward;
+  const street = rowData.street;
+  const name = rowData.name;
+  $("#school-info").text(
+    `${name} - ${registration_number} [Mkoa: ${region} > Halmashauri: ${district} > Kata: ${ward} > Mtaa: ${street}] `
+  );
+  // Ensure the modal is opened before initializing the map and loading markers
+  modal("mapModal", true); // This function should display the modal
+  // After the modal is shown, initialize the map and load markers
+  setTimeout(function () {
+    map.invalidateSize(); // Adjust the map size once modal is fully visible
+    loadMarkers(registration_number); // Load markers after the map is initialized
+  }, 300); // Delay to ensure the modal is fully opened before invalidating the map size
+}
 

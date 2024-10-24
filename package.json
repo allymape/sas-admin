@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@turf/turf": "^7.1.0",
     "axios": "^1.7.4",
     "body-parser": "^1.19.0",
     "cheerio": "^1.0.0-rc.12",

@@ -5,9 +5,17 @@
     card_title : 'Shule zilizopo',
     styles : [
             { href: '/css/datatables/dataTables.dataTables.css' },
-            { href: '/css/datatables/buttons.dataTables.css' }
+            { href: '/css/datatables/buttons.dataTables.css' },
+             { href: '/css/map/leaflet.css' },
+            { href: 'https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css' },
         ]
 }) %>
+<style>
+  #map {
+      height: 600px; /* Set the height of the map */
+      width: 100%; /* Optional, but ensures it takes up full width */
+  }
+</style>
     <div class="card-body">
        
         <div id="customerList">
@@ -96,6 +104,7 @@
                             <th>Mtaa</th>
                             <th>Imesasishwa</th>
                             <th>Hali</th>
+                            <th>GeoLocation</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -234,6 +243,20 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="latitude-field">Latitude</label>
+                                <div class="form-group">
+                                    <input type="text" value="" data-latitude="-6.2285595291" name="latitude" id="latitude-field" placeholder="Latitutude ..." class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="longitude-field">Longitude</label>
+                                <div class="form-group">
+                                    <input type="text" value="" data-longitude="35.7501885794" name="longitude" id="longitude-field" placeholder="Longitude ..." class="form-control">
+                                </div>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="form-group">
                               <button type="submit" class="btn btn-primary">Update</button>
@@ -243,11 +266,35 @@
                 </div>
                 </div>
         </div>
-  </div>
+    </div>
+    <div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title h5">GeoLocation: <span id="school-info" class="text-primary"></span></h4>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="map" ></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-end">
+                    <button class="btn btn-danger" onclick="zoomToLocationAndReset()">Return to Normal View</button>
+                </div>
+                </div>
+        </div>
+    </div>
 <%- include('../layouts/partials/footer.ejs' , {
     card_title :  card_title,
     scripts : [
+            {src : '/js/map/leaflet.js'},
+            {src : '/js/map/leaflet.markercluster.js'},
+            {src : 'https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js'},
             {src : '/design/layouts/scripts/shule_scripts.js'},
+            {src : '/design/layouts/scripts/map_scripts.js'},
             { src : '/js/datatables/dataTables.js'},
             { src : '/js/datatables/dataTables.buttons.js'},
             { src : '/js/datatables/buttons.dataTables.js'},
@@ -298,6 +345,25 @@
                     { data: 'status' , name: 'status' , render: (data , type , row) => {
                          return `<span class="badge bg-${data ? 'success':'danger'}">${data}</span>`;
                     }},
+                    { data:null, render: (data , type , row) => {
+                        if(row.latitude && row.longitude){
+                            const elements = [
+                                            {
+                                                show : true,
+                                                type : 'button',
+                                                class : 'btn btn-sm btn-outline-info me-1',
+                                                icon : 'bx bx-map-pin me-2',
+                                                function : 'showMap',
+                                                btnText : 'View Map',
+                                                moreAttributes : `title="[Lat: ${row.latitude} , Lng: ${row.longitude}] " data-bs-toggle="tooltip"]`
+                                            }
+                                        ]
+                            return actionButtons(row , elements)
+                        }
+                        return null;
+                    },
+                    class : 'text-center'
+                    },
                     {
                     data: null, // No data source for this column
                     render: function (data, type, row) {
@@ -312,7 +378,7 @@
                                                 moreAttributes : `data-id="${row.id}"`
                                             }
                                         ]
-                                row = null
+                        row = null
                         return actionButtons(row , elements);
                     },
                     orderable: false, // Disable sorting for the action buttons column
