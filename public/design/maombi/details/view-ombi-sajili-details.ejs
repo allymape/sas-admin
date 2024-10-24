@@ -82,7 +82,7 @@
                 <div class="card-body">
                     <h5 class="card-title mb-3">Viambatisho</h5>
                     <div class="vstack gap-2">
-                        <% for(var i = 0; i < objAttachment.length; i++){ %>
+                        <% for(var i = 0; i < objAttachment1.length; i++){ %>
                         <div class="border rounded border-dashed p-2">
                             <div class="d-flex align-items-center">
                                 <div class="flex-shrink-0 me-3">
@@ -93,8 +93,8 @@
                                     </div>
                                 </div>
                                 <div class="flex-grow-1 overflow-hidden">
-                                    <h5 class="fs-13 mb-1"><a href="javascript:void(0);" class="text-body text-truncate d-block"><%= objAttachment[i].attachment_name %></a></h5>
-                                    <div><%= objAttachment[i].file_format %>MB</div>
+                                    <h5 class="fs-13 mb-1"><a href="javascript:void(0);" class="text-body text-truncate d-block"><%= objAttachment1[i].attachment_name %></a></h5>
+                                    <div><%= objAttachment1[i].file_format %>MB</div>
                                 </div>
                                 <div class="flex-shrink-0 ms-2">
                                     <div class="d-flex gap-1">
@@ -396,7 +396,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <% for(var i = 0; i < objAttachment.length; i++){ %>
+                                        <% for(var i = 0; i < objAttachment1.length; i++){ %>
                                         <tr>
                                             <td>
                                               <div class="d-flex align-items-center">
@@ -407,20 +407,20 @@
                                                 </div>
                                                 <div class="ms-3 flex-grow-1">
                                                     <h6 class="fs-15 mb-0"><a href="#showModal" 
-                                                        data-path="<%= objAttachment[i].attachment_path %>" 
+                                                        data-path="<%= objAttachment1[i].attachment_path %>" 
                                                         data-bs-toggle="modal" class="fw-medium link-primary open-AddBookDialog read-attachment">
-                                                        <%= objAttachment[i].attachment_name %></a>
+                                                        <%= objAttachment1[i].attachment_name %></a>
                                                     </h6>
                                                 </div>
                                             </div>
                                             </td>
-                                            <td><%= objAttachment[i].file_format %></td>
-                                            <td><%= objAttachment[i].file_size %> MB</td>
-                                            <td><%= dateFormat(objAttachment[i].created_at) %></td>
+                                            <td><%= objAttachment1[i].file_format %></td>
+                                            <td><%= objAttachment1[i].file_size %> MB</td>
+                                            <td><%= dateFormat(objAttachment1[i].created_at) %></td>
                                             <td>
                                                 <a class="btn btn-outline-success read-attachment" 
                                                 href="#showModal"
-                                                data-path="<%= objAttachment[i].attachment_path %>" 
+                                                data-path="<%= objAttachment1[i].attachment_path %>" 
                                                 data-bs-toggle="modal" 
                                                 >
                                                 <i class="ri-eye-fill me-2 align-middle"></i>View

@@ -79,13 +79,14 @@ attachmentController.post(
         attachments: [
           {
             attachment_type: req.body.attachment,
-            attachment_path: req.body.kiambatisho,
+            attachment_path: `data:application/pdf;base64,${req.body.kiambatisho}`,
           },
         ],
         // kiambatisho: req.body.kiambatisho,
       };
       const token = process.env.FRONT_END_TOKEN;
-      console.log("url", pandishaHatiAPI);
+      // console.log("url", pandishaHatiAPI);
+      // console.log(req.body.kiambatisho)
       request(
         {
           url: pandishaHatiAPI,
@@ -127,6 +128,7 @@ attachmentController.post(
         }
       );
     } catch (error) {
+      console.log(error)
         return res.status(response.statusCode).send({
           success: false,
           statusCode:306,
