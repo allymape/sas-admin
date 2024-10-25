@@ -48,3 +48,31 @@
     fill: #333;
     /* Adjust the fill color to ensure visibility */
 }
+
+.form-check-input-lg {
+    width: 1.3em;
+    height: 1.3em;
+    min-width: 1.3em;
+    min-height: 1.3em;
+}
+
+.form-check-input-md {
+    width: 1.2em;
+    height: 1.2em;
+    min-width: 1.2em;
+    min-height: 1.2em;
+}
+
+.form-check-input-sm {
+    width: 1em;
+    height: 1em;
+    min-width: 1em;
+    min-height: 1em;
+}
+
+.form-check-input-xl {
+    width: 1.8em;
+    height: 1.8em;
+    min-width: 1.8em;
+    min-height: 1.8em;
+}

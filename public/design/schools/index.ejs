@@ -35,16 +35,28 @@
               <div class="col-sm">
                 <div class="d-flex justify-content-sm-end">
                     <form class="d-flex" action="/Shule" method="GET">
-                         <!-- <div class="" style="width: 100px;">
-                                <select class="form-control" name="sign"  >
-                                    <option value="=" <%= req.query.sign == '=' ? 'selected' : ''%> >=</option>
-                                    <option value="LIKE" <%= !req.query.sign || req.query.sign == 'LIKE' ? 'selected' : ''%>>Like</option>
+                        <div class="search-box ms-2 form-check-success form-check">
+                            <input type="hidden" name="search" value="true">
+                            <label for="dup-reg" class="form-check-label mt-2 mr-3" >
+                                <input type="checkbox" id="dup-reg" name="duplicate_reg" value="1" <%= req.query.duplicate_reg == "1" ? 'checked' : '' %> 
+                                    class="form-check-input form-check-input-lg"> &nbsp;Namba za usajili zilizojirudia
+                            </label>
+                        </div>
+                        <div>&nbsp;&nbsp;&nbsp;</div>
+                        <div class="search-box ms-2 form-check-success form-check">
+                            <label for="no-reg" class="form-check-label mt-2 mr-3" >
+                                <input type="checkbox" id="no-reg" name="invalid_or_no_reg" value="1" <%= req.query.invalid_or_no_reg == "1" ? 'checked' : '' %> 
+                                    class="form-check-input form-check-input-lg"> &nbsp;Zisizokuwa na namba ya usajili au zenye makosa 
+                            </label>
+                        </div>
+                        <div>&nbsp;&nbsp;&nbsp;</div>
+                        <div class="" style="width: 200px;">
+                                <select class="form-control" name="geolocation"  >
+                                    <option value="">-- Geo Location --</option>
+                                    <option value="1" <%= req.query.geolocation == 1  ? 'selected' : ''%> >Zenye Geolocation</option>
+                                    <option value="2" <%= req.query.geolocation == 2  ? 'selected' : ''%>>Zisizo na Geolocation</option>
                                 </select>
                         </div>
-                        <div>&nbsp;</div> -->
-                        <!-- <div class="search-box ms-2">
-                            <input type="text" name="tafuta" value="<%= req.query.tafuta || '' %>" class="form-control search" placeholder="Tafuta...">
-                        </div> -->
                         <div>&nbsp;</div>
                         <div class="" style="width: 200px;">
                                 <select class="form-control" name="aina"  >
@@ -75,7 +87,7 @@
                                 <i class="ri-search-line search-icon"></i>  Search
                             </button>
                         </div>
-                         <% if(req.query.aina || req.query.umiliki || req.query.tafuta) {%>
+                         <% if(req.query.search) {%>
                          <div>&nbsp;</div>
                          <div>
                             <a href="/Shule" class="btn btn-outline-danger"> 
@@ -112,7 +124,7 @@
                     </tbody>
                 </table>
             </div>
-            <%- include('../paginations/ajax_pagination.ejs')%>
+           
         </div>
     </div>
     <!-- end card -->

@@ -82,14 +82,6 @@ const redisClient = createClient({
 redisClient.connect(console.log("Redis connected successfully.")).catch(console.error);
 
 app.set("trust proxy", 1);
-// app.use(
-//   session({
-//     store: new RedisStore({ client: redisClient }),
-//     secret: "your-secret-key",
-//     resave: false,
-//     saveUninitialized: false,
-//   })
-// );
 app.use(
   session({
     secret: "201-S3cr3t@#",
@@ -105,7 +97,29 @@ app.use(
     // },
   })
 );
+const useragent = require("useragent");
 
+function clientInfoMiddleware(req, res, next) {
+  // Get IP address
+  const ipAddress =
+    req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+
+  // Get browser info
+  const agent = useragent.parse(req.headers["user-agent"]);
+  const browserInfo = {
+    browser: agent.toAgent(),
+    os: agent.os.toString(),
+    platform: agent.device.toString(),
+  };
+
+  // Attach IP and browser info to req.body
+  req.body.clientInfo = {
+    ip: ipAddress,
+    browserInfo : browserInfo,
+  };
+
+  next(); // Proceed to the next middleware or route handler
+}
 // app.use(express.static('public'));
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -138,9 +152,6 @@ global.routeIs =  (url_segments, currentUrl) => {
         var urls = url_segments.split("|");
         if (Array.isArray(urls) && urls.length > 0) {
               for(var i=0; i< urls.length; i++){
-                // console.log('cehkakdka ',currentUrl , currentUrl.replace(/^\/+/, '') , urls[i].trim()))
-                // console.log(modifyUrl(currentUrl.) === urls[i].trim())
-                // console.log(modifyUrl(currentUrl).toLowerCase().trim() , "xxxxx" , urls[i].toLowerCase())
                 if(modifyUrl(currentUrl).toLowerCase().trim() == urls[i].trim().toLowerCase()){
                     return true;
                 }
@@ -155,7 +166,6 @@ global.permission = (req , permission_name) => {
 }
 
 var modifyUrl = function(currentUrl){
-  
     var url = currentUrl.split("?").length == 2 ? currentUrl.split("?")[0].split("/") : currentUrl.split("/");
     if(url.length > 0 && !JSON.stringify(url).includes('.')){
       // console.log(url.length  , currentUrl , url[0]) 
@@ -220,6 +230,7 @@ global.remainDays =  (fromDate) => {
 var port = process.env.PORT || 8087;
 var url = process.env.APP_URL || "http://localhost";
 
+app.use(clientInfoMiddleware);
 app.use("/", dashboardController);
 // Maombi
 app.use("/" , anzishaShuleRequestController)

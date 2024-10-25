@@ -53,18 +53,6 @@ schoolController.post(
           recordsFiltered: totalRecords,
           data: dataToSend,
         });
-        // var data = jsonData.data;
-        // var numRows = jsonData.numRows;
-        // res.send({
-        //   schools: data,
-        //   canEdit: hasPermission(req, "update-schools"),
-        //   pagination: {
-        //     total: numRows,
-        //     current: page,
-        //     per_page: per_page,
-        //     pages: Math.ceil(numRows / per_page),
-        //   },
-        // });
       }
     );
   }
@@ -160,7 +148,6 @@ schoolController.post("/changeshule", isAuthenticated, can('update-school-name')
           });
         }
     );
- 
 });
 
 

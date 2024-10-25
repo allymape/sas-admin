@@ -6,7 +6,7 @@
     breadcrumb_main : 'Dashibodi',
     styles : [
             { href: '/css/map/leaflet.css' },
-            { href: 'https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css' },
+            { href: '/css/map/Control.Geocoder.css' },
         ]
 }) %>
 <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" /> -->
@@ -53,11 +53,9 @@
                                      <%= item.name %>
                                 </option>
                             <% } %>
-                            
                         </select>
                     </div>
                 </div>
-
                  <!--end col-->
                 <div class="col-xxl-3 col-sm-4">
                     <div class="input-light">
@@ -70,7 +68,6 @@
                                      <%= item.name %>
                                 </option>
                             <% } %>
-                            
                         </select>
                     </div>
                 </div>
@@ -111,17 +108,22 @@
                 <!--end col-->
                 <div class="col-xxl-2 col-sm-4 d-flex gap-2">
                     <button title="" type="submit" class="btn btn-primary w-100"> 
-                        <!-- <i class="ri-equalizer-fill me-1 align-bottom"></i> -->
+                        <i class="ri-filter-2-fill me-1 align-bottom"></i>
                         Filter
                     </button>
                      <% if(typeof req.query.search != undefined && req.query.search == "true") { %>
                      <a href="/Map" class="btn btn-danger w-100">
-                        <!-- <i class="ri-equalizer-fill me-1 align-bottom"></i> -->
+                        <i class="ri-delete-back-2-fill me-1 align-bottom"></i>
                         Futa
                      </a>
                      <% } %>
                 </div>
-                <div class="col-xxl-8 col-sm-8"></div>
+                <div class="col-xxl-10 col-sm-8 text-end">
+                    <button class="btn btn-secondary d-none" id="btn-zoom-default" onclick="zoomToLocationAndReset()">
+                    <i class="ri-refresh-line me-1 align-bottom"></i>
+                        Return to Normal View
+                    </button>
+                </div>
                 <!--end col-->
             </div>
             <!--end row-->
@@ -140,7 +142,7 @@
     scripts : [
         {src : '/js/map/leaflet.js'},
         {src : '/js/map/leaflet.markercluster.js'},
-        {src : 'https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js'},
+        {src : '/js/map/Control.Geocoder.js'},
         {src : '/design/layouts/scripts/map_scripts.js'},
         ]
     }) 

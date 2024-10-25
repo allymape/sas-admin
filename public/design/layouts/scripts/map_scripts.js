@@ -27,7 +27,12 @@
                             ? param_registration_number
                             : params.get("name_or_reg");
         const bounds = map.getBounds();
-         const zoomLevel = map.getZoom();
+        const zoomLevel = map.getZoom();
+         if (zoomLevel != defaultZoom) {
+           $("#btn-zoom-default").removeClass("d-none");
+         } else {
+           $("#btn-zoom-default").addClass("d-none");
+        }
                     ajaxRequest(
                       "/MapData",
                       "POST",
