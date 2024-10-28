@@ -9,7 +9,6 @@
             { href: '/css/map/Control.Geocoder.css' },
         ]
 }) %>
-<!-- <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" /> -->
 <style>
   #map {
       height: 600px; /* Set the height of the map */
@@ -148,19 +147,12 @@
     }) 
 %>
 <%- include('../includes/locations') %>
-<script type="text/javascript" src="design/layouts/scripts/map_scripts.js"></script>
-<!-- <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>  -->
  <script>
-    if($('#mkoa-field').val() || 
-        $("input[name='name_or_reg']").val() ||
-        $("select[name='category']").val() ||
-        $("select[name='ownership']").val() ||
-        $("input[name='date_range']").val()
-        ){
-            loadMarkers()
-        }else{
-            loadMarkers()
-        }
+    $(function(){
+        map.invalidateSize(); // Adjust the map size once modal is fully visible
+        zoomToLocationAndReset(6);
+        mapMoveEnd()
+    })
  </script>
 </body>
 </html>

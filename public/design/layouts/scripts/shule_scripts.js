@@ -248,7 +248,11 @@ function showMap(button) {
   // After the modal is shown, initialize the map and load markers
   setTimeout(function () {
     map.invalidateSize(); // Adjust the map size once modal is fully visible
-    loadMarkers(registration_number); // Load markers after the map is initialized
+    zoomToLocationAndReset(6);
+    mapMoveEnd(registration_number);
+    // debounce( () => {
+    //   loadMarkers(registration_number);
+    // } , 300); // Load markers after the map is initialized
   }, 300); // Delay to ensure the modal is fully opened before invalidating the map size
 }
 

@@ -324,7 +324,6 @@
         urlParams.forEach(function(value, key) {
             params.push({name : key , value : value});
         });
-       
         tableData('datatable' , '/SchoolList' , 'POST',
             [
                     { data: null, render : (data , type , row , meta) => {

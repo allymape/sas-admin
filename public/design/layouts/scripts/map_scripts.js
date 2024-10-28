@@ -33,32 +33,49 @@
         } else {
         $("#btn-zoom-default").addClass("d-none");
     }
+          const formData = {
+                    southWestLat: bounds.getSouthWest().lat,
+                    southWestLng: bounds.getSouthWest().lng,
+                    northEastLat: bounds.getNorthEast().lat,
+                    northEastLng: bounds.getNorthEast().lng,
+                    zoom: zoomLevel,
+                    date_range: params.get("date_range"),
+                    search: params.get("search"),
+                    name_or_reg: keyword,
+                    category: params.get("category"),
+                    ownership: params.get("ownership"),
+                    region: params.get("region"),
+                    district: params.get("district"),
+                    ward: params.get("ward"),
+                    street: params.get("street"),
+                    };
+
                 ajaxRequest(
-                    "/MapData",
-                    "POST",
-                    (response) => {
+                  "/MapData",
+                  "POST",
+                  (response) => {
                     const { data, statusCode, hasPermission } = response;
                     if (statusCode == 300) {
-                        // Clear the current markers
-                        markers.clearLayers();
-                        // Add markers to the map
-                        $("#total-school").text(data.length);
-                        data.forEach((item) => {
+                      // Clear the current markers
+                      markers.clearLayers();
+                      // Add markers to the map
+                      $("#total-school").text(data.length);
+                      data.forEach((item) => {
                         const {
-                            latitude,
-                            longitude,
-                            tracking_number,
-                            name,
-                            ownership,
-                            category,
-                            registration_number,
-                            region,
-                            district,
-                            ward,
-                            street,
+                          latitude,
+                          longitude,
+                          tracking_number,
+                          name,
+                          ownership,
+                          category,
+                          registration_number,
+                          region,
+                          district,
+                          ward,
+                          street,
                         } = item;
                         const marker = L.marker([latitude, longitude], {
-                            draggable: hasPermission,
+                          draggable: hasPermission,
                         }).addTo(map).bindPopup(`
                                             <div class="col-md-12">
                                             <label>Lat: ${latitude}, Lon: ${longitude}</label>
@@ -91,36 +108,21 @@
                         // .openPopup();
                         markers.addLayer(marker);
                         marker.on("dragend", function (e) {
-                            // Get the new marker position
-                            const newLatLng = e.target.getLatLng();
-                            // Update the popup with the new coordinates
-                            updateMarkers(
+                          // Get the new marker position
+                          const newLatLng = e.target.getLatLng();
+                          // Update the popup with the new coordinates
+                          updateMarkers(
                             name,
                             tracking_number,
                             newLatLng.lat,
                             newLatLng.lng,
                             param_registration_number
-                            );
+                          );
                         });
-                        });
+                      });
                     }
-                    },
-                    JSON.stringify({
-                    southWestLat: bounds.getSouthWest().lat,
-                    southWestLng: bounds.getSouthWest().lng,
-                    northEastLat: bounds.getNorthEast().lat,
-                    northEastLng: bounds.getNorthEast().lng,
-                    zoom: zoomLevel,
-                    date_range: params.get("date_range"),
-                    search: params.get("search"),
-                    name_or_reg: keyword,
-                    category: params.get("category"),
-                    ownership: params.get("ownership"),
-                    region: params.get("region"),
-                    district: params.get("district"),
-                    ward: params.get("ward"),
-                    street: params.get("street"),
-                    })
+                  },
+                  JSON.stringify(formData)
                 );
     }
     function updateMarkers(name , tracking_number, latitude, longitude , registration_number) {
@@ -198,11 +200,21 @@
         return function executedFunction(...args) {
             const context = this;
             clearTimeout(timeout);
+              if (typeof func !== "function") {
+                console.error("Provided argument is not a function:", func);
+                return;
+              }
+              console.log("it is function ..")
             timeout = setTimeout(() => func.apply(context, args), wait);
         };
     }
-    map.on('moveend', debounce(loadMarkers, 300));
-
+    function mapMoveEnd(keyword = null){
+        map.on("moveend", () => {
+          debounce(() => {
+            loadMarkers(keyword);
+          }, 300)();
+        });
+    }
     var cleanHref = cleanUrl(window.location.href);
     window.history.replaceState(null, null, cleanHref);
     // Example function to zoom in to level 15 and reset back to default after 5 seconds
