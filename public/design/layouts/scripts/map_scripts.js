@@ -126,7 +126,7 @@
                 );
     }
     function updateMarkers(name , tracking_number, latitude, longitude , registration_number) {
-        const text = `You want to update ${name} to lat: ${latitude}, lon: ${longitude} [${longitude}, ${latitude}]`;
+        const text = `You want to update ${name} to lat: ${latitude}, lon: ${longitude}`;
         confirmAction(
         () => {
             ajaxRequest("/UpdateMarker", "POST", (response) => {
