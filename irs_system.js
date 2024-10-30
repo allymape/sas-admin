@@ -117,7 +117,24 @@ function clientInfoMiddleware(req, res, next) {
     ip: ipAddress,
     browserInfo : browserInfo,
   };
+  if (req.session) {
+    const { email, cheoName, userName, officeName } = req.session;
+    const {browser , os , platform} = browserInfo;
 
+    console.log("\n************User Info*******************\n");
+    console.log(
+      "URL: " + req.host+req.url,
+      "\nBrowser" + browser,
+      "\nOS:" + os,
+      "\nPlatform:" + platform,
+      "\nIP: " + ipAddress,
+      "\nEmail:" + email,
+      "\nCheo: " + cheoName,
+      "\nUsername: " + userName,
+      "\nOfisi: " + officeName
+    );
+    console.log("\n*************End******************\n");
+  };
   next(); // Proceed to the next middleware or route handler
 }
 // app.use(express.static('public'));
