@@ -117,7 +117,7 @@ function clientInfoMiddleware(req, res, next) {
     ip: ipAddress,
     browserInfo : browserInfo,
   };
-  if (req.session) {
+  if (req.session && req.session.email) {
     const { email, cheoName, userName, officeName } = req.session;
     const {browser , os , platform} = browserInfo;
 
