@@ -241,22 +241,26 @@ module.exports = {
           const {is_password_changed} = req.user
           if (!is_password_changed){
             res.redirect("/Profile?tab=change_password");
+            return;
           }
           if (active) {
             res.redirect("/Profile?tab=kaimisha");
+            return
           }
         }
       );
+    }else{
+       next();
     }
-    next();
   },
   redirectIfAuthenticated: (req, res, next) => {
     if (req.session.userName) {
       // let  previousUrl = req.session.previousUrl
       // res.redirect(previousUrl ? previousUrl : '/Dashboard');
       res.redirect("/Dashboard");
+    }else{
+      next();
     }
-    next();
   },
 isInTanzaniaAndNotInWater : (latitude, longitude) => {
   const point = turf.point([longitude, latitude]);
@@ -393,11 +397,12 @@ validateGeoLocation : (req , res, next) => {
             if (
               response &&
               typeof response !== "undefined" &&
-              response.statusCode == 403
+              response?.statusCode == 403
             ) {
               res.status(response.statusCode).redirect("/403");
             } else {
               console.log(body, response);
+              callback(null);
             }
           }
         }

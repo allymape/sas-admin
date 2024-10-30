@@ -205,6 +205,7 @@ userController.get(
   "/Watumiaji",
   isAuthenticated,
   can("view-users"),
+  activeHandover,
   function (req, res) {
     res.render(path.join(__dirname + "/../design/watumiaji"), {
       req: req,
