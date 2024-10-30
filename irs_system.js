@@ -123,7 +123,7 @@ function clientInfoMiddleware(req, res, next) {
 
     console.log("\n************User Info*******************\n");
     console.log(
-      "URL: " + req.host+req.url,
+      "URL: " + req.hostname+req.url,
       "\nBrowser" + browser,
       "\nOS:" + os,
       "\nPlatform:" + platform,
