@@ -101,7 +101,7 @@ userController.post("/auth", function (req, res) {
     },
     (err, response, body) => {
       // console.log(loginAPI);
-      const errorMessage = `Kuna tatizo wasiliana na msimamizi wa mfumo`;
+      const errorMessage = `Kuna tatizo wasiliana na msimamizi wa mfumo.`;
       if (err) {
         console.log(err);
         req.flash("error", errorMessage);
