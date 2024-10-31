@@ -241,15 +241,17 @@ module.exports = {
           const {is_password_changed} = req.user
           if (!is_password_changed){
             res.redirect("/Profile?tab=change_password");
-          }
-          if (active) {
+          }else if (active) {
             res.redirect("/Profile?tab=kaimisha");
+          }else{
+             next();
           }
-          return;
         }
       );
+    }else{
+       next();
     }
-    next();
+   
   },
   redirectIfAuthenticated: (req, res, next) => {
     if (req.session.userName) {

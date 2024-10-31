@@ -63,7 +63,7 @@ userController.post("/Reset", function (req, res) {
     },
     (err, jsonData) => {
       if(err){
-        req.flash.message = "Kuna tatizo wasiliana na Msimamizi wa Mfumo";
+        req.flash.message = "Kuna hitilafu wasiliana na msimamizi wa mfumo";
         res.redirect(`/PasswordReset`);
       }
       const { statusCode, message } = jsonData.body;
@@ -101,9 +101,9 @@ userController.post("/auth", function (req, res) {
     },
     (err, response, body) => {
       // console.log(loginAPI);
-      const errorMessage = `Kuna tatizo wasiliana na Msimamizi wa Mfumo`;
+      const errorMessage = `Kuna tatizo wasiliana na msimamizi wa mfumo`;
       if (err) {
-        // console.log(err, body);
+        console.log(err);
         req.flash("error", errorMessage);
         res.redirect("/");
       } else {
