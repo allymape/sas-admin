@@ -89,7 +89,7 @@ userController.post("/auth", function (req, res) {
     browser,
     device
   }
-  console.log(clientIp);
+  // console.log(clientIp);
   request(
     {
       url: loginAPI,
@@ -103,7 +103,7 @@ userController.post("/auth", function (req, res) {
       // console.log(loginAPI);
       const errorMessage = `Kuna tatizo wasiliana na Msimamizi wa Mfumo`;
       if (err) {
-        console.log(err, body);
+        // console.log(err, body);
         req.flash("error", errorMessage);
         res.redirect("/");
       } else {
