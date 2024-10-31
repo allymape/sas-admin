@@ -298,6 +298,20 @@ validateGeoLocation : (req , res, next) => {
       }
       next();
   },
+  validateUserInput : () => {
+    return (req, res, next) => {
+      next();
+      //  const {username} = req.body
+      //     if(username !== ""){
+      //       res.status(422).send({
+      //         statusCode : 306,
+      //         message : "Fields marked with * are required fields."
+      //       });
+      //     }else{
+      //       next();
+      //     }
+    };
+  },
   validePassword: (req, res, next) => {
     const { oldpassword, newpassword, confirmpassword } = req.body;
     if (!oldpassword || !newpassword || !confirmpassword) {

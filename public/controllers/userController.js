@@ -14,6 +14,7 @@ const {
   can,
   validePassword,
   activeHandover,
+  validateUserInput,
 } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 var loginAPI = API_BASE_URL + "login";
@@ -323,6 +324,7 @@ userController.post(
   "/CreateUser",
   isAuthenticated,
   can("create-users"),
+  validateUserInput,
   function (req, res) {
     sendRequest(req, res, createUserAPI, "POST", req.body, (jsonData) => {
       res.send({

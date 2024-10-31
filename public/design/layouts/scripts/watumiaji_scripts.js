@@ -384,7 +384,7 @@ function validateUserForm(){
         "Tafadhali jaza neno siri au ficha neno siri ili kuendelea",
         "warning"
       );
-      return;
+      return false;
     }
     if (password.length > 0) {
       if (password == repassword) {
@@ -396,7 +396,7 @@ function validateUserForm(){
             "Umeweka neno siri lisilo salama (Weak). Hakikisha neno siri linakuwa na  angalau herufi kubwa 1, herufi ndogo 1, namba 1, special character 1 na linatakiwa kuwa na jumla ya characters kuanzia 8",
             "warning"
           );
-          return;
+          return false;
         }
       } else {
         alertMessage(
@@ -404,12 +404,15 @@ function validateUserForm(){
           "Nenosiri hazifanani (Password does not match)",
           "warning"
         );
-        return;
+        return false;
       }
     }
   }
 
   if (
+    name.length <= 0  ||
+    email.length <= 0  ||
+    phone.length <= 0  ||
     roleId.length <= 0 ||
     userLevel.length <= 0 ||
     (zoneField.is(":visible") && zone.length <= 0) ||
@@ -420,7 +423,7 @@ function validateUserForm(){
       "Sehemu zote zilizowekwa alama ya * lazima zijazwe.",
       "warning"
     );
-    return;
+    return false;
   }
   return data;
 }
@@ -429,6 +432,7 @@ function saveUser() {
   var selectedFile = document.getElementById("sign-field").files;
   var base64image = [];
   var data = validateUserForm()
+  if(!data) return;
   var elementId = document.getElementById("id-field");
     if (elementId !== null) {
       data["userId"] = elementId.value;
