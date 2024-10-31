@@ -103,7 +103,7 @@ userController.post("/auth", function (req, res) {
       // console.log(loginAPI);
       const errorMessage = `Kuna tatizo wasiliana na msimamizi wa mfumo.`;
       if (err) {
-        console.log(err);
+        console.log("Login Error: ",err);
         req.flash("error", errorMessage);
         res.redirect("/");
       } else {
