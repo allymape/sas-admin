@@ -245,12 +245,11 @@ module.exports = {
           if (active) {
             res.redirect("/Profile?tab=kaimisha");
           }
+          return;
         }
       );
-    }else{
-      next();
     }
-    
+    next();
   },
   redirectIfAuthenticated: (req, res, next) => {
     if (req.session.userName) {
@@ -390,7 +389,6 @@ validateGeoLocation : (req , res, next) => {
             );
             res.redirect("/");
           } else if (body !== undefined && response.statusCode == 200) {
-            console.log(body)
             callback(body);
           } else {
             if (
