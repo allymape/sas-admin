@@ -986,7 +986,7 @@ function tumaMaoniYako(
           btn == "tuma"
             ? "kutuma kwenda kwa " + $("#staffs option:selected").text()
             : btn == "wasilisha"
-            ? "kuwasilisha ombi hili kwenda ngazi juu"
+            ? "kuwasilisha ombi hili kwenda ngazi ya juu"
             : btn == "rudisha"
             ? "kurudisha ombi hili kwa Mwombaji"
             : btn == "thibitisha"

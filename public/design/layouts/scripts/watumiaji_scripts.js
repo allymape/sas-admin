@@ -431,32 +431,34 @@ function validateUserForm(){
 function saveUser() {
   var selectedFile = document.getElementById("sign-field").files;
   var base64image = [];
-  var data = validateUserForm()
-  if(!data) return;
-  var elementId = document.getElementById("id-field");
+  var validData = validateUserForm()
+
+  if(validData){
+    var elementId = document.getElementById("id-field");
     if (elementId !== null) {
-      data["userId"] = elementId.value;
+      validData["userId"] = elementId.value;
       var url = `UpdateUser/${elementId.value}`;
-    }else{
+    } else {
       var url = `CreateUser`;
     }
-  if (selectedFile.length > 0) {
-    // Select the very first file from list
-    var fileToLoad = selectedFile[0];
-    // FileReader function for read the file.
-    var fileReader = new FileReader();
-    // Onload of file read the file content
-    fileReader.onload = function (fileLoadedEvent) {
-      var base64 = fileLoadedEvent.target.result;
-      var taachedFile = base64.split(",");
-      base64image.push(taachedFile[1]);
-      data["selectedFile"] = base64image;
-      ajaxSaveUser(url ,data);
-    };
-    // Convert data to base64
-    fileReader.readAsDataURL(fileToLoad);
-  } else {
-    ajaxSaveUser(url , data);
+    if (selectedFile.length > 0) {
+      // Select the very first file from list
+      var fileToLoad = selectedFile[0];
+      // FileReader function for read the file.
+      var fileReader = new FileReader();
+      // Onload of file read the file content
+      fileReader.onload = function (fileLoadedEvent) {
+        var base64 = fileLoadedEvent.target.result;
+        var taachedFile = base64.split(",");
+        base64image.push(taachedFile[1]);
+        validData["selectedFile"] = base64image;
+        ajaxSaveUser(url, validData);
+      };
+      // Convert data to base64
+      fileReader.readAsDataURL(fileToLoad);
+    } else {
+      ajaxSaveUser(url, validData);
+    }
   }
 }
 
