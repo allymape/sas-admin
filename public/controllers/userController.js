@@ -322,9 +322,9 @@ userController.post(
 // Create User Account
 userController.post(
   "/CreateUser",
-  // isAuthenticated,
-  // can("create-users"),
-  // validateUserInput,
+  isAuthenticated,
+  can("create-users"),
+  validateUserInput,
   function (req, res) {
     sendRequest(req, res, createUserAPI, "POST", req.body, (jsonData) => {
       res.send({
