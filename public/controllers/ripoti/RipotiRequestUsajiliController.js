@@ -100,7 +100,7 @@ reportUsajiliRequestController.post(
   `/ThibitishaUsajili/:tracking_number`,
   isAuthenticated,
   (req, res) => {
-     sendRequest(req, res , thibitishaUsajiliAPI+`/${req.params.tracking_number}` , "POST" , {} , (jsonData) => {
+     sendRequest(req, res , thibitishaUsajiliAPI+`/${req.params.tracking_number}` , "POST" , req.body , (jsonData) => {
           const {statusCode , message} = jsonData
           res.send({
             statusCode,
