@@ -91,6 +91,7 @@ $("#add-school").on('click' , function(){
      modal("schoolModal", true);
      $("#school-form").find("button[type='submit']").text('Create');
      $("#school-form").attr("action" , "AddShule");
+      $("#description").closest(".row").addClass("d-none");
      resetFields();
      $("#latitude-field").val(defaultLatitude);
      $("#longitude-field").val(defaultLongitude);
@@ -145,7 +146,8 @@ function edit(e){
              document.getElementById("registration-date-field").value = "";
              document.getElementById("latitude-field").value = latitude ? latitude : defaultLatitude;
              document.getElementById("longitude-field").value = longitude ? longitude : defaultLongitude;
-             
+             $("#description").val(data.description);
+             $("#description").closest(".row").removeClass('d-none');
              setDatePicker("registration-date-field", registration_date);
              getRegions(selectedRegion);
             if(selectedRegion){

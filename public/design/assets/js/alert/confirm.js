@@ -51,3 +51,54 @@ function alertMessage(title = "" , text='' , icon = 'success' , callback , data 
     t.value && callback(data);
   });
 }
+
+function verifySchoolInfo(
+  school_name,
+  registration_number,
+  description,
+  callback
+) {
+  Swal.fire({
+    title: `JINA: ${school_name} REG#: ${registration_number}`,
+    input: "textarea",
+    inputAttributes: {
+      autocapitalize: "off",
+    },
+    inputValue: description,
+    inputPlaceholder: "Weka Maelezo ...",
+    showCancelButton: true,
+    cancelButtonText: "Ghairi",
+    confirmButtonText: "Wasilisha",
+    showLoaderOnConfirm: true,
+    inputValidator: (value) => {
+      if (!value) {
+        return "You have to write something!";
+      }
+    },
+    preConfirm: async (value) => {
+      // Wrap the callback to handle status codes
+      return new Promise((resolve) => {
+        callback(value, (statusCode, message) => {
+          if (statusCode === 306) {
+            Swal.showValidationMessage(`Error: ${message}`);
+            resolve(false); // Prevent modal from closing
+          } else {
+            alertMessage(
+              "Alert",
+              message,
+              statusCode === 300 ? "success" : "warning",
+              () => {
+                window.location.reload()
+              }
+            );
+            resolve(true); // Allow modal to close
+          }
+        });
+      });
+    },
+    allowOutsideClick: () => false,
+  }).then((result) => {
+    if (result.isConfirmed) {
+    }
+  });
+}

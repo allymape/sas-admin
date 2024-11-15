@@ -178,13 +178,14 @@
                         <th>Mtaa</th>
                         <th>Tarehe</th>
                         <th>Hali</th>
+                        <th>Thibitisha</th>
                         <!--<th  data-sort="priority">Walioshughulikia</th>-->
                     </tr>
                 </thead>
                 <tbody class="list form-check-all">
                    <% for (let i = 0; i < data.length; i++) { %>
                    <% const item = data[i];%>
-                    <tr>
+                    <tr class="<%= item.is_verified ? '' : (!item.is_verified &&  item.corrected == 0 ? 'text-warning' : (item.corrected == 1 ? 'text-success' : '' ))  %>">
                         <td> <%= item.tracking_number %> </td>
                         <td> <%= item.school_name %> </td>
                         <td> <%= item.registration_number %> </td>
@@ -207,6 +208,23 @@
                              <%= item.status == 2 ? 'Limethibitshwa' : '' %> 
                              <%= item.status == 3 ? 'Limekataliwa' : '' %> 
                            </span>
+                        </td>
+                        <td>
+                            <% if(!item.is_verified) {%>
+                                <div class="btn-group">
+                                    <button class="btn btn-outline-<%= item.description ? 'warning' : 'danger'%> btn-correction" 
+                                            data-registration_number="<%=item.registration_number%>"
+                                            data-tracking_number="<%=item.tracking_number%>"
+                                            data-school_name="<%=item.school_name%>"
+                                            data-description="<%=item.description%>"
+                                    >Marekebisho</button>
+                                    <% if(item.corrected == 1 || !item.description) {%>
+                                    <button class="btn btn-outline-success btn-verify"  
+                                        data-tracking_number="<%=item.tracking_number%>"  
+                                        data-school_name="<%=item.school_name%>">Thibitisha</button>
+                                    <% } %>
+                                </div>
+                            <% } %>
                         </td>
                     </tr>
                    <% } %>
@@ -232,5 +250,51 @@
     }) %>
   <%- include('../../includes/locations') %>
 <!-- <script type="text/javascript" src="/design/layouts/scripts/anzishashule_scripts.js"></script> -->
+ <script>
+    $(function(){
+        $(".btn-correction").on('click' , function(){
+            const school_name = $(this).data('school_name')
+            const registration_number = $(this).data('registration_number')
+            const tracking_number = $(this).data('tracking_number')
+            const eDescription = $(this).data('description')
+            verifySchoolInfo(school_name , registration_number , eDescription,(description , responseCallback) => {
+                ajaxRequest(`/RekebishaUsajili/${tracking_number}` , 'POST' , (response) => {
+                    const { statusCode , message} = response
+                    if(statusCode == 300){
+                        $(this).data('description' , description )
+                    }
+                    responseCallback(statusCode , message)
+                } , JSON.stringify({ description : description}))
+            })
+        })
+        $(".btn-verify").on('click' , function(){
+             const tracking_number = $(this).data('tracking_number')
+             const school_name = $(this).data('school_name')
+            confirmAction(() => {
+                            ajaxRequest(`/ThibitishaUsajili/${tracking_number}` , 'POST' , (response) => {
+                                    const { statusCode , message} = response
+                                    if(statusCode == 300){
+                                        $(this).closest('tr').removeClass('text-danger')
+                                        $(this).closest('td').html('')
+                                    }
+                                     alertMessage(
+                                            "Alert",
+                                            message,
+                                            statusCode === 300 ? "success" : "warning",
+                                            () => {
+                                                window.location.reload()
+                                            }
+                                        );
+                                    })
+                        },
+                    "Verify",
+                    "warning",
+                    `You won't be able to revert this!`,
+                    `Are you sure you want to confirm ${school_name} information are correct? `,
+                    )
+            
+        })
+    })
+ </script>
 </body>
 </html>

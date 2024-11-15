@@ -7,7 +7,9 @@ var path = require("path");
 const { isAuthenticated, sendRequest, can, createLetter, formatDate, exportJSONToExcel, activeHandover } = require("../../../util");
 // const { sendRequest, isAuthenticated, can } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
-const requestRiportKuanzishaAPI = API_BASE_URL + "ripoti-usajili-shule";
+const requestRiportUsajiliAPI = API_BASE_URL + "ripoti-usajili-shule";
+const thibitishaUsajiliAPI = API_BASE_URL + "thibitisha-usajili-shule";
+const rekebishaUsajiliAPI = API_BASE_URL + "rekebisha-usajili-shule";
 
 
 // Display
@@ -51,7 +53,7 @@ reportUsajiliRequestController.get(
     sendRequest(
       req,
       res,
-      requestRiportKuanzishaAPI,
+      requestRiportUsajiliAPI,
       "GET",
       formData,
       (jsonData) => {
@@ -84,4 +86,27 @@ reportUsajiliRequestController.get(
   }
 );
 
+reportUsajiliRequestController.post(`/RekebishaUsajili/:tracking_number`,isAuthenticated,(req, res) => {
+    sendRequest(req, res , rekebishaUsajiliAPI+`/${req.params.tracking_number}` , "POST" , req.body , (jsonData) => {
+          const {statusCode , message} = jsonData
+          res.send({
+            statusCode,
+            message
+          });
+    })
+  }
+);
+reportUsajiliRequestController.post(
+  `/ThibitishaUsajili/:tracking_number`,
+  isAuthenticated,
+  (req, res) => {
+     sendRequest(req, res , thibitishaUsajiliAPI+`/${req.params.tracking_number}` , "POST" , {} , (jsonData) => {
+          const {statusCode , message} = jsonData
+          res.send({
+            statusCode,
+            message
+          });
+    })
+  }
+);
 module.exports = reportUsajiliRequestController;
