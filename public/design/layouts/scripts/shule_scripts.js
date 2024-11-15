@@ -250,6 +250,7 @@ function showMap(button) {
     map.invalidateSize(); // Adjust the map size once modal is fully visible
     zoomToLocationAndReset(6);
     mapMoveEnd(registration_number);
+    // showMyLocation();
     // debounce( () => {
     //   loadMarkers(registration_number);
     // } , 300); // Load markers after the map is initialized
