@@ -86,8 +86,18 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-xxl-12 col-sm-6"></div>
-
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select class="form-control" placeholder="Hali ya Ombi ..." 
+                                name="verified" id="verified">
+                            <option selected>Uthibitisho ...</option>
+                            <option value="1" <%= req.query.verified == '1' ? 'selected' : '' %> >Zilizothibitishwa</option>
+                            <option value="2" <%= req.query.verified == '2' ? 'selected' : '' %> >Hazijathibitishwa</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-sm-4">
+                </div>
                 <div class="col-xxl-3 col-sm-4">
                     <div class="input-light">
                         <select id="mkoa-field"  data-choices-search-true class="form-control" placeholder="Mkoa ..."  name="region">
@@ -209,7 +219,7 @@
                              <%= item.status == 3 ? 'Limekataliwa' : '' %> 
                            </span>
                         </td>
-                        <td>
+                        <td class="<%= item.is_verified ? 'text-center' : '' %>">
                             <% if(!item.is_verified) {%>
                                 <div class="btn-group">
                                     <button class="btn btn-outline-<%= item.description ? 'warning' : 'danger'%> btn-correction" 
@@ -224,6 +234,9 @@
                                         data-school_name="<%=item.school_name%>">Thibitisha</button>
                                     <% } %>
                                 </div>
+                            <% } else{ %>
+                                <span title="Verified" data-bs-toggle="tooltip" class="myTooltip las la-check la-x text-success">
+                                </span>
                             <% } %>
                         </td>
                     </tr>

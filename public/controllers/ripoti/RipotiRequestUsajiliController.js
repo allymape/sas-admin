@@ -28,6 +28,7 @@ reportUsajiliRequestController.get(
     const tracking_number = req.query.tracking_number;
     const date_range = req.query.date_range;
     const category = req.query.category;
+    const verified = req.query.verified;
     const ownership = req.query.ownership;
     const structure = req.query.structure;
     const region = req.query.region;
@@ -42,6 +43,7 @@ reportUsajiliRequestController.get(
       status,
       date_range,
       category,
+      verified,
       ownership,
       structure,
       region,

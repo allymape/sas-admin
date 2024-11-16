@@ -147,7 +147,9 @@ function edit(e){
              document.getElementById("latitude-field").value = latitude ? latitude : defaultLatitude;
              document.getElementById("longitude-field").value = longitude ? longitude : defaultLongitude;
              $("#description").val(data.description);
-             $("#description").closest(".row").removeClass('d-none');
+             data.is_verified
+               ? $("#description").closest(".row").addClass("d-none")
+               : $("#description").closest(".row").removeClass("d-none");
              setDatePicker("registration-date-field", registration_date);
              getRegions(selectedRegion);
             if(selectedRegion){

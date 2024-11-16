@@ -35,18 +35,27 @@
               <div class="col-sm">
                 <div class="d-flex justify-content-sm-end">
                     <form class="d-flex" action="/Shule" method="GET">
-                        <div class="search-box ms-2 form-check-success form-check">
-                            <label for="correction" class="form-check-label mt-2 mr-3" >
-                                <input type="checkbox" id="correction" name="correction" value="1" <%= req.query.correction == "1" ? 'checked' : '' %> 
-                                    class="form-check-input form-check-input-lg"> &nbsp;Masahihisho
-                            </label>
-                        </div>
-                        <div>&nbsp;&nbsp;&nbsp;</div>
-                        <div class="search-box ms-2 form-check-success form-check">
+                         <div class="search-box ms-2 form-check-success form-check">
                             <input type="hidden" name="search" value="true">
                             <label for="dup-reg" class="form-check-label mt-2 mr-3" >
                                 <input type="checkbox" id="dup-reg" name="duplicate_reg" value="1" <%= req.query.duplicate_reg == "1" ? 'checked' : '' %> 
                                     class="form-check-input form-check-input-lg"> &nbsp;Zilizojirudia
+                            </label>
+                        </div>
+                        <div>&nbsp;&nbsp;&nbsp;</div>
+                        <% if(req.query.duplicate_reg){%>
+                            <div>&nbsp;&nbsp;&nbsp;</div>
+                            <div class="search-box ms-2 form-check-danger form-check">
+                            <label for="delete_duplicate" class="form-check-label mt-2 mr-3" >
+                                <input type="checkbox" id="delete_duplicate" name="delete_duplicate" value="1" <%= req.query.delete_duplicate == "1" ? 'checked' : '' %> 
+                                    class="form-check-input form-check-input-lg"> &nbsp;Futa Zilizojirudia
+                            </label>
+                        </div>
+                        <% } else { %>
+                        <div class="search-box ms-2 form-check-success form-check">
+                            <label for="correction" class="form-check-label mt-2 mr-3" >
+                                <input type="checkbox" id="correction" name="correction" value="1" <%= req.query.correction == "1" ? 'checked' : '' %> 
+                                    class="form-check-input form-check-input-lg"> &nbsp;Masahihisho
                             </label>
                         </div>
                         <div>&nbsp;&nbsp;&nbsp;</div>
@@ -88,6 +97,7 @@
                                     <%  } %>
                             </select>
                         </div>
+                        <% } %>
                         <div>&nbsp;</div>
                         <div class="">
                             <button type="submit" class="btn btn-outline-info"> 
@@ -339,16 +349,33 @@
         urlParams.forEach(function(value, key) {
             params.push({name : key , value : value});
         });
-        tableData('datatable' , '/SchoolList' , 'POST',
+        
+        const hasDeleteDuplicate = params.some(
+        (param) => param.name === 'delete_duplicate' && param.value === '1'
+        );
+
+        if (hasDeleteDuplicate) {
+           if(confirm("Are you sure you want to delete duplicates?")){
+           }else{
+            params = params.filter(param => param.name !== 'delete_duplicate');
+            loadData();
+            return false;
+           }
+        }
+        loadData()
+        function loadData(){
+            tableData('datatable' , '/SchoolList' , 'POST',
             [
                     { data: null, render : (data , type , row , meta) => {
                         return meta.row + meta.settings._iDisplayStart + 1;
                     } },
                     { data: "name", name: "name"  , render : (data , type , row) => {
                         if(row.canEdit){
-                            return `<a href="/ShuleDetails/${row.id}/Edit" title='More Edit' data-bs-toggle="tooltip" class="edit-school">${data}</a>`;
+                            return `<a href="/ShuleDetails/${row.id}/Edit" title='More Edit' data-bs-toggle="tooltip" class="edit-school">
+                                    <span class="myTooltip las la-check ${row.is_verified ? 'la-x text-success' : 'la-times text-danger'} "></span> ${data}
+                                    </a>`;
                         }
-                        return data;
+                        return `<span class="myTooltip las la-check ${row.is_verified ? 'la-x text-success' : 'la-times text-danger'}"></span> ${data}`;
                     }},
                     { data: "reg_no", name: "reg_no", render: function (data , type , row) {
                          let cssClass = ''; // Default to no class
@@ -426,6 +453,7 @@
             ],
             params   //search query
         );
+        }
     });
 </script>
 <!-- <script type="text/javascript" src="/design/layouts/scripts/shule_scripts.js"></script> -->
