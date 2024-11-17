@@ -121,6 +121,7 @@
                     <thead class="table-light">
                         <tr>
                             <th style="width: 10px;">Na.</th>
+                            <th>Namba ya Ufuatiliaji</th>
                             <th>Jina la Shule</th>
                             <th class=" text-wrap">Namba</th>
                             <th>Umiliki</th>
@@ -369,7 +370,8 @@
                     { data: null, render : (data , type , row , meta) => {
                         return meta.row + meta.settings._iDisplayStart + 1;
                     } },
-                    { data: "name", name: "name"  , render : (data , type , row) => {
+                    { data : 'id' , name : 'id'},
+                    { data : "name", name: "name"  , render : (data , type , row) => {
                         if(row.canEdit){
                             return `<a href="/ShuleDetails/${row.id}/Edit" title='More Edit' data-bs-toggle="tooltip" class="edit-school">
                                     <span class="myTooltip las la-check ${row.is_verified ? 'la-x text-success' : 'la-times text-danger'} "></span> ${data}
