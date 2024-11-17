@@ -193,45 +193,80 @@ function getRegions(selectedRegion){
           );
 }
 $("#school-form").on('submit' , function(e){
-    e.preventDefault();
-     const formData = parseQueryString($(this).serialize());
-     for(var i in formData){
-        if(formData[i] == "" && i != "address" && $("#owner-name-field").is(":visible")){
-          var input = $(`input[name='${i}'],select[name='${i}']`);
-          var label = $("label[for='" + input.attr("id")+ "']").text();
-              input.focus();
-          alertMessage("Invalid" ,`Tafadhali unatakiwa kujaza sehemu ya ${label}` , 'warning')
-          return;
-        }
-      }
+  e.preventDefault();
+  const formData = parseQueryString($(this).serialize());
+  const category = $("#category-field").val();
+  const registration_number = $("#registration-number-field").val();
+  // Define the regex patterns for each category
+  const patterns = {
+    1: /^EA\..*$/, // Category 1: Starts with "EA."
+    2: /^EM\..*$/, // Category 2: Starts with "EM."
+    3: /^S\..*$/, // Category 3: Starts with "S."
+    4: /^CU\..*$/, // Category 4: Starts with "CU."
+  };
 
-    confirmAction(() => {
-             const url = $(this).attr("action");
-              if(url){
-                ajaxRequest(
-                  `${url}`,
-                  "POST",
-                  (response) => {
-                    const { statusCode, message , action } = response;
-                    alertMessage(
-                      statusCode == 300 ? "Umefanikiwa" : "Haujafanikiwa",
-                      message,
-                      statusCode == 300 ? "success" : "error",
-                      () => {
-                        if(statusCode == 300){
-                           $("#datatable").DataTable().ajax.reload();
-                          if(action == 'create'){
-                            resetFields();
-                          }
-                        }
-                      }
-                    );
-                  },
-                  JSON.stringify(formData)
-                );
-              }
-    } , 'Ndio!' , 'warning' , `Je, unataka kuhifadhi taarifa hizi?` , 'Una uhakika?') 
-    
+  // Check if the registration number matches the pattern for the selected category
+  const regex = patterns[category];
+  if (regex && regex.test(registration_number)) {
+   for (var i in formData) {
+     if (
+       formData[i] == "" &&
+       i != "address" &&
+       $("#owner-name-field").is(":visible")
+     ) {
+       var input = $(`input[name='${i}'],select[name='${i}']`);
+       var label = $("label[for='" + input.attr("id") + "']").text();
+       input.focus();
+       alertMessage(
+         "Invalid",
+         `Tafadhali unatakiwa kujaza sehemu ya ${label}`,
+         "warning"
+       );
+       return;
+     }
+   }
+
+   confirmAction(
+     () => {
+       const url = $(this).attr("action");
+       if (url) {
+         ajaxRequest(
+           `${url}`,
+           "POST",
+           (response) => {
+             const { statusCode, message, action } = response;
+             alertMessage(
+               statusCode == 300 ? "Umefanikiwa" : "Haujafanikiwa",
+               message,
+               statusCode == 300 ? "success" : "error",
+               () => {
+                 if (statusCode == 300) {
+                   $("#datatable").DataTable().ajax.reload();
+                   if (action == "create") {
+                     resetFields();
+                   }
+                 }
+               }
+             );
+           },
+           JSON.stringify(formData)
+         );
+       }
+     },
+     "Ndio!",
+     "warning",
+     `Je, unataka kuhifadhi taarifa hizi?`,
+     "Una uhakika?"
+   );
+  } else {
+    alertMessage(
+      "Invalid",
+      `Invalid registration number for the selected category.`,
+      "warning"
+    );
+    return;
+  }
+  
 });
 
 ajaxSelect2("search-school", "LookForSchools", "Tafuta Shule", "schoolModal");

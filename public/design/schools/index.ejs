@@ -225,7 +225,27 @@
                                 </div>
                             </div>
                         </div>
-
+                          <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="category-field">Aina ya Shule</label>
+                                <div class="form-group">
+                                    <select type="text" name="category" id="category-field" class="form-control">
+                                        <option value="">Chagua Aina ya Shule</option>
+                                            <% for (let index = 0; index < categories.length; index++) { %>
+                                            <% const element = categories[index];%>
+                                                <option value="<%=element.id%>"
+                                                    ><%= element.name %></option>
+                                            <%  } %>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6 address-field">
+                                <label for="address-field">Anuani</label>
+                                <div class="form-group">
+                                    <input type="text" name="address" id="address-field" placeholder="Anuani ya Shule ..." class="form-control">
+                                </div>
+                            </div>
+                        </div>
                         <div class="row mb-3">
                             <div class="col-md-4">
                                 <label for="registration-date-field">Tarehe ya Usajili</label>
@@ -252,27 +272,6 @@
                             </div>
                         </div>
 
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="category-field">Aina ya Shule</label>
-                                <div class="form-group">
-                                    <select type="text" name="category" id="category-field" class="form-control">
-                                        <option value="">Chagua Aina ya Shule</option>
-                                            <% for (let index = 0; index < categories.length; index++) { %>
-                                            <% const element = categories[index];%>
-                                                <option value="<%=element.id%>"
-                                                    ><%= element.name %></option>
-                                            <%  } %>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6 address-field">
-                                <label for="address-field">Anuani</label>
-                                <div class="form-group">
-                                    <input type="text" name="address" id="address-field" placeholder="Anuani ya Shule ..." class="form-control">
-                                </div>
-                            </div>
-                        </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="latitude-field">Latitude</label>
