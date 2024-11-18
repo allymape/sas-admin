@@ -17,6 +17,7 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
         // console.log(type)
         sendRequest(req , res , baruaDetailsAPI +"/"+ tracking_number , 'POST' , formData , (jsonData) => {
           const { statusCode, data, sqa_zone_region } = jsonData;
+          console.log(data)
           if(statusCode == 300){
             const {
               school_name,
