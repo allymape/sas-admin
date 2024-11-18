@@ -1282,10 +1282,14 @@ const generateBody = (doc, bodyContent) => {
 const generateFooter = (res , doc, base64Image, signatory, cheo) => {
   const lineSize = 174;
   const signatureHeight = doc.y + 100;
-  if(base64Image.startsWith("data:image/png;base64")){
+  if(base64Image && base64Image.startsWith("data:image/png;base64")){
     var signature = Buffer.from(base64Image.split(',')[1], "base64"); 
   }else{
-    var signature = Buffer.from(base64Image, "base64"); 
+    if(base64Image){
+      var signature = Buffer.from(base64Image, "base64"); 
+    }else{
+      var signature = null;
+    }
   }
   // SIGNATURE
   // const signature = `${__dirname + "/tmp/signature_" + tracking_number}.png`;
