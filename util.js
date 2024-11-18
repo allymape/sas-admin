@@ -1010,7 +1010,7 @@ const usajiliBinafsi = (
 const getSchoolType = (school_type_id, school_type, school_name) => {
   var name = '';
   if ([1, 2, 3].includes(school_type_id)) {
-    name = `shule ya ${school_type.toLowerCase()} ${school_name} `;
+    name = `shule ya ${school_type.toLowerCase()} ${school_name.toUpperCase()} `;
   } else {
     name = `chuo cha Ualimu ${school_name}`;
   }
