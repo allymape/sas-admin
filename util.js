@@ -995,7 +995,7 @@ const usajiliBinafsi = (
     `2.  Ninafurahi kukujulisha kuwa ${titleCase(name.toLowerCase())} imesajiliwa tarehe <b>${registration_date}</b> kwa mujibu wa Sheria ya Elimu, Sura ya 353.\n\n`,
     `3.  ${type} ${
       school_type == 4 ? "kimipewa" : "imepewa"
-    } namba ya Usajili <b>${registration_number} </b> kuwa ya  ${subcategory} ${gender_type} na jina <b>${school_name} </b> limeidhinishwa. ${type} ${
+    } namba ya Usajili <b>${registration_number} </b> kuwa ya  ${subcategory} ${gender_type} na jina <b>${school_name.toUpperCase()} </b> limeidhinishwa. ${type} ${
       school_type == 4 ? "hiki" : "hii"
     } imeidhinishwa kuwa na ${
       stream < 2 ? "mkondo" : "mikondo"
