@@ -1125,8 +1125,9 @@ function tableData(tableId ,url, type, columns , data = null , columnDefs = []) 
 
 function actionButtons(row, elements) {
   const escapedRow = JSON.stringify(row)
-    .replace(/"/g, "&quot;") // escape double quotes
-    .replace(/'/g, "&#39;"); // escape single quotes
+                        .replace(/"/g, "&quot;") // escape double quotes
+                        .replace(/'/g, "&#39;"); // escape single quotes
+  
   if (typeof elements == "object") {
     let tags = ``;
     elements.forEach((element) => {
@@ -1138,7 +1139,7 @@ function actionButtons(row, elements) {
                           }
                           ${
                             row
-                              ? `data-row="${escapedRow}"`
+                              ? `data-row='${escapedRow}'`
                               : ""
                           } 
                           class="${element.class ? element.class : ""}" 
@@ -1155,7 +1156,7 @@ function actionButtons(row, elements) {
         } else {
           tags += `<a href="${element.link ? element.link : "#"}" 
                         ${element.moreAttributes ? element.moreAttributes : ""}
-                        ${row ? "data-row='" + JSON.stringify(row) + "'" : ""} 
+                        ${row ? "data-row='" + escapedRow + "'" : ""} 
                         class="${element.class ? element.class : ""}" 
                         onclick="${
                           element.function
