@@ -73,7 +73,7 @@ reportUsajiliRequestController.get(
           });
           const csvData = data.map((item) => ({
             ...item,
-            registration_date: item.registration_date ? formatDate(item.registration_date, "DD-MM-YYYY") : '',
+            registration_date : item.registration_date ? formatDate(item.registration_date, "DD-MM-YYYY") : '',
           }));
           exportJSONToExcel(res, csvData);
         } else {
