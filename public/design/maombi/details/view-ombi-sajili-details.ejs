@@ -44,7 +44,10 @@
                             <tbody>
                                 <tr>
                                     <td class="fw-medium">Namba ya Ombi</td>
-                                    <td><%= tracking_number %></td>
+                                    <td>
+                                        <%= tracking_number %>
+                                        <input type="hidden" id="trackingId" value="<%= tracking_number %>"/>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td class="fw-medium">Mwombaji</td>
@@ -256,7 +259,15 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td><b><%= school_name %></b></td>
+                                            <td class="d-flex justify-content-between">
+                                                <div><b><%= school_name %></b></div>
+                                                <% if(permission(req , 'update-school-name') && [0,1].includes(is_approved)){ %>
+                                                    <a href="#" class="btn btn-link" onclick="badili('<%= school_name %>')"
+                                                    title="Kama jina la shule haliko sawa badilisha hapa" bs-data-toggle="tooltip">
+                                                        <span class="bx bx-edit"></span> Badili Jina
+                                                    </a>
+                                                <% } %>
+                                            </td>
                                             <td><b><%= schoolCategory %></b></td>
                                             <td><b><%= schoolOpeningDate %></b></td>
                                         </tr>
@@ -487,134 +498,6 @@
     </div>
     <!--end row-->
 
-    <div class="modal fade" id="inviteMembersModal" tabindex="-1" aria-labelledby="inviteMembersModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0">
-                <div class="modal-header p-3 ps-4 bg-soft-success">
-                    <h5 class="modal-title" id="inviteMembersModalLabel">Team Members</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="search-box mb-3">
-                        <input type="text" class="form-control bg-light border-light" placeholder="Search here...">
-                        <i class="ri-search-line search-icon"></i>
-                    </div>
-
-                    <div class="mb-4 d-flex align-items-center">
-                        <div class="me-2">
-                            <h5 class="mb-0 fs-13">Members :</h5>
-                        </div>
-                        <div class="avatar-group justify-content-center">
-                            <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Tonya Noble">
-                                <div class="avatar-xs">
-                                    <img src="../design/assets/images/users/avatar-10.jpg" alt="" class="rounded-circle img-fluid">
-                                </div>
-                            </a>
-                            <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Thomas Taylor">
-                                <div class="avatar-xs">
-                                    <img src="../design/assets/images/users/avatar-8.jpg" alt="" class="rounded-circle img-fluid">
-                                </div>
-                            </a>
-                            <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Nancy Martino">
-                                <div class="avatar-xs">
-                                    <img src="../design/assets/images/users/avatar-2.jpg" alt="" class="rounded-circle img-fluid">
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="mx-n4 px-4" data-simplebar style="max-height: 225px;">
-                        <div class="vstack gap-3">
-                            <div class="d-flex align-items-center">
-                                <div class="avatar-xs flex-shrink-0 me-3">
-                                    <img src="../design/assets/images/users/avatar-2.jpg" alt="" class="img-fluid rounded-circle">
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h5 class="fs-13 mb-0"><a href="javascript:void(0);" class="text-body d-block">Nancy Martino</a></h5>
-                                </div>
-                                <div class="flex-shrink-0">
-                                    <button type="button" class="btn btn-light btn-sm">Add</button>
-                                </div>
-                            </div>
-                            <!-- end member item -->
-                            <div class="d-flex align-items-center">
-                                <div class="avatar-xs flex-shrink-0 me-3">
-                                    <div class="avatar-title bg-soft-danger text-danger rounded-circle">
-                                        HB
-                                    </div>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h5 class="fs-13 mb-0"><a href="javascript:void(0);" class="text-body d-block">Henry Baird</a></h5>
-                                </div>
-                                <div class="flex-shrink-0">
-                                    <button type="button" class="btn btn-light btn-sm">Add</button>
-                                </div>
-                            </div>
-                            <!-- end member item -->
-                            <div class="d-flex align-items-center">
-                                <div class="avatar-xs flex-shrink-0 me-3">
-                                    <img src="../design/assets/images/users/avatar-3.jpg" alt="" class="img-fluid rounded-circle">
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h5 class="fs-13 mb-0"><a href="javascript:void(0);" class="text-body d-block">Frank Hook</a></h5>
-                                </div>
-                                <div class="flex-shrink-0">
-                                    <button type="button" class="btn btn-light btn-sm">Add</button>
-                                </div>
-                            </div>
-                            <!-- end member item -->
-                            <div class="d-flex align-items-center">
-                                <div class="avatar-xs flex-shrink-0 me-3">
-                                    <img src="../design/assets/images/users/avatar-4.jpg" alt="" class="img-fluid rounded-circle">
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h5 class="fs-13 mb-0"><a href="javascript:void(0);" class="text-body d-block">Jennifer Carter</a></h5>
-                                </div>
-                                <div class="flex-shrink-0">
-                                    <button type="button" class="btn btn-light btn-sm">Add</button>
-                                </div>
-                            </div>
-                            <!-- end member item -->
-                            <div class="d-flex align-items-center">
-                                <div class="avatar-xs flex-shrink-0 me-3">
-                                    <div class="avatar-title bg-soft-success text-success rounded-circle">
-                                        AC
-                                    </div>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h5 class="fs-13 mb-0"><a href="javascript:void(0);" class="text-body d-block">Alexis Clarke</a></h5>
-                                </div>
-                                <div class="flex-shrink-0">
-                                    <button type="button" class="btn btn-light btn-sm">Add</button>
-                                </div>
-                            </div>
-                            <!-- end member item -->
-                            <div class="d-flex align-items-center">
-                                <div class="avatar-xs flex-shrink-0 me-3">
-                                    <img src="../design/assets/images/users/avatar-7.jpg" alt="" class="img-fluid rounded-circle">
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h5 class="fs-13 mb-0"><a href="javascript:void(0);" class="text-body d-block">Joseph Parker</a></h5>
-                                </div>
-                                <div class="flex-shrink-0">
-                                    <button type="button" class="btn btn-light btn-sm">Add</button>
-                                </div>
-                            </div>
-                            <!-- end member item -->
-                        </div>
-                        <!-- end list -->
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light w-xs" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-success w-xs">Assigned</button>
-                </div>
-            </div>
-            <!-- end modal-content -->
-        </div>
-        <!-- modal-dialog -->
-    </div>
-
-
     <div class="modal fade zoomIn showModal" id="showModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content border-0">
@@ -642,7 +525,31 @@
         </div>
     </div>
     <!-- end modal -->
-
+     <div class="modal fade" id="inviteMembersModal" tabindex="-1" aria-labelledby="inviteMembersModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0">
+            <div class="modal-header p-3 ps-4 bg-soft-success">
+                <h5 class="modal-title"></h5>
+                <input type="text" id="inviteMembersModalLabel" class="form-control bg-light border-light" disabled>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="search-box mb-3">
+                    <input type="text" class="form-control bg-light border-light" id="newName" placeholder="Ingiza Jina...">
+                    <!-- <i class="ri-search-line search-icon"></i> -->
+                </div>
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+                <button type="button" class="btn btn-danger w-xs" data-bs-dismiss="modal">Sitisha</button>
+                <button type="button" onclick="changeName('usajili')" class="btn btn-success w-xs">
+                    Badili Jina
+                </button>
+            </div>
+        </div>
+        <!-- end modal-content -->
+    </div>
+    <!-- modal-dialog -->
+</div>
 <!--end card-body-->
 <%- include('../../layouts/partials/footer.ejs' , {
      card_title :  '' , 

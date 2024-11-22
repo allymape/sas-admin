@@ -213,7 +213,7 @@
                                         <td class="d-flex justify-content-between">
                                             <div><b><%= school_name %></b></div>
                                             <% if(permission(req , 'update-school-name') && [0,1].includes(is_approved)){ %>
-                                                <a href="#" class="btn btn-link" onclick="badili('<%= school_name %>')"
+                                                <a href="#" class="btn btn-link" onclick='badili("<%= school_name %>")'
                                                 title="Kama jina la shule haliko sawa badilisha hapa" bs-data-toggle="tooltip">
                                                     <span class="bx bx-edit"></span> Badili Jina
                                                 </a>
@@ -430,16 +430,17 @@
                     <i class="ri-search-line search-icon"></i>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light w-xs" data-bs-dismiss="modal">Sitisha</button>
-                <button type="button" onclick="changeName()" class="btn btn-success w-xs"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></button>
+            <div class="modal-footer d-flex justify-content-between">
+                 <button type="button" class="btn btn-danger w-xs" data-bs-dismiss="modal">Sitisha</button>
+                <button type="button" onclick="changeName()" class="btn btn-success w-xs">
+                    Badili Jina
+                </button>
             </div>
         </div>
         <!-- end modal-content -->
     </div>
     <!-- modal-dialog -->
 </div>
-
 
 <div class="modal fade zoomIn showModal" id="showModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl">

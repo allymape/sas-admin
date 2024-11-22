@@ -138,15 +138,26 @@ schoolController.post("/changeshule", isAuthenticated, can('update-school-name')
   const trackingId = req.body.trackingId;
   const from_user = req.session.userID;
   const newName = req.body.newName;
-    sendRequest(req , res , changeShuleAPI, "POST",{  trackingId: trackingId, from_user: from_user, newName: newName},
+  const application_category = req.body.application_category;
+    sendRequest(
+      req,
+      res,
+      changeShuleAPI,
+      "POST",
+      {
+        trackingId: trackingId,
+        from_user: from_user,
+        newName: newName,
+        application_category: application_category,
+      },
       (jsonData) => {
-          const {message , statusCode , success} = jsonData
-          res.send({
-            message,
-            statusCode,
-            success
-          });
-        }
+        const { message, statusCode, success } = jsonData;
+        res.send({
+          message,
+          statusCode,
+          success,
+        });
+      }
     );
 });
 

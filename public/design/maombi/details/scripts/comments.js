@@ -244,7 +244,7 @@ function badili(school_name) {
   $("#inviteMembersModal").modal("show");
 }
 
-function changeName() {
+function changeName(application_category = '') {
   var trackingId = document.getElementById("trackingId").value;
   var newName = document.getElementById("newName").value;
   ajaxRequest(
@@ -258,11 +258,15 @@ function changeName() {
         message,
         success ? "success" : "error",
         () => {
-          window.location.href = "/TaarifaOmbi/" + trackingId;
+          window.location.reload();
         },
         {}
       );
     },
-    JSON.stringify({ trackingId: trackingId, newName: newName })
+    JSON.stringify({
+      trackingId: trackingId,
+      newName: newName,
+      application_category: application_category,
+    })
   );
 }
