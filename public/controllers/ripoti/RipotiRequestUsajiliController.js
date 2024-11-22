@@ -64,8 +64,18 @@ reportUsajiliRequestController.get(
         if (req.query.export == "true") {
           data.forEach((item) => {
             delete item.status;
+            delete item.is_verified;
+            delete item.registration_id;
+            delete item.approved_at;
+            delete item.approved;
+            delete item.corrected;
+            delete item.description;
           });
-          exportJSONToExcel(res, data);
+          const csvData = data.map((item) => ({
+            ...item,
+            registration_date: item.registration_date ? formatDate(item.registration_date, "DD-MM-YYYY") : '',
+          }));
+          exportJSONToExcel(res, csvData);
         } else {
           res.render(path.join(__dirname + "/../../design/reports/usajili"), {
             req: req,

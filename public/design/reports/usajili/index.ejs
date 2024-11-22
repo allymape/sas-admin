@@ -41,21 +41,17 @@
                         </select>
                     </div>
                 </div>
-
                  <!--end col-->
                 <div class="col-xxl-3 col-sm-4">
                     <div class="input-light">
-                        <select class="form-control" placeholder="Umiliki ..." data-choices data-choices-search-true name="ownership">
-                            <option> Umiliki ...</option>
+                        <select class="form-control" placeholder="Umiliki ..." name="ownership">
+                            <option value=""> Umiliki ...</option>
                             <% for (let index = 0; index < ownerships.length; index++) { %>
-                            <% const item = ownerships[index];
-                                if(item.id == 3) continue;
-                            %>
-                                <option value="<%= item.id %>" <%= req.query.ownership == item.id ? 'selected' : '' %>>
-                                     <%= item.name %>
-                                </option>
+                            <% const item = ownerships[index];%>
+                            <option value="<%= item.id %>" <%= req.query.ownership == item.id ? 'selected' : '' %>>
+                             <%= item.name %>
+                            </option>
                             <% } %>
-                            
                         </select>
                     </div>
                 </div>
