@@ -75,6 +75,7 @@ reportUsajiliRequestController.get(
             ...item,
             registration_date : item.registration_date ? formatDate(item.registration_date, "DD-MM-YYYY") : '',
           }));
+          console.log("Export to Excel...")
           exportJSONToExcel(res, csvData);
         } else {
           res.render(path.join(__dirname + "/../../design/reports/usajili"), {
