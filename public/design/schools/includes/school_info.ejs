@@ -202,5 +202,88 @@
         </div>
       </div>
     </div>
+     <div class="row">
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="school_size">Eneo (Jaza Eneo)</label>
+          <input type="number"  name="school_size" value="<%=school_info.school_size%>" class="form-control" id="school_size" placeholder="Jaza Eneo">
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="area">Ukubwa Mita za Mraba (Namba tu)</label>
+          <input type="number"  name="area" value="<%=school_info.area%>" class="form-control" id="area" placeholder="Jaza Ukubwa">
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <div class="form-check mt-3"> <br>
+            <label class="form-label" for="is_for_disabled">
+              <input type="checkbox"  name="is_for_disabled"
+              class="form-check-input" id="is_for_disabled" 
+              placeholder="Dahalia"
+              <%= school_info.is_for_disabled ? 'checked' : '' %>
+              >
+              Shule ni ya wenye mahitaji Maalum?
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <div class="form-check mt-3"> <br>
+            <label class="form-label" for="seminary">
+              <input type="checkbox"  name="is_seminary"
+              class="form-check-input" id="seminary" 
+              placeholder="Dahalia"
+              <%= school_info.is_seminary ? 'checked' : '' %>
+              >
+              Ni ya seminari
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="row">
+      <div class="col-lg-3">
+         <div class="mb-3">
+          <label class="form-label" for="website">Tovuti (Optional)</label>
+          <input type="text"  name="website" value="<%=school_info.website%>" class="form-control" id="website" placeholder="Website: www.example.com">
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="school_phone">Namba ya Simu (Optional)</label>
+          <input type="text"  name="school_phone" value="<%=school_info.school_phone%>" class="form-control" id="school_phone" placeholder="Namba ya simu ya Shule..">
+        </div>
+      </div>
+      <div class="col-lg-3">
+      <div class="mb-3">
+          <label class="form-label" for="school_address">Physica Address (Optional)</label>
+          <textarea type="Number"  name="school_address" value="" class="form-control" id="po_box" placeholder=Physical Address e.g Mtaa wa 6 Kitumbini"><%=school_info.school_address%></textarea>
+        </div>
+      </div>
+      <div class="col-lg-3">
+         <div class="mb-3">
+          <label class="form-label" for="po_box">Sanduku la Posta (Optional)</label>
+          <input type="text"  name="po_box" value="<%=school_info.po_box%>" class="form-control" id="po_box" placeholder="Sanduku la Posta..">
+        </div>
+      </div>
+    </div>
+
+      <div class="row">
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="number_of_students">Idadi ya Wanafunzi</label>
+          <input type="Number" min="0"  name="number_of_students" value="<%=school_info.number_of_students%>" class="form-control" id="number_of_students" placeholder="Idadi ya Wanafunzi ...">
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="number_of_teachers">Idadi ya Walimu</label>
+          <input type="Number" min="0"  name="number_of_teachers" value="<%=school_info.number_of_teachers%>" class="form-control" id="number_of_teachers" placeholder="Idadi ya Walimu ...">
+        </div>
+      </div>
+    </div>
   </div>
 </div>

@@ -1,17 +1,78 @@
 <div class="tab-pane fade show" id="steparrow-description-info" role="tabpanel" aria-labelledby="steparrow-description-info-tab">
-  <div>
-    <div class="mb-3">
-      <label for="formFile" class="form-label">Upload Image</label>
-      <input class="form-control" type="file" id="formFile">
-    </div>
-    <div>
-      <label class="form-label" for="des-info-description-input">Description</label>
-      <textarea class="form-control" placeholder="Enter Description" id="des-info-description-input" rows="3"></textarea>
-    </div>
-  </div>
-  <div class="d-flex align-items-start gap-3 mt-4">
-    <button type="button" class="btn btn-light btn-label previestab" data-previous="steparrow-gen-info-tab"><i class="ri-arrow-left-line label-icon align-middle fs-16 me-2"></i> Back to General</button>
-    <button type="button" class="btn btn-success btn-label right ms-auto nexttab
-nexttab" data-nexttab="pills-experience-tab"><i class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Submit</button>
-  </div>
+   <div class="row">
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="owner_name">Name</label>
+          <input type="text" name="owner_name" value="<%= owner ? owner.owner_name : '' %>" class="form-control" id="owner_name" placeholder="Enter Owner Name ...">
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="authorized_person">Authorized Person</label>
+          <input type="text" name="authorized_person" value="<%= owner ? owner.authorized_person : '' %>" class="form-control" id="authorized_person" placeholder="Enter Authorized Personnel ... ">
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="title">Title</label>
+          <input type="text" name="title" value="<%= owner ? owner.title : '' %>" class="form-control" id="title" placeholder="Enter Title ...">
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="">Email</label>
+          <input type="email" name="owner_email" value="<%= owner ? owner.owner_email : '' %>" class="form-control" id="owner_email" placeholder="Enter email ...">
+        </div>
+      </div>
+   </div>
+   <div class="row">
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="phone">Phone Number</label>
+          <input type="text" name="phone_number" value="<%= owner ? owner.phone_number : '' %>" class="form-control" id="phone_number" placeholder="Enter Owner Phone Number ...">
+        </div>
+      </div>
+     <div class="col-lg-3">
+      <div class="mb-3">
+        <label for="ownership_sub_type_id">Ownership Sub Type</label>
+          <select   class="form-control" name="ownership_sub_type_id" id="ownership_sub_type_id" placeholder="Owner Type">
+            <option value="">-- Select Owner Sub Type --</option>
+            <% for (let index = 0; index < ownership_sub_types.length; index++) { %>
+            <% const element = ownership_sub_types[index]; %>
+              <option value="<%= element.id %>" <%= element.id == (owner ? owner.ownership_sub_type_id : '') ? 'selected' : '' %> 
+                >
+              <%= element.name %>
+              </option>
+            <% } %>
+          </select>
+      </div>
+     </div>
+     <div class="col-lg-3">
+      <div class="mb-3">
+        <label for="ownership_sub_type_id">Denomination</label>
+          <select   class="form-control" name="denomination_id" id="denomination_id" placeholder="Denomination">
+            <option value="">-- Denomination --</option>
+            <% for (let index = 0; index < denominations.length; index++) { %>
+            <% const element = denominations[index]; %>
+              <option value="<%= element.id %>" <%= element.id == (owner ? owner.denomination_id : '') ? 'selected' : '' %> 
+                >
+              <%= element.name %>
+              </option>
+            <% } %>
+          </select>
+      </div>
+     </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <div class="form-check mt-3 form-check-success"> <br>
+            <label class="form-label" for="is_manager">
+              <input type="checkbox"  name="is_manager"
+              class="form-check-input" id="is_manager" placeholder="Dahalia" <%= (owner ? owner.is_manager : false) ? 'checked' : '' %>
+              >
+              is Manager? 
+            </label>
+          </div>
+        </div>
+      </div>
+   </div>
 </div>
