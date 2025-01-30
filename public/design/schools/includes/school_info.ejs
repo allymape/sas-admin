@@ -1,4 +1,4 @@
-<div class="tab-pane show active" id="steparrow-gen-info" role="tabpanel" aria-labelledby="steparrow-gen-info-tab">
+<div class="tab-pane show active" id="school-info" role="tabpanel" aria-labelledby="school-info-tab">
   <div>
     <div class="row">
       <div class="col-lg-3">
@@ -119,22 +119,7 @@
             </select>
         </div>
       </div>
-      <div class="col-lg-3">
-        <div class="mb-3">
-          <label class="form-label" for="steparrow-gen-info-email-input">Specialization</label>
-          <select   class="form-control" name="school_specialization_id" id="steparrow-gen-info-email-input" placeholder="Specialization">
-            <option value="">-- Select Speciliazation --</option>
-            <% for (let index = 0; index < specializations.length; index++) { %>
-            <% const element = specializations[index]; %>
-              <option value="<%= element.id %>" <%= element.id == school_info.school_specialization_id ? 'selected' : '' %> 
-                >
-              <%= element.name %>
-              </option>
-            <% } %>
-            </select>
-        </div>
-      </div>
-      <div class="col-lg-3">
+      <div class="col-lg-6">
         <div class="mb-3">
           <label class="form-label" for="steparrow-gen-info-email-input">Curriculum</label>
          <select   class="form-control" name="curriculum_id" id="steparrow-gen-info-email-input" placeholder="Building Structure">

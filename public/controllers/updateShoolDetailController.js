@@ -10,8 +10,25 @@ const updateSchoolDeatilsApi = API_BASE_URL + "update-school-detail";
 // Edit school details
 updateSchoolDetailController.get('/ShuleDetails/:tracking_number/edit' , isAuthenticated , can('update-schools'), activeHandover , (req , res) => {
     sendRequest(req, res, editSchoolAPI+`/${req.params.tracking_number}/edit`, "GET", {}, (jsonData) => {
-      var { school_info, languages, school_categories, school_sub_categories, building_structures, genders,
-            specializations, registration_structures, curriculums, certificates, sect_names,owner, manager, denominations , ownership_sub_types } = jsonData;
+      var {
+        school_info,
+        languages,
+        school_categories,
+        school_sub_categories,
+        building_structures,
+        genders,
+        specializations,
+        combinations,
+        school_combinations,
+        registration_structures,
+        curriculums,
+        certificates,
+        sect_names,
+        owner,
+        manager,
+        denominations,
+        ownership_sub_types,
+      } = jsonData;
       res.render(path.join(__dirname + "/../design/schools/edit"), {
         req,
         school_info,
@@ -21,6 +38,8 @@ updateSchoolDetailController.get('/ShuleDetails/:tracking_number/edit' , isAuthe
         building_structures,
         genders,
         specializations,
+        combinations,
+        school_combinations,
         registration_structures,
         curriculums,
         certificates,

@@ -1,0 +1,43 @@
+<!-- <div class="tab-pane fade" id="pills-experience" role="tabpanel"> -->
+ <div class="tab-pane fade show" id="combinations-info" role="tabpanel" aria-labelledby="combinations-info-tab">
+   <div class="row">
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="steparrow-gen-info-email-input">Specialization</label>
+          <select   class="form-control" name="school_specialization_id" id="steparrow-gen-info-email-input" placeholder="Specialization">
+            <option value="">-- Select Speciliazation --</option>
+            <% for (let index = 0; index < specializations.length; index++) { %>
+            <% const element = specializations[index]; %>
+              <option value="<%= element.id %>" <%= element.id == school_info.school_specialization_id ? 'selected' : '' %> 
+                >
+              <%= element.name %>
+              </option>
+            <% } %>
+            </select>
+        </div>
+      </div>
+      <div class="col-lg-9">
+        <div class="mb-3">
+          <label class="form-label" for="combinations">Combinations</label>
+          <select   class="form-control" name="combinations[]" 
+            data-choices 
+            data-choices-sorting-false 
+            data-choices multiple 
+            data-choices-removeItem 
+          multiple id="combinations-input" placeholder="Combinations ...">
+            <option value="">-- Select Combinations --</option>
+            <% for (let index = 0; index < combinations.length; index++) { %>
+            <% const element = combinations[index]; %>
+              <option value="<%= element.id %>" 
+                <%= school_combinations.includes(element.id)  ? 'selected' : '' 
+                %> 
+                >
+              <%= element.name %>
+              </option>
+            <% } %>
+            </select>
+        </div>
+      </div>
+   </div>
+</div>
+<!-- </div> -->
