@@ -45,6 +45,7 @@ schoolController.post(
         const dataToSend = jsonData.data.map((item) => ({
           ...item,
           canEdit: hasPermission(req, "update-schools"),
+          canEditSchoolDetails: hasPermission(req, "edit-school-details"),
         }));
         // console.log(dataToSend)
         res.send({

@@ -8,51 +8,72 @@ const editSchoolAPI = API_BASE_URL + "edit-school-detail";
 const updateSchoolDeatilsApi = API_BASE_URL + "update-school-detail";
 
 // Edit school details
-updateSchoolDetailController.get('/ShuleDetails/:tracking_number/edit' , isAuthenticated , can('update-schools'), activeHandover , (req , res) => {
-    sendRequest(req, res, editSchoolAPI+`/${req.params.tracking_number}/edit`, "GET", {}, (jsonData) => {
-      var {
-        school_info,
-        languages,
-        school_categories,
-        school_sub_categories,
-        building_structures,
-        genders,
-        specializations,
-        combinations,
-        school_combinations,
-        registration_structures,
-        curriculums,
-        certificates,
-        sect_names,
-        owner,
-        manager,
-        denominations,
-        ownership_sub_types,
-      } = jsonData;
-      res.render(path.join(__dirname + "/../design/schools/edit"), {
-        req,
-        school_info,
-        languages,
-        school_categories,
-        school_sub_categories,
-        building_structures,
-        genders,
-        specializations,
-        combinations,
-        school_combinations,
-        registration_structures,
-        curriculums,
-        certificates,
-        sect_names,
-        owner,
-        manager,
-        ownership_sub_types,
-        denominations
-      });
-    });
-});
+updateSchoolDetailController.get(
+  "/ShuleDetails/:tracking_number/edit",
+  isAuthenticated,
+  can("edit-school-details"),
+  activeHandover,
+  (req, res) => {
+    sendRequest(
+      req,
+      res,
+      editSchoolAPI + `/${req.params.tracking_number}/edit`,
+      "GET",
+      {},
+      (jsonData) => {
+        var {
+          statusCode,
+          message,
+          school_info,
+          languages,
+          school_categories,
+          school_sub_categories,
+          building_structures,
+          registry_types,
+          genders,
+          specializations,
+          combinations,
+          school_combinations,
+          registration_structures,
+          curriculums,
+          certificates,
+          sect_names,
+          owner,
+          manager,
+          denominations,
+          ownership_sub_types,
+        } = jsonData;
+        if(statusCode == 300){
+          res.render(path.join(__dirname + "/../design/schools/edit"), {
+            req,
+            school_info,
+            languages,
+            school_categories,
+            school_sub_categories,
+            building_structures,
+            registry_types,
+            genders,
+            specializations,
+            combinations,
+            school_combinations,
+            registration_structures,
+            curriculums,
+            certificates,
+            sect_names,
+            owner,
+            manager,
+            ownership_sub_types,
+            denominations,
+          });
+        }else{
+           res.status(statusCode).redirect("/403");
+        }
+      }
+    );
+  }
+);
 // Update SchoolDetails
-updateSchoolDetailController.post('/ShuleDetails/:tracking_number', isAuthenticated , can('update-schools') , activeHandover , (req, res) => {
+updateSchoolDetailController.post('/ShuleDetails/:tracking_number', isAuthenticated , can('update-school-details') , activeHandover , (req, res) => {
   const tracking_number = req.params.tracking_number 
   sendRequest(req, res, updateSchoolDeatilsApi+`/${tracking_number}`, "PUT", req.body, (jsonData) => {
       var { statusCode , message } = jsonData;

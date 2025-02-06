@@ -371,7 +371,7 @@
                     } },
                     { data : 'id' , name : 'id'},
                     { data : "name", name: "name"  , render : (data , type , row) => {
-                        if(row.canEdit){
+                        if(row.canEditSchoolDetails){
                             return `<a href="/ShuleDetails/${row.id}/Edit" title='More Edit' data-bs-toggle="tooltip" class="edit-school">
                                     <span class="myTooltip las la-check ${row.is_verified ? 'la-x text-success' : 'la-times text-danger'} "></span> ${data}
                                     </a>`;

@@ -13,8 +13,8 @@
     Taarifa ya Meneja
   </button>
 </li>
-<li class="nav-item" role="presentation">
-  <button class="nav-link" id="combinations-info-tab" data-bs-toggle="pill" data-bs-target="#combinations-info" type="button" role="tab" aria-controls="combinations-info" aria-selected="false">
+<li class="nav-item inactive" role="presentation">
+  <button class="nav-link" <%= [2,6].includes(Number(school_info.certificate_type_id)) ? '' : 'disabled' %> id="combinations-info-tab" data-bs-toggle="pill" data-bs-target="#combinations-info" type="button" role="tab" aria-controls="combinations-info" aria-selected="false">
     Taarifa za Michepuo
   </button>
 </li>

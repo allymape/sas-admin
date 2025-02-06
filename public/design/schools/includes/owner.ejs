@@ -3,7 +3,7 @@
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="owner_name">Name</label>
-          <input type="text" name="owner_name" value="<%= owner ? owner.owner_name : '' %>" class="form-control" id="owner_name" placeholder="Enter Owner Name ...">
+          <input type="text" name="owner_name" value="<%= owner && owner.owner_name ? owner.owner_name : (school_info.registry_type_id == 3 ? 'DED '+school_info.district : '') %>" class="form-control" id="owner_name" placeholder="Enter Owner Name ...">
         </div>
       </div>
       <div class="col-lg-3">

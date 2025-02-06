@@ -26,6 +26,32 @@
         </div>
       </div>
     </div>
+     <div class="row">
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="steparrow-gen-info-email-input">Region</label>
+          <input type="text" disabled readonly value="<%= school_info.region %>" class="form-control">
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="steparrow-gen-info-email-input">Lga</label>
+          <input type="text" readonly disabled value="<%= school_info.district %>" class="form-control">
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="steparrow-gen-info-email-input">Ward</label>
+          <input type="text" readonly disabled value="<%= school_info.ward %>" class="form-control" >
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="steparrow-gen-info-email-input">Street</label>
+          <input type="text" disabled readonly value="<%= school_info.street %>" class="form-control">
+        </div>
+      </div>
+    </div>
     <div class="row">
       <div class="col-lg-3">
         <div class="mb-3">
@@ -35,6 +61,21 @@
             <% for (let index = 0; index < school_categories.length; index++) { %>
             <% const element = school_categories[index]; %>
               <option value="<%= element.id %>" <%= element.id == school_info.school_category_id ? 'selected' : '' %> 
+                >
+              <%= element.name %>
+              </option>
+            <% } %>
+            </select>
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="ownership-type">Ownership Type</label>
+          <select   class="form-control" name="registry_type_id" id="ownership-type" placeholder="Ownership Type">
+            <option value="">-- Select Ownership Type --</option>
+            <% for (let index = 0; index < registry_types.length; index++) { %>
+            <% const element = registry_types[index]; %>
+              <option value="<%= element.id %>" <%= element.id == school_info.registry_type_id ? 'selected' : '' %> 
                 >
               <%= element.name %>
               </option>
@@ -72,6 +113,8 @@
             </select>
         </div>
       </div>
+    </div>
+     <div class="row">
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="steparrow-gen-info-email-input">Building Structure</label>
@@ -87,8 +130,6 @@
             </select>
         </div>
       </div>
-    </div>
-     <div class="row">
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="steparrow-gen-info-email-input">Gender</label>
@@ -119,7 +160,7 @@
             </select>
         </div>
       </div>
-      <div class="col-lg-6">
+      <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="steparrow-gen-info-email-input">Curriculum</label>
          <select   class="form-control" name="curriculum_id" id="steparrow-gen-info-email-input" placeholder="Building Structure">
@@ -188,12 +229,6 @@
       </div>
     </div>
      <div class="row">
-      <div class="col-lg-3">
-        <div class="mb-3">
-          <label class="form-label" for="school_size">Eneo (Jaza Eneo)</label>
-          <input type="number"  name="school_size" value="<%=school_info.school_size%>" class="form-control" id="school_size" placeholder="Jaza Eneo">
-        </div>
-      </div>
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="area">Ukubwa Mita za Mraba (Namba tu)</label>
