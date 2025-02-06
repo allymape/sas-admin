@@ -2,10 +2,12 @@ require("dotenv").config();
 const express = require("express");
 const updateSchoolDetailController = express.Router();
 var path = require("path");
-const { sendRequest, isAuthenticated, can, activeHandover } = require("../../util");
+const { sendRequest, isAuthenticated, can, activeHandover, updateWindowMiddleware } = require("../../util");
 const API_BASE_URL = process.env.API_BASE_URL;
 const editSchoolAPI = API_BASE_URL + "edit-school-detail";
 const updateSchoolDeatilsApi = API_BASE_URL + "update-school-detail";
+const startDate = new Date(process.env.START_DATE || "2025-02-01");
+const endDate = new Date(process.env.END_DATE ||  "2025-02-10");
 
 // Edit school details
 updateSchoolDetailController.get(
@@ -13,6 +15,7 @@ updateSchoolDetailController.get(
   isAuthenticated,
   can("edit-school-details"),
   activeHandover,
+  updateWindowMiddleware(startDate , endDate),
   (req, res) => {
     sendRequest(
       req,
@@ -43,7 +46,7 @@ updateSchoolDetailController.get(
           denominations,
           ownership_sub_types,
         } = jsonData;
-        if(statusCode == 300){
+        if (statusCode == 300) {
           res.render(path.join(__dirname + "/../design/schools/edit"), {
             req,
             school_info,
@@ -65,8 +68,8 @@ updateSchoolDetailController.get(
             ownership_sub_types,
             denominations,
           });
-        }else{
-           res.status(statusCode).redirect("/403");
+        } else {
+          res.status(statusCode).redirect("/403");
         }
       }
     );
