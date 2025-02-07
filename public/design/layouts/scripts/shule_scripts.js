@@ -296,3 +296,67 @@ function showMap(button) {
   }, 300); // Delay to ensure the modal is fully opened before invalidating the map size
 }
 
+function softDeleteSchool(e){
+  const tracking_number = e.getAttribute("data-id")
+  confirmAction(
+    () => {
+      const url = `/DeleteSchool/${tracking_number}`;
+      if (url) {
+        ajaxRequest(
+          `${url}`,
+          "POST",
+          (response) => {
+            const { statusCode, message, action } = response;
+            alertMessage(
+              statusCode == 300 ? "Umefanikiwa" : "Haujafanikiwa",
+              message,
+              statusCode == 300 ? "success" : "error",
+              () => {
+                if (statusCode == 300) {
+                  $("#datatable").DataTable().ajax.reload();
+                }
+              }
+            );
+          },
+          {}
+        );
+      }
+    },
+    "Ndio!",
+    "warning",
+    `Je, unataka kufuta shule hii?, Hata hivyo, Shule hii itaendelea kuhifadhiwa kwenye kanzidata`,
+    "Una uhakika?"
+  );
+}
+function deregisterSchool(e){
+  const tracking_number = e.getAttribute("data-id");
+   confirmAction(
+     () => {
+       const url = `/DeregisterSchool/${tracking_number}`;
+       if (url) {
+         ajaxRequest(
+           `${url}`,
+           "POST",
+           (response) => {
+             const { statusCode, message, action } = response;
+             alertMessage(
+               statusCode == 300 ? "Umefanikiwa" : "Haujafanikiwa",
+               message,
+               statusCode == 300 ? "success" : "error",
+               () => {
+                 if (statusCode == 300) {
+                   $("#datatable").DataTable().ajax.reload();
+                 }
+               }
+             );
+           },
+           {}
+         );
+       }
+     },
+     "Ndio!",
+     "warning",
+     `Je, unataka kuifutia usajili shule hii?, Hata hivyo, Shule hii itaendelea kuhifadhiwa kwenye kanzidata`,
+     "Una uhakika?"
+   );
+}

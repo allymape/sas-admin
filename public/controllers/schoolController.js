@@ -14,6 +14,8 @@ var updateSchoolAPI = API_BASE_URL + "update-school";
 var vutaExistingSchoolsAPI = API_BASE_URL + "existing_schools";
 var schoolFiltersAPI = API_BASE_URL + "school-filters";
 var changeShuleAPI = API_BASE_URL + "change-shule";
+var deleteShuleAPI = API_BASE_URL + "delete-shule";
+var deregisterShuleAPI = API_BASE_URL + "deregister-shule";
 
 // Page
 schoolController.get('/Shule' , isAuthenticated , can('view-schools'), activeHandover , (req , res) => {
@@ -45,6 +47,8 @@ schoolController.post(
         const dataToSend = jsonData.data.map((item) => ({
           ...item,
           canEdit: hasPermission(req, "update-schools"),
+          canDelete: hasPermission(req, "delete-school"),
+          canDeregister: hasPermission(req, "deregister-school"),
           canEditSchoolDetails: hasPermission(req, "edit-school-details"),
         }));
         // console.log(dataToSend)
@@ -162,5 +166,52 @@ schoolController.post("/changeshule", isAuthenticated, can('update-school-name')
     );
 });
 
+schoolController.post(
+  "/DeleteSchool/:tracking_number",
+  isAuthenticated,
+  can("delete-school"),
+  function (req, res) {
+    const tracking_number = req.params.tracking_number;
+    sendRequest(
+      req,
+      res,
+      deleteShuleAPI+'/'+tracking_number,
+      "POST",
+      req.body,
+      (jsonData) => {
+        const { message, statusCode, success } = jsonData;
+        res.send({
+          message,
+          statusCode,
+          success,
+        });
+      }
+    );
+  }
+);
+
+schoolController.post(
+  "/DeregisterSchool/:tracking_number",
+  isAuthenticated,
+  can("deregister-school"),
+  function (req, res) {
+    const tracking_number = req.params.tracking_number;
+    sendRequest(
+      req,
+      res,
+      deregisterShuleAPI + "/" + tracking_number,
+      "POST",
+      req.body,
+      (jsonData) => {
+        const { message, statusCode, success } = jsonData;
+        res.send({
+          message,
+          statusCode,
+          success,
+        });
+      }
+    );
+  }
+);
 
 module.exports = schoolController;

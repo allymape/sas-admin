@@ -436,14 +436,32 @@
                     render: function (data, type, row) {
                           const elements = [
                                             {
-                                                show : row.canEdit,
-                                                type : 'button',
-                                                class : 'btn btn-sm btn-outline-primary me-1',
-                                                icon : 'bx bx-show me-1',
-                                                function : 'edit',
-                                                btnText : 'Edit',
+                                                show           : row.canEdit,
+                                                type           : 'button',
+                                                class          : 'btn btn-sm btn-outline-primary me-1',
+                                                icon           : 'bx bx-show me-1',
+                                                function       : 'edit',
+                                                btnText        : 'Edit',
                                                 moreAttributes : `data-id="${row.id}"`
-                                            }
+                                            },
+                                            {
+                                                show           : row.canDelete,
+                                                type           : 'button',
+                                                class          : 'btn btn-sm btn-outline-warning me-1',
+                                                icon           : 'bx bx-archive-in me-1',
+                                                function       : 'softDeleteSchool',
+                                                btnText        : 'Archive',
+                                                moreAttributes : `data-id="${row.id}"`
+                                            },
+                                            {
+                                                show           : row.canDeregister,
+                                                type           : 'button',
+                                                class          : 'btn btn-sm btn-outline-danger me-1',
+                                                icon           : 'bx bx-trash me-1',
+                                                function       : 'deregisterSchool',
+                                                btnText        : 'Deregister',
+                                                moreAttributes : `data-id="${row.id}"`
+                                            },
                                         ]
                         row = null
                         return actionButtons(row , elements);
