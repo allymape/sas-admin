@@ -30,6 +30,8 @@ umilikinaumenejaRequestController.get(
       //  is_paginated: req.query.is_paginated,
       //  search: req.query.tafuta,
       status: req.query.status,
+      keyword: req.query.keyword,
+      date_range: req.query.date_range,
     };
     sendRequest(req, res, maommilikiShuleAPI, "POST", formData, (jsonData) => {
       const { dataList, dataSummary, numRows } = jsonData;

@@ -28,7 +28,7 @@
     </div>
     <!--end col-->
     <div class="col-xxl-3 col-sm-6">
-        <div class="card card-animate">
+        <div class="card card-animate <%= req.query.status == 'pending' || !req.query.status ? 'border-1 border-warning' : '' %>">
             <div class="card-body" title="Idadi ya maombi ya kuanzisha shule yanayohitaji kufanyiwa kazi nawe">
                 <div class="d-flex justify-content-between">
                     <div>
@@ -60,7 +60,7 @@
     </div>
     <!--end col-->
     <div class="col-xxl-3 col-sm-6">
-        <div class="card card-animate">
+        <div class="card card-animate <%=req.query.status == 'approved' ? 'border-1 border-success' : '' %>">
             <div class="card-body" title="">
                 <div class="d-flex justify-content-between">
                     <div>
@@ -92,7 +92,7 @@
     </div>
     <!--end col-->
     <div class="col-xxl-3 col-sm-6">
-        <div class="card card-animate border-left-info">
+        <div class="card card-animate <%=req.query.status == 'rejected' ? 'border-1 border-danger' : '' %>">
             <div class="card-body" title="Maombi ya kuanzisha shule yaliyokataliwa mwezi August">
                 <div class="d-flex justify-content-between">
                     <div>

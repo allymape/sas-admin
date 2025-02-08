@@ -23,6 +23,8 @@ kusajiliSerikaliRequestController.get(
       per_page,
       // search: req.query.tafuta,
       status: req.query.status,
+      keyword: req.query.keyword,
+      date_range: req.query.date_range,
     };
     sendRequest(
       req,

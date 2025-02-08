@@ -9,33 +9,17 @@
     breadcrumb_main : 'Maombi',
     top_header : '../../maombi/top_headers/maombi_top_header.ejs',
 }) %>
-<div class="card-body border border-dashed border-end-0 border-start-0">
-    <form>
-        <div class="row g-3">
-            <div class="col-xxl-5 col-sm-12">
-                <div class="search-box">
-                    <input type="text" class="form-control search bg-light border-light" placeholder="Tafuta ombi kuendelea nalo...">
-                    <i class="ri-search-line search-icon"></i>
-                </div>
-            </div>
-
-            <div class="col-xxl-3 col-sm-4">
-                <input type="date" class="form-control bg-light border-light" id="demo-datepicker" data-provider="flatpickr" data-date-format="d M, Y" data-range-date="true" placeholder="Chagua Tarehe ya Ombi">
-            </div>
-
-            <div class="col-xxl-3 col-sm-4">
-               
-            </div>
-        </div>
-    </form>
-</div>
+<%- include('../maombi/top_headers/search.ejs' , {
+    req : req,
+    status : status
+})
+%>
 <!--end card-body-->
 <div class="card-body">
     <div class="table-responsive table-card mb-4">
         <table class="table align-middle table-nowrap mb-0" id="tasksTable">
             <thead class="table-light text-muted">
                 <tr>
-                   
                     <th class="sort" data-sort="id">Namba ya Ombi</th>
                     <th class="sort" data-sort="project_name">Shule Pendekezwa</th>
                     <th class="sort" data-sort="tasks_name">Halmashauri</th>

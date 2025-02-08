@@ -40,6 +40,8 @@ anzishaShuleRequestController.get("/MaombiKuanzishaShuleList", isAuthenticated ,
          page,
          per_page,
          status: req.query.status,
+         keyword: req.query.keyword,
+         date_range: req.query.date_range,
        };
       sendRequest(req, res, maoanzishaShuleListAPI , 'POST' , formData , (jsonData) => {
         const {message , statusCode , data} = jsonData

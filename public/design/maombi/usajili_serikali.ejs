@@ -9,45 +9,11 @@
     breadcrumb_main : 'Maombi',
     top_header : '../../maombi/top_headers/maombi_top_header.ejs',
 }) %>
- <div class="card-body border border-dashed border-end-0 border-start-0">
-    <form>
-        <div class="row g-3">
-            <div class="col-xxl-5 col-sm-12">
-                <div class="search-box">
-                    <input type="text" class="form-control search bg-light border-light" placeholder="Tafuta ombi kuendelea nalo...">
-                    <i class="ri-search-line search-icon"></i>
-                </div>
-            </div>
-            <!--end col-->
-
-            <div class="col-xxl-3 col-sm-4">
-                <input type="date" class="form-control bg-light border-light" id="demo-datepicker" data-provider="flatpickr" data-date-format="d M, Y" data-range-date="true" placeholder="Chagua Tarehe ya Ombi">
-            </div>
-            <!--end col-->
-
-            <div class="col-xxl-3 col-sm-4">
-                <div class="input-light">
-                    <select class="form-control" data-choices data-choices-search-false name="choices-single-default" id="idStatus">
-                        <option value="">Status</option>
-                        <option value="all" selected>All</option>
-                        <option value="New">New</option>
-                        <option value="Pending">Pending</option>
-                        <option value="Inprogress">Inprogress</option>
-                        <option value="Completed">Completed</option>
-                    </select>
-                </div>
-            </div>
-            <!--end col-->
-            <div class="col-xxl-1 col-sm-4">
-                <button title="Angalia kwa tarehe na Hali ulizochagua" type="button" class="btn btn-primary w-100" onclick="SearchData();"> <i class="ri-equalizer-fill me-1 align-bottom"></i>
-                    Angalia
-                </button>
-            </div>
-            <!--end col-->
-        </div>
-        <!--end row-->
-    </form>
-</div>
+<%- include('../maombi/top_headers/search.ejs' , {
+    req : req,
+    status : status
+})
+%>
 <!--end card-body-->
 <div class="card-body">
      <div class="ribbon-three ribbon-three-info">

@@ -1,0 +1,29 @@
+<div class="card-body border border-dashed border-end-0 border-start-0">
+    <form  method="GET">
+        <div class="row g-3">
+            <div class="col-xxl-5 col-sm-12">
+                <div class="search-box">
+                    <input type="hidden" name="status" value="<%= req.query.status %>" >
+                    <input type="text" name="keyword" value="<%= req.query.keyword %>" class="form-control search bg-light border-light" placeholder="Tafuta ombi kuendelea nalo...">
+                    <i class="ri-search-line search-icon"></i>
+                </div>
+            </div>
+
+            <div class="col-xxl-3 col-sm-4">
+                <input type="date" name="date_range" 
+                class="form-control bg-light border-light" 
+                id="demo-datepicker" data-provider="flatpickr" 
+                data-default-date="<%= req.query.date_range %>"
+                data-date-format="d M, Y" 
+                data-range-date="true" placeholder="Chagua Tarehe ya Ombi">
+            </div>
+
+            <div class="col-xxl-3 col-sm-4">
+               <button type="submit" class="btn btn-primary">Tafuta</button>
+                <% if(req.query.keyword || req.query.date_range){ %>
+                    <a href="<%= req.protocol+'://'+req.get('host')+req.path+(status ? '?status='+status : '') %>" class="btn btn-outline-warning"> Clear </a>
+                <% } %>
+            </div>
+        </div>
+    </form>
+</div>

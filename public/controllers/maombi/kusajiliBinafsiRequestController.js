@@ -24,6 +24,8 @@ kusajiliBinafsiRequestController.get(
       //  is_paginated: req.query.is_paginated,
       //  search: req.query.tafuta,
       status: req.query.status,
+      keyword: req.query.keyword,
+      date_range: req.query.date_range,
     };
     const obj = [];
     sendRequest(
