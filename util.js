@@ -231,8 +231,9 @@ module.exports = {
               // Check if today's date is between start and end dates
               if (today <= startDate || today >= endDate) {
                 res.redirect("/404"); // Redirect if outside the update window
+              }else{
+                next();
               }
-              next()
     }
   },
   activeHandover: (req, res, next) => {
