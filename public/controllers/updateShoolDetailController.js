@@ -10,7 +10,7 @@ const startDate = new Date(process.env.START_DATE || "2025-02-01");
 const endDate = new Date(process.env.END_DATE ||  "2025-02-10");
 
 // View School Details
-updateSchoolDetailController.get("/ShuleDetails/:tracking_number" , isAuthenticated , can('edit-school-details') , activeHandover, (req, res) => {
+updateSchoolDetailController.get("/ShuleDetails/:tracking_number" , isAuthenticated , can('view-school-details') , activeHandover, (req, res) => {
   //View Screen
   getSchoolDetails(req, res, (responseData) => {
     res.render(path.join(__dirname + "/../design/schools/show"), responseData);
