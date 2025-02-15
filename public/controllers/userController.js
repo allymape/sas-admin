@@ -104,7 +104,7 @@ userController.post("/auth", function (req, res) {
       // console.log(loginAPI);
       const errorMessage = `Kuna tatizo, wasiliana na msimamizi wa mfumo.`;
       if (err) {
-        console.log("Login Error: ",err);
+        console.log("Request Error: ", err);
         req.flash("error", errorMessage);
         res.redirect("/");
       } else {
@@ -114,7 +114,7 @@ userController.post("/auth", function (req, res) {
         ) {
           const { statusCode, message, error } = body;
           if (error) {
-            req.flash("error", errorMessage);
+            req.flash("API Server Error: ", errorMessage);
             res.redirect("/");
           } else {
             if (body == "Too many requests, please try again later.") {
@@ -164,6 +164,7 @@ userController.post("/auth", function (req, res) {
             }
           }
         } else {
+          console.log(`Undefined body with status code:  ${response.statusCode}`)
           req.flash("error", errorMessage);
           res.redirect("/");
         }
