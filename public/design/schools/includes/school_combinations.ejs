@@ -4,7 +4,7 @@
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="steparrow-gen-info-email-input">Specialization</label>
-          <select   class="form-control" name="school_specialization_id" id="steparrow-gen-info-email-input" placeholder="Specialization">
+          <select   class="form-control" <%= !edit ? 'readonly disabled' : '' %> name="school_specialization_id" id="steparrow-gen-info-email-input" placeholder="Specialization">
             <option value="">-- Select Speciliazation --</option>
             <% for (let index = 0; index < specializations.length; index++) { %>
             <% const element = specializations[index]; %>
@@ -19,12 +19,13 @@
       <div class="col-lg-9">
         <div class="mb-3">
           <label class="form-label" for="combinations">Combinations</label>
-          <select   class="form-control" name="combinations[]" 
+          <select   class="form-control" <%= !edit ? '' : '' %> name="combinations[]" 
             data-choices 
             data-choices-sorting-false 
             data-choices multiple 
-            data-choices-removeItem 
-          multiple id="combinations-input" placeholder="Combinations ...">
+            <%= !edit ? '' : 'data-choices-removeItem' %>
+            multiple id="combinations-input" 
+            placeholder="Combinations ...">
             <option value="">-- Select Combinations --</option>
             <% for (let index = 0; index < combinations.length; index++) { %>
             <% const element = combinations[index]; %>

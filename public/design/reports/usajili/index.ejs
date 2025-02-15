@@ -216,6 +216,7 @@
                            </span>
                         </td>
                         <td class="<%= item.is_verified ? 'text-center' : '' %>">
+                            <div class="btn-group">
                             <% if(!item.is_verified) {%>
                                 <div class="btn-group">
                                     <button class="btn btn-outline-<%= item.description ? 'warning' : 'danger'%> btn-correction" 
@@ -231,9 +232,17 @@
                                     <% } %>
                                 </div>
                             <% } else{ %>
-                                <span title="Verified" data-bs-toggle="tooltip" class="myTooltip las la-check la-x text-success">
-                                </span>
+                                <button type="button" class="btn btn-sm">
+                                    <span title="Verified" data-bs-toggle="tooltip" class="myTooltip las la-check la-x text-success">
+                                    </span>
+                                </button>
                             <% } %>
+                            <% if(permission(req, 'view-school-details')){ %>
+                                <a href="/ShuleDetails/<%=item.tracking_number %>" class="btn btn-sm btn-outline-primary ml-2">
+                                    Details
+                                </a>
+                            <% } %>
+                            </div>
                         </td>
                     </tr>
                    <% } %>

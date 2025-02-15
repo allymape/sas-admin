@@ -71,7 +71,7 @@
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="ownership-type">Ownership Type</label>
-          <select   class="form-control" name="registry_type_id" id="ownership-type" placeholder="Ownership Type">
+          <select   class="form-control" <%= !edit ? 'readonly disabled' : '' %> name="registry_type_id" id="ownership-type" placeholder="Ownership Type">
             <option value="">-- Select Ownership Type --</option>
             <% for (let index = 0; index < registry_types.length; index++) { %>
             <% const element = registry_types[index]; %>
@@ -86,7 +86,7 @@
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="steparrow-gen-info-email-input">School Sub Category</label>
-          <select   class="form-control" name="school_sub_category_id" id="steparrow-gen-info-email-input" placeholder="School Sub Category">
+          <select   class="form-control" <%= !edit ? 'readonly disabled' : '' %> name="school_sub_category_id" id="steparrow-gen-info-email-input" placeholder="School Sub Category">
             <option value="">-- Select School Sub Category --</option>
             <% for (let index = 0; index < school_sub_categories.length; index++) { %>
             <% const element = school_sub_categories[index]; %>
@@ -101,7 +101,7 @@
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="steparrow-gen-info-email-input">Registration Structure</label>
-          <select   class="form-control" name="registration_structure_id" id="steparrow-gen-info-email-input" placeholder="Structure">
+          <select   class="form-control" <%= !edit ? 'readonly disabled' : '' %> name="registration_structure_id" id="steparrow-gen-info-email-input" placeholder="Structure">
             <option value="">-- Select Structure --</option>
             <% for (let index = 0; index < registration_structures.length; index++) { %>
             <% const element = registration_structures[index]; %>
@@ -118,7 +118,7 @@
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="steparrow-gen-info-email-input">Building Structure</label>
-         <select   class="form-control" name="building_structure_id" id="steparrow-gen-info-email-input" placeholder="Building Structure">
+         <select   class="form-control" <%= !edit ? 'readonly disabled' : '' %> name="building_structure_id" id="steparrow-gen-info-email-input" placeholder="Building Structure">
             <option value="">-- Select Building Structure --</option>
             <% for (let index = 0; index < building_structures.length; index++) { %>
             <% const element = building_structures[index]; %>
@@ -133,7 +133,7 @@
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="steparrow-gen-info-email-input">Gender</label>
-          <select   class="form-control" name="school_gender_id" id="steparrow-gen-info-email-input" placeholder="School Gender">
+          <select   class="form-control" <%= !edit ? 'readonly disabled' : '' %> name="school_gender_id" id="steparrow-gen-info-email-input" placeholder="School Gender">
             <option value="">-- Select School Gender Type --</option>
             <% for (let index = 0; index < genders.length; index++) { %>
             <% const element = genders[index]; %>
@@ -148,7 +148,7 @@
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="steparrow-gen-info-email-input">Media of Communication</label>
-          <select   class="form-control" name="language_id" id="steparrow-gen-info-email-input" placeholder="School Sub Category">
+          <select   class="form-control" <%= !edit ? 'readonly disabled' : '' %> name="language_id" id="steparrow-gen-info-email-input" placeholder="School Sub Category">
             <option value="">-- Select Media of Communication --</option>
             <% for (let index = 0; index < languages.length; index++) { %>
             <% const element = languages[index]; %>
@@ -163,7 +163,7 @@
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="steparrow-gen-info-email-input">Curriculum</label>
-         <select   class="form-control" name="curriculum_id" id="steparrow-gen-info-email-input" placeholder="Building Structure">
+         <select   class="form-control" <%= !edit ? 'readonly disabled' : '' %> name="curriculum_id" id="steparrow-gen-info-email-input" placeholder="Building Structure">
             <option value="">-- Select Curriculum --</option>
             <% for (let index = 0; index < curriculums.length; index++) { %>
             <% const element = curriculums[index]; %>
@@ -180,7 +180,7 @@
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="steparrow-gen-info-email-input">Certificate</label>
-          <select   class="form-control" name="certificate_id" id="steparrow-gen-info-email-input" placeholder="Certificate">
+          <select   class="form-control" <%= !edit ? 'readonly disabled' : '' %> name="certificate_id" id="steparrow-gen-info-email-input" placeholder="Certificate">
             <option value="">-- Select Certificate --</option>
             <% for (let index = 0; index < certificates.length; index++) { %>
             <% const element = certificates[index]; %>
@@ -195,7 +195,7 @@
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="steparrow-gen-info-email-input">Religion Sect</label>
-          <select   class="form-control" name="sect_name_id" id="steparrow-gen-info-email-input" placeholder="Religion Sect">
+          <select   class="form-control" <%= !edit ? 'readonly disabled' : '' %> name="sect_name_id" id="steparrow-gen-info-email-input" placeholder="Religion Sect">
             <option value="">-- Select Religion Sect --</option>
             <% for (let index = 0; index < sect_names.length; index++) { %>
             <% const element = sect_names[index]; %>
@@ -210,14 +210,14 @@
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="steparrow-gen-info-email-input">Idadi ya Mikondo</label>
-          <input type="number"  name="stream" value="<%=school_info.stream%>" class="form-control" id="steparrow-gen-info-email-input" placeholder="Enter number of stream">
+          <input type="number"  name="stream" value="<%=school_info.stream%>" class="form-control" <%= !edit ? 'readonly disabled' : '' %> id="steparrow-gen-info-email-input" placeholder="Enter number of stream">
         </div>
       </div>
       <div class="col-lg-3">
         <div class="mb-3">
           <div class="form-check mt-3"> <br>
             <label class="form-label" for="dahalia">
-              <input type="checkbox"  name="is_hostel"
+              <input type="checkbox" <%= !edit ? 'readonly disabled' : '' %>  name="is_hostel"
               class="form-check-input" id="dahalia" 
               placeholder="Dahalia"
               <%= school_info.is_hostel ? 'checked' : '' %>
@@ -232,14 +232,14 @@
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="area">Ukubwa Mita za Mraba (Namba tu)</label>
-          <input type="number"  name="area" value="<%=school_info.area%>" class="form-control" id="area" placeholder="Jaza Ukubwa">
+          <input type="number"  name="area" value="<%=school_info.area%>" class="form-control" <%= !edit ? 'readonly disabled' : '' %> id="area" placeholder="Jaza Ukubwa">
         </div>
       </div>
       <div class="col-lg-3">
         <div class="mb-3">
           <div class="form-check mt-3"> <br>
             <label class="form-label" for="is_for_disabled">
-              <input type="checkbox"  name="is_for_disabled"
+              <input type="checkbox" <%= !edit ? 'readonly disabled' : '' %>  name="is_for_disabled"
               class="form-check-input" id="is_for_disabled" 
               placeholder="Dahalia"
               <%= school_info.is_for_disabled ? 'checked' : '' %>
@@ -253,7 +253,7 @@
         <div class="mb-3">
           <div class="form-check mt-3"> <br>
             <label class="form-label" for="seminary">
-              <input type="checkbox"  name="is_seminary"
+              <input type="checkbox" <%= !edit ? 'readonly disabled' : '' %>  name="is_seminary"
               class="form-check-input" id="seminary" 
               placeholder="Dahalia"
               <%= school_info.is_seminary ? 'checked' : '' %>
@@ -268,25 +268,25 @@
       <div class="col-lg-3">
          <div class="mb-3">
           <label class="form-label" for="website">Tovuti (Optional)</label>
-          <input type="text"  name="website" value="<%=school_info.website%>" class="form-control" id="website" placeholder="Website: www.example.com">
+          <input type="text"  name="website" value="<%=school_info.website%>" class="form-control"  <%= !edit ? 'readonly disabled' : '' %> id="website" placeholder="Website: www.example.com">
         </div>
       </div>
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="school_phone">Namba ya Simu (Optional)</label>
-          <input type="text"  name="school_phone" value="<%=school_info.school_phone%>" class="form-control" id="school_phone" placeholder="Namba ya simu ya Shule..">
+          <input type="text"  name="school_phone" value="<%=school_info.school_phone%>" class="form-control" <%= !edit ? 'readonly disabled' : '' %> id="school_phone" placeholder="Namba ya simu ya Shule..">
         </div>
       </div>
       <div class="col-lg-3">
       <div class="mb-3">
           <label class="form-label" for="school_address">Physica Address (Optional)</label>
-          <textarea type="Number"  name="school_address" value="" class="form-control" id="po_box" placeholder=Physical Address e.g Mtaa wa 6 Kitumbini"><%=school_info.school_address%></textarea>
+          <textarea type="Number"  name="school_address" value="" class="form-control" <%= !edit ? 'readonly disabled' : '' %> id="po_box" placeholder=Physical Address e.g Mtaa wa 6 Kitumbini"><%=school_info.school_address%></textarea>
         </div>
       </div>
       <div class="col-lg-3">
          <div class="mb-3">
           <label class="form-label" for="po_box">Sanduku la Posta (Optional)</label>
-          <input type="text"  name="po_box" value="<%=school_info.po_box%>" class="form-control" id="po_box" placeholder="Sanduku la Posta..">
+          <input type="text"  name="po_box" value="<%=school_info.po_box%>" class="form-control" <%= !edit ? 'readonly disabled' : '' %> id="po_box" placeholder="Sanduku la Posta..">
         </div>
       </div>
     </div>
@@ -295,15 +295,48 @@
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="number_of_students">Idadi ya Wanafunzi</label>
-          <input type="Number" min="0"  name="number_of_students" value="<%=school_info.number_of_students%>" class="form-control" id="number_of_students" placeholder="Idadi ya Wanafunzi ...">
+          <input type="Number" min="0"  name="number_of_students" value="<%=school_info.number_of_students%>" class="form-control"   <%= !edit ? 'readonly disabled' : '' %>id="number_of_students" placeholder="Idadi ya Wanafunzi ...">
         </div>
       </div>
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="number_of_teachers">Idadi ya Walimu</label>
-          <input type="Number" min="0"  name="number_of_teachers" value="<%=school_info.number_of_teachers%>" class="form-control" id="number_of_teachers" placeholder="Idadi ya Walimu ...">
+          <input type="Number" min="0"  name="number_of_teachers" value="<%=school_info.number_of_teachers%>" class="form-control" <%= !edit ? 'readonly disabled' : '' %> id="number_of_teachers" placeholder="Idadi ya Walimu ...">
         </div>
       </div>
     </div>
   </div>
+  <% if(school_info.registry_type_id == 2){ %>
+  <fieldset class="mt-4">
+    <legend>Taarifa ya Taasisi/Kampuni</legend>
+    <hr>
+    <div>
+      <div class="row">
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="institution-name">Jina la Taasisi/Kampuni</label>
+          <input type="text" name="institution_name" value="<%= institute_info ? institute_info.name : '' %>" class="form-control"  <%= !edit ? 'readonly disabled' : '' %>id="institution-name" 
+          placeholder="Jina la Taasisi" required>
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="company-registration-number">Namba ya Usajili wa Kampuni/Taasisi</label>
+          <input type="text" name="company_registration_number" value="<%= institute_info ? institute_info.registration_number : ''%>" class="form-control" <%= !edit ? 'readonly disabled' : '' %> 
+          id="company-registration-number" 
+          placeholder="Jina Namba ya Usajili ya Taasisi/Kampuni">
+        </div>
+      </div>
+       <div class="col-lg-3">
+        <div class="mb-3">
+          <label class="form-label" for="company-box">Sanduku la Posta</label>
+          <input type="number" name="company_box" value="<%= institute_info ? institute_info.box : '' %>" class="form-control" <%= !edit ? 'readonly disabled' : '' %> 
+          id="company-box" 
+          placeholder="Sanduku la Posta">
+        </div>
+      </div>
+    </div>
+    </div>
+  </fieldset>
+  <% } %>
 </div>

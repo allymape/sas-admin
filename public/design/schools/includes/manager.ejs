@@ -4,25 +4,25 @@
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="manager_first_name">First Name </label>
-          <input type="text" name="manager_first_name" value="<%= manager && manager.manager_first_name ? manager.manager_first_name : (school_info.registry_type_id == 3 ? 'Afisa Elimu wa Halmashauri' : '')%>" class="form-control" id="manager_first_name" placeholder="First Name ...">
+          <input type="text" name="manager_first_name" value="<%= manager && manager.manager_first_name ? manager.manager_first_name : (school_info.registry_type_id == 3 ? 'Afisa Elimu wa Halmashauri' : '')%>" class="form-control" <%= !edit ? 'readonly disabled' : '' %> id="manager_first_name" placeholder="First Name ...">
         </div>
       </div>
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="manager_middle_name">Middle Name</label>
-          <input type="text" name="manager_middle_name" value="<%= manager ? manager.manager_middle_name : '' %>" class="form-control" id="manager_middle_name" placeholder="Middle Name ... ">
+          <input type="text" name="manager_middle_name" value="<%= manager ? manager.manager_middle_name : '' %>" class="form-control" <%= !edit ? 'readonly disabled' : '' %> id="manager_middle_name" placeholder="Middle Name ... ">
         </div>
       </div>
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="manager_last_name">Last Name</label>
-          <input type="text" name="manager_last_name" value="<%= manager ? manager.manager_last_name : ''%>" class="form-control" id="manager_last_name" placeholder="Last Name ...">
+          <input type="text" name="manager_last_name" value="<%= manager ? manager.manager_last_name : ''%>" class="form-control" <%= !edit ? 'readonly disabled' : '' %> id="manager_last_name" placeholder="Last Name ...">
         </div>
       </div>
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="occupation">Kazi</label>
-          <input type="text" name="occupation" value="<%= manager ? manager.occupation : ''%>" class="form-control" id="email" placeholder="Kazi ...">
+          <input type="text" name="occupation" value="<%= manager ? manager.occupation : ''%>" class="form-control" <%= !edit ? 'readonly disabled' : '' %> id="email" placeholder="Kazi ...">
         </div>
       </div>
    </div>
@@ -30,13 +30,13 @@
     <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="phone">Phone Number</label>
-          <input type="text" name="manager_phone_number" value="<%= manager ? manager.manager_phone_number : '' %>" class="form-control" id="phone_number" placeholder="Enter Phone Number ...">
+          <input type="text" name="manager_phone_number" value="<%= manager ? manager.manager_phone_number : '' %>" class="form-control" <%= !edit ? 'readonly disabled' : '' %> id="phone_number" placeholder="Enter Phone Number ...">
         </div>
       </div>
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="manager_email">Email</label>
-          <input type="email" name="manager_email" value="<%= manager ? manager.manager_email : '' %>" class="form-control" id="manager_email" placeholder="Email ...">
+          <input type="email" name="manager_email" value="<%= manager ? manager.manager_email : '' %>" class="form-control" <%= !edit ? 'readonly disabled' : '' %> id="manager_email" placeholder="Email ...">
         </div>
       </div>
    </div>
