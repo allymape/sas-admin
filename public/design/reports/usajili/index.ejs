@@ -92,7 +92,19 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-xxl-3 col-sm-4">
+                 <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select class="form-control" placeholder="Level ..." 
+                                name="certificate" id="certificate_type">
+                            <option selected>Ngazi ...</option>
+                             <% for (let index = 0; index < certificates.length; index++) { %>
+                            <% const item = certificates[index]; %>
+                                <option value="<%= item.id %>" data-level="<%= item.level %>" <%= req.query.certificate == item.id ? 'selected' : '' %>>
+                                     <%= item.name %>
+                                </option>
+                            <% } %>
+                        </select>
+                    </div>
                 </div>
                 <div class="col-xxl-3 col-sm-4">
                     <div class="input-light">

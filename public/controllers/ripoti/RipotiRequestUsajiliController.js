@@ -10,8 +10,6 @@ var API_BASE_URL = process.env.API_BASE_URL;
 const requestRiportUsajiliAPI = API_BASE_URL + "ripoti-usajili-shule";
 const thibitishaUsajiliAPI = API_BASE_URL + "thibitisha-usajili-shule";
 const rekebishaUsajiliAPI = API_BASE_URL + "rekebisha-usajili-shule";
-
-
 // Display
 reportUsajiliRequestController.get(
   "/RipotiZilizosajiliwa",
@@ -31,6 +29,7 @@ reportUsajiliRequestController.get(
     const verified = req.query.verified;
     const ownership = req.query.ownership;
     const structure = req.query.structure;
+    const certificate = req.query.certificate;
     const region = req.query.region;
     const district = req.query.district;
     const ward = req.query.ward;
@@ -46,6 +45,7 @@ reportUsajiliRequestController.get(
       verified,
       ownership,
       structure,
+      certificate,
       region,
       district,
       ward,
@@ -59,7 +59,7 @@ reportUsajiliRequestController.get(
       "GET",
       formData,
       (jsonData) => {
-        const { data, numRows, categories, structures, ownerships, regions } =
+        const { data, numRows, categories, structures , certificates, ownerships, regions } =
           jsonData;
         if (req.query.export == "true") {
           data.forEach((item) => {
@@ -84,6 +84,7 @@ reportUsajiliRequestController.get(
             categories,
             structures,
             ownerships,
+            certificates,
             regions,
             pagination: {
               total: numRows,
