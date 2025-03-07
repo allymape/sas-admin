@@ -187,7 +187,7 @@
                         <td> <%= item.district %> </td>
                         <td> <%= item.ward %> </td>
                         <td> <%= item.street %> </td>
-                        <td> <%= dateFormat(item.approved_at) %> </td>
+                        <td> <%= item.approved_at ? dateFormat(item.approved_at) : '' %> </td>
                         <td> 
                            <span class="badge bg-<%= item.status == 2 ? 'success' : 'danger' %>" >
                              <%= item.status == 2 ? 'Limethibitshwa' : '' %> 
