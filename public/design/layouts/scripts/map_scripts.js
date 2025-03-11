@@ -227,35 +227,43 @@
                 map.setView(defaultCenter, zoom);
             }, 300); // 5000ms = 5 seconds
     }
-    function showMyLocation(){
-      // Add a variable for the location marker
-      let locationMarker;
-      // Locate and show user's current location
-      map.locate({ setView: true, maxZoom: 6 });
-      // Define your custom icon
-      const myLocationIcon = L.icon({
-        iconUrl: "../../../css/map/images/loc.png", // Path to your image file
-        iconSize: [30, 30], // Adjust size to fit the image
-        iconAnchor: [15, 30], // Point of the icon which will correspond to marker's location
-        popupAnchor: [0, -30], // Position of popup relative to icon
-      });
-      // Event listener for location found
-      map.on("locationfound", function (e) {
-        // Remove the previous marker if it exists
-        if (locationMarker) {
-          map.removeLayer(locationMarker);
-        }
-        const radius = e.accuracy / 2;
-        // Add a marker for the current location
-        L.marker(e.latlng, { icon: myLocationIcon })
-          .addTo(map)
-          .bindPopup("You are within " + radius + " meters from this point")
-          .openPopup();
+  let locationMarker; // Define globally to retain reference
 
-        // Add a new marker for the current location
-        locationMarker = L.marker(e.latlng).addTo(map);
-        // Add a circle to show the accuracy of the location
-        L.circle(e.latlng, radius).addTo(map);
-      });
-    }
+  function showMyLocation() {
+    // Locate and show user's current location
+    map.locate({ setView: true, maxZoom: 16, enableHighAccuracy: true });
+
+    // Define the custom icon
+    const myLocationIcon = L.icon({
+      iconUrl: "../../../css/map/images/loc.png",
+      iconSize: [30, 30],
+      iconAnchor: [15, 30],
+      popupAnchor: [0, -30],
+    });
+
+    // Ensure event listener is not duplicated
+    map.off("locationfound").on("locationfound", function (e) {
+      const radius = e.accuracy / 2;
+
+      // Remove previous marker if it exists
+      if (locationMarker) {
+        map.removeLayer(locationMarker);
+      }
+
+      // Add a marker for the current location
+      locationMarker = L.marker(e.latlng, { icon: myLocationIcon })
+        .addTo(map)
+        .bindPopup(`You are within ${radius.toFixed(2)} meters from this point`)
+        .openPopup();
+
+      // Add a circle to show location accuracy
+      L.circle(e.latlng, radius).addTo(map);
+    });
+
+    // Handle location error
+    map.on("locationerror", function () {
+      alert("Unable to retrieve your location.");
+    });
+  }
+
     
