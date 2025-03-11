@@ -8,14 +8,80 @@ const getSchoolAPI = API_BASE_URL + "get-school-detail";
 const updateSchoolDeatilsApi = API_BASE_URL + "update-school-detail";
 const startDate = new Date(process.env.START_DATE || "2025-02-01");
 const endDate = new Date(process.env.END_DATE ||  "2025-02-10");
+const { body, validationResult } = require("express-validator");
+
+const validateSchoolDetails = [
+  // Validate required fields
+  body("stream")
+    .optional() // Stream is optional
+    .custom((value) => {
+      if (
+        value !== "" &&
+        (!Number.isInteger(Number(value)) || Number(value) < 1)
+      ) {
+        throw new Error("Stream must be a number and not less than 1");
+      }
+      return true;
+    }),
+  body("number_of_students")
+    .notEmpty()
+    .withMessage("Number of students is required.")
+    .isInt({ min: 0 })
+    .withMessage("Number of students must be a number and not less than 0"),
+  body("number_of_teachers")
+    .notEmpty()
+    .withMessage("Number of teachers is required.")
+    .isInt({ min: 0 })
+    .withMessage("Number of teachers must be a number and not less than 0"),
+  body("school_phone")
+    .optional()
+    .custom((value) => {
+      const phoneRegex = /^0\d{9}$/; // Ensures "0xxxnnnnnn" format (10 digits starting with 0)
+      if (!phoneRegex.test(value)) {
+        throw new Error("Invalid phone number format. Use: 0xxx######");
+      }
+      return true;
+    }),
+  body("email").optional().isEmail().withMessage("Invalid email format"),
+  // "institution_name" is required only if it exists in req.body
+  body("institution_name")
+    .if(body("institution_name").exists()) // Apply rule only if present
+    .notEmpty()
+    .withMessage("Institution name cannot be empty"),
+  // Middleware to handle validation errors
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      req.flash("statusCode", 400);
+      req.flash(
+        "message",
+        errors
+          .array()
+          .map((err) => err.msg)
+          .join(", ")
+      );
+      return res.redirect(`/ShuleDetails/${req.params.tracking_number}/Edit`);
+    }
+    next();
+  },
+];
 
 // View School Details
-updateSchoolDetailController.get("/ShuleDetails/:tracking_number" , isAuthenticated , can('view-school-details') , activeHandover, (req, res) => {
-  //View Screen
-  getSchoolDetails(req, res, (responseData) => {
-    res.render(path.join(__dirname + "/../design/schools/show"), responseData);
-  });
-})
+updateSchoolDetailController.get(
+  "/ShuleDetails/:tracking_number",
+  isAuthenticated,
+  can("view-school-details"),
+  activeHandover,
+  (req, res) => {
+    //View Screen
+    getSchoolDetails(req, res, (responseData) => {
+      res.render(
+        path.join(__dirname + "/../design/schools/show"),
+        responseData
+      );
+    });
+  }
+);
 // Edit school details
 updateSchoolDetailController.get(
   "/ShuleDetails/:tracking_number/edit",
@@ -93,7 +159,7 @@ function getSchoolDetails(req , res , callback , edit =  false){
   );
 }
 // Update SchoolDetails
-updateSchoolDetailController.post('/ShuleDetails/:tracking_number', isAuthenticated , can('update-school-details') , activeHandover , (req, res) => {
+updateSchoolDetailController.post('/ShuleDetails/:tracking_number', isAuthenticated, validateSchoolDetails , can('update-school-details') , activeHandover , (req, res) => {
   const tracking_number = req.params.tracking_number 
   sendRequest(req, res, updateSchoolDeatilsApi+`/${tracking_number}`, "PUT", req.body, (jsonData) => {
       var { statusCode , message } = jsonData;
