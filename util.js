@@ -1381,14 +1381,11 @@ const generateFooter = (res , doc, base64Image, signatory, cheo) => {
       height: 80,
     });
   }else{
-    doc.text(
-      `<Insert Signature>`,
-      -50,
-      signatureHeight,
-      {
-        align : 'center'
-      }
-    ).moveDown();
+    doc
+      .text(`<Insert Signature>`, doc.page.width / 2 - 50, signatureHeight, {
+        align: "center",
+      })
+      .moveDown();
   }
 // LINE
   // doc
