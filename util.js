@@ -1374,7 +1374,8 @@ const generateFooter = (res , doc, base64Image, signatory, cheo) => {
   
   //Buffer.from(base64Image.split(",")[1], "base64");
   // if (fs.existsSync(signature)) {
-  if (!signature) {
+  if (signature) {
+    console.log(signature)
     doc.image(signature, doc.page.width / 2 - 50, signatureHeight - 70, {
       width: 120,
       height: 80,
