@@ -16,13 +16,13 @@
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="steparrow-gen-info-email-input">Registration Date</label>
-          <input type="text" readonly disabled value="<%=dateFormat(school_info.registration_date , 'DD/MM/YYYY')%>" class="form-control" id="steparrow-gen-info-email-input" placeholder="Enter School Name">
+          <input type="text" readonly disabled value="<%=school_info.registration_date ? dateFormat(school_info.registration_date , 'DD/MM/YYYY') : '' %>" class="form-control" id="steparrow-gen-info-email-input" placeholder="Enter School Name">
         </div>
       </div>
       <div class="col-lg-3">
         <div class="mb-3">
           <label class="form-label" for="steparrow-gen-info-email-input">Opening Date</label>
-          <input type="text" disabled readonly value="<%=dateFormat(school_info.school_opening_date , 'DD/MM/YYYY')%>" class="form-control" id="steparrow-gen-info-email-input" placeholder="Enter School Name">
+          <input type="text" disabled readonly value="<%= school_info.school_opening_date ? dateFormat(school_info.school_opening_date , 'DD/MM/YYYY') : '' %>" class="form-control" id="steparrow-gen-info-email-input" placeholder="Enter School Name">
         </div>
       </div>
     </div>
