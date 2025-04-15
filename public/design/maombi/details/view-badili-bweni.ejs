@@ -359,7 +359,13 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="ms-3 flex-grow-1">
-                                                                        <h6 class="fs-15 mb-0"><a href="#showModal" data-path="<%= objAttachment1[i].attachment_path %>" data-ward="<%= objAttachment1[i].attachment_path %>" data-lga="<%= objAttachment1[i].attachment_name %>" data-region="<%= objAttachment1[i].attachment_name %>" data-date="<%= objAttachment1[i].attachment_name %>" data-name="<%= objAttachment1[i].attachment_namee %>" data-id="<%= objAttachment1[i].attachment_name %>" data-category="<%= objAttachment1[i].attachment_name %>" data-bs-toggle="modal" class="fw-medium link-primary open-AddBookDialog read-attachment"><%= objAttachment1[i].attachment_name %></a></h6>
+                                                                        <h6 class="fs-15 mb-0"><a href="#showModal" data-path="<%= objAttachment1[i].attachment_path %>" 
+                                                                            data-ward="<%= objAttachment1[i].attachment_path %>" 
+                                                                            data-lga="<%= objAttachment1[i].attachment_name %>" 
+                                                                            data-region="<%= objAttachment1[i].attachment_name %>" 
+                                                                            data-date="<%= objAttachment1[i].attachment_name %>" data-name="<%= objAttachment1[i].attachment_namee %>" data-id="<%= objAttachment1[i].attachment_name %>" data-category="<%= objAttachment1[i].attachment_name %>" data-bs-toggle="modal" 
+                                                                            class="fw-medium link-primary open-AddBookDialog read-attachment">
+                                                                            <%= objAttachment1[i].attachment_name %></a></h6>
                                                                     </div>
                                                                 </div>
                                                             </td>
@@ -525,6 +531,33 @@
                         </div>
                         <!-- modal-dialog -->
                     </div>
+
+                    <div class="modal fade zoomIn showModal" id="showModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content border-0">
+            <div class="modal-header p-3 bg-soft-info">
+                <h5 class="modal-title" id="exampleModalLabele">Shule Mabadiliko</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+            </div>
+            <form action="#">
+                <div class="modal-body">
+                    <input type="hidden" id="tasksId" />
+                    <div  id="iframediv">
+                        <iframe id="pdfdoc" src="" width="100%" height="700"></iframe>
+                    </div>
+                    <!--end row-->
+                </div>
+                <div class="modal-footer">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-light" id="close-modal" data-bs-dismiss="modal">Close</button>
+                        <!-- <button type="submit" class="btn btn-success" id="add-btn">Add Task</button>
+                        <button type="button" class="btn btn-success" id="edit-btn">Update Task</button> -->
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <!--end card-body-->
 <%- include('../../layouts/partials/footer.ejs' , {
