@@ -26,16 +26,6 @@
         <!--end card-->
         <div class="card mb-3">
             <div class="card-body">
-                <div class="mb-4">
-                    <select class="form-control" name="choices-single-default" data-choices data-choices-search-false disabled>
-                        <option value="">Taarifa Fupi</option>
-                        <!-- <option value="Unassigned">Unassigned</option>
-                        <option value="To Do">To Do</option>
-                        <option value="Inprogress">Inprogress</option>
-                        <option value="In Reviews" selected>In Reviews</option>
-                        <option value="Completed">Completed</option> -->
-                    </select>
-                </div>
                 <div class="table-card">
                     <table class="table mb-0">
                         <tbody>
@@ -44,15 +34,15 @@
                                 <td><%= tracking_number %></td>
                                 <input type="hidden" id="trackingId" value="<%= tracking_number %>"/>
                             </tr>
-                            <!-- <tr>
-                                <td class="fw-medium">Mwombaji</td>
+                            <tr>
+                                <td class="fw-medium">Namba ya Usajili</td>
                                 <td>
-                                    <h5 class="fs-13"><a href="#"><%= fullname %></a></h5>
+                                    <h5 class="fs-13"><a href="#"><%= registration_number %></a></h5>
                                 </td>
-                            </tr> -->
+                            </tr>
                             <tr>
                                 <td class="fw-medium">Jina la Shule</td>
-                                <td><span class="badge badge-soft-danger"><%= school_name %></span></td>
+                                <td><span class="fw-medium"><%= school_name %></span></td>
                             </tr>
                             <tr>
                                 <td class="fw-medium">Aina ya Shule</td>
@@ -60,7 +50,7 @@
                             </tr>
                             <tr>
                                 <td class="fw-medium">Ngazi ya Shule</td>
-                                <td><%= schoolCategory %></td>
+                                <td><%= schoolCategory + " ("+ certificate_level + ")" %></td>
                             </tr>
                             <tr>
                                 <td class="fw-medium">Halmashauri</td>
@@ -315,14 +305,23 @@
                             <table class="table align-middle mb-0">
                                 <thead class="table-light text-muted">
                                     <tr>
-                                        <th scope="col">Jina la Tahasusi</th>
+                                        <th scope="col">Tahasusi zinazoombewa kuongezwa</th>
+                                        <th scope="col">Tahasusi zilizopo sasa</th>
                                         <!-- <th scope="col">Ukubwa wa shule kwa idadi ya mikondo pendekezwa</th> -->
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td><b><%= streamOld %></b></td>
-                                        <!-- <td><b><%= streamOld %></b></td> -->
+                                        <td>
+                                            <b>
+                                                <%= additional_combinations.map(item => item.combination).join(', ') %>
+                                            </b>
+                                        </td>
+                                        <td>
+                                            <b>
+                                                <%= current_combinations.map(item => item.combination).join(', ') %>
+                                            </b>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>

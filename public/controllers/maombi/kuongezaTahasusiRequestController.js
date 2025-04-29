@@ -87,6 +87,8 @@ kuongezaTahasusiRequestController.get(
       formData,
       (jsonData) => {
         var data = jsonData.data;
+        var additional_combinations = jsonData.additional_combinations
+        var current_combinations = jsonData.current_combinations;
         var remain_days = data[0].remain_days;
         var created_at = data[0].created_at;
         var tracking_number = data[0].tracking_number;
@@ -110,6 +112,8 @@ kuongezaTahasusiRequestController.get(
         var streamOld = data[0].streamOld;
         var streamNew = data[0].streamNew;
         var school_id = data[0].school_id;
+        var registration_number = data[0].registration_number;
+        var certificate_level = data[0].certificate_level;
         var establishId = data[0].establishId;
         var WardName = data[0].WardName;
         var structure = data[0].structure;
@@ -131,6 +135,7 @@ kuongezaTahasusiRequestController.get(
             " view details of change Tahasusi application with TrackingNumber " +
             TrackingNumber
         );
+        console.log(additional_combinations)
         res.render(
           path.join(
             __dirname + "/../../design/maombi/details/view_ongeza_tahasusi"
@@ -146,6 +151,10 @@ kuongezaTahasusiRequestController.get(
             cheoName: req.session.cheoName,
             created_at: created_at,
             tracking_number: tracking_number,
+            registration_number : registration_number,
+            certificate_level: certificate_level,
+            additional_combinations,
+            current_combinations,
             school_name: school_name,
             LgaName: LgaName,
             RegionName: RegionName,
