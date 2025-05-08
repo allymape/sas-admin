@@ -957,12 +957,12 @@ module.exports = {
         break;
 
       case 12:
-        title = `KIBALI CHA KUONGEZA TAHASUSI ZA ${combinations}, KATIKA ${titleCase(
+        title = `KIBALI CHA KUONGEZA TAHASUSI ${combinations.indexOf(',') !== -1 ? 'ZA' : 'YA'} ${combinations} KATIKA ${titleCase(
           name.toLowerCase()
         )}`;
         bodyContent = [
           `      Tafadhali rejea somo la barua hii.\n\n\n`,
-          `2.    Nafurahi kukujulisha kuwa Wizara imekubali kutoa kibali cha kuanzisha tahasusi za <b>${combinations}</b> mkondo mmoja <b>(01)</b> kwa kila tahasusi kwa ${gender_type} pekee. Kibali hiki kimetolewa tarehe <b>${approved_date}</b>\n\n`,
+          `2.    Nafurahi kukujulisha kuwa Wizara imekubali kutoa kibali cha kuanzisha tahasusi ${combinations.indexOf(',') !== -1 ? 'za' : 'ya'} <b>${combinations}</b> mkondo mmoja <b>(01)</b> kwa kila tahasusi kwa ${gender_type} pekee. Kibali hiki kimetolewa tarehe <b>${approved_date}</b>\n\n`,
           `3.    Hata hivyo, unatakiwa kuendelea kuboresha miundombinu ya ${type} pamoja na kununua samani na vitabu vya kutosha.\n\n`,
           `4.    Aidha, mfahamishe <b>Katibu Mtendaji Baraza la Mitihani Tanzania</b> ni lini ${type} ${
             type == "chuo" ? "kitakuwa" : "itakuwa"
