@@ -64,7 +64,7 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
             } = data;
       
             // decodeSignature(base64signature, tracking_number);
-            const reference = `${file_number}/${school_folio}/${folio}`;
+            const reference = `${file_number}/${folio}`;
             const createdAt = approved_at != undefined ? formatDate(approved_at , 'DD/MM/YYYY'): null;
             const box = address_box;
             const region_address = address_region;

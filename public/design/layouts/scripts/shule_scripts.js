@@ -134,11 +134,15 @@ function edit(e){
              const longitude = data.longitude;
              const ownership = data.ownership;
              const registration_number = data.registration_number;
+             const file_number = data.file_number;
+             const max_folio = data.max_folio;
             //  const payment = data.payment;
              const tracking_number = data.tracking_number;
              document.getElementById("id-field").value = tracking_number;
              document.getElementById('name-field').value = school_name
              document.getElementById('registration-number-field').value = registration_number
+             document.getElementById('file_number-field').value = file_number
+             document.getElementById('max_folio-field').value = max_folio
             //  document.getElementById('payment-field').checked = (payment == 2 ? true : false) 
              document.getElementById('category-field').value = category
              document.getElementById('ownership-field').value = ownership
