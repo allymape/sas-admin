@@ -336,6 +336,43 @@
         </div>
       </div>
     </div>
+    <div class="row">
+      <div class="col-xxl-3 col-sm-4">
+        <div class="input-light">
+            <select id="mkoa-field"  data-choices-search-true class="form-control" placeholder="Mkoa ..."  name="region">
+                <option value=""> Chagua Mkoa ...</option>
+                <% for (let index = 0; index < regions.length; index++) { %>
+                <% const item = regions[index]; %>
+                    <option value="<%= item.id %>" <%= institute_info.region == item.id ? 'selected' : '' %>>
+                         <%= item.name %>
+                    </option>
+                <% } %>
+            </select>
+        </div>
+    </div>
+      <div class="col-xxl-3 col-sm-4">
+        <div class="input-light">
+            <select id="lga-field" class="form-control" placeholder="Halmashauri ..."  name="district">
+                <option value=""> Chagua Halmashauri ...</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-xxl-3 col-sm-4">
+        <div class="input-light">
+            <select id="kata-field" class="form-control" placeholder="Kata ..."  name="ward">
+                <option value=""> Chagua Kata ...</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-xxl-3 col-sm-4">
+        <div class="input-light">
+            <select id="mtaa-field" class="form-control" placeholder="Mtaa ..."  name="street">
+                <option value=""> Chagua Mtaa ...</option>
+            </select>
+        </div>
+    </div>
+    <!--end col-->
+    </div>
     </div>
   </fieldset>
   <% } %>

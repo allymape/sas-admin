@@ -230,7 +230,6 @@ module.exports = {
               const today = new Date();
               // Check if today's date is between start and end dates
               if (today <= startDate || today >= endDate) {
-                console.log("hereee");
                 res.redirect("/404"); // Redirect if outside the update window
               }else{
                 next();

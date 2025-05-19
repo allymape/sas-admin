@@ -19,35 +19,40 @@ const validateSchoolDetails = [
         value !== "" &&
         (!Number.isInteger(Number(value)) || Number(value) < 1)
       ) {
-        throw new Error("Stream must be a number and not less than 1");
+        throw new Error("Idadi ya Mkono inatakiwa kuwa namba na isiwe chini ya 1.");
       }
       return true;
     }),
   body("number_of_students")
     .notEmpty()
-    .withMessage("Number of students is required.")
+    .withMessage("Idadi ya Wanafunzi inatakiwa kujazwa.")
     .isInt({ min: 0 })
-    .withMessage("Number of students must be a number and not less than 0"),
+    .withMessage("Idadi ya Wanafunzi inatakiwa kuwa namba na isiwe chini ya 0."),
   body("number_of_teachers")
     .notEmpty()
     .withMessage("Number of teachers is required.")
     .isInt({ min: 0 })
-    .withMessage("Number of teachers must be a number and not less than 0"),
+    .withMessage("Idadi ya Walimu inatakiwa kuwa namba na isiwe chini ya 0."),
   body("school_phone")
     .optional()
     .custom((value) => {
       const phoneRegex = /^0\d{9}$/; // Ensures "0xxxnnnnnn" format (10 digits starting with 0)
       if (!phoneRegex.test(value)) {
-        throw new Error("Invalid phone number format. Use: 0xxx######");
+        throw new Error("Namba ya simu sio sahii. weka kwa muundo huu: 0xxx######");
       }
       return true;
     }),
-  body("email").optional().isEmail().withMessage("Invalid email format"),
+  body("email").optional().isEmail().withMessage("Baruapepe iliyoingizwa sio sahihi."),
   // "institution_name" is required only if it exists in req.body
   body("institution_name")
     .if(body("institution_name").exists()) // Apply rule only if present
     .notEmpty()
-    .withMessage("Institution name cannot be empty"),
+    .withMessage("Jina la Taasisi linapaswa kujazwa."),
+  // "ward" is required only if it exists in req.body
+  body("ward")
+    .if(body("ward").exists()) // Apply rule only if present
+    .notEmpty()
+    .withMessage("Jaza taarifa ya Kata kwa Taasisi."),
   // Middleware to handle validation errors
   (req, res, next) => {
     const errors = validationResult(req);
@@ -127,6 +132,7 @@ function getSchoolDetails(req , res , callback , edit =  false){
         manager,
         denominations,
         ownership_sub_types,
+        regions
       } = jsonData;
       if (statusCode == 300) {
         callback({
@@ -150,6 +156,7 @@ function getSchoolDetails(req , res , callback , edit =  false){
           ownership_sub_types,
           denominations,
           edit,
+          regions,
           req,
         });
       } else {
