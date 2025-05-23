@@ -1,9 +1,9 @@
   <script>
     // $(function(){
-        const regionCode = "<%= req.query.region || location !== undefined ? location.region : null  %>"
-        const districtCode = "<%= req.query.district || location !== undefined ? location.district : null  %>"
-        const wardCode = "<%= req.query.ward || location !== undefined ? location.ward : null %>"
-        const streetCode = "<%= req.query.street || location !== undefined ? location.street : null %>"
+        const regionCode = "<%= req.query.region || (location?.region || null)  %>"
+        const districtCode = "<%= req.query.district || (location?.district || null)  %>"
+        const wardCode = "<%= req.query.ward || (location?.ward || null) %>"
+        const streetCode = "<%= req.query.street || (location?.street || null) %>"
         if(regionCode){
             getAllDistricts(regionCode , districtCode)
         }
