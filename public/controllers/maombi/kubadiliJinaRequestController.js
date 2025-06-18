@@ -94,7 +94,7 @@ kubadiliJinaRequestController.get(
         var school_name_new = data[0].school_name_new;
         var structure = data[0].structure;
         var subcategory = data[0].subcategory;
-        var count = jsonData.maoni[0].count;
+        var count = jsonData.Maoni.count;
         var objAttachment = jsonData.objAttachment;
         var objAttachment1 = jsonData.objAttachment1;
         var objAttachment2 = jsonData.objAttachment2;
