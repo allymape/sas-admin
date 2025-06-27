@@ -22,11 +22,11 @@
             <div class="row g-4 mb-3">
                 <div class="col-sm-auto">
                     <div class="d-flex">
-                        <!-- <div id="firstbtn">
+                        <div id="firstbtn">
                             <button type="button" class="btn btn-outline-danger add-btn"  id="btn-migrate-schools">
                                 <i class="ri-download-2-line align-bottom me-1"></i>Vuta Shule (Existing Schools)
                             </button>
-                        </div> -->
+                        </div>
                         <div class="ms-2">
                             <button type="button" class="btn btn-info" id="add-school"> + Sajili</button>
                         </div>
@@ -135,6 +135,7 @@
                             <th>Imesasishwa</th>
                             <th>Hali</th>
                             <th>GeoLocation</th>
+                            <th>Mwombaji</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -451,6 +452,12 @@
                     },
                     class : 'text-center'
                     },
+                    { data: 'status' , name: 'status' , render: (data , type , row) => {
+                         return `<div title="${row.applicant_email}" data-toggle="tooltip" style="cursor:pointer">
+                                  ${row.applicant_name}
+                                  <small><br/><i>${row.applicant_email}</i></small>
+                                  </div>`;
+                    }},
                     {
                     data: null, // No data source for this column
                     render: function (data, type, row) {
