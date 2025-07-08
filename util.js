@@ -230,7 +230,8 @@ module.exports = {
               const today = new Date();
               // Check if today's date is between start and end dates
               if (today <= startDate || today >= endDate) {
-                res.redirect("/404"); // Redirect if outside the update window
+                req.flash("window_closed", `Mwisho wa kipindi cha kubadilisha taarifa ulikuwa tarehe ${endDate}. Dirisha limefungwa kwa sasa hadi taarifa nyingine itakapotolewa.`)
+                res.redirect("/Shule"); // Redirect if outside the update window
               }else{
                 next();
               }

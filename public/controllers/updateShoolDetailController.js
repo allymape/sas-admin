@@ -97,6 +97,9 @@ updateSchoolDetailController.get(
   (req, res) => {
     // Edit Screen
     getSchoolDetails(req , res , (responseData) => {
+      responseData[
+        "window_closed"
+      ] = `Kumbuka: Dirisha la kufanya mabadiliko litafungwa tarehe ${endDate}. Tafadhali kamilisha shughuli zako mapema ili kuepuka usumbufu.`;
       res.render(path.join(__dirname + "/../design/schools/edit"), responseData);
     } , true);
   }

@@ -23,9 +23,9 @@
                 <div class="col-sm-auto">
                     <div class="d-flex">
                         <div id="firstbtn">
-                            <button type="button" class="btn btn-outline-danger add-btn"  id="btn-migrate-schools">
+                            <!-- <button type="button" class="btn btn-outline-danger add-btn"  id="btn-migrate-schools">
                                 <i class="ri-download-2-line align-bottom me-1"></i>Vuta Shule (Existing Schools)
-                            </button>
+                            </button> -->
                         </div>
                         <div class="ms-2">
                             <button type="button" class="btn btn-info" id="add-school"> + Sajili</button>
@@ -117,6 +117,12 @@
             </div>
             </div>
             <div class="table-responsive mt-3 mb-1">
+                <% var window_closed  = req.flash('window_closed') %>
+                <% if(window_closed != '' && window_closed ){ %>
+                    <div class="alert alert-danger">
+                        <%= window_closed %>
+                    </div>
+                <% } %>
                 <table class="table align-middle table-nowrap" id="datatable" width="100%">
                     <thead class="table-light">
                         <tr>

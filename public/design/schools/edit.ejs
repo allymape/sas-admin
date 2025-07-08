@@ -7,6 +7,11 @@
 }) %>
 <div class="col-xl-12">
     <div class="card-body form-steps">
+      <% if(window_closed ){ %>
+        <div class="alert alert-info font-italic">
+            <%= window_closed %>
+        </div>
+      <% } %>
       <% var statusCode = req.flash('statusCode') %>
       <% var message = req.flash('message') %>
       <% if(statusCode != '' || message != ''){ %>
