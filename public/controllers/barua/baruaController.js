@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 
 const baruaController = express.Router();
+const he = require("he")
 const cors = require("cors");
 var session = require("express-session");
 const { isAuthenticated, sendRequest,  generateLetter, bodyContent, formatDate, decodeSignature, can } = require("../../../util");
@@ -118,7 +119,7 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
                   school_name,
                   registration_number,
                   `${category} (${level})`,
-                  `${typeof masharti != "undefined" && masharti ? masharti.replaceAll(/<\/?[^>]+(>|$)/gi, "") : ""}`,
+                  `${typeof masharti != "undefined" && masharti ? he.decode(masharti.replaceAll(/<\/?[^>]+(>|$)/gi, "").replace(/^(&nbsp;)+/, "") ) : ""}`,
                 ],
               ],
             };

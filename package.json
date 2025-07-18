@@ -37,6 +37,7 @@
     "geo-distance": "^0.2.0",
     "geocoder": "^0.1.0",
     "geopoint": "^1.0.1",
+    "he": "^1.2.0",
     "helmet": "^6.1.5",
     "https": "^1.0.0",
     "jimp": "^0.3.5",
