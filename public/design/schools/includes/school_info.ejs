@@ -304,6 +304,25 @@
           <input type="Number" min="0"  name="number_of_teachers" value="<%=school_info.number_of_teachers%>" class="form-control" <%= !edit ? 'readonly disabled' : '' %> id="number_of_teachers" placeholder="Idadi ya Walimu ...">
         </div>
       </div>
+      <% if(school_info.school_sub_category_id == 2 || school_info.school_sub_category_id == 3){ 
+              if(school_info.school_gender_type_id == 2 || school_info.school_gender_type_id == 3){
+              %>
+                <div class="col-lg-3">
+                  <div class="mb-3">
+                    <label class="form-label" for="male_capacity">Bweni Wavulana</label>
+                    <input type="Number" min="0"  name="male_capacity" value="<%=school_info.male_capacity%>" class="form-control"   <%= !edit ? 'readonly disabled' : '' %>id="male_capacity" placeholder="Uwezo wa bweni Wavulana...">
+                  </div>
+                </div>
+                <% }
+              if(school_info.school_gender_type_id == 1 || school_info.school_gender_type_id == 3) {%>
+              <div class="col-lg-3">
+                <div class="mb-3">
+                  <label class="form-label" for="number_of_teachers">Bweni Wasichana</label>
+                  <input type="Number" min="0"  name="female_capacity" value="<%=school_info.female_capacity%>" class="form-control" <%= !edit ? 'readonly disabled' : '' %> id="female_capacity" placeholder="Uwezo wa bweni Wasichana...">
+                </div>
+              </div>
+              <% } %>
+      <% } %>
     </div>
   </div>
   <% if(school_info.registry_type_id == 2){ %>

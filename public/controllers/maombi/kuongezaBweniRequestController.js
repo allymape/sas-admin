@@ -89,6 +89,9 @@ kuongezaBweniRequestController.get(
         var WardName = data[0].WardName;
         var structure = data[0].structure;
         var subcategory = data[0].subcategory;
+        var male_capacity = data[0].male_capacity;
+        var female_capacity = data[0].female_capacity;
+        var school_sub_category_id = data[0].school_sub_category_id;
         // var count = jsonData.maoni[0].count
         var objAttachment = jsonData.objAttachment;
         var objAttachment1 = jsonData.objAttachment1;
@@ -103,6 +106,9 @@ kuongezaBweniRequestController.get(
             req: req,
             muda_ombi: remain_days,
             is_approved,
+            male_capacity,
+            female_capacity,
+            school_sub_category_id,
             created_at: created_at,
             tracking_number: tracking_number,
             school_name: school_name,

@@ -213,6 +213,16 @@
                                                                 <td><b><%= subcategory %></b></td>
                                                             <% } %>
                                                         </tr>
+                                                        <% if(school_sub_category_id == 2 || school_sub_category_id == 3){ %>
+                                                        <tr class="table-light text-muted">
+                                                            <th>Idadi Wavulana</th>
+                                                            <th>Idadi Wasichana</th>
+                                                        </tr>
+                                                         <tr>
+                                                            <td><%= male_capacity %></td>
+                                                            <td><%= female_capacity %></td>
+                                                        </tr>
+                                                        <% } %>
                                                     </tbody>
                                                 </table>
                                                 <input type="hidden" id="newstream" value="<%= streamNew %>"/>
