@@ -61,6 +61,14 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
               district_box,
               district_sqa_box,
               masharti,
+              t_street,
+              t_ward,
+              t_district,
+              t_region,
+              t_old_region,
+              t_old_district,
+              t_old_ward,
+              t_old_street,
             } = data;
       
             // decodeSignature(base64signature, tracking_number);
@@ -100,7 +108,15 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
               number_of_students,
               gender_type,
               category,
-              old_category
+              old_category,
+              t_street,
+              t_ward,
+              t_district,
+              t_region,
+              t_old_region,
+              t_old_district,
+              t_old_ward,
+              t_old_street
             );
 
             const paragraphs = letter.bodyContent;

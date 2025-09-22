@@ -717,7 +717,8 @@ module.exports = {
     number_of_students = 0,
     gender_type = "",
     category, //  awali, msingi, sekondari
-    old_category // msingi, chuo cha ualimu
+    old_category, // msingi, chuo cha ualimu,
+    t_street, t_ward, t_district, t_region, t_old_region, t_old_district, t_old_ward, t_old_street
   ) => {
     let bodyContent = null;
     const name = getSchoolType(school_type_id, school_type, school_name);
@@ -930,7 +931,7 @@ module.exports = {
           `      Tafadhali rejea somo la barua hii.\n\n`,
           `2.    Wizara ya Elimu, Sayansi na Teknolojia imepokea maombi ya kibali cha kuhamisha ${titleCase(
             name.toLowerCase()
-          )} kutoka .... kwenda....\n\n`,
+          )} kutoka Kata ya ${t_ward} kwenda Kata ya ${ward}\n\n`,
           `3.    Kwa mamlaka niliyonayo nitatoa kibali cha kuhamisha ${type.toLowerCase()} kuanzia tarehe ya barua hii.  \n\n`,
           `4.    Aidha, ${type} ${
             type == "chuo" ? "kitaendelea" : "itaendelea"
