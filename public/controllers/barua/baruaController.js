@@ -35,6 +35,7 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
               registry_type_id,
               school_category_id,
               application_category_id,
+              address_title,
               address_name,
               address_box,
               address_region,
@@ -146,6 +147,7 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
               application_category_id, //Aina ya Ombi Kuanzisha, Umiliki na Meneja
               reference,
               createdAt,
+              address_title,
               address_name,
               box,
               region_address,

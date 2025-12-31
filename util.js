@@ -184,7 +184,7 @@ module.exports = {
             const { exp } = decode;
             const timestamp = Math.round(Date.now() / 1000, 0);
             const timeLeft = exp - timestamp;
-            console.log(timeLeft);
+            // console.log(timeLeft);
             const current_url = req.originalUrl;
             if (
               !["/CheckSessionExpire", "/ExtendSession"].includes(current_url)
@@ -603,6 +603,7 @@ module.exports = {
     application_category_id,
     reference,
     created_at,
+    address_title,
     company,
     box,
     region_address,
@@ -627,16 +628,6 @@ module.exports = {
       margin: 72,
       size: "A4",
     };
-    // console.log(
-    //   region,
-    //   district,
-    //   zone_name,
-    //   zone_box,
-    //   region_box,
-    //   sqa_zone_region,
-    //   district_box,
-    //   district_sqa_box
-    // );
     let doc = new PDFDocument(options);
     const imagesPaths = path.join(__dirname + "/public/assets/images");
     const trackingNumber = req.params.tracking_number;
@@ -654,6 +645,7 @@ module.exports = {
       imagesPaths,
       reference,
       created_at,
+      address_title,
       company,
       box,
       region_address,
@@ -1215,6 +1207,7 @@ const generateHeader = (
   imagesPaths,
   reference,
   createdAt,
+  address_title,
   company,
   box,
   region_address,
@@ -1273,7 +1266,7 @@ const generateHeader = (
   doc
     .font("Helvetica-Bold")
     .text(`Kumb. na. ${reference}`, { continued: true })
-    .text(createdAt, doc.page.width / 2 - 60, 190)
+    .text(createdAt, doc.page.width / 2 - 90, 190)
     .moveDown()
     .moveDown();
 
@@ -1297,6 +1290,7 @@ const generateHeader = (
   }else{
     doc
     .font("Helvetica-Bold")
+    .text(`${ address_title ? address_title + ',\n' : ''}`)
     .text(
       `${
         company ? company.toUpperCase() : company || "<Insert Company/Name>"
@@ -1377,7 +1371,7 @@ const generateFooter = (res , doc, base64Image, signatory, cheo) => {
   //Buffer.from(base64Image.split(",")[1], "base64");
   // if (fs.existsSync(signature)) {
   if (signature) {
-    console.log(signature)
+    // console.log(signature)
     doc.image(signature, doc.page.width / 2 - 50, signatureHeight - 70, {
       width: 120,
       height: 80,
