@@ -825,20 +825,16 @@ module.exports = {
           total_streams
         )} (${total_streams}) KWA ${titleCase(name.toLowerCase())}`;
         bodyContent = [
-          `      Tafadhali rejea somo la barua hii.\n\n\n`,
+          `      Tafadhali rejea somo la barua hii.\n\n`,
           `2.    Napenda kukufahamisha kuwa Wizara imekubali ombi lako la kuongeza ${mikondo_text(
             stream ?? 0
           )} <b>${numberToWord(stream ?? 0)} (${
             stream ?? 0
-          })</b> katika ${school_type_only} <b>${school_name}</b> ili iwe <b>${mikondo_text(
-            total_streams
-          )} ${numberToWord(
-            total_streams
-          )} (${total_streams})</b>. Kibali kimetolewa tarehe <b>${approved_date}</b>.\n\n`,
-          `3.    Hata hivyo unatakiwa kuendelea kuboresha miundombinu ya ${type} ikiwa ni pamoja na kuajiri walimu wenye sifa na kununua vitabu vya kutosha.\n\n\n`,
+          })</b> katika ${school_type_only} <b>${school_name}</b> ili iwe <b>${mikondo_text(total_streams)} ${numberToWord(total_streams)} (${total_streams})</b>. Kibali kimetolewa tarehe <b>${approved_date}</b>.\n\n`,
+          `3.    Hata hivyo unatakiwa kuendelea kuboresha miundombinu ya ${type} ikiwa ni pamoja na kuajiri walimu wenye sifa na kununua vitabu vya kutosha.\n\n`,
           `4.    Mfahamishe Katibu Mtendaji wa Baraza la Mitihani ni lini ${
             type == "chuo" ? "Wanachuo" : "Wanafunzi"
-          } walioongezeka watafanya upimaji wa darasa la IV na mtihani wa Taifa wa darasa la VII.\n\n\n`,
+          } walioongezeka watafanya mtihani wa upimaji wa ${upimajiMtihaniText(school_type_id)}.\n\n`,
           `5.    Ninakutakia utekelezaji mwema.`,
         ];
         break;
@@ -999,7 +995,21 @@ module.exports = {
     return { bodyContent, title };
   },
 };
-
+const upimajiMtihaniText = (school_type_id) => {
+  var commonText = `na mtihani wa Taifa wa`;
+  switch (school_type_id) {
+    case 1:
+      return ``
+      case 2: 
+      return `darasa la IV ${commonText}  darasa la VII`;
+      case 3: 
+      return `kidato cha pili ${commonText} kidato cha nne`;
+      case 4: 
+      return ''
+    default:
+      break;
+  }
+}
 const ngaziWilaya = (ngazi_ya_wilaya) => {
     var ngazi = "";
      switch(ngazi_ya_wilaya) {
