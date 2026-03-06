@@ -1273,10 +1273,16 @@ const generateHeader = (
     // .fontSize(10)
     .moveDown()
     .moveDown();
+  const referenceText = `Kumb na. ${reference}`;
+  const referenceWidth = doc.widthOfString(referenceText, {
+                          font: "Helvetica-Bold",
+                          size: 12,
+                        });
+  console.log("Reference Width: ", referenceWidth);
   doc
     .font("Helvetica-Bold")
-    .text(`Kumb. na. ${reference}`, { continued: true })
-    .text(createdAt, doc.page.width / 2 - 90, 190)
+    .text(`${referenceText}`, { continued: true })
+    .text(createdAt, doc.page.width / 2 - Math.ceil(referenceWidth / 2), 190)
     .moveDown()
     .moveDown();
 
@@ -1299,19 +1305,19 @@ const generateHeader = (
     .moveDown();
   }else{
     doc
-    .font("Helvetica-Bold")
-    .text(`${ address_title ? address_title + ',\n' : ''}`)
-    .text(
-      `${
-        company ? company.toUpperCase() : company || "<Insert Company/Name>"
-      },  \n${ (box ? (box.toString().includes("S") ? box : 'S.L.P '+box) : '') + `,\n`}`
-    )
-    .text(
-      `${region_address ? region_address.toUpperCase() : region_address}.`,
-      { underline: true }
-    )
-    .moveDown()
-    .moveDown();
+      .font("Helvetica-Bold")
+      .text(`${address_title ? address_title + ",\n" : ""}`)
+      .text(
+        `${
+          company ? company.toUpperCase() : company || "................................"
+        },  \n${(box ? (box.toString().includes("S") ? box : "S.L.P " + box) : "................................") + `,\n`}`,
+      )
+      .text(
+        `${region_address ? region_address.toUpperCase() : "................................"}.`,
+        { underline: true },
+      )
+      .moveDown()
+      .moveDown();
   }
   
 };
@@ -1365,7 +1371,7 @@ const generateBody = (doc, bodyContent) => {
 // 
 const generateFooter = (res , doc, base64Image, signatory, cheo) => {
   const lineSize = 174;
-  const signatureHeight = doc.y + 100;
+  const signatureHeight = doc.y + 60;
   if(base64Image && base64Image.startsWith("data:image/png;base64")){
     var signature = Buffer.from(base64Image.split(',')[1], "base64"); 
   }else{
@@ -1421,7 +1427,7 @@ const generateFooter = (res , doc, base64Image, signatory, cheo) => {
     .fontSize(12)
     .fill("#021c27")
     .text(
-      cheo ? cheo : `<Insert Title>`,
+      cheo ? cheo : `...........................`,
       doc.page.width / 2 - 130,
       signatureHeight + 20,
       {
@@ -1433,9 +1439,7 @@ const generateFooter = (res , doc, base64Image, signatory, cheo) => {
         underline: true,
       }
     );
-  doc.font("Helvetica").text("", 20, doc.page.height - 50, {
-    lineBreak: false,
-  });
+  doc.font("Helvetica").text("", 30, doc.y + 20 , { align: "left", lineBreak: true});
 }
 
 const generateCopies = (
@@ -1454,19 +1458,19 @@ const generateCopies = (
 ) => {
   const has_copies = zone_box || region_box || district_box || district_sqa_box;
   var ngazi = ngaziWilaya(ngazi_ya_wilaya);
-  var copies = has_copies
-    ? `Nakala:
-  `
+  var copies = ''
+  has_copies
+    ? doc.font("Helvetica-Bold").text(`Nakala:`, 30, doc.page.height - 50)
     : "";
   // console.log(zone_box);
   if ([4, 11, 9, 14, 12, 5].includes(application_category_id)) {
     copies += `
           Katibu Mkuu,
-          OR – TAMISEMI,
+          OWM – TAMISEMI,
           S.L.P.1923,<u>Dodoma.</u>
           Katibu Mtendaji,
           Baraza la Mitihani Tanzania,
-          S.L.P.2624,<u>Dar es salaam.</u>`;
+          S.L.P. 2624,<u>Dar es salaam.</u>`;
   }
   copies += zone_box
     ? `${
