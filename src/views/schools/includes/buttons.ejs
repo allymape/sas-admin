@@ -1,0 +1,20 @@
+<li class="nav-item" role="presentation">
+  <button class="nav-link active" id="school-info-tab" data-bs-toggle="pill" data-bs-target="#school-info" type="button" role="tab" aria-controls="school-info" aria-selected="true">
+    Taarifa ya Shule
+</button>
+</li>
+<li class="nav-item" role="presentation">
+  <button class="nav-link" id="owner-info-tab" data-bs-toggle="pill" data-bs-target="#owner-info" type="button" role="tab" aria-controls="owner-info" aria-selected="false">
+    Taarifa ya Mmiliki
+  </button>
+</li>
+<li class="nav-item" role="presentation">
+  <button class="nav-link" id="manager-info-tab" data-bs-toggle="pill" data-bs-target="#manager-info" type="button" role="tab" aria-controls="manager-info" aria-selected="false">
+    Taarifa ya Meneja
+  </button>
+</li>
+<li class="nav-item inactive" role="presentation">
+  <button class="nav-link" <%= [2,6].includes(Number(school_info.certificate_type_id)) ? '' : 'disabled' %> id="combinations-info-tab" data-bs-toggle="pill" data-bs-target="#combinations-info" type="button" role="tab" aria-controls="combinations-info" aria-selected="false">
+    Taarifa za Michepuo
+  </button>
+</li>

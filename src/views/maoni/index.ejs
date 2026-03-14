@@ -1,0 +1,33 @@
+   <div class="timeline-2">
+        <div class="timeline-continue">
+   <% if(Maoni.length > 0){ %>
+   <% for(var i = 0; i < Maoni.length; i++){ %>
+    <% const {name , name_to, rank_name_to, coments , created_at , rank_name} = Maoni[i]; %>
+            <div class="row timeline-right">
+                <div class="col-12" style="position: absolute;">
+                    <div class="timeline-year">
+                        <p class="shadow text-primary">
+                            <b>M.<%= Maoni.length - i%></b>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="timeline-box shadow" style="margin: 5px 100px; width: 100%">
+                        <div class="timeline-text">
+                            <% if(name_to) {%>
+                            <h6><%= rank_name_to %> (<%= name_to %>)</h6>
+                            <% } %>
+                            <h6 class="">By: <%= rank_name %> (<%= name %>) - <%= dateFormat(created_at , 'ddd DD/MM/YYYY HH:mm:ss') %></h6>
+                            <div class="border-bottom border-bottom-dark mb-3 text-muted"></div>
+                            <p class="mb-0"><%- coments %></p>
+                            <!-- <hr class="text-info"> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+   <% } %>
+   <% } else { %>
+    <div class="alert alert-info">Hakuna Maoni: Ombi bado alijaanza kushughulikiwa.</div>
+   <% }%>
+      </div>
+    </div>

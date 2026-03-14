@@ -1,0 +1,104 @@
+<% var card_title = '' %> 
+<%- include('layouts/partials/header.ejs' , {
+    title : 'Waombaji',
+    page_title : 'Orodha ya Waombaji',
+    card_title : 'Waombaji Waliopo',
+    breadcrumb_main : 'Mipangilio',
+     styles : [
+                { href: '/css/datatables/dataTables.dataTables.css' },
+                { href: '/css/datatables/buttons.dataTables.css' }
+            ]
+
+}) %>
+<div class="card-body">
+
+<div id="applicantsList">
+    <div class="col-md-12">
+        <div class="table-responsive mt-3 mb-1">
+        <table class="table table-striped" id="datatable">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Jina</th>
+                    <th>Barua Pepe</th>
+                    <th>Imetengezwa</th>
+                    <th>Imesasishwa</th>
+                    <th>Maombi</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody class="list form-check-all">
+            </tbody>
+        </table>
+        <div class="noresult" style="display: none">
+            <div class="text-center">
+                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                <h5 class="mt-2">Sorry! No Result Found</h5>
+                <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
+            </div>
+        </div>
+    </div>
+    </div>
+
+</div>
+</div><!-- end card -->
+<%- include('layouts/partials/footer.ejs' , {
+    card_title :  card_title,
+    scripts : [
+            {src : '/design/layouts/scripts/waombaji_scripts.js'},
+            { src : '/js/datatables/dataTables.js'},
+            { src : '/js/datatables/dataTables.buttons.js'},
+            { src : '/js/datatables/buttons.dataTables.js'},
+            { src : '/js/datatables/buttons.html5.min.js'},
+            { src : '/js/datatables/jszip.min.js'},
+            { src : '/js/datatables/pdfmake.min.js'},
+            { src : '/js/datatables/vfs_fonts.js'},
+            { src : '/js/datatables/buttons.print.min.js'},
+          ]
+    }) %>
+<script>
+    $(document).ready(function() {
+        tableData('datatable' , '/ApplicantList' , 'POST',
+            [
+                    { data: null, render : (data , type , row , meta) => {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    } },
+                    { data: "name", name: "name" },
+                    { data: "email", name: "email" },
+                    {data: 'created_at' , name: 'created_at' , render: (data , type , row) => {
+                        return data ? changeDateFormat(data) : ''
+                    }},
+                    {data: 'updated_at' , name: 'updated_at' , render: (data , type , row) => {
+                        return data ? changeDateFormat(data) : ''
+                    }},
+                    { data: "total_applications", name: "total_applications" ,  render: (data , type , row) => {
+                        return `<span class="badge badge-label bg-${ data > 0 ? 'success' : 'danger'}">${data}</span>`
+                        },
+                    class : 'text-center'
+                    },
+                    {
+                    data: null, // No data source for this column
+                    render: function (data, type, row) {
+                          const elements = [
+                                            {
+                                                show : true,
+                                                type : 'link',
+                                                link : `/Mwombaji/${row.id}`,
+                                                class : 'btn btn-sm btn-outline-success me-1',
+                                                icon : 'bx bx-show me-1',
+                                                function : '',
+                                                btnText : 'View'
+                                            }
+                                        ]
+                        return actionButtons(row , elements);
+                    },
+                    orderable: false, // Disable sorting for the action buttons column
+                    class : 'text-center'
+                    },
+            ],
+        );
+    });
+</script>
+<!-- <script type="text/javascript" src="design/layouts/scripts/waombaji_scripts.js"></script> -->
+</body>
+</html>

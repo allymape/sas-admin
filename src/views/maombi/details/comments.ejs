@@ -1,0 +1,49 @@
+
+ <% if(permission(req , "view-comments")){%>
+ <div class="tab-pane" id="home-1" role="tabpanel">
+   <!-- <h5 class="card-title">Maoni</h5> -->
+     <div class="timeline-2">
+        <div class="timeline-continue">
+    <% has_adsa_commented = false; %>
+   <% for(var i = 0; i < Maoni.length; i++){ %>
+    <% const {name , name_to, rank_name_to, coments, title , created_at , rank_name} = Maoni[i]; %>
+    <% if(title == 'adsa' || title == 'kadsa'){ %>
+        <% has_adsa_commented =  true; %>
+    <% } %>
+            <div class="row timeline-right">
+                <div class="col-12" style="position: absolute;">
+                    <div class="timeline-year">
+                        <p class="shadow text-primary">
+                            <b>M.<%= Maoni.length - i%></b>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="timeline-box shadow" style="margin: 5px 100px; width: 100%">
+                        <div class="timeline-text">
+                            <% if(name_to) {%>
+                            <h6><%= rank_name_to %> (<%= name_to %>)</h6>
+                            <% } %>
+                            <h6 class="">By: <%= rank_name %> (<%= name %>) - <%= dateFormat(created_at , 'ddd DD/MM/YYYY HH:mm:ss') %></h6>
+                            <div class="border-bottom border-bottom-dark mb-3 text-muted"></div>
+                            <p class="mb-0"><%- coments %></p>
+                            <!-- <hr class="text-info"> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+   <% } %>
+      </div>
+    </div>
+   <% if(permission(req , "create-comments")){%>
+      <% if(Maoni.length > 0){ %>
+        <hr class="text-info">
+      <% } %>
+   <%- include('includes/form_comment.ejs' , {
+    'has_adsa_commented' : has_adsa_commented
+   }) %>
+   <% } %>
+ </div>
+ <% } %>
+
+

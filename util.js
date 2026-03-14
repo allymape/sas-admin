@@ -13,7 +13,7 @@ const json2xls = require("json2xls");
 const Cryptr = require("cryptr");
 const cheerio = require("cheerio");
 const path = require("path");
-const PDFDocument = require("./public/controllers/barua/pdfkitTable");
+const PDFDocument = require("./src/controllers/barua/pdfkitTable");
 const url = require("url");
 
 const { toSwahili } = require('digits-to-swahili');
@@ -142,14 +142,42 @@ const waterBodies = [
     ]),
   },
 ];
+
+const toRoleManageFromPermissions = (permissions = []) =>
+  (Array.isArray(permissions) ? permissions : [])
+    .filter((permission) => String(permission || "").trim().length > 0)
+    .map((permission_name, index) => ({
+      permission_id: index + 1,
+      permission_name: String(permission_name),
+    }));
+
+const syncSessionFromDecodedToken = (req, decoded = {}) => {
+  if (!req) return;
+  req.user = decoded;
+
+  if (!req.session) return;
+  if (!decoded || typeof decoded !== "object" || Array.isArray(decoded)) return;
+
+  if (Array.isArray(decoded.userPermissions)) {
+    req.session.RoleManage = toRoleManageFromPermissions(decoded.userPermissions);
+  }
+
+  if (decoded.id !== undefined) req.session.userID = decoded.id;
+  if (decoded.name !== undefined) req.session.userName = decoded.name;
+  if (decoded.user_level !== undefined) req.session.UserLevel = decoded.user_level;
+  if (decoded.jukumu !== undefined) req.session.jukumu = decoded.jukumu;
+  if (decoded.cheo !== undefined) req.session.cheoName = String(decoded.cheo || "").toUpperCase();
+};
+
 module.exports = {
   isAuthenticated: (req, res, next) => {
     const sessionToken = req.session.Token;
     const bodyToken = req.body.token;
-    const authorization = "Bearer" + " " + (sessionToken || bodyToken);
+    const token = sessionToken || bodyToken;
+    const authorization = token ? "Bearer" + " " + token : null;
+    const currentPath = (req.path || req.originalUrl || "").split("?")[0];
     // req.session.previousUrl = req.originalUrl;
-    if (authorization) {
-      const token = authorization.slice(7, authorization.length); // Bearer XXXXXX
+    if (token) {
       jwt.verify(
         token,
         process.env.ACCESS_TOKEN_SECRET || "the-super-strong-secrect",
@@ -180,19 +208,22 @@ module.exports = {
               }
             }
           } else {
-            req.user = decode;
+            syncSessionFromDecodedToken(req, decode);
             const { exp } = decode;
             const timestamp = Math.round(Date.now() / 1000, 0);
             const timeLeft = exp - timestamp;
             // console.log(timeLeft);
-            const current_url = req.originalUrl;
             if (
-              !["/CheckSessionExpire", "/ExtendSession"].includes(current_url)
-            )
-              if (timeLeft > 0 && timeLeft <= 300) {
-                module.exports.refreshToken(req, res);
-                console.log("Refresh token");
+              !["/CheckSessionExpire", "/ExtendSession"].includes(currentPath) &&
+              timeLeft > 0
+            ) {
+              const now = Date.now();
+              const lastAttempt = Number(req.session._lastTokenRefreshAttemptAt || 0);
+              if (now - lastAttempt >= 60 * 1000) {
+                req.session._lastTokenRefreshAttemptAt = now;
+                module.exports.refreshToken(req, null);
               }
+            }
             next();
           }
         }
@@ -209,18 +240,56 @@ module.exports = {
       }
     }
   },
-  refreshToken: (req, res) => {
-    module.exports.sendRequest(
-      req,
-      res,
-      refreshTokenApi,
-      "POST",
-      {},
-      (jsonData) => {
-        const { statusCode, token } = jsonData;
-        if (statusCode == 300) {
-          if (token) req.session.Token = token;
-          // console.log(req.user)
+  refreshToken: (req, res = null, callback = null) => {
+    const token = req.session.Token || req.body.token;
+    if (!token) {
+      if (typeof callback === "function") {
+        callback({ statusCode: 401, message: "No token provided" });
+      }
+      return;
+    }
+
+    request(
+      {
+        url: refreshTokenApi,
+        method: "POST",
+        headers: {
+          Authorization: "Bearer" + " " + token,
+          "Content-Type": "application/json",
+        },
+        json: {},
+      },
+      (error, response, body) => {
+        if (error) {
+          console.log("refreshToken error", error);
+          if (typeof callback === "function") {
+            callback({ statusCode: 500, message: "Refresh token request failed" });
+          }
+          return;
+        }
+
+        const statusCode = body?.statusCode;
+        const newToken = body?.token;
+        if (statusCode == 300 && newToken) {
+          req.session.Token = newToken;
+          try {
+            const decoded = jwt.verify(
+              newToken,
+              process.env.ACCESS_TOKEN_SECRET || "the-super-strong-secrect",
+            );
+            syncSessionFromDecodedToken(req, decoded);
+          } catch (decodeError) {
+            // keep token refresh successful even if decode fails on client side
+          }
+        }
+
+        if (typeof callback === "function") {
+          callback({
+            statusCode: statusCode || response?.statusCode || 500,
+            message:
+              body?.message ||
+              (statusCode == 300 ? "Session extended successfully" : "Unable to extend session"),
+          });
         }
       }
     );
@@ -265,12 +334,14 @@ module.exports = {
     }
   },
   redirectIfAuthenticated: (req, res, next) => {
-    if (req.session.userName) {
+    const hasUser = !!req.session.userName;
+    const hasToken = !!req.session.Token;
+    if (hasUser && hasToken) {
       // let  previousUrl = req.session.previousUrl
       // res.redirect(previousUrl ? previousUrl : '/Dashboard');
-      res.redirect("/Dashboard");
+      return res.redirect("/Dashboard");
     }
-    next();
+    return next();
   },
   isInTanzaniaAndNotInWater: (latitude, longitude) => {
     const point = turf.point([longitude, latitude]);
@@ -400,16 +471,26 @@ module.exports = {
     const nameOrToken = typeof (req.session.userName || req.body.token);
     const token = req.session.Token || req.body.token;
     if (nameOrToken !== "undefined" || req.session.userName === true) {
-      request(
-        {
-          url: url,
-          method: method,
-          headers: {
-            Authorization: "Bearer" + " " + token,
-            "Content-Type": "application/json",
-          },
-          json: formData,
+      const upperMethod = String(method || "GET").toUpperCase();
+      const requestOptions = {
+        url: url,
+        method: upperMethod,
+        headers: {
+          Authorization: "Bearer" + " " + token,
         },
+      };
+      if (upperMethod === "GET") {
+        requestOptions.json = true;
+        if (formData && typeof formData === "object" && Object.keys(formData).length > 0) {
+          requestOptions.qs = formData;
+        }
+      } else {
+        requestOptions.headers["Content-Type"] = "application/json";
+        requestOptions.json = formData;
+      }
+
+      request(
+        requestOptions,
         (error, response, body) => {
           // console.log(body);
           if (error) {
@@ -422,7 +503,7 @@ module.exports = {
               "Too many requests, please try again after 10 minutes."
             );
             res.redirect("/");
-          } else if (body !== undefined && response.statusCode == 200) {
+          } else if (body !== undefined && response && response.statusCode == 200) {
             callback(body);
           } else {
             if (
@@ -432,7 +513,17 @@ module.exports = {
             ) {
               res.status(response.statusCode).redirect("/403");
             } else {
-              console.log(body, response);
+              const status = response ? response.statusCode : "NO_RESPONSE";
+              const bodyPreview =
+                typeof body === "string"
+                  ? body.slice(0, 300)
+                  : JSON.stringify(body || {}).slice(0, 300);
+              console.log("sendRequest failed:", {
+                url,
+                method: upperMethod,
+                status,
+                body: bodyPreview,
+              });
             }
           }
         }
@@ -443,15 +534,24 @@ module.exports = {
     }
   },
   sendRequestTest: (req, res, url, method, formData, callback) => {
+    const upperMethod = String(method || "GET").toUpperCase();
+    const requestOptions = {
+      url: url,
+      method: upperMethod,
+      headers: {},
+    };
+    if (upperMethod === "GET") {
+      requestOptions.json = true;
+      if (formData && typeof formData === "object" && Object.keys(formData).length > 0) {
+        requestOptions.qs = formData;
+      }
+    } else {
+      requestOptions.headers["Content-Type"] = "application/json";
+      requestOptions.json = formData;
+    }
+
     request(
-      {
-        url: url,
-        method: method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        json: formData,
-      },
+      requestOptions,
       (error, response, body) => {
         // console.log(body);
         if (error) {
@@ -464,7 +564,7 @@ module.exports = {
             "Too many requests, please try again after 10 minutes."
           );
           res.redirect("/");
-        } else if (body !== undefined && response.statusCode == 200) {
+        } else if (body !== undefined && response && response.statusCode == 200) {
           callback(body);
         } else {
           if (
@@ -474,7 +574,17 @@ module.exports = {
           ) {
             res.status(response.statusCode).redirect("/403");
           } else {
-            console.log(body, response);
+            const status = response ? response.statusCode : "NO_RESPONSE";
+            const bodyPreview =
+              typeof body === "string"
+                ? body.slice(0, 300)
+                : JSON.stringify(body || {}).slice(0, 300);
+            console.log("sendRequestTest failed:", {
+              url,
+              method: upperMethod,
+              status,
+              body: bodyPreview,
+            });
           }
         }
       }
@@ -484,37 +594,45 @@ module.exports = {
   can: (permission) => {
     // return a middleware
     return (req, res, next) => {
-      const { user } = req;
-      if (user && user.userPermissions.includes(permission)) {
+      const hasPermission = (userLike = {}) => {
+        const permissions = Array.isArray(userLike?.userPermissions) ? userLike.userPermissions : [];
+        return permissions.includes(permission);
+      };
+
+      if (hasPermission(req?.user)) {
         next(); // role is allowed, so continue on the next middleware
       } else {
-        // console.log(permission, req);
-        res.redirect("/403"); // user is forbidden
+        module.exports.refreshToken(req, null, (result = {}) => {
+          if (Number(result.statusCode) === 300 && hasPermission(req?.user)) {
+            return next();
+          }
+          return res.redirect("/403"); // user is forbidden
+        });
       }
     };
   },
   hasPermission: (req, permission_name) => {
     if (req && permission_name) {
-      const pluck = (arr, key) => arr.map((i) => i[key].toLowerCase());
-      const permissions = req.session.RoleManage;
-      if (permissions.length > 0) {
-        const user_permissions = pluck(permissions, "permission_name");
-        // {{id : 1 , name : 'view-users'} , {id : 2 , name : 'create-users'} }  =>  ['view-users','create-user'];
-        // Check permission name has separated by | and loop through to
-        // check if user has at least one permission,
-        // | is conjuction or
-        if (permission_name.includes("|")) {
-          var found = false;
-          permission_name.split("|").forEach(function (p) {
-            if (p && user_permissions.includes(p.trim().toLowerCase())) {
-              found = true;
-              return true;
-            }
-          });
-          return found;
-        }
-        return user_permissions.includes(permission_name.toLowerCase());
+      const tokenPermissions = Array.isArray(req?.user?.userPermissions)
+        ? req.user.userPermissions.map((item) => String(item || "").toLowerCase())
+        : [];
+      const sessionPermissions = Array.isArray(req?.session?.RoleManage)
+        ? req.session.RoleManage.map((item) => String(item?.permission_name || "").toLowerCase())
+        : [];
+      const user_permissions = tokenPermissions.length ? tokenPermissions : sessionPermissions;
+      if (!user_permissions.length) return false;
+
+      if (permission_name.includes("|")) {
+        var found = false;
+        permission_name.split("|").forEach(function (p) {
+          if (p && user_permissions.includes(p.trim().toLowerCase())) {
+            found = true;
+            return true;
+          }
+        });
+        return found;
       }
+      return user_permissions.includes(permission_name.toLowerCase());
     }
     return false;
   },

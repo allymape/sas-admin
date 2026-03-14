@@ -1,0 +1,513 @@
+<% var card_title = '' %> 
+<%- include('../layouts/partials/header.ejs' , {
+    title : 'Shule',
+    page_title : 'Orodha ya Shule',
+    card_title : 'Shule zilizopo',
+    styles : [
+            { href: '/css/datatables/dataTables.dataTables.css' },
+            { href: '/css/datatables/buttons.dataTables.css' },
+             { href: '/css/map/leaflet.css' },
+            { href: 'https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css' },
+        ]
+}) %>
+<style>
+  #map {
+      height: 600px; /* Set the height of the map */
+      width: 100%; /* Optional, but ensures it takes up full width */
+  }
+</style>
+    <div class="card-body">
+       
+        <div id="customerList">
+            <div class="row g-4 mb-3">
+                <div class="col-sm-auto">
+                    <div class="d-flex">
+                        <div id="firstbtn">
+                            <!-- <button type="button" class="btn btn-outline-danger add-btn"  id="btn-migrate-schools">
+                                <i class="ri-download-2-line align-bottom me-1"></i>Vuta Shule (Existing Schools)
+                            </button> -->
+                        </div>
+                        <div class="ms-2">
+                            <button type="button" class="btn btn-info" id="add-school"> + Sajili</button>
+                        </div>
+                    </div>
+                </div>
+              <div class="col-sm">
+                <div class="d-flex justify-content-sm-end">
+                    <form class="d-flex" action="/Shule" method="GET">
+                         <div class="search-box ms-2 form-check-success form-check">
+                            <input type="hidden" name="search" value="true">
+                            <label for="dup-reg" class="form-check-label mt-2 mr-3" >
+                                <input type="checkbox" id="dup-reg" name="duplicate_reg" value="1" <%= req.query.duplicate_reg == "1" ? 'checked' : '' %> 
+                                    class="form-check-input form-check-input-lg"> &nbsp;Zilizojirudia
+                            </label>
+                        </div>
+                        <div>&nbsp;&nbsp;&nbsp;</div>
+                        <% if(req.query.duplicate_reg){%>
+                            <div>&nbsp;&nbsp;&nbsp;</div>
+                            <div class="search-box ms-2 form-check-danger form-check">
+                            <label for="delete_duplicate" class="form-check-label mt-2 mr-3" >
+                                <input type="checkbox" id="delete_duplicate" name="delete_duplicate" value="1" <%= req.query.delete_duplicate == "1" ? 'checked' : '' %> 
+                                    class="form-check-input form-check-input-lg"> &nbsp;Futa Zilizojirudia
+                            </label>
+                        </div>
+                        <% } else { %>
+                        <div class="search-box ms-2 form-check-success form-check">
+                            <label for="correction" class="form-check-label mt-2 mr-3" >
+                                <input type="checkbox" id="correction" name="correction" value="1" <%= req.query.correction == "1" ? 'checked' : '' %> 
+                                    class="form-check-input form-check-input-lg"> &nbsp;Masahihisho
+                            </label>
+                        </div>
+                        <div>&nbsp;&nbsp;&nbsp;</div>
+                        <div class="search-box ms-2 form-check-success form-check">
+                            <label for="no-reg" class="form-check-label mt-2 mr-3" >
+                                <input type="checkbox" id="no-reg" name="invalid_or_no_reg" value="1" <%= req.query.invalid_or_no_reg == "1" ? 'checked' : '' %> 
+                                    class="form-check-input form-check-input-lg"> &nbsp;No Reg/Zilizokosewa 
+                            </label>
+                        </div>
+                        <div>&nbsp;&nbsp;&nbsp;</div>
+                        <div class="" style="width: 200px;">
+                                <select class="form-control" name="geolocation"  >
+                                    <option value="">-- Geo Location --</option>
+                                    <option value="1" <%= req.query.geolocation == 1  ? 'selected' : ''%> >Zenye Geolocation</option>
+                                    <option value="2" <%= req.query.geolocation == 2  ? 'selected' : ''%>>Zisizo na Geolocation</option>
+                                </select>
+                        </div>
+                        <div>&nbsp;</div>
+                        <div class="" style="width: 200px;">
+                                <select class="form-control" name="aina"  >
+                                    <option value="">Chagua Aina ya Shule ...</option>
+                                    <% for (let index = 0; index < categories.length; index++) { %>
+                                    <% const element = categories[index];%>
+                                        <option value="<%=element.id%>"
+                                            <%=req.query.aina == element.id ? 'selected' : ''%>
+                                            ><%= element.name %></option>
+                                    <%  } %>
+                                </select>
+                        </div>
+                        <div>&nbsp;</div>
+                        <div class="" style="width: 200px;">
+                            <select class="form-control" name="umiliki">
+                                    <option value="">Chagua Umiliki wa Shule ...</option>
+                                    <% for (let index = 0; index < ownerships.length; index++) { %>
+                                    <% const item = ownerships[index];%>
+                                        <option value="<%=item.id%>"
+                                        <%=req.query.umiliki == item.id ? 'selected' : ''%>
+                                            ><%= item.name %></option>
+                                    <%  } %>
+                            </select>
+                        </div>
+                        <% } %>
+                        <div>&nbsp;</div>
+                        <div class="">
+                            <button type="submit" class="btn btn-outline-info"> 
+                                <i class="ri-search-line search-icon"></i>  Search
+                            </button>
+                        </div>
+                         <% if(req.query.search) {%>
+                         <div>&nbsp;</div>
+                         <div>
+                            <a href="/Shule" class="btn btn-outline-danger"> 
+                            <i class="ri-close-line"></i> Clear
+                           </a>
+                          </div>
+                            <% } %>
+                    </form>
+                </div>
+            </div>
+            </div>
+            <div class="table-responsive mt-3 mb-1">
+                <% var window_closed  = req.flash('window_closed') %>
+                <% if(window_closed != '' && window_closed ){ %>
+                    <div class="alert alert-danger">
+                        <%= window_closed %>
+                    </div>
+                <% } %>
+                <table class="table align-middle table-nowrap" id="datatable" width="100%">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 10px;">Na.</th>
+                            <th>Namba ya Ufuatiliaji</th>
+                            <th>Jina la Shule</th>
+                            <th class=" text-wrap">Namba</th>
+                            <th>Umiliki</th>
+                            <th>Aina</th>
+                            <th>Tarehe Usajil</th>
+                            <th>Tarehe Kufungua</th>
+                            <th>Mkoa</th>
+                            <th>Halmashauri</th>
+                            <th>Kata</th>
+                            <th>Mtaa</th>
+                            <th>Imesasishwa</th>
+                            <th>Hali</th>
+                            <th>GeoLocation</th>
+                            <th>Mwombaji</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="list form-check-all">
+                    </tbody>
+                </table>
+            </div>
+           
+        </div>
+    </div>
+    <!-- end card -->
+    <div class="modal fade" id="schoolModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title h5">FOMU <span id="tracking-number" class="text-primary"></span></h4>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="search-school">Tafuta Shule </label>
+                                <div class="form-group">
+                                    <select  id="search-school" class="form-control" onchange="edit(this); return false;" data-bs-placeholder="Tafuta Shule">
+                                    </select>
+                                </div>
+                        </div>
+                    </div>
+                    <hr/>
+                    <form method="POST" id="school-form">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="name-field">Jina la Shule</label>
+                                <div class="form-group">
+                                    <input type="hidden" id="id-field">
+                                    <input type="text" name="school_name" id="name-field" placeholder="Jina la Shule ..." class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="ownership-field">Umiliki</label>
+                                <div class="form-group">
+                                    <select type="text" name="ownership" id="ownership-field" class="form-control">
+                                        <option value="">Chagua Umiliki</option>
+                                         <% for (let index = 0; index < ownerships.length; index++) { %>
+                                         <% const item = ownerships[index];%>
+                                            <option value="<%=item.id%>"
+                                                ><%= item.name %></option>
+                                         <%  } %>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="mkoa-field">Mkoa</label>
+                                <div class="form-group">
+                                    <select name="mkoa" id="mkoa-field" class="form-control">
+                                        <option value="">Chagua  Mkoa</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="lga-field">Halmashauri</label>
+                                <div class="form-group">
+                                    <select name="lga" disabled id="lga-field" class="form-control">
+                                        <option value="">Chagua  Halmashauri</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="kata-field">Kata</label>
+                                <div class="form-group">
+                                    <select name="kata" disabled id="kata-field" class="form-control">
+                                        <option value="">Chagua  Kata</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                             <div class="col-md-3">
+                                <label for="mtaa-field">Mtaa</label>
+                                <div class="form-group">
+                                    <select name="mtaa" disabled id="mtaa-field" class="form-control">
+                                        <option value="">Chagua  Mtaa</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                          <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="category-field">Aina ya Shule</label>
+                                <div class="form-group">
+                                    <select type="text" name="category" id="category-field" class="form-control">
+                                        <option value="">Chagua Aina ya Shule</option>
+                                            <% for (let index = 0; index < categories.length; index++) { %>
+                                            <% const element = categories[index];%>
+                                                <option value="<%=element.id%>"
+                                                    ><%= element.name %></option>
+                                            <%  } %>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6 address-field">
+                                <label for="address-field">Anuani</label>
+                                <div class="form-group">
+                                    <input type="text" name="address" id="address-field" placeholder="Anuani ya Shule ..." class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="registration-date-field">Tarehe ya Usajili</label>
+                                <div class="form-group">
+                                    <input 
+                                    type="text" name="registration_date" id="registration-date-field"
+                                    class="form-control border-0 dash-filter-picker shadow"
+                                    readonly
+                                    required
+                                    placeholder="yyyy-mm-dd" class="form-control">
+                                </div>
+                            </div>
+                             <div class="col-md-4">
+                                <label for="registration-number-field">Namba ya Usajili</label>
+                                <div class="form-group">
+                                    <input type="text" name="registration_number" id="registration-number-field" placeholder="Namba ya Usajili" class="form-control">
+                                </div>
+                            </div>
+                             <div class="col-md-4 owner-name-field">
+                                <label for="owner-name-field">Jina la Mmiliki</label>
+                                <div class="form-group">
+                                    <input type="text" name="owner" id="owner-name-field" placeholder="Jina la Mmiliki ..." class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6 file-number">
+                                <label for="file_number-field">Namba ya Jalada mfano: EB.234/2/1</label>
+                                <div class="form-group">
+                                    <input type="text" name="file_number" id="file_number-field" placeholder="Namba ya Jalada ..." class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-6  max-folio">
+                                <label for="max_folio-field">Namba ya Mwisho ya Folio mfano: 3</label>
+                                <div class="form-group">
+                                    <input type="number" min="1" name="max_folio" id="max_folio-field" placeholder="Namba ya mwisho ya folio" class="form-control">
+                                </div>
+                            </div>
+                             <div class="col-md-4 owner-name-field">
+                                <label for="owner-name-field">Jina la Mmiliki</label>
+                                <div class="form-group">
+                                    <input type="text" name="owner" id="owner-name-field" placeholder="Jina la Mmiliki ..." class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="latitude-field">Latitude</label>
+                                <div class="form-group">
+                                    <input type="text" value="" data-latitude="-6.2285595291" name="latitude" id="latitude-field" placeholder="Latitutude ..." class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="longitude-field">Longitude</label>
+                                <div class="form-group">
+                                    <input type="text" value="" data-longitude="35.7501885794" name="longitude" id="longitude-field" placeholder="Longitude ..." class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3 d-none">
+                            <div class="col-md-12">
+                                <label class="text-danger">Marekebisho</label>
+                                <div class="form-group">
+                                    <textarea class="form-control" id="description" disabled></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                              <button type="submit" class="btn btn-primary">Update</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                </div>
+        </div>
+    </div>
+    <div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title h5">GeoLocation: <span id="school-info" class="text-primary"></span></h4>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="map" ></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-end">
+                    <button class="btn btn-danger" onclick="zoomToLocationAndReset()">Return to Normal View</button>
+                </div>
+                </div>
+        </div>
+    </div>
+<%- include('../layouts/partials/footer.ejs' , {
+    card_title :  card_title,
+    scripts : [
+            {src : '/js/map/leaflet.js'},
+            {src : '/js/map/leaflet.markercluster.js'},
+            {src : 'https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js'},
+            {src : '/design/layouts/scripts/shule_scripts.js'},
+            {src : '/design/layouts/scripts/map_scripts.js'},
+            { src : '/js/datatables/dataTables.js'},
+            { src : '/js/datatables/dataTables.buttons.js'},
+            { src : '/js/datatables/buttons.dataTables.js'},
+            { src : '/js/datatables/buttons.html5.min.js'},
+            { src : '/js/datatables/jszip.min.js'},
+            { src : '/js/datatables/pdfmake.min.js'},
+            { src : '/js/datatables/vfs_fonts.js'},
+            { src : '/js/datatables/buttons.print.min.js'},
+          ]
+    }) %>
+<script>
+    $(document).ready(function() {
+        var params = [];
+        var urlParams = new URLSearchParams(window.location.search);
+        urlParams.forEach(function(value, key) {
+            params.push({name : key , value : value});
+        });
+        
+        const hasDeleteDuplicate = params.some(
+        (param) => param.name === 'delete_duplicate' && param.value === '1'
+        );
+
+        if (hasDeleteDuplicate) {
+           if(confirm("Are you sure you want to delete duplicates?")){
+           }else{
+            params = params.filter(param => param.name !== 'delete_duplicate');
+            loadData();
+            return false;
+           }
+        }
+        loadData()
+        function loadData(){
+            tableData('datatable' , '/SchoolList' , 'POST',
+            [
+                    { data: null, render : (data , type , row , meta) => {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    } },
+                    { data : 'id' , name : 'id'},
+                    { data : "name", name: "name"  , render : (data , type , row) => {
+                        if(row.canEditSchoolDetails){
+                            return `<a href="/ShuleDetails/${row.id}/Edit" title='More Edit' data-bs-toggle="tooltip" class="edit-school">
+                                    <span class="myTooltip las la-check ${row.is_verified ? 'la-x text-success' : 'la-times text-danger'} "></span> ${data}
+                                    </a>`;
+                        }
+                        return `<span class="myTooltip las la-check ${row.is_verified ? 'la-x text-success' : 'la-times text-danger'}"></span> ${data}`;
+                    }},
+                    { data: "reg_no", name: "reg_no", render: function (data , type , row) {
+                         let cssClass = ''; // Default to no class
+                        if (row.is_verified) {
+                        cssClass = ''; // No class needed if verified
+                        } else if (!row.is_verified && row.corrected == 0) {
+                        cssClass = 'text-warning'; // Apply warning class
+                        } if (row.corrected == 0) {
+                            cssClass = 'text-danger';
+                        }
+                        else if (row.corrected == 1) {
+                        cssClass = 'text-success'; // Apply success class
+                        }
+                        return `<span class="${cssClass}" title="${row.description ? row.description : ''}" data-toggle="tooltip">${data}</span>`;
+                    }},
+                    { data: "ownership", name: "ownership" },
+                    { data: "category", name: "category" },
+                    { data: 'reg_date' , name: 'reg_date' , render: (data , type , row) => {
+                        return data ? changeOnlyDateFormat(data) : ''
+                    }},
+                    { data: 'opening_date' , name: 'opening_date' , render: (data , type , row) => {
+                        return data ? changeOnlyDateFormat(data) : ''
+                    }},
+                    { data: "region", name: "regio" },
+                    { data: "lga", name: "lga" },
+                    { data: "ward", name: "ward" },
+                    { data: "street", name: "street" },
+                    { data: 'updated_at' , name: 'updated_at' , render: (data , type , row) => {
+                        var updated_at = data ? changeDateFormat(data) : ''
+                        if(updated_at == 'Invalid Date') return '';
+                        return updated_at
+                    }},
+                    { data: 'status' , name: 'status' , render: (data , type , row) => {
+                         return `<span class="badge bg-${data ? 'success':'danger'}">${data}</span>`;
+                    }},
+                    { data:null, render: (data , type , row) => {
+                        if(row.latitude && row.longitude){
+                            const elements = [
+                                            {
+                                                show : true,
+                                                type : 'button',
+                                                class : 'btn btn-sm btn-outline-info me-1',
+                                                icon : 'bx bx-map-pin me-2',
+                                                function : 'showMap',
+                                                btnText : 'View Map',
+                                                moreAttributes : `title="[Lat: ${row.latitude} , Lng: ${row.longitude}] " data-bs-toggle="tooltip"]`
+                                            }
+                                        ]
+                            return actionButtons(row , elements)
+                        }
+                        return null;
+                    },
+                    class : 'text-center'
+                    },
+                    { data: 'status' , name: 'status' , render: (data , type , row) => {
+                         return `<div title="${row.applicant_email}" data-toggle="tooltip" style="cursor:pointer">
+                                  ${row.applicant_name}
+                                  <small><br/><i>${row.applicant_email}</i></small>
+                                  </div>`;
+                    }},
+                    {
+                    data: null, // No data source for this column
+                    render: function (data, type, row) {
+                          const elements = [
+                                            {
+                                                show           : row.canEdit,
+                                                type           : 'button',
+                                                class          : 'btn btn-sm btn-outline-primary me-1',
+                                                icon           : 'bx bx-show me-1',
+                                                function       : 'edit',
+                                                btnText        : 'Edit',
+                                                moreAttributes : `data-id="${row.id}"`
+                                            },
+                                            {
+                                                show           : row.canDelete,
+                                                type           : 'button',
+                                                class          : 'btn btn-sm btn-outline-warning me-1',
+                                                icon           : 'bx bx-archive-in me-1',
+                                                function       : 'softDeleteSchool',
+                                                btnText        : 'Archive',
+                                                moreAttributes : `data-id="${row.id}"`
+                                            },
+                                            {
+                                                show           : row.canDeregister,
+                                                type           : 'button',
+                                                class          : 'btn btn-sm btn-outline-danger me-1',
+                                                icon           : 'bx bx-trash me-1',
+                                                function       : 'deregisterSchool',
+                                                btnText        : 'Deregister',
+                                                moreAttributes : `data-id="${row.id}"`
+                                            },
+                                        ]
+                        row = null
+                        return actionButtons(row , elements);
+                    },
+                    orderable: false, // Disable sorting for the action buttons column
+                    class : 'text-center'
+                    },
+            ],
+            params   //search query
+        );
+        }
+    });
+</script>
+<!-- <script type="text/javascript" src="/design/layouts/scripts/shule_scripts.js"></script> -->
+</body>
+</html>

@@ -1,0 +1,291 @@
+<% var card_title = '' %>
+<%- include('layouts/partials/header.ejs' , {
+    title : 'Masomo',
+    page_title : 'Orodha ya Masomo',
+    card_title : 'Masomo yaliyopo',
+    breadcrumb_main : 'Mipangilio',
+    styles : [
+                { href: '/css/datatables/dataTables.dataTables.css' },
+                { href: '/css/datatables/buttons.dataTables.css' }
+            ]
+}) %>
+<div class="card-body">
+    <div id="customerList">
+        <div class="row g-4 mb-3">
+            <div class="col-sm-auto">
+                <button type="button" class="btn btn-success add-btn" id="create-btn">
+                    <i class="ri-add-line align-bottom me-1"></i> Sajili
+                </button>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="table-responsive table-card mt-3 mb-1">
+                <table class="table align-middle table-nowrap" id="datatable">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="5%">Na.</th>
+                            <th>Somo</th>
+                            <th>Imetengenezwa</th>
+                            <th>Imesasishwa</th>
+                            <th class="text-center" width="10%">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="list form-check-all"></tbody>
+                </table>
+                <div class="noresult" style="display: none">
+                    <div class="text-center">
+                        <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                            colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                        <h5 class="mt-2">Hakuna matokeo</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title">Sajili Somo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <div class="mb-1">
+                        <label for="subject-field" class="form-label">Somo</label>
+                        <input type="text" id="subject-field" class="form-control" placeholder="Mfano: Hisabati" required />
+                        <span class="text-danger" style="display: none;" id="jaza-subject">Tafadhali jaza Somo.</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Funga</button>
+                        <button type="button" class="btn btn-success" onclick="sajiliSomo()">Sajili</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showEditModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title">Badili Somo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <input type="hidden" id="id-field" />
+                    <div class="mb-1">
+                        <label for="subject2-field" class="form-label">Somo</label>
+                        <input type="text" id="subject2-field" class="form-control" placeholder="Mfano: Hisabati" required />
+                        <span class="text-danger" style="display: none;" id="jaza-subject2">Tafadhali jaza Somo.</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Funga</button>
+                        <button type="button" class="btn btn-success" onclick="sasishaSomo()">Hifadhi</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('layouts/partials/footer.ejs' , {
+    card_title :  card_title,
+    scripts : [
+            { src : '/js/datatables/dataTables.js'},
+            { src : '/js/datatables/dataTables.buttons.js'},
+            { src : '/js/datatables/buttons.dataTables.js'},
+            { src : '/js/datatables/buttons.html5.min.js'},
+            { src : '/js/datatables/jszip.min.js'},
+            { src : '/js/datatables/pdfmake.min.js'},
+            { src : '/js/datatables/vfs_fonts.js'},
+            { src : '/js/datatables/buttons.print.min.js'}
+          ]
+    }) %>
+
+<script>
+    const reloadSubjectTable = () => {
+        $('#datatable').DataTable().ajax.reload(null, false);
+    };
+
+    $("#create-btn").on("click", function () {
+        $("#subject-field").val("");
+        $("#jaza-subject").hide();
+        modal("showModal", true);
+    });
+
+    function BadiliData(button) {
+        const rowData = JSON.parse(button.getAttribute("data-row"));
+        $("#id-field").val(rowData.id || "");
+        $("#subject2-field").val(rowData.subject_name || rowData.name || "");
+        $("#jaza-subject2").hide();
+        modal("showEditModal", true);
+    }
+
+    function sajiliSomo() {
+        const subject_name = String($("#subject-field").val() || "").trim();
+        $("#jaza-subject").hide();
+
+        if (!subject_name) {
+            $("#jaza-subject").show();
+            return;
+        }
+
+        ajaxRequest(
+            "/tengenezaSomo",
+            "POST",
+            (response) => {
+                const statusCode = Number(response?.statusCode || 306);
+                alertMessage(
+                    statusCode === 300 ? "Umefanikiwa" : "Haujafanikiwa",
+                    response?.message || "Kuna tatizo, jaribu tena.",
+                    statusCode === 300 ? "success" : "warning",
+                    () => {
+                        if (statusCode === 300) {
+                            modal("showModal", false);
+                            reloadSubjectTable();
+                        }
+                    }
+                );
+            },
+            JSON.stringify({
+                subject_name
+            })
+        );
+    }
+
+    function sasishaSomo() {
+        const id = Number($("#id-field").val() || 0);
+        const subject_name = String($("#subject2-field").val() || "").trim();
+        $("#jaza-subject2").hide();
+
+        if (!subject_name) {
+            $("#jaza-subject2").show();
+            return;
+        }
+
+        if (!id) {
+            alertMessage("Haujafanikiwa", "Somo halijapatikana.", "warning");
+            return;
+        }
+
+        ajaxRequest(
+            `/badiliSomo/${id}`,
+            "POST",
+            (response) => {
+                const statusCode = Number(response?.statusCode || 306);
+                alertMessage(
+                    statusCode === 300 ? "Umefanikiwa" : "Haujafanikiwa",
+                    response?.message || "Kuna tatizo, jaribu tena.",
+                    statusCode === 300 ? "success" : "warning",
+                    () => {
+                        if (statusCode === 300) {
+                            modal("showEditModal", false);
+                            reloadSubjectTable();
+                        }
+                    }
+                );
+            },
+            JSON.stringify({
+                subject_name
+            })
+        );
+    }
+
+    function FutaData(button) {
+        const rowData = JSON.parse(button.getAttribute("data-row"));
+        const id = Number(rowData.id || 0);
+        if (!id) {
+            alertMessage("Haujafanikiwa", "Somo halijapatikana.", "warning");
+            return;
+        }
+
+        confirmAction(
+            () => {
+                ajaxRequest(`/futaSomo/${id}`, "POST", (response) => {
+                    const statusCode = Number(response?.statusCode || 306);
+                    alertMessage(
+                        statusCode === 300 ? "Umefanikiwa" : "Haujafanikiwa",
+                        response?.message || "Kuna tatizo, jaribu tena.",
+                        statusCode === 300 ? "success" : "warning",
+                        () => {
+                            if (statusCode === 300) {
+                                reloadSubjectTable();
+                            }
+                        }
+                    );
+                });
+            },
+            "Futa",
+            "warning",
+            "Ukifuta taarifa hii, haitatumika tena kwenye setup.",
+            "Futa Somo?"
+        );
+    }
+
+    $(document).ready(function() {
+        tableData('datatable' ,'/MasomoList' , 'POST',
+            [
+                {
+                    data: null,
+                    render: function (data, type, row , meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                },
+                {
+                    data: "subject_name",
+                    name: "subject_name",
+                    render: (data, type, row) => data || row.name || "-"
+                },
+                {
+                    data: "created_at",
+                    name: "created_at",
+                    render: (data) => data ? changeDateFormat(data) : "-"
+                },
+                {
+                    data: "updated_at",
+                    name: "updated_at",
+                    render: (data) => data ? changeDateFormat(data) : "-"
+                },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        const elements = [
+                            {
+                                show : true,
+                                type : 'link',
+                                class : 'btn btn-sm btn-outline-primary me-1',
+                                icon : 'bx bx-pencil me-1',
+                                function : 'BadiliData',
+                                btnText : 'Edit'
+                            },
+                            {
+                                show : true,
+                                type : 'link',
+                                class : 'btn btn-sm btn-outline-danger',
+                                icon : 'bx bx-trash me-1',
+                                function : 'FutaData',
+                                btnText : 'Futa'
+                            }
+                        ];
+                        return actionButtons(row, elements);
+                    },
+                    orderable: false,
+                    searchable: false,
+                    className: "text-center"
+                }
+            ]
+        );
+    });
+</script>
+</body>
+</html>

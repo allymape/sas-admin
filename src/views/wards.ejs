@@ -1,0 +1,115 @@
+<% var card_title = '' %> 
+<%- include('layouts/partials/header.ejs' , {
+    title : 'Kata',
+    page_title : 'Orodha ya Kata',
+    card_title : 'Kata zilizopo',
+    styles : [
+                { href: '/css/datatables/dataTables.dataTables.css' },
+                { href: '/css/datatables/buttons.dataTables.css' }
+            ]
+}) %>
+    <div class="card-body">
+        <div id="customerList">
+            <div class="row g-4 mb-3">
+                <div class="col-sm-auto">
+                    <div>
+                        <!-- <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn" onclick="PullRegions()"><i class="ri-add-line align-bottom me-1"></i> Vuta Kata</button> -->
+                    
+                        <div id="firstbtn">
+                            <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"><i class="ri-add-line align-bottom me-1"></i> Vuta Kata</button>
+                        </div>
+                        <div id="pakiabtn" style="display: none;">
+                            <button type="button" class="btn btn-success btn-load">
+                                <span class="d-flex align-items-center">
+                                    <span class="spinner-border flex-shrink-0" role="status">
+                                        <span class="visually-hidden">Inapakia...</span>
+                                    </span>
+                                    <span class="flex-grow-1 ms-2">
+                                        Inapakia...
+                                    </span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="table-responsive table-card mt-3 mb-1"></div>
+                <table class="table align-middle table-nowrap" id="datatable">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" style="width: 50px;">
+                               Na.
+                            </th>
+                            <th>Jina la Kata</th>
+                            <th>Kodi ya Kata</th>
+                            <th>Halmashauri</th>
+                            <th>Mkoa</th>
+                            <th>Imeingizwa</th>
+                            <th>Imesasishwa</th>
+                            <!-- <th class="sort" data-sort="action">Action</th> -->
+                        </tr>
+                    </thead>
+                    <tbody class="list form-check-all">
+
+                    </tbody>
+                </table>
+                <div class="noresult" style="display: none">
+                    <div class="text-center">
+                        <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                        <h5 class="mt-2">Sorry! No Result Found</h5>
+                        <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <!-- <%- include('paginations/ajax_pagination.ejs')%> -->
+        </div>
+    </div><!-- end card -->
+<%- include('layouts/partials/footer.ejs' , {
+    card_title :  card_title,
+    scripts : [
+            {src : '/design/layouts/scripts/kata_scripts.js'},
+            { src : '/js/datatables/dataTables.js'},
+            { src : '/js/datatables/dataTables.buttons.js'},
+            { src : '/js/datatables/buttons.dataTables.js'},
+            { src : '/js/datatables/buttons.html5.min.js'},
+            { src : '/js/datatables/jszip.min.js'},
+            { src : '/js/datatables/pdfmake.min.js'},
+            { src : '/js/datatables/vfs_fonts.js'},
+            { src : '/js/datatables/buttons.print.min.js'},
+          ]
+    }) %>
+<script>
+    $(document).ready(function() {
+        tableData('datatable' ,'/WardList' , 'POST',
+            [
+                    { data: null, // No data source for this column
+                        render: function (data, type, row , meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    },
+                    { data: "WardName", name: "WardName" },
+                    { data: "WardCode", name: "WardCode" },
+                    { data: "LgaName", name: "LgaName" },
+                    { data: "RegionName", name: "RegionName" },
+                    {
+                      data: "CreatedAt", name: "CreatedAt",
+                            render: (data, type, row) => {
+                                return changeDateFormat(data);
+                            },
+                    },
+                    {
+                    data: "UpdatedAt", name: "UpdatedAt",
+                            render: (data, type, row) => {
+                                return changeDateFormat(data);
+                            },
+                    },
+            ]
+        );
+    });
+</script>
+<!-- <script type="text/javascript" src="design/layouts/scripts/kata_scripts.js"></script> -->
+</body>
+</html>

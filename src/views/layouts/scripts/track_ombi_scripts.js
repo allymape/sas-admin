@@ -1,0 +1,41 @@
+
+function makePayment(e){
+      const tracking_number = e.getAttribute("data-tracking_number");
+    confirmAction(() => {
+        ajaxRequest(`/ChangePayment/${tracking_number}`, "POST", (response) => {
+             const {statusCode , message} = response
+              alertMessage(statusCode == 300 ? 'Umefanikiwa' : 'Haujafanikiwa' , message , statusCode == 300 ? 'success' : 'warning' , () => {
+                  if(statusCode == 300){
+                    window.location.reload();
+                  }
+              })
+        });
+    } , 'Ndio! Endelea' , 'warning' , `Je, unataka kubadili hali ya malipo ya ombi hili lenye namba ya Ombi ${tracking_number}?` , 'Thibitisha')
+}
+
+$(".btn-reassign").on("click" , function(){
+     modal("reassign-modal" , true);
+});
+
+$("#application-category").on('change' , function(){
+  const id = $(this).val()
+        if(id){
+          window.location.href = `/TrackOmbi/${id}`;
+        }
+});
+
+function viewComments(button){
+  const rowData = JSON.parse(button.getAttribute("data-row"));
+  const tracking_number = rowData.tracking_number
+  const modal = $("#comments-modal");
+  const body = modal.find(".modal-body");
+    $("#commentModalTitle").text(
+      `${rowData.application_category.toUpperCase()} : ${rowData.school_name} ( ${tracking_number} )`
+    );
+    body.empty();
+    ajaxRequest("/ApplicationComments/"+tracking_number , 'POST' , (response) => {
+          const { htmlComments } = response;
+          body.html(htmlComments)
+          modal.modal("show");
+    } , {} , true);
+}

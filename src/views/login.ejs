@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none">
+
+
+<!-- Mirrored from themesbrand.com/velzon/html/default/auth-signin-basic.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 02 Sep 2022 10:10:18 GMT -->
+<head>
+
+    <meta charset="utf-8" />
+    <title>Sign In | SaS - School Accreditation System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="Themesbrand" name="author" />
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="design/assets/images/favicon.ico">
+
+    <!-- Layout config Js -->
+    <script src="design/assets/js/layout.js"></script>
+    <!-- Bootstrap Css -->
+    <link href="design/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="design/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <!-- App Css-->
+    <link href="design/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+    <!-- custom Css-->
+    <link href="design/assets/css/custom.min.css" rel="stylesheet" type="text/css" />
+    <link href="/design/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+    <style>
+      :root {
+        --sas-green: #198754;
+        --sas-ink: #1f2937;
+      }
+
+      body {
+        min-height: 100vh;
+        background:
+          radial-gradient(1200px 500px at 15% -10%, rgba(25, 135, 84, 0.22), transparent 60%),
+          radial-gradient(900px 420px at 90% 0%, rgba(13, 110, 253, 0.15), transparent 55%),
+          #f4f7fb;
+      }
+
+      .auth-page-wrapper {
+        position: relative;
+      }
+
+      .auth-one-bg .bg-overlay {
+        background: linear-gradient(130deg, rgba(25, 135, 84, 0.85), rgba(15, 23, 42, 0.75));
+      }
+
+      .login-card {
+        border: 0;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.22);
+        animation: card-enter 0.35s ease;
+      }
+
+      @keyframes card-enter {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .login-card .card-body {
+        padding: 2rem 1.8rem;
+      }
+
+      .login-title {
+        color: var(--sas-ink);
+        letter-spacing: 0.3px;
+        line-height: 1.4;
+      }
+
+      .login-subtitle {
+        font-size: 0.88rem;
+        color: #6b7280;
+      }
+
+      .login-input {
+        border-radius: 10px;
+        padding: 0.72rem 0.9rem;
+        border: 1px solid #d8e2ee;
+      }
+
+      .login-input:focus {
+        border-color: #6abf99;
+        box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.12);
+      }
+
+      .login-submit {
+        border-radius: 10px;
+        padding: 0.74rem 1rem;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+      }
+
+      .login-footer-note {
+        font-size: 0.78rem;
+        color: #94a3b8;
+      }
+
+      @media (max-width: 576px) {
+        .login-card .card-body {
+          padding: 1.45rem 1rem;
+        }
+      }
+    </style>
+
+</head>
+
+<body>
+<!-- <div class="d-flex justify-content-center">
+  <div class="spinner-border" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div> -->
+    <div class="auth-page-wrapper pt-5">
+        <!-- auth page bg -->
+        <div class="auth-one-bg-position auth-one-bg" id="auth-particles">
+            <div class="bg-overlay"></div>
+
+            <div class="shape">
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1440 120">
+                    <path d="M 0,36 C 144,53.6 432,123.2 720,124 C 1008,124.8 1296,56.8 1440,40L1440 140L0 140z"></path>
+                </svg>
+            </div>
+        </div>
+
+        <!-- auth page content -->
+        <div class="auth-page-content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="text-center mt-sm-5 mb-4 text-white-50">
+                            <div>
+                                <p class="mt-3 fs-15 text-white fw-medium">JAMHURI YA MUUNGANO WA TANZANIA</p>
+                                
+                                <a href="#" class="d-inline-block auth-logo">
+                                    <img src="design/assets/images/arm.png" alt="" height="100">
+                                </a>
+                            </div>
+                            <p class="mt-3 fs-15 text-white fw-medium">WIZARA YA ELIMU SAYANSI NA TEKNOLOJIA</p>
+                            <!-- <p class="mt-3 fs-15 fw-medium">Mfumo wa Uanzishaji na usajili  wa shule</p> -->
+                        </div>
+                    </div>
+                </div>
+                <!-- end row -->
+
+                <div class="row justify-content-center">
+                    <div class="col-md-8 col-lg-6 col-xl-5">
+                        <div class="card mt-4 login-card">
+
+                            <div class="card-body p-4">
+                                <div class="text-center mt-2">
+                                    <h5 class="text-uppercase login-title">Mfumo wa Uanzishaji na Usajili wa Shule</h5>
+                                    <p class="login-subtitle mb-2">Tumia akaunti yako kuingia kwenye mfumo.</p>
+                                    <% const error = req.flash('error') %>
+                                    <% const warning = req.flash('warning') %>
+                                    <% const success = req.flash('success') %>
+                                    <div class="alert alert-light" role="alert">
+                                        <strong>INGIA KUENDELEA</strong>
+                                    </div>
+                                </div>
+                                <div class="p-2 mt-4">
+                                    <form id="login-form" action="/auth" method="POST" novalidate>
+
+                                        <div class="mb-3">
+                                            <label for="username" class="form-label">Barua pepe</label>
+                                            <input
+                                              type="email"
+                                              class="form-control login-input"
+                                              id="username"
+                                              name="username"
+                                              placeholder="Ingiza Barua pepe"
+                                              autocomplete="username"
+                                              inputmode="email"
+                                              spellcheck="false"
+                                              autocapitalize="off"
+                                              required
+                                              autofocus
+                                            >
+                                            <div class="invalid-feedback text-start">
+                                              Tafadhali ingiza baruapepe sahihi.
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <div class="float-end">
+                                                <a href="/PasswordReset" class="text-muted">Umesahau Neno siri?</a>
+                                            </div>
+                                            <label class="form-label" for="password-input">Neno siri</label>
+                                            <div class="position-relative auth-pass-inputgroup mb-3">
+                                                <input
+                                                  type="password"
+                                                  name="password"
+                                                  class="form-control login-input pe-5 password-input"
+                                                  placeholder="Ingiza Neno siri"
+                                                  id="password"
+                                                  autocomplete="current-password"
+                                                  required
+                                                  minlength="6"
+                                                >
+                                                <button class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon" type="button" id="password-addon"><i class="ri-eye-fill align-middle"></i></button>
+                                            </div>
+                                            <div id="caps-lock-hint" class="text-warning small d-none text-start">
+                                              Caps Lock imewashwa.
+                                            </div>
+                                            <div class="invalid-feedback text-start d-block d-none" id="password-invalid-feedback">
+                                              Tafadhali jaza neno siri.
+                                            </div>
+                                        </div>
+
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="1" id="auth-remember-check" name="remember_me">
+                                            <label class="form-check-label" for="auth-remember-check">Kumbuka</label>
+                                        </div>
+
+                                        <div class="mt-4">
+                                            <button id="login-submit-btn" class="btn btn-success w-100 login-submit" type="submit">
+                                                <span class="btn-label">Ingia</span>
+                                            </button>
+                                            <div id="login-loading-hint" class="text-muted text-center mt-2 d-none" aria-live="polite">
+                                                Inakagua taarifa zako, tafadhali subiri... <span id="login-seconds-counter">0</span>s
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-4 text-center">
+                                            <div class="signin-other-title">
+                                                <!-- <h5 class="fs-13 mb-4 title">Sign In with</h5> -->
+                                            </div>
+                                            <!-- <div>
+                                                <button type="button" class="btn btn-primary btn-icon waves-effect waves-light"><i class="ri-facebook-fill fs-16"></i></button>
+                                                <button type="button" class="btn btn-danger btn-icon waves-effect waves-light"><i class="ri-google-fill fs-16"></i></button>
+                                                <button type="button" class="btn btn-dark btn-icon waves-effect waves-light"><i class="ri-github-fill fs-16"></i></button>
+                                                <button type="button" class="btn btn-info btn-icon waves-effect waves-light"><i class="ri-twitter-fill fs-16"></i></button>
+                                            </div> -->
+                                        </div>
+                                    </form>
+                                    <div class="text-center mt-3 login-footer-note">
+                                        Mfumo salama wa taarifa za uanzishaji na usajili wa shule.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- end card body -->
+                        </div>
+                        <!-- end card -->
+
+                        <!-- <div class="mt-4 text-center">
+                            <p class="mb-0">Don't have an account ? <a href="auth-signup-basic.html" class="fw-semibold text-primary text-decoration-underline"> Signup </a> </p>
+                        </div> -->
+
+                    </div>
+                </div>
+                <!-- end row -->
+            </div>
+            <!-- end container -->
+        </div>
+        <!-- end auth page content -->
+
+        <!-- footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="text-center">
+                             <%- include('layouts/partials/copyright.ejs') %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- end Footer -->
+    </div>
+    <!-- end auth-page-wrapper -->
+
+    <!-- JAVASCRIPT -->
+    <script src="design/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="design/assets/libs/simplebar/simplebar.min.js"></script>
+    <script src="design/assets/libs/node-waves/waves.min.js"></script>
+    <script src="design/assets/libs/feather-icons/feather.min.js"></script>
+    <script src="design/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
+    <script src="design/assets/js/plugins.js"></script>
+
+    <!-- particles js -->
+    <script src="design/assets/libs/particles.js/particles.js"></script>
+    <!-- particles app js -->
+    <script src="design/assets/js/pages/particles.app.js"></script>
+    <!-- password-addon init -->
+    <script src="design/assets/js/pages/password-addon.init.js"></script>
+    <script src="/design/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+    <script>
+      (function () {
+        const form = document.getElementById("login-form");
+        const submitBtn = document.getElementById("login-submit-btn");
+        const submitLabel = submitBtn ? submitBtn.querySelector(".btn-label") : null;
+        const hint = document.getElementById("login-loading-hint");
+        const password = document.getElementById("password");
+        const capsLockHint = document.getElementById("caps-lock-hint");
+        const passwordInvalidFeedback = document.getElementById("password-invalid-feedback");
+
+        const secondsCounter = document.getElementById("login-seconds-counter");
+        if (!form || !submitBtn || !submitLabel || !hint || !secondsCounter || !password || !capsLockHint || !passwordInvalidFeedback) return;
+
+        const togglePasswordError = function () {
+          const hasPassword = Boolean((password.value || "").trim());
+          passwordInvalidFeedback.classList.toggle("d-none", hasPassword);
+        };
+
+        password.addEventListener("input", togglePasswordError);
+        password.addEventListener("keyup", function (event) {
+          capsLockHint.classList.toggle("d-none", !event.getModifierState("CapsLock"));
+        });
+        password.addEventListener("keydown", function (event) {
+          capsLockHint.classList.toggle("d-none", !event.getModifierState("CapsLock"));
+        });
+
+        form.addEventListener("submit", function () {
+          togglePasswordError();
+          if (!form.checkValidity()) {
+            form.classList.add("was-validated");
+            return;
+          }
+
+          let seconds = 0;
+          let counterInterval = null;
+
+          submitBtn.disabled = true;
+          submitBtn.setAttribute("aria-busy", "true");
+          submitLabel.innerHTML =
+            '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Inaingia...';
+          hint.classList.remove("d-none");
+          secondsCounter.textContent = "0";
+
+          counterInterval = setInterval(function () {
+            seconds += 1;
+            secondsCounter.textContent = String(seconds);
+          }, 1000);
+
+          // If request stalls, allow retry without forcing page refresh.
+          setTimeout(function () {
+            if (document.hidden) return;
+            clearInterval(counterInterval);
+            submitBtn.disabled = false;
+            submitBtn.setAttribute("aria-busy", "false");
+            submitLabel.textContent = "Ingia";
+            hint.textContent = "Imekuwa muda mrefu. Tafadhali jaribu tena.";
+          }, 15000);
+        });
+      })();
+    </script>
+    <script>
+      (function () {
+        const flashMessages = {
+          error: <%- JSON.stringify(error || []) %>,
+          warning: <%- JSON.stringify(warning || []) %>,
+          success: <%- JSON.stringify(success || []) %>,
+        };
+
+        const showToast = function (type, messages) {
+          if (!Array.isArray(messages) || messages.length === 0) return;
+          const toastStyle = {
+            error: { background: "#dc3545", color: "#ffffff" },
+            warning: { background: "#f59f00", color: "#111111" },
+            success: { background: "#198754", color: "#ffffff" },
+          };
+
+          messages.forEach(function (message) {
+            if (!message) return;
+            if (window.Swal) {
+              const style = toastStyle[type] || toastStyle.error;
+              const toast = Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 5000,
+                timerProgressBar: true,
+                background: style.background,
+                color: style.color,
+                didOpen: function (el) {
+                  el.addEventListener("mouseenter", Swal.stopTimer);
+                  el.addEventListener("mouseleave", Swal.resumeTimer);
+                },
+              });
+              toast.fire({ icon: type, title: message });
+            } else {
+              alert(message);
+            }
+          });
+        };
+
+        showToast("error", flashMessages.error);
+        showToast("warning", flashMessages.warning);
+        showToast("success", flashMessages.success);
+      })();
+    </script>
+</body>
+
+<!-- Mirrored from themesbrand.com/velzon/html/default/auth-signin-basic.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 02 Sep 2022 10:10:19 GMT -->
+</html>

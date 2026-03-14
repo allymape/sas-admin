@@ -1,0 +1,335 @@
+<% var card_title = '' %> 
+<%- include('../../layouts/partials/header.ejs' , {
+    title : 'Usajili wa Shule',
+    page_title : 'Taarifa ya Shule Zilizosajiliwa',
+    card_title : 'Usajili wa Shule',
+    breadcrumb_main : 'Ripoti',
+    // top_header : '../../reports/top_headers/badili_dahalia_top_header.ejs',
+}) %>
+  <div class="card-body border border-dashed border-end-0 border-start-0">
+        <form>
+            <div class="row g-3">
+                <div class="col-xxl-3 col-sm-12">
+                    <div class="search-box">
+                        <input type="text" name="tracking_number" 
+                        value="<%= req.query.tracking_number %>" class="form-control search bg-light border-light" 
+                        placeholder="Na.Usajili au Kumb au Jina ...">
+                        <i class="ri-search-line search-icon"></i>
+                    </div>
+                </div>
+                <!--end col-->
+
+                <div class="col-xxl-3 col-sm-4">
+                    <input type="date" class="form-control bg-light border-light" 
+                    id="demo-datepicker" data-provider="flatpickr" 
+                    data-date-format="d M, Y" data-range-date="true" 
+                    name="date_range"
+                    data-default-date="<%= req.query.date_range %>"
+                    placeholder="Chagua Tarehe ya Ombi">
+                </div>
+                 <!--end col-->
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select class="form-control" placeholder="Aina ..." data-choices data-choices-search-true name="category">
+                            <option> Aina ...</option>
+                            <% for (let index = 0; index < categories.length; index++) { %>
+                            <% const item = categories[index]; %>
+                                <option value="<%= item.id %>" <%= req.query.category == item.id ? 'selected' : '' %>>
+                                     <%= item.name %>
+                                </option>
+                            <% } %>
+                            
+                        </select>
+                    </div>
+                </div>
+                 <!--end col-->
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select class="form-control" placeholder="Umiliki ..." name="ownership">
+                            <option value=""> Umiliki ...</option>
+                            <% for (let index = 0; index < ownerships.length; index++) { %>
+                            <% const item = ownerships[index];%>
+                            <option value="<%= item.id %>" <%= req.query.ownership == item.id ? 'selected' : '' %>>
+                             <%= item.name %>
+                            </option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+
+                 <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select class="form-control" placeholder="Majengo ..." data-choices data-choices-search-true name="structure">
+                            <option> Majengo ...</option>
+                            <% for (let index = 0; index < structures.length; index++) { %>
+                            <% const item = structures[index]; %>
+                                <option value="<%= item.id %>" <%= req.query.structure == item.id ? 'selected' : '' %>>
+                                     <%= item.name %>
+                                </option>
+                            <% } %>
+                            
+                        </select>
+                    </div>
+                </div>
+                
+                <!--end col-->
+
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select class="form-control" placeholder="Hali ya Ombi ..." data-choices data-choices-search-false name="status" id="idStatus">
+                            <option>Hali ya Ombi ...</option>
+                            <option value="approved" <%= req.query.status == 'approved' ? 'selected' : '' %> >Yaliyothibitishwa</option>
+                            <option value="rejected" <%= req.query.status == 'rejected' ? 'selected' : '' %> >Yaliyokataliwa</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select class="form-control" placeholder="Hali ya Ombi ..." 
+                                name="verified" id="verified">
+                            <option selected>Uthibitisho ...</option>
+                            <option value="1" <%= req.query.verified == '1' ? 'selected' : '' %> >Zilizothibitishwa</option>
+                            <option value="2" <%= req.query.verified == '2' ? 'selected' : '' %> >Hazijathibitishwa</option>
+                        </select>
+                    </div>
+                </div>
+                 <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select class="form-control" placeholder="Level ..." 
+                                name="certificate" id="certificate_type">
+                            <option selected>Ngazi ...</option>
+                             <% for (let index = 0; index < certificates.length; index++) { %>
+                            <% const item = certificates[index]; %>
+                                <option value="<%= item.id %>" data-level="<%= item.level %>" <%= req.query.certificate == item.id ? 'selected' : '' %>>
+                                     <%= item.name %>
+                                </option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select id="mkoa-field"  data-choices-search-true class="form-control" placeholder="Mkoa ..."  name="region">
+                            <option value=""> Chagua Mkoa ...</option>
+                            <% for (let index = 0; index < regions.length; index++) { %>
+                            <% const item = regions[index]; %>
+                                <option value="<%= item.id %>" <%= req.query.region == item.id ? 'selected' : '' %>>
+                                     <%= item.name %>
+                                </option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+                  <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select id="lga-field" class="form-control" placeholder="Halmashauri ..."  name="district">
+                            <option value=""> Chagua Halmashauri ...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select id="kata-field" class="form-control" placeholder="Kata ..."  name="ward">
+                            <option value=""> Chagua Kata ...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select id="mtaa-field" class="form-control" placeholder="Mtaa ..."  name="street">
+                            <option value=""> Chagua Mtaa ...</option>
+                        </select>
+                    </div>
+                </div>
+                <!--end col-->
+                <div class="col-xxl-2 col-sm-4 d-flex gap-2">
+                    <button title="" type="submit" class="btn btn-primary w-100"> 
+                        <!-- <i class="ri-equalizer-fill me-1 align-bottom"></i> -->
+                        Angalia
+                    </button>
+                     <% if(req.query.tracking_number || req.query.date_range || req.query.status) { %>
+                     <a href="RipotiZilizosajiliwa" class="btn btn-danger w-100">
+                        <!-- <i class="ri-equalizer-fill me-1 align-bottom"></i> -->
+                        Futa
+                     </a>
+                     <% } %>
+                </div>
+                <div class="col-xxl-8 col-sm-8"></div>
+                <% if(pagination.total > 0){ %>
+                    <div class="col-xxl-2 col-sm-2">
+                      <%- include('../../includes/export_excel_link.ejs', {
+                        btn_color : 'danger',
+                        export_format : 'csv',
+                        btn_text : 'Export CSV (Fast)'
+                }) %>
+                    </div>
+                <% } %>
+                <!--end col-->
+            </div>
+            <!--end row-->
+        </form>
+    </div>
+    <!--end card-body-->
+    <div class="card-body">
+         <div class="ribbon-three ribbon-three-danger">
+            <span class="badge"><%=`${pagination.total}`%></span>
+        </div>
+        <div class="table-responsive mb-4">
+             <div class="alert alert-danger">
+                    <h6 class="text-primary text-uppercase">Jumla <%= pagination.total %></h6>
+            </div>
+            <table class="table align-middle mb-0" id="tasksTable">
+                <thead class="table-light text-muted">
+                    <tr>
+                        <th>Namba ya Ombi</th>
+                        <th>Jina la Shule</th>
+                        <th>Namba Usajil</th>
+                        <th>Tarehe Usajili</th>
+                        <th>Mkondo</th>
+                        <th>Aina</th>
+                        <th>Lugha</th>
+                        <th>Ni Seminari</th>
+                        <th>Bweni</th>
+                        <th>Shule ni</th>
+                        <th>Majengo</th>
+                        <th>Umiliki</th>
+                        <th>Mkoa</th>
+                        <th>Halmashauri</th>
+                        <th>Kata</th>
+                        <th>Mtaa</th>
+                        <th>Tarehe</th>
+                        <th>Hali</th>
+                        <th>Thibitisha</th>
+                        <!--<th  data-sort="priority">Walioshughulikia</th>-->
+                    </tr>
+                </thead>
+                <tbody class="list form-check-all">
+                   <% for (let i = 0; i < data.length; i++) { %>
+                   <% const item = data[i];%>
+                    <tr class="<%= item.is_verified ? '' : (!item.is_verified &&  item.corrected == 0 ? 'text-warning' : (item.corrected == 1 ? 'text-success' : '' ))  %>">
+                        <td> <%= item.tracking_number %> </td>
+                        <td> <%= item.school_name %> </td>
+                        <td> <%= item.registration_number %> </td>
+                        <td> <%= item.registration_date ? dateFormat(item.registration_date , 'DD-MM-YYYY') : '' %> </td>
+                        <td> <%= item.stream %> </td>
+                        <td> <%= item.category %> </td>
+                        <td> <%= item.language %> </td>
+                         <td> <%= item.is_seminary ? 'Ndio' : '' %> </td>
+                        <td> <%= item.subcategory %> </td>
+                        <td> <%= item.gender_type %> </td>
+                        <td> <%= item.structure %> </td>
+                        <td> <%= item.registry %> </td>
+                        <td> <%= item.region %> </td>
+                        <td> <%= item.district %> </td>
+                        <td> <%= item.ward %> </td>
+                        <td> <%= item.street %> </td>
+                        <td> <%= item.approved_at ? dateFormat(item.approved_at) : '' %> </td>
+                        <td> 
+                           <span class="badge bg-<%= item.status == 2 ? 'success' : 'danger' %>" >
+                             <%= item.status == 2 ? 'Limethibitshwa' : '' %> 
+                             <%= item.status == 3 ? 'Limekataliwa' : '' %> 
+                           </span>
+                        </td>
+                        <td class="<%= item.is_verified ? 'text-center' : '' %>">
+                            <div class="btn-group">
+                            <% if(!item.is_verified) {%>
+                                <div class="btn-group">
+                                    <button class="btn btn-outline-<%= item.description ? 'warning' : 'danger'%> btn-correction" 
+                                            data-registration_number="<%=item.registration_number%>"
+                                            data-tracking_number="<%=item.tracking_number%>"
+                                            data-school_name="<%=item.school_name%>"
+                                            data-description="<%=item.description%>"
+                                    >Marekebisho</button>
+                                    <% if(item.corrected == 1 || !item.description) {%>
+                                    <button class="btn btn-outline-success btn-verify"  
+                                        data-tracking_number="<%=item.tracking_number%>"  
+                                        data-school_name="<%=item.school_name%>">Thibitisha</button>
+                                    <% } %>
+                                </div>
+                            <% } else{ %>
+                                <button type="button" class="btn btn-sm">
+                                    <span title="Verified" data-bs-toggle="tooltip" class="myTooltip las la-check la-x text-success">
+                                    </span>
+                                </button>
+                            <% } %>
+                            <% if(permission(req, 'view-school-details')){ %>
+                                <a href="/ShuleDetails/<%=item.tracking_number %>" class="btn btn-sm btn-outline-primary ml-2">
+                                    Details
+                                </a>
+                            <% } %>
+                            </div>
+                        </td>
+                    </tr>
+                   <% } %>
+                </tbody>
+            </table>
+            <!--end table-->
+            <div class="noresult" style="display: none">
+                <div class="text-center">
+                    <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                    <h5 class="mt-2">Sorry! No Result Found</h5>
+                    <p class="text-muted mb-0">We've searched more than 200k+ tasks We did not find any tasks for you search.</p>
+                </div>
+            </div>
+        </div>
+          <!-- Pagination and page length -->
+            <%- include('../../paginations/html_pagination.ejs'); %>
+               <!-- End pagination and page length -->
+            </div>
+    <!--end card-body-->
+<%- include('../../layouts/partials/footer.ejs' , {
+     card_title :  '' , 
+     pagination_script : false,
+    }) %>
+<%- include('../../includes/locations' , {
+  'location' : null
+}) %>
+<!-- <script type="text/javascript" src="/design/layouts/scripts/anzishashule_scripts.js"></script> -->
+ <script>
+    $(function(){
+        $(".btn-correction").on('click' , function(){
+            const school_name = $(this).data('school_name')
+            const registration_number = $(this).data('registration_number')
+            const tracking_number = $(this).data('tracking_number')
+            const eDescription = $(this).data('description')
+            verifySchoolInfo(school_name , registration_number , eDescription,(description , responseCallback) => {
+                ajaxRequest(`/RekebishaUsajili/${tracking_number}` , 'POST' , (response) => {
+                    const { statusCode , message} = response
+                    if(statusCode == 300){
+                        $(this).data('description' , description )
+                    }
+                    responseCallback(statusCode , message)
+                } , JSON.stringify({ description : description}))
+            })
+        })
+        $(".btn-verify").on('click' , function(){
+             const tracking_number = $(this).data('tracking_number')
+             const school_name = $(this).data('school_name')
+            confirmAction(() => {
+                            ajaxRequest(`/ThibitishaUsajili/${tracking_number}` , 'POST' , (response) => {
+                                    const { statusCode , message} = response
+                                    if(statusCode == 300){
+                                        $(this).closest('tr').removeClass('text-danger')
+                                        $(this).closest('td').html('')
+                                    }
+                                     alertMessage(
+                                            "Alert",
+                                            message,
+                                            statusCode === 300 ? "success" : "warning",
+                                            () => {
+                                                window.location.reload()
+                                            }
+                                        );
+                                    })
+                        },
+                    "Verify",
+                    "warning",
+                    `You won't be able to revert this!`,
+                    `Are you sure you want to confirm ${school_name} information are correct? `,
+                    )
+            
+        })
+    })
+ </script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<% var card_title = '' %> 
+<%- include('layouts/partials/header.ejs' , {
+    title : 'Login Activities',
+    page_title : 'Orodha ya Watumiaji waliongia kwenye Mfumo',
+    card_title : 'Taarifa ya waliongia kwenye Mfumo.',
+    breadcrumb_main : 'Dashboard' 
+}) %>
+  <div class="card-body">
+    <div id="customerList">
+        <div class="row g-4 mb-3">
+            <div class="col-sm-auto">
+                <div>
+                    <!-- <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"><i class="ri-add-line align-bottom me-1"></i> Sajili</button> -->
+                    <!-- <button class="btn btn-soft-danger" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button> -->
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="d-flex justify-content-sm-end">
+                    <div class="search-box ms-2">
+                        <input type="text" class="form-control search" placeholder="Tafuta...">
+                        <i class="ri-search-line search-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive mt-3 mb-1">
+            <table class="table align-middle table-nowrap" id="kandaTable">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" width="5%">
+                            Na.
+                        </th>
+                        <th >Jina la Mtumiaji</th>
+                        <th >Cheo</th>
+                        <th >Kanda</th>
+                        <th >Mkoa</th>
+                        <th >Halmashauri</th>
+                        <th >Muda aliongia</th>
+                        <th >Kifaa</th>
+                        <th >IP Address</th>
+                        <th >Browser</th>
+                    </tr>
+                </thead>
+                <tbody class="list form-check-all">
+                    <% activities.forEach( (activity , index) => { %>
+                        <% const {name, title , zone, region, council , ip , browser , device , created_at} = activity %>
+                        <tr>
+                            <td><%- include('paginations/numbering.ejs' , {index}) %></td>
+                            <td><%= name %></td>
+                            <td><%= title %></td>
+                            <td><%= zone %></td>
+                            <td><%= region %></td>
+                            <td><%= council %></td>
+                            <td><%= dateFormat(created_at , 'ddd DD MMM, YYYY at HH:mm:ss') %></td>
+                            <td><i  class="ri-<%= device == 'Desktop' ? 'computer' : 'smartphone'%>-line text-secondary"></i> <%= device %></td>
+                            <td><%= ip %></td>
+                            <td><%= browser %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+        <%- include('paginations/html_pagination.ejs') %>
+    </div>
+    </div><!-- end card -->
+<%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
+<!-- <script type="text/javascript" src="/design/layouts/scripts/kanda_scripts.js"></script> -->
+</body>
+</html>

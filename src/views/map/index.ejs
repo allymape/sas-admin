@@ -1,0 +1,162 @@
+
+<%- include('../layouts/partials/header.ejs' , {
+    title : "Map Data",
+    page_title : "School Geo-Location",
+    card_title :  "Map View",
+    breadcrumb_main : 'Dashibodi',
+    styles : [
+            { href: '/css/map/leaflet.css' },
+            { href: '/css/map/Control.Geocoder.css' },
+        ]
+}) %>
+<style>
+  #map {
+      height: 600px; /* Set the height of the map */
+      width: 100%; /* Optional, but ensures it takes up full width */
+  }
+</style>
+<div class="card-body">
+     <div class="ribbon-three ribbon-three-danger">
+        <span class="badge" id="total-school">0</span>
+    </div>
+    <div class="mb-2 d-flex justify-content-end">
+        <span id="map-status" class="badge bg-soft-secondary text-secondary">Inasubiri...</span>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <form class="" style="z-index: 10000;">
+            <div class="row g-3">
+                <div class="col-xxl-3 col-sm-12">
+                    <div class="search-box">
+                        <input type="hidden" name="search" value="true">
+                        <input type="text" name="name_or_reg" 
+                        value="<%= req.query.name_or_reg %>" class="form-control search bg-light border-light" placeholder="Jina au namba ya usajili ...">
+                        <i class="ri-search-line search-icon"></i>
+                    </div>
+                </div>
+                <!--end col-->
+
+                <div class="col-xxl-3 col-sm-4">
+                    <input type="date" class="form-control bg-light border-light" 
+                    id="demo-datepicker" data-provider="flatpickr" 
+                    data-date-format="d M, Y" data-range-date="true" 
+                    name="date_range"
+                    data-default-date="<%= req.query.date_range %>"
+                    placeholder="Chagua tarehe ya usajili">
+                </div>
+                 <!--end col-->
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select class="form-control" placeholder="Aina ..."  name="category">
+                            <option value=""> Aina ...</option>
+                            <% for (let index = 0; index < categories.length; index++) { %>
+                            <% const item = categories[index]; %>
+                                <option value="<%= item.id %>" <%= req.query.category == item.id ? 'selected' : '' %>>
+                                     <%= item.name %>
+                                </option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+                 <!--end col-->
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select class="form-control" placeholder="Umiliki ..."  name="ownership">
+                            <option value=""> Umiliki ...</option>
+                            <% for (let index = 0; index < ownerships.length; index++) { %>
+                            <% const item = ownerships[index];
+                            %>
+                                <option value="<%= item.id %>" <%= req.query.ownership == item.id ? 'selected' : '' %>>
+                                     <%= item.name %>
+                                </option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select id="mkoa-field"  data-choices-search-true class="form-control" placeholder="Mkoa ..."  name="region">
+                            <option value=""> Chagua Mkoa ...</option>
+                            <% for (let index = 0; index < regions.length; index++) { %>
+                            <% const item = regions[index]; %>
+                                <option value="<%= item.id %>" <%= req.query.region == item.id ? 'selected' : '' %>>
+                                     <%= item.name %>
+                                </option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+                  <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select id="lga-field" class="form-control" placeholder="Halmashauri ..."  name="district">
+                            <option value=""> Chagua Halmashauri ...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select id="kata-field" class="form-control" placeholder="Kata ..."  name="ward">
+                            <option value=""> Chagua Kata ...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select id="mtaa-field" class="form-control" placeholder="Mtaa ..."  name="street">
+                            <option value=""> Chagua Mtaa ...</option>
+                        </select>
+                    </div>
+                </div>
+                <!--end col-->
+                <div class="col-xxl-2 col-sm-4 d-flex gap-2">
+                    <button title="" type="submit" class="btn btn-primary w-100"> 
+                        <i class="ri-filter-2-fill me-1 align-bottom"></i>
+                        Filter
+                    </button>
+                     <% if(typeof req.query.search != undefined && req.query.search == "true") { %>
+                     <a href="/Map" class="btn btn-danger w-100">
+                        <i class="ri-delete-back-2-fill me-1 align-bottom"></i>
+                        Futa
+                     </a>
+                     <% } %>
+                </div>
+                <div class="col-xxl-10 col-sm-8 text-end">
+                    <button class="btn btn-secondary d-none" id="btn-zoom-default" onclick="zoomToLocationAndReset()">
+                    <i class="ri-refresh-line me-1 align-bottom"></i>
+                        Return to Normal View
+                    </button>
+                </div>
+                <!--end col-->
+            </div>
+            <!--end row-->
+        </form>
+        </div>
+    </div>
+    <hr class="mb-3"/>
+    <div class="row" style="z-index: 900;">
+        <div class="col-md-12">
+            <div id="map"></div>
+        </div>
+    </div>
+</div>
+<%- include('../layouts/partials/footer.ejs' , {
+    card_title :  '',
+    scripts : [
+        {src : '/js/map/leaflet.js'},
+        {src : '/js/map/leaflet.markercluster.js'},
+        {src : '/js/map/Control.Geocoder.js'},
+        {src : '/design/layouts/scripts/map_scripts.js'},
+        ]
+    }) 
+%>
+<%- include('../includes/locations.ejs') %>
+ <script>
+    $(function(){
+        map.invalidateSize(); // Adjust the map size once modal is fully visible
+        zoomToLocationAndReset(6);
+        mapMoveEnd()
+        showMyLocation()
+    })
+ </script>
+</body>
+</html>

@@ -1,0 +1,405 @@
+<% var card_title = 'Watumiaji waliopo' %> 
+<%- include('layouts/partials/header.ejs' , {
+    title : 'Watumiaji',
+    page_title : 'Orodha ya Watumiaji',
+    card_title : card_title,
+    styles : [
+                { href: '/css/datatables/dataTables.dataTables.css' },
+                { href: '/css/datatables/buttons.dataTables.css' }
+            ]
+}) %>
+<div class="card-body">
+    <!-- <i class=" ri-toggle-fill ri-2x"></i> xxx -->
+    <div id="customerList">
+        <div class="row g-4 mb-3">
+            <div class="col-sm-auto">
+                <div>
+                    <button type="button" class="btn btn-info add-btn" id="btn-create-user" ><i class="ri-add-line align-bottom me-1"></i> Sajili</button>
+                    <% if(req.query.inactive == 'true') {%>
+                            <a href="/Watumiaji" class="btn btn-outline-success" >
+                                <i class=" ri-team-fill"></i> Active Users
+                            </a>
+                        <% }else { %>
+                            <a href="/Watumiaji?inactive=true" class="btn btn-outline-danger">
+                                <i class="ri-team-fill"></i> Inactive Users
+                            </a>
+                        <% } %>
+                </div>
+            </div>
+            <!-- <div class="col-sm">
+                <div class="d-flex justify-content-sm-end">
+                    <div class="search-box ms-2">
+                        <input type="text" class="form-control search" placeholder="Tafuta...">
+                        <i class="ri-search-line search-icon"></i>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+
+        <div class="col-md-12">
+            <div class="table-responsive mt-3 mb-1">
+            <table class="table align-middle table-nowrap table-striped" id="datatable" style="width: 100%">
+                <thead class="table-light">
+                    <tr>
+                        <th>Na.</th>
+                        <th>Jina Kamili</th>
+                        <th>Simu</th>
+                        <th >Jina la kuingia</th>
+                        <th>Jukumu</th>
+                        <th>Cheo</th>
+                        <th>Ofisi</th>
+                        <th>Kuingia</th>
+                        <th>Sign</th>
+                        <th>Amebadili Nywila?</th>
+                        <th>Hai</th>
+                        <th class="sort text-center" width="10%" >Action</th>
+                    </tr>
+                </thead>
+                <tbody class="list form-check-all">
+                </tbody>
+            </table>
+        </div>
+        </div>
+
+        <!-- Pagination and page length -->
+        <!-- <%- include('paginations/ajax_pagination.ejs'); %> -->
+        <!-- End pagination and page length -->
+
+
+    </div>
+</div><!-- end card -->
+
+ <div class="modal  top fade" id="showModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <span class="ribbon-three ribbon-three-info"><span>Akaunti</span></span>
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title" id="exampleModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+            </div>
+            <form id="user-form">
+                <!-- <input type="text" id="id-field" /> -->
+                <div class="modal-body">
+                    <div class="row">
+                    <div class="mb-3 col-xxl-4">
+                        <label for="name-field" class="form-label">Jina Kamili (<span style="color: red;">*</span>)</label>
+                        <input type="text" id="name-field" class="form-control" placeholder="Mfano: Olivia Samwel" onkeyup="checkOnlyNo()" required />
+                        <span style="color: red;display: none;" id="jazanamba">Tafadhali jina haliwezi kuwa namba pekee</span>
+                        <span style="color: red;display: none;" id="jazanalama">Tafadhali jina haliwezi kuwa na alama</span>
+                        <span style="color: red;display: none;" id="jazaname">Tafadhali jaza Jina Kamili</span>
+                    </div>
+                    <div class="mb-3 col-xxl-4">
+                        <label for="email-field" class="form-label">Barua Pepe (<span style="color: red;">*</span>)</label>
+                        <input type="email" autocomplete="off" id="username-field" class="form-control" placeholder="Mfano: olivia@gmail.com" onkeyup="ValidateEmail();" required />
+                        <span style="color: red;display: none;" id="jazausername">Tafadhali jaza Barua Pepe</span>
+                        <span id="lblError" style="color: red"></span>
+                    </div>
+
+                    <div class="mb-3 col-xxl-4">
+                        <label for="email-field" class="form-label">Namba ya Simu(<span style="color: red;">*</span>)</label>
+                        <input type="phone" id="phone-field" class="form-control" onkeypress="return onlyNumberKey(event)" 
+                        maxlength="20"  placeholder="Mfano: 0768556633" required />
+                        <input type="hidden" id="strengthhidden" class="form-control" />
+                        <span style="color: red;display: none;" id="jazasimu">Tafadhali jaza Namba ya Simu</span>
+                    </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xxl-6 mb-3">
+                            <div class="form-check  form-check-danger">
+                                <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input" id="show-password-checkbox"/>  
+                                    <span class="text-uppercase text-body">Onesha sehemu ya kuweka nywila</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-xxl-6 mb-3">
+                            <div class="form-check  form-check-success">
+                                <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input" id="send-email-checkbox"/>  
+                                    <span class="text-uppercase text-body">Mjulishe kwa njia ya baruapepe</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row d-none" id="password-fields">
+                        <div class="mb-3 col-xxl-6">
+                            <label for="email-field" class="form-label">Nenosiri</label>
+                            <input type="password" autocomplete="off" name="password-field" id="password-field" 
+                            class="form-control" size="15" maxlength="100" onkeyup="return passwordChanged();" placeholder="Mfano: 2" required />
+                            <span id="strength">Type Password</span>
+                        </div>
+                        <div class="mb-3 col-xxl-6">
+                            <label for="email-field" class="form-label">Thibithisha Nenosiri</label>
+                            <input type="password" autocomplete="off" id="repassword-field" class="form-control" placeholder="Mfano: 2" required />
+                        </div>
+                    </div>
+                    <!-- <hr/> -->
+                    <div class="row">
+                        <div class="col-xxl-6 mb-3">
+                            <label for="jukumu-field" class="form-label">Jukumu (Role) (<span style="color: red;">*</span>)</label>
+                                <select class="form-control select2-hidden-accessible" data-trigger name="role" id="jukumu-field" >
+                                </select>
+                            <span style="color: red;display: none;" id="jazajukumu">Tafadhali Chagua Jukumu</span>
+                        </div>
+                        <div class="col-xxl-6 mb-3">
+                            <label for="ngazi-field" class="form-label">Ngazi (<span style="color: red;">*</span>)</label>
+                                <select class="form-control select2-hidden-accessible" data-trigger name="ngazi" id="ngazi-field" >
+                                </select>
+                            <span style="color: red;display: none;" id="jazangazi">Tafadhali Chagua Ngazi</span>
+                        </div>  
+                    </div>
+                        <div class="row">
+                        <div class="col-xxl-6 mb-3">
+                            <label for="uongozi-field" class="form-label">Sehemu (<span style="color: red;">*</span>)</label>
+                                <select class="form-control select2-hidden-accessible" disabled data-trigger name="uongozi" id="uongozi-field" >
+                                <option value="">Chagua Kituo kwanza</option>
+                                </select>
+                            <span style="color: red;display: none;" id="jazasehemu">Tafadhali Chagua Sehemu</span>
+                        </div>     
+                         <div class="col-xxl-6 mb-3">
+                            <label for="cheo-field" class="form-label">Cheo (<span style="color: red;">*</span>)</label>
+                                <select class="form-control select2-hidden-accessible" disabled data-trigger name="cheo" id="cheo-field" >
+                                <option value="">Chagua sehemu kwanza</option>
+                                </select>
+                            <span style="color: red;display: none;" id="jazacheo">Tafadhali Chagua Cheo</span>
+                        </div>         
+                    </div>
+                    <div class="row">
+                        <!-- Zones -->
+                            <div  class="kanda-div col-xxl-4 mb-3 d-none">
+                            <label for="kanda-field" class="form-label">Kanda (<span style="color: red;">*</span>)</label>
+                            <select class="form-control select2-hidden-accessible" data-trigger name="zone" id="kanda-field">
+                            </select>
+                        </div>
+                        <!-- Regions -->
+                        <div   class="region-div col-xxl-4 mb-3 d-none">
+                            <label for="mkoa-field" class="form-label">Mkoa (<span style="color: red;">*</span>)</label>
+                                <select class="form-control select2-hidden-accessible" data-trigger name="region" id="mkoa-field" disabled>
+                                    <option value="">Chagua Kanda kwanza</option>
+                                </select>
+                        </div>
+                        <!-- Concils -->
+                        <div   class="lga-div col-xxl-4 mb-3 d-none">
+                            <label for="lga-field" class="form-label">Halmashauri (<span style="color: red;">*</span>)</label>
+                            <select class="form-control select2-hidden-accessible" data-trigger name="lga" id="lga-field" disabled>
+                                <option value="">Chagua Mkoa kwanza</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                         <div class="col-xxl-12 mb-3">
+                            <div class="form-check  form-check-info">
+                                <label class="form-check-label" for="change-password-checkbox">
+                                <input type="checkbox" class="form-check-input" id="change-password-checkbox"/>  
+                                    <span class="text-uppercase text-body">Je, Anapaswa kubadili Nywila baada ya kuingia kwenye Mfumo?</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-xxl-8">
+                            <label for="email-field" class="form-label">Saini</label>
+                            <input type="file" id="sign-field" class="form-control"  accept="image/*"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-light"  data-bs-dismiss="modal">Funga</button>
+                        <div id="sajilbtn">
+                        <button type="button" class="btn btn-success" onclick="saveUser()" id="add-btnmwox">Sajili</button>
+                        </div>
+                        <div id="pakiabtn" style="display: none;">
+                            <button type="button" class="btn btn-success btn-load">
+                                <span class="d-flex align-items-center">
+                                    <span class="spinner-border flex-shrink-0" role="status">
+                                        <span class="visually-hidden">Tafadhali subiri...</span>
+                                    </span>
+                                    <span class="flex-grow-1 ms-2">
+                                        Tafadhali subiri...
+                                    </span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade zoomIn" id="enableDisableUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+             <span class="ribbon-three ribbon-three-info"><span id="confirm-title"></span></span>
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btn-close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mt-2 text-center">
+                    <span class=" bx bx-user bx-lg text-muted"></span>
+                    <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
+                        <h4>Una uhakika ?</h4>
+                        <p class="text-muted mx-4 mb-0">Unataka <span id="confirm-text"></span>?</p>
+                    </div>
+                    <!-- <div class="mb-3"> -->
+                        <!-- <label for="name-field" class="form-label">Je, unataka kumfuta mtumiaji kwenye mfumo</label> -->
+                        <input type="hidden" id="ada-field-edit" class="form-control" placeholder="Mfano: Ada ya usajili"/>
+                    <!-- </div> -->
+                    <!-- <div class="mb-3">
+                        <label for="name-field" class="form-label">Code ya Ada</label> -->
+                        <input type="hidden" id="code-field-edit" class="form-control" placeholder="Mfano: RF01"/>
+                    <!-- </div> -->
+                </div>
+                <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+                    <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn w-sm btn-danger " onclick="enableDisableUser()" id="btn-enable-disable">Yes, Delete It!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade zoomIn" id="resetPasswordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <span class="ribbon-three ribbon-three-info"><span>Reset</span></span>
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btn-close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mt-2 text-center">
+                    <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
+                    <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
+                        <h4>Nenosiri/Nywira</h4>
+                        <p class="text-muted mx-4 mb-0">Maelekezo ya kuweka upya nenosiri yatatumwa kwenye barua pepe hapo chini  ! Tafadhali thibitisha</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="text-muted mx-4 mb-0">Barua Pepe</p>
+                        <input type="text" id="ada1-field-edit" class="form-control" disabled/>
+                        <!-- <input type="text" id="email_only" class="form-control"/> -->
+                    </div>
+                    <div class="mb-3">
+                        <p class="text-muted mx-4 mb-0">Jina la Mtumiaji</p>
+                        <input type="text" id="code1-field-edit" class="form-control" disabled/>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+                    <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Funga</button>
+                    <button type="button" class="btn w-sm btn-danger " onclick="TumaEmail()" id="delete-record">Ndio, Nathibitisha!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+<%- include('layouts/partials/footer.ejs' , {
+    card_title :  card_title,
+    scripts : [
+            {src : '/design/layouts/scripts/watumiaji_scripts.js'},
+            { src : '/js/datatables/dataTables.js'},
+            { src : '/js/datatables/dataTables.buttons.js'},
+            { src : '/js/datatables/buttons.dataTables.js'},
+            { src : '/js/datatables/buttons.html5.min.js'},
+            { src : '/js/datatables/jszip.min.js'},
+            { src : '/js/datatables/pdfmake.min.js'},
+            { src : '/js/datatables/vfs_fonts.js'},
+            { src : '/js/datatables/buttons.print.min.js'},
+          ]
+    }) %>
+<script>
+    $(document).ready(function() {
+       
+        tableData('datatable' , '/UserList' , 'POST',
+            [
+                    { data: null, render : (data , type , row , meta) => {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    } },
+                    { data: "name", name: "name" },
+                    { data: "phone_no", name: "phone_no" },
+                    { data: "email", name: "email" },
+                    { data: "role_name", name: "role_name" },
+                    { data: "level_name", name: "level_name"},
+                    { data: "section_name", name: "section_name" , render : (data , type , row) => {
+                              return  row.lga_name
+                                ? `<span class='myTooltip' style='cursor:pointer' data-bs-toggle=tooltip title='Kanda ya ${
+                                    row.zone_name
+                                    }'>
+                                ${row.section_name + " " + row.lga_name}
+                                </span>`
+                                : row.zone_name
+                                ? `<span class='myTooltip' style='cursor:pointer' data-bs-toggle=tooltip title='Kanda ya ${
+                                    row.zone_name
+                                    }'>
+                                ${row.section_name + " " + row.zone_name}
+                                </span>`
+                                : row.section_name + " HQ"
+                    }},
+                    {data: 'last_login' , name: 'last_login' , render: (data , type , row) => {
+                        return data ? changeDateFormat(data) : ''
+                    }},
+                    {data: 'has_signature' , name: 'has_signature' , render: (data , type , row) => {
+                        return data ? `<span title="Sahihi ya muhusika imeingizwa" data-bs-toggle=tooltip class="myTooltip las la-signature la-2x"></span>`
+                                    : ""
+                    }},
+                    {
+                        data : 'is_password_changed' , name : 'is_password_changed' , render : (data , type , row) => {
+                            return data ? `<span title="Ndiyo" data-bs-toggle=tooltip class="myTooltip las la-check la-x text-success"></span>`
+                                        : `<span title="Hapana" data-bs-toggle=tooltip class="myTooltip las la-times la-x text-danger"></span>`
+                        },
+                        class : 'text-center'
+                    },
+                    { data: "user_status", name: "user_status" ,  render: (data , type , row) => {
+                        return data ? `<span class="badge bg-success" title="Active" data-bs-toggle="tooltip">Active</span>` : `<span class="badge bg-danger" title="In-active" data-bs-toggle="tooltip">In Active</span>`;
+                        },
+                        class : 'text-center'
+                    },
+                    {
+                    data: null, // No data source for this column
+                    render: function (data, type, row) {
+                          const elements = [
+                                            {
+                                                show : row.user_status,
+                                                type : 'link',
+                                                class : 'btn btn-sm btn-outline-primary me-1',
+                                                icon : 'bx bx-pencil me-1',
+                                                function : 'editUser',
+                                                btnText : 'Edit'
+                                            },
+                                            {
+                                                show : true,
+                                                type : 'button',
+                                                class : `btn btn-sm btn-outline-${row.user_status ? 'danger' : 'success'} me-1`,
+                                                icon : `ri-toggle-${row.user_status ? 'fill' : 'line'} ri-x`,
+                                                function : 'activateDeactivateUser',
+                                                btnText : row.user_status ? 'Deactivate' : 'Activate'
+                                            },
+                                            {
+                                                show : row.user_status,
+                                                type : 'button',
+                                                class : `btn btn-sm btn-outline-warning me-1`,
+                                                icon : `ri-lock-unlock-line text-danger`,
+                                                function : 'ResetPassword',
+                                                btnText : '',
+                                                moreAttributes : "title = 'Reset Password' data-bs-toggle='tooltip'"
+                                            }
+                                        ]
+                           if(row.userId !== row.login_user_id)
+                               return actionButtons(row , elements);
+                            else
+                                return '';
+                    },
+                    orderable: false, // Disable sorting for the action buttons column
+                    class : 'text-start'
+                    },
+            ],
+            <% if(req.query.inactive == 'true'){ %>
+                [{ name : 'inactive' , value : true }]
+            <% } else{ %>
+                [{ name : 'inactive' , value : false }]
+            <%}%>
+        );
+    });
+</script>
+<!-- <script type="text/javascript" src="design/layouts/scripts/watumiaji_scripts.js"></script> -->
+</body>
+</html>

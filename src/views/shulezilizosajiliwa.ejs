@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none">
+
+
+<!-- Mirrored from themesbrand.com/velzon/html/default/apps-tasks-list-view.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 02 Sep 2022 10:07:58 GMT -->
+<head>
+
+    <meta charset="utf-8" />
+    <title>Kusajili Shule | IRS - Institution Registration System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="Themesbrand" name="author" />
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="design/assets/images/favicon.ico">
+
+    <!-- Sweet Alert css-->
+    <link href="design/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Layout config Js -->
+    <script src="design/assets/js/layout.js"></script>
+    <!-- Bootstrap Css -->
+    <link href="design/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="design/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <!-- App Css-->
+    <link href="design/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+    <!-- custom Css-->
+    <link href="design/assets/css/custom.min.css" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+    <!-- Begin page -->
+    <div id="layout-wrapper">
+
+        <%- include('sidebar.ejs') %>
+
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+        <div class="main-content">
+
+            <div class="page-content">
+                <div class="container-fluid">
+                    <!-- start page title -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                <h4 class="mb-sm-0">SHULE ZILISAJILIWA</h4>
+
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        <li class="breadcrumb-item"><a href="javascript: void(0);">Shule</a></li>
+                                        <li class="breadcrumb-item active">ZILISAJILIWA</li>
+                                    </ol>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end page title -->
+
+                    <div class="row">
+                        <% for(var i = 0; i < objtotal.length; i++){ %>
+                        <div class="col-xxl-3 col-sm-6">
+                            <div class="card card-animate">
+                                <div class="card-body" title="Idadi ya maombi ya SHULE ZILIZOANZISHWA mwezi huu(August) ni zaidi ya 17.32% ukilinganisha na mwezi July">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <p class="fw-medium text-muted mb-0"><%= objtotal[i].category %></p>
+                                            <h2 class="mt-4 ff-secondary fw-semibold"><span class="counter-value" data-target="<%= objtotal[i].kaunti %>">0</span></h2>
+                                            <p class="mb-0 text-muted"><span class="badge bg-light text-success mb-0"> <i class="ri-arrow-up-line align-middle"></i> 0 %</span> vs. mwezi uliopita</p>
+                                        </div>
+                                        <div>
+                                            <div class="avatar-sm flex-shrink-0">
+                                                <span class="avatar-title bg-soft-info text-info rounded-circle fs-4">
+                                                    <i class="ri-ticket-2-line"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!-- end card body -->
+                            </div> <!-- end card-->
+                        </div>
+                        <% } %>
+                        <!--end col-->
+                        <!-- <div class="col-xxl-3 col-sm-6">
+                            <div class="card card-animate">
+                                <div class="card-body" title="Idadi ya maombi ya SHULE ZILIZOANZISHWA yanayohitaji kufanyiwa kazi nawe">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <p class="fw-medium text-muted mb-0">Awali na Msingi</p>
+                                            <h2 class="mt-4 ff-secondary fw-semibold"><span class="counter-value" data-target="64.5">0</span></h2>
+                                            <p class="mb-0 text-muted"><span class="badge bg-light text-danger mb-0"> <i class="ri-arrow-down-line align-middle"></i> 0.87 %</span> vs. mwezi uliopita</p>
+                                        </div>
+                                        <div>
+                                            <div class="avatar-sm flex-shrink-0">
+                                                <span class="avatar-title bg-soft-warning text-warning rounded-circle fs-4">
+                                                    <i class="mdi mdi-timer-sand"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xxl-3 col-sm-6">
+                            <div class="card card-animate">
+                                <div class="card-body" title="Maombi ya SHULE ZILIZOANZISHWA yaliyokamilika mwezi August">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <p class="fw-medium text-muted mb-0">Sekondari</p>
+                                            <h2 class="mt-4 ff-secondary fw-semibold"><span class="counter-value" data-target="116.21">0</span></h2>
+                                            <p class="mb-0 text-muted"><span class="badge bg-light text-danger mb-0"> <i class="ri-arrow-down-line align-middle"></i> 2.52 % </span> vs. mwezi uliopita</p>
+                                        </div>
+                                        <div>
+                                            <div class="avatar-sm flex-shrink-0">
+                                                <span class="avatar-title bg-soft-success text-success rounded-circle fs-4">
+                                                    <i class="ri-checkbox-circle-line"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xxl-3 col-sm-6">
+                            <div class="card card-animate">
+                                <div class="card-body" title="Maombi ya SHULE ZILIZOANZISHWA yaliyokataliwa mwezi August">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <p class="fw-medium text-muted mb-0">Vyuo</p>
+                                            <h2 class="mt-4 ff-secondary fw-semibold"><span class="counter-value" data-target="14.84">0</span></h2>
+                                            <p class="mb-0 text-muted"><span class="badge bg-light text-success mb-0"> <i class="ri-arrow-up-line align-middle"></i> 0.63 % </span> vs. mwezi uliopita</p>
+                                        </div>
+                                        <div>
+                                            <div class="avatar-sm flex-shrink-0">
+                                                <span class="avatar-title bg-soft-danger text-danger rounded-circle fs-4">
+                                                    <i class="ri-delete-bin-line"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
+                    </div>
+                    <!--end row-->
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card" id="tasksList">
+                                <div class="card-header border-0">
+                                    <div class="d-flex align-items-center">
+                                        <h5 class="card-title mb-0 flex-grow-1">Orodha ya SHULE ZILIZOSAJILIWA</h5>
+                                        <div class="flex-shrink-0">
+                                            <!-- <button class="btn btn-danger add-btn" data-bs-toggle="modal" data-bs-target="#showModal"><i class="ri-add-line align-bottom me-1"></i> Chagua Ombi kulishughulikia</button>
+                                            <button class="btn btn-soft-danger" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button> -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body border border-dashed border-end-0 border-start-0">
+                                    <form>
+                                        <div class="row g-3">
+                                            <div class="col-xxl-5 col-sm-12">
+                                                <div class="search-box">
+                                                    <input type="text" class="form-control search bg-light border-light" placeholder="Tafuta ombi kuendelea nalo...">
+                                                    <i class="ri-search-line search-icon"></i>
+                                                </div>
+                                            </div>
+                                            <!--end col-->
+
+                                            <div class="col-xxl-3 col-sm-4">
+                                                <input type="date" class="form-control bg-light border-light" id="demo-datepicker" data-provider="flatpickr" data-date-format="d M, Y" data-range-date="true" placeholder="Chagua Tarehe ya Ombi">
+                                            </div>
+                                            <!--end col-->
+
+                                            <div class="col-xxl-3 col-sm-4">
+                                                <div class="input-light">
+                                                    <select class="form-control" data-choices data-choices-search-false name="choices-single-default" id="idStatus">
+                                                        <option value="">Status</option>
+                                                        <option value="all" selected>All</option>
+                                                        <option value="New">New</option>
+                                                        <option value="Pending">Pending</option>
+                                                        <option value="Inprogress">Inprogress</option>
+                                                        <option value="Completed">Completed</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <!--end col-->
+                                            <div class="col-xxl-1 col-sm-4">
+                                                <button title="Angalia kwa tarehe na Hali ulizochagua" type="button" class="btn btn-primary w-100" onclick="SearchData();"> <i class="ri-equalizer-fill me-1 align-bottom"></i>
+                                                    Angalia
+                                                </button>
+                                            </div>
+                                            <!--end col-->
+                                        </div>
+                                        <!--end row-->
+                                    </form>
+                                </div>
+                                <!--end card-body-->
+                                <div class="card-body">
+                                    <div class="table-responsive table-card mb-4">
+                                        <table class="table align-middle table-nowrap mb-0" id="tasksTable">
+                                            <thead class="table-light text-muted">
+                                                <tr>
+                                                    <th scope="col" style="width: 40px;">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" id="checkAll" value="option">
+                                                        </div>
+                                                    </th>
+                                                    <th class="sort" data-sort="project_name">Namba ya Usajili</th>
+                                                    <th class="sort" data-sort="id">Jina la Shule</th>
+                                                    <th class="sort" data-sort="due_date">Ngazi ya Shule</th>
+                                                    <th class="sort" data-sort="client_name">Tarehe ya Kusajiliwa</th>
+                                                    <th class="sort" data-sort="assignedto">Mkoa</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="list form-check-all">
+                                                <% for(var i = 0; i < list.length; i++){ %>
+                                                <tr>
+                                                    <th scope="row">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" name="chk_child" value="option1">
+                                                        </div>
+                                                    </th>
+                                                    <td class="id"><a href="/TaarifaSajili/<%= list[i].tracking_number %>" class="fw-medium link-primary"><%= list[i].reg_no %></a></td>
+                                                    <td class="project_name"><a href="#showModal" data-ward="<%= list[i].WardName %>" 
+                                                        data-lga="<%= list[i].LgaName %>" data-region="<%= list[i].RegionName %>" 
+                                                        data-date="<%= list[i].approved_at %>" data-name="<%= list[i].school_name %>" 
+                                                        data-id="<%= list[i].tracking_number %>" data-category="<%= list[i].category %>" 
+                                                        data-usajili="<%= list[i].reg_no %>" data-subcategory="<%= list[i].subcategory %>" data-gender="<%= list[i].gender_type %>" 
+                                                        data-bs-toggle="modal"  class="fw-medium link-primary"><%= list[i].school_name %></a></td>
+                                                    <td class="client_name">  <%= list[i].category %> </td>
+                                                    <td>
+                                                        <div class="d-flex">
+                                                            <div class="flex-grow-1 tasks_name"> <%= list[i].approved_at %> </div>
+                                                            <div class="flex-shrink-0 ms-4">
+                                                                <ul class="list-inline tasks-list-menu mb-0">
+                                                                    <li class="list-inline-item"><a href="/AnzishoTaarifa/<%= list[i].tracking_number %>"><i class="ri-eye-fill align-bottom me-2 text-muted"></i></a></li>
+                                                                    <!-- <li class="list-inline-item"><a class="edit-item-btn" href="#showModal" data-bs-toggle="modal"><i class="ri-pencil-fill align-bottom me-2 text-muted"></i></a></li>
+                                                                    <li class="list-inline-item">
+                                                                        <a class="remove-item-btn" data-bs-toggle="modal" href="#deleteOrder">
+                                                                            <i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
+                                                                        </a>
+                                                                    </li> -->
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="client_name">  <%= list[i].RegionName %> </td>
+                                            
+                                                </tr>
+                                                <% } %>
+                                            </tbody>
+                                        </table>
+                                        <!--end table-->
+                                        <div class="noresult" style="display: none">
+                                            <div class="text-center">
+                                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                                                <h5 class="mt-2">Sorry! No Result Found</h5>
+                                                <p class="text-muted mb-0">We've searched more than 200k+ tasks We did not find any tasks for you search.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-2">
+                                        <div class="pagination-wrap hstack gap-2">
+                                            <a class="page-item pagination-prev disabled" href="#">
+                                                Previous
+                                            </a>
+                                            <ul class="pagination listjs-pagination mb-0"></ul>
+                                            <a class="page-item pagination-next" href="#">
+                                                Next
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!--end card-body-->
+                            </div>
+                            <!--end card-->
+                        </div>
+                        <!--end col-->
+                    </div>
+                    <!--end row-->
+
+                    <div class="modal fade flip" id="deleteOrder" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-body p-5 text-center">
+                                    <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#405189,secondary:#f06548" style="width:90px;height:90px"></lord-icon>
+                                    <div class="mt-4 text-center">
+                                        <h4>You are about to delete a task ?</h4>
+                                        <p class="text-muted fs-14 mb-4">Deleting your task will remove all of
+                                            your information from our database.</p>
+                                        <div class="hstack gap-2 justify-content-center remove">
+                                            <button class="btn btn-link btn-ghost-success fw-medium text-decoration-none" data-bs-dismiss="modal"><i class="ri-close-line me-1 align-middle"></i> Close</button>
+                                            <button class="btn btn-danger" id="delete-record">Yes, Delete It</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--end delete modal -->
+
+                    <div class="modal fade zoomIn showModal" id="showModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                            <div class="modal-content border-0">
+                                <div class="modal-header p-3 bg-soft-info">
+                                    <h5 class="modal-title" id="exampleModalLabele">Shule iliyosajiliwa</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+                                </div>
+                                <form action="#">
+                                    <div class="modal-body">
+                                        <input type="hidden" id="tasksId" />
+                                        <div class="container py-0">
+                                            <h6 style="text-align: center">JAMHURI YA MUUNGANO WA TANZANIA <br>
+                                                WIZARA YA ELIMU, SAYANSI NA TEKNOLOJIA</h6>
+                                            <div class="row py-1">
+                                                
+                                                <div class="col-md-4">
+                                                   <p>
+                                                    Anuani ya simu “ELIMU”</p>
+                                                    <p>Simu: 026 296 35 33</p>
+                                                    <p>Baruapepe:info@moe.go.tz</p>
+                                                    <p>Tovuti:    <a href="">www.moe.go.tz</a></p>
+                                                    <p>Unapojibu tafadhali taja:
+                                                    </p> 
+                                    
+                                                    <div class="mt-0">
+                                                        <strong id="kumbna"></strong>
+                                                    </div>
+                                    
+                                                    <div class="mt-3">
+                                                        <p>
+                                                            Ester Ladislaus Kiwona,<br>
+                                                            S.L.P. 05,<br>
+                                                             <strong> <u>MABADA - RUVUMA</u> </strong> <br>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="col text-center">
+                                                    <img src="assets/images/arm.png" alt="logo"><img src="" alt="">
+                                                </div>&nbsp;
+                                                <div class="col float-right">
+                                                   <p>
+                                                    Mji wa Serikali,<br>
+                                                     Mtumba,<br>
+                                                     Mtaa wa Afya,<br>
+                                                        S. L. P. 10,<br>
+                                                   <b>  40479 DODOMA.</b><br>
+                                                </p> 
+                                                <div class="py-0">
+                                                    <p>
+                                                     <label for="birthday"> <b>Tarehe:</b> </label>
+                                                     <label for="birthday" id="issuedDate" name="issuedDate"></label>
+                                                    </p>
+                                                  
+                                                </div>
+                                               
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <h5 style="text-align: center" id="kuanzishwa_header">YAH:<b><u>  USAJILI WA SHULE YA AWALI NA MSINGI KATORO HILL
+                                                </u></b></h5>
+                                                <p>Tafadhali rejea somo la barua hii.</p>
+                                                <ol style="align-text: center">
+                                                    <li >
+                                                        <p id="ninafurahi">Ninafurahi kukujulisha kuwa shule ya Awali na Msingi <b>Katoro Hill</b> imesajiliwa 
+                                                        tarehe <b>14/06/2022</b> kwa mujibu wa <b>Sheria ya Elimu, Sura ya 353.</b></p>
+                                                    </li>
+                                                    <li >
+                                                       <p id="conentTwo">Shule imepewa namba ya  <b>Usajili EM. 19554 </b> kuwa shule ya Awali na Msingi na 
+                                                        jina limeidhinishwa. Shule hii ni ya <b>kutwa na mchanganyiko</b> yenye <b>mkondo mmoja
+                                                            (01), yenye kutumia Lugha ya Kiingereza kufundishia na kujifunzia.</b></p>
+                                                      </li>
+                                                      <li>
+                                    
+                                                          <p>
+                                                             Kufuatana na <b>Sheria ya Elimu, Sura 353,</b> cheti cha Usajili kiwekwe bayana na 
+                                                             Uongozi wa Shule uwe tayari kukionesha iwapo kitatakiwa. Hakikisha kuwa <b>Kamati ya 
+                                                                 Shule</b> inaundwa katika muda wa miezi sita baada ya usajili. Kulingana na <b>Waraka wa 
+                                                                     Elimu Na. 10 wa mwaka 2011 usajili wa shule hii utarudiwa baada ya miaka 4.</b>
+                                                          </p>
+                                                      </li>
+                                                      <li>
+                                                        <p>
+                                                            Mmiliki wa Shule atatakiwa kuja kuchukua cheti cha usajili wa shule akiwa na 
+                                                        kitambulisho chake mwezi mmoja baada ya kupokea barua hii
+                                                        </p>
+                                                      </li>
+                                                       <li>
+                                                        <p>
+                                                            Nakutakia utekelezaji mwema.
+                                                        </p>
+                                                       </li>
+                                                </ol>
+                                                <div>
+
+                                                <p style="text-align: center">
+                                                <img style="text-align: center;width: 100px;height: 100px;"  src="design/assets/images/sign.png" alt="logo"><img src="" alt="">
+                                                </p>
+                                                    
+                                                    <p style="text-align: center">Venance N. Manori
+                                                    </p>
+                                                    <p style="text-align: center"><b>
+                                                        <u>
+                                                            KAIMU KAMISHNA WA ELIMU
+                                    
+                                                        </u>
+                                                    </b>
+                                                    </p>
+                                                </div>
+                                                <div class="col">
+                                                    <h6 class="mt-3"><b>Nakala:</b></h6>
+                                    
+                                                    <p>
+                                                        Katibu Mkuu,<br>
+                                                        OR – TAMISEMI,<br>
+                                                        S.L.P.1923,
+                                                        <br>
+                                                                 <b><u>DODOMA.</u></b>
+                                                    </p>
+                                                    <p>
+                                                        Katibu Mtendaji, <br>
+                                                        Baraza la Mitihani Tanzania,<br>
+                                                        S.L.P. 2624,<br>
+                                                              <b><u> DAR ES SALAAM.</u></b> 
+                                                    </p>
+                                                    <p>
+                                                        Mthibiti Mkuu Ubora wa Shule,<br>
+                                                        Kanda ya Ziwa, <br>
+                                                        S.L.P. 2419,<br>
+                                                            <b><u>MWANZA.
+                                                            </u></b>
+                                    
+                                                    </p>
+                                                    <p>
+                                                        Afisa Elimu Mkoa,
+                                                        <br>
+                                                        Mkoa wa Geita,
+                                                        <br>
+                                                        S.L.P. 315,<br>
+                                                            <b><u>GEITA.
+                                                            </u></b>
+                                                    </p>
+                                                    <p>
+                                                        Afisa Elimu Msingi,<br>
+                                                        Halmashauri ya Wilaya ya Geita,
+                                                        <br>
+                                                        S.L.P. 384,
+                                                        <br>
+                                                            <b><u>GEITA.
+                                                            </u></b>
+                                                    </p>
+                                                    <p>
+                                                        Mthibiti Mkuu Ubora wa Shule,<br>
+                                                        Halmashauri ya Wilaya ya Geita,
+                                                        <br>
+                                                        S.L.P. 384,
+                                                        <br>
+                                                            <b><u>GEITA.
+                                                            </u></b>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--end row-->
+                                    </div>
+                                    <div class="modal-footer">
+                                        <div class="hstack gap-2 justify-content-end">
+                                            <button type="button" class="btn btn-light" id="close-modal" data-bs-dismiss="modal">Funga</button>
+                                            <!-- <button type="submit" class="btn btn-success" id="add-btn">Add Task</button> -->
+                                            <button type="button" onclick="chapa()" class="btn btn-success" id="edit-btn">Chapisha</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!--end modal-->
+                    <script>
+                       function chapa(){
+                        window.print();
+                       } 
+                    </script>
+                </div>
+                <!-- container-fluid -->
+            </div>
+            <!-- End Page-content -->
+
+            <footer class="footer">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <script>document.write(new Date().getFullYear())</script> © IRS
+                        </div>
+                        <div class="col-sm-6">
+                            <!-- <div class="text-sm-end d-none d-sm-block">
+                                Design & Develop by Themesbrand
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        <!-- end main content-->
+
+    </div>
+    <!-- END layout-wrapper -->
+
+
+
+    <!--start back-to-top-->
+    <button onclick="topFunction()" class="btn btn-danger btn-icon" id="back-to-top">
+        <i class="ri-arrow-up-line"></i>
+    </button>
+    <!--end back-to-top-->
+
+
+
+    <!-- JAVASCRIPT -->
+    <script src="design/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="design/assets/libs/simplebar/simplebar.min.js"></script>
+    <script src="design/assets/libs/node-waves/waves.min.js"></script>
+    <script src="design/assets/libs/feather-icons/feather.min.js"></script>
+    <script src="design/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
+    <script src="design/assets/js/plugins.js"></script>
+
+    <!-- list.js min js -->
+    <script src="design/assets/libs/list.js/list.min.js"></script>
+
+    <!--list pagination js-->
+    <script src="design/assets/libs/list.pagination.js/list.pagination.min.js"></script>
+
+    <!-- titcket init js -->
+    <script src="design/assets/js/pages/tasks-list.init.js"></script>
+
+    <!-- Sweet Alerts js -->
+    <script src="design/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+
+    <!-- App js -->
+    <script src="design/assets/js/app.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+
+    <script>
+        $('a').click(function(){
+            var category = $(this).attr('data-category');
+            var trackingNumber = $(this).attr('data-id');
+            var schoolName = $(this).attr('data-name');
+            var schoolDate = $(this).attr('data-date');
+            var regionName = $(this).attr('data-region');
+            var wardName = $(this).attr('data-ward');
+            var lgaName = $(this).attr('data-lga');
+            var usajili = $(this).attr('data-usajili');
+            var gender = $(this).attr('data-gender');
+            var subcategory = $(this).attr('data-subcategory');
+            document.getElementById('kuanzishwa_header').textContent = 
+            "YAH: USAJILI WA SHULE YA " + category.toUpperCase() + " " + schoolName.toUpperCase();
+            document.getElementById('issuedDate').textContent = schoolDate;
+            document.getElementById('ninafurahi').textContent = 
+            "Ninafurahi kukujulisha kuwa shule ya " + category + " " + 
+            schoolName + " imesajiliwa tarehe " + schoolDate + 
+            " kwa mujibu wa Sheria ya Elimu, Sura ya 353. ";
+            // document.getElementById('conentTwo').textContent = 
+            // "Shule imepewa namba ya Usajili " + usajili + " " + 
+            // schoolName + " imesajiliwa tarehe " + schoolDate + 
+            // " kwa mujibu wa Sheria ya Elimu, Sura ya 353. ";
+            document.getElementById('conentTwo').textContent = 
+            "Shule imepewa namba ya Usajili " + usajili + " kuwa shule ya " + 
+            subcategory + " na " + gender + 
+            " yenye mkondo mmoja (01), yenye kutumia Lugha ya Kiingereza kufundishia na kujifunzia.";
+            document.getElementById('kumbna').textContent = "Kumb. Na. " + trackingNumber;
+        });
+    </script>
+
+</body>
+
+
+<!-- Mirrored from themesbrand.com/velzon/html/default/apps-tasks-list-view.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 02 Sep 2022 10:07:59 GMT -->
+</html>

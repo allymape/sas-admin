@@ -1,0 +1,2401 @@
+<%- include('../layouts/partials/header.ejs' , {
+  title : 'Attend Application',
+  page_title : pageTitle || `OMBI LA ${String(application?.application_category?.app_name || "-").toUpperCase()}`,
+  card_title : ''
+}) %>
+
+<%
+  const app = application || {};
+  const school = app.establishing_school || {};
+  const category = app.application_category || {};
+  const applicant = app.applicant || {};
+  const comments = (Array.isArray(app.comments) ? app.comments : [])
+    .slice()
+    .sort((left, right) => {
+      const leftIdParsed = Number.parseInt(left?.id, 10);
+      const rightIdParsed = Number.parseInt(right?.id, 10);
+      const leftId = Number.isFinite(leftIdParsed) ? leftIdParsed : 0;
+      const rightId = Number.isFinite(rightIdParsed) ? rightIdParsed : 0;
+      if (rightId !== leftId) return rightId - leftId;
+
+      const leftDate = left?.created_at ? new Date(left.created_at).getTime() : 0;
+      const rightDate = right?.created_at ? new Date(right.created_at).getTime() : 0;
+      return rightDate - leftDate;
+    });
+  const attachments = Array.isArray(app.attachments) ? app.attachments : [];
+  const locationHierarchy = school.location_hierarchy || {};
+  const schoolRegistration = school.school_registration || {};
+  const contactPerson = school.contact_person || {};
+  const instituteInfo = contactPerson.institute_info || {};
+  const personalInfo = contactPerson.personal_info || {};
+  const workflow = app.workflow || {};
+  const canTakeActionNow = typeof canTakeAction === "boolean" ? canTakeAction : false;
+  const workflowActions = canTakeActionNow && Array.isArray(workflow.allowed_actions) ? workflow.allowed_actions : [];
+  const workflowActionLabels = workflow.action_labels && typeof workflow.action_labels === "object"
+    ? workflow.action_labels
+    : {};
+  const assignableStaff = canTakeActionNow && Array.isArray(workflow.assignable_staff) ? workflow.assignable_staff : [];
+  const assignableStaffOptions = assignableStaff
+    .map((staff) => ({
+      id: Number.parseInt(staff?.id, 10),
+      name: String(staff?.name || "").trim().toUpperCase(),
+      role_name: String(staff?.role_name || "").trim(),
+    }))
+    .filter((staff) => Number.isFinite(staff.id) && staff.id > 0 && staff.name)
+    .reduce((acc, staff) => {
+      if (!acc.some((item) => item.id === staff.id)) acc.push(staff);
+      return acc;
+    }, [])
+    .sort((left, right) => left.name.localeCompare(right.name));
+
+  const actionLabel = (action) => {
+    const dbLabel = String(workflowActionLabels?.[action] || "").trim();
+    if (dbLabel) return dbLabel;
+    if (action === "Review") return "Submit";
+    if (action === "Assign") return "Assign";
+    if (action === "Forward") return "Forward";
+    if (action === "Approve") return "Approve";
+    if (action === "Reject") return "Reject";
+    if (action === "Return") return "Send Back";
+    if (action === "Return_back") return "Return to Applicant";
+    return action;
+  };
+
+  const actionTone = (action) => {
+    if (action === "Review") return "primary";
+    if (action === "Assign") return "info";
+    if (action === "Forward") return "success";
+    if (action === "Approve") return "success";
+    if (action === "Reject") return "danger";
+    if (action === "Return") return "warning";
+    if (action === "Return_back") return "warning";
+    return "secondary";
+  };
+
+  const actionNeedsTarget = (action) => ["Assign", "Return"].includes(action);
+  const currentUserPermissions = Array.isArray(req?.user?.userPermissions) ? req.user.userPermissions : [];
+  const hasAssignStaffPermission = currentUserPermissions.some((permission) => {
+    const key = String(permission || "").trim().toLowerCase();
+    return key === "assign-staff" || key === "assigned-staff";
+  });
+  const toBooleanFlag = (value) => {
+    if (typeof value === "boolean") return value;
+    const normalized = String(value ?? "").trim().toLowerCase();
+    return normalized === "1" || normalized === "true" || normalized === "yes";
+  };
+  const workflowStepsForActions = Array.isArray(app.workflow_steps) ? app.workflow_steps : [];
+  const currentProcessForActions = app.current_process || {};
+  const currentWorkflowUnitForActions = currentProcessForActions?.current_workflow_unit || {};
+  const currentProcessWorkflowIdForActions = Number(currentProcessForActions?.work_flow_id || 0);
+  const startFromCurrentWorkflowUnit = toBooleanFlag(currentWorkflowUnitForActions?.is_start);
+  const finalFromCurrentWorkflowUnit = toBooleanFlag(currentWorkflowUnitForActions?.is_final);
+  const canApproveInCurrentWorkflowUnit = toBooleanFlag(currentWorkflowUnitForActions?.can_approve);
+  const isCurrentWorkflowStartStep = startFromCurrentWorkflowUnit || workflowStepsForActions.some(
+    (step) =>
+      Number(step?.work_flow_id || 0) === currentProcessWorkflowIdForActions
+      && toBooleanFlag(step?.is_start),
+  );
+  const isCurrentWorkflowFinalStep = finalFromCurrentWorkflowUnit || workflowStepsForActions.some(
+    (step) =>
+      Number(step?.work_flow_id || 0) === currentProcessWorkflowIdForActions
+      && toBooleanFlag(step?.is_final),
+  );
+  const hideReturnToPreviousStaffAction = hasAssignStaffPermission && isCurrentWorkflowStartStep;
+  const hideReturnBackToApplicantAction = hasAssignStaffPermission && (
+    isCurrentWorkflowStartStep
+    || (finalFromCurrentWorkflowUnit && canApproveInCurrentWorkflowUnit)
+  );
+  const alignReturnToPreviousStepRight = hasAssignStaffPermission
+    && finalFromCurrentWorkflowUnit
+    && canApproveInCurrentWorkflowUnit;
+  const hideForwardAction = hasAssignStaffPermission && isCurrentWorkflowFinalStep;
+  const hideApproveRejectActions = hasAssignStaffPermission && !canApproveInCurrentWorkflowUnit;
+  const workflowActionButtons = !canTakeActionNow
+    ? []
+    : hasAssignStaffPermission
+    ? ["Assign", "Forward", "Approve", "Reject", "Return", "Return_back"]
+    : ["Review"];
+  const shouldHideWorkflowAction = (action) => {
+    if (hideReturnToPreviousStaffAction && action === "Return") return true;
+    if (hideReturnBackToApplicantAction && action === "Return_back") return true;
+    if (hideForwardAction && action === "Forward") return true;
+    if (hideApproveRejectActions && (action === "Approve" || action === "Reject")) return true;
+    return false;
+  };
+  const createdAt = app.created_at ? dateFormat(app.created_at, "DD/MM/YYYY HH:mm:ss") : "-";
+  const updatedAt = app.updated_at ? dateFormat(app.updated_at, "DD/MM/YYYY HH:mm:ss") : "-";
+  const approvedAtDisplay = app.approved_at ? dateFormat(app.approved_at, "DD/MM/YYYY HH:mm:ss") : "";
+  const isDevelopment = typeof process !== "undefined" && String(process.env.NODE_ENV || "").toLowerCase() === "local";
+
+  const toStatusLabel = (status) => {
+    const id = Number(status);
+    if (id === 2) return "LILILOTHIBITISHWA";
+    if (id === 3) return "LILILOKATALIWA";
+    if (id === 4) return "LILILORUDISHWA";
+    if (id === 1) return "LINALOFANYIWA KAZI";
+    return "LILILOWASILISHWA";
+  };
+
+  const statusLabel = toStatusLabel(app.is_approved);
+  const approvalStatus = Number(app.is_approved ?? 0);
+
+  const statusChipMeta = (status) => {
+    const id = Number(status);
+    if (id === 2) return { tone: "success", icon: "ri-checkbox-circle-fill" };
+    if (id === 3) return { tone: "danger", icon: "ri-close-circle-fill" };
+    if (id === 4) return { tone: "warning", icon: "ri-arrow-go-back-fill" };
+    if (id === 1) return { tone: "primary", icon: "ri-loader-4-line" };
+    return { tone: "secondary", icon: "ri-send-plane-2-fill" };
+  };
+  const chipMeta = statusChipMeta(app.is_approved);
+
+  const toText = (value) => {
+    if (value === null || value === undefined || value === "") return "-";
+    if (typeof value === "boolean") return value ? "Ndiyo" : "Hapana";
+    return String(value);
+  };
+
+  const toAttachmentViewerPath = (attachmentPath) => {
+    const raw = String(attachmentPath || "").trim();
+    if (!raw) return "";
+    const normalized = raw.replace(/^\/+/, "");
+    return `/View-Attachment/${encodeURIComponent(normalized)}`;
+  };
+
+  const canOpenAttachment = (attachmentPath) => /\.pdf(\?|$)/i.test(String(attachmentPath || "").trim());
+
+  const hasDisplayValue = (value) => {
+    if (value === null || value === undefined) return false;
+    const normalized = String(value).trim();
+    if (normalized === "") return false;
+    const lowered = normalized.toLowerCase();
+    return !["-", "--", "null", "undefined", "n/a", "na", "none"].includes(lowered);
+  };
+
+  const hasSchoolContactValue = (value) => {
+    if (value === null || value === undefined) return false;
+    const normalized = String(value).trim();
+    if (normalized === "") return false;
+    const lowered = normalized.toLowerCase();
+    return !["-", "--", "null", "undefined", "n/a", "na", "none", "nill"].includes(lowered);
+  };
+
+  const contactPersonPersonalName = [
+    personalInfo.first_name,
+    personalInfo.middle_name,
+    personalInfo.last_name,
+    personalInfo.full_name,
+  ]
+    .map((value) => String(value || "").trim())
+    .filter((value, index, arr) => hasDisplayValue(value) && arr.findIndex((item) => item.toUpperCase() === value.toUpperCase()) === index)
+    .join(" ");
+
+  const applicantDisplayName =
+    contactPerson.display_name ||
+    contactPerson.title ||
+    contactPersonPersonalName ||
+    instituteInfo.institute_name ||
+    instituteInfo.name ||
+    applicant.name ||
+    "-";
+  const applicantEmailDisplay = String(contactPerson.email || applicant.email || "").trim();
+  const applicantPhoneDisplay = String(
+    contactPerson.phone ||
+    personalInfo.phone_number ||
+    instituteInfo.phone_number ||
+    applicant.phone ||
+    ""
+  ).trim();
+  const applicantPoBoxDisplay = String(contactPerson.box || "").trim();
+  const applicantLgaDisplay = String(
+    contactPerson.lga_box_location_name ||
+    contactPerson.lga_district?.name ||
+    contactPerson.lga_box_location ||
+    ""
+  ).trim();
+  const applicantAddressDisplay = String(contactPerson.address || "").trim();
+  const applicantStreetDisplay = String(contactPerson.street_id || "").trim();
+  const applicantTypeDisplay = (() => {
+    const applicantableType = String(contactPerson.applicantable_type || "").toLowerCase();
+    if (applicantableType.includes("institute")) return "Taasisi";
+    if (applicantableType.includes("personal")) return "Binafsi";
+    if (hasDisplayValue(instituteInfo.institute_name || instituteInfo.name)) return "Taasisi";
+    if (hasDisplayValue(personalInfo.full_name || personalInfo.first_name || personalInfo.last_name)) return "Binafsi";
+    return "";
+  })();
+  const isInstitutionApplicant = applicantTypeDisplay === "Taasisi";
+  const applicantPrimaryLabel = isInstitutionApplicant ? "Jina la Taasisi" : "Jina";
+  const institutionRegistrationDisplay = String(instituteInfo.registration_number || "").trim();
+  const institutionCategoryDisplay = String(instituteInfo.category || "").trim();
+
+  const uniqueDisplayList = (values = []) => {
+    const seen = new Set();
+    return values
+      .map((value) => String(value).trim())
+      .filter((value) => hasDisplayValue(value))
+      .filter((value) => {
+        const key = value.toUpperCase();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+  };
+
+  const cleanCommentText = (value) => {
+    if (value === null || value === undefined) return "-";
+    const text = String(value)
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<\/?p[^>]*>/gi, "")
+      .replace(/<[^>]+>/g, "")
+      .replace(/&nbsp;/gi, " ")
+      .trim();
+    return text || "-";
+  };
+
+  const commentDepartmentKey = (comment) => {
+    if (!comment) return "-";
+    return String(
+      comment.receiver_department?.name ||
+      comment.receiver_unit?.name ||
+      comment.receiver?.name ||
+      comment.user_to ||
+      "-"
+    ).trim();
+  };
+
+  const normalizeCommentTitle = (value) => {
+    const title = String(value || "")
+      .replace(/[()]/g, "")
+      .trim()
+      .toUpperCase();
+    return title;
+  };
+
+  const commentSenderTitle = (comment) => {
+    if (!comment || typeof comment !== "object") return "";
+    const rawTitle = normalizeCommentTitle(
+      comment.sender_title ||
+      comment.title ||
+      comment.rank_name ||
+      comment.cheo ||
+      comment.sender?.title ||
+      comment.sender?.rank_name ||
+      comment.sender?.role_name ||
+      ""
+    );
+    const firstSegment = String(rawTitle || "").split("-")[0];
+    return normalizeCommentTitle(firstSegment);
+  };
+
+  const commentSenderDisplayName = (comment) => {
+    const baseName = String(
+      comment?.sender?.name ||
+      (`USER #${comment?.user_from || "-"}`)
+    ).trim();
+    const title = commentSenderTitle(comment);
+    const location = String(comment?.location_label || "").trim();
+    if (title && location) return `${baseName} (${title} - ${location})`;
+    if (title) return `${baseName} (${title})`;
+    if (location) return `${baseName} (${location})`;
+    return baseName;
+  };
+
+  const schoolCombinations = Array.isArray(schoolRegistration.school_combinations)
+    ? schoolRegistration.school_combinations
+    : [];
+  const michepuoList = uniqueDisplayList(
+    schoolCombinations.map((item) => item?.combination?.school_specialization?.specialization),
+  );
+  const combinationList = schoolCombinations
+    .map((item) => item?.combination?.combination)
+    .filter((value) => hasDisplayValue(value));
+  const michepuoValue = michepuoList.length
+    ? michepuoList.join(", ")
+    : school.school_specialization?.specialization;
+  const tahasusiValue = combinationList.length
+    ? combinationList.join(", ")
+    : school.school_specialization?.specialization;
+  const elimuNgaziDisplay = hasDisplayValue(school.certificate_type?.level)
+    ? `${school.certificate_type.level}${hasDisplayValue(school.certificate_type?.certificate) ? ` (${school.certificate_type.certificate})` : ""}`
+    : (hasDisplayValue(school.certificate_type?.certificate) ? `(${school.certificate_type.certificate})` : "-");
+  const mikondoDisplay = hasDisplayValue(school.stream) ? String(school.stream).trim() : "-";
+  const lughaYaKufundishiaDisplay = hasDisplayValue(school.language?.language)
+    ? String(school.language.language).trim()
+    : "-";
+
+  const registrationNumberQuickValue =
+    schoolRegistration.registration_number ||
+    school.registration_number ||
+    school.registration_no ||
+    school.file_number ||
+    "";
+  const registrationNumberDisplay = hasDisplayValue(registrationNumberQuickValue)
+    ? String(registrationNumberQuickValue).trim()
+    : "";
+  const latitudeDisplay = String(school.latitude || "").trim();
+  const longitudeDisplay = String(school.longitude || "").trim();
+  const hasCoordinates = hasDisplayValue(latitudeDisplay) && hasDisplayValue(longitudeDisplay);
+  const googleMapsLink = hasCoordinates
+    ? `https://www.google.com/maps?q=${encodeURIComponent(`${latitudeDisplay},${longitudeDisplay}`)}`
+    : "";
+  const extraSchoolFields = [
+    { label: "Simu ya Shule", value: school.school_phone },
+    { label: "Barua Pepe ya Shule", value: school.school_email },
+    { label: "S. L. P ya Shule", value: school.po_box },
+    { label: "Anwani ya Shule", value: school.school_address },
+    { label: "Tovuti ya Shule", value: school.website },
+    { label: "Eneo la Shule", value: school.area },
+    { label: "Kozi na Masomo", value: school.lessons_and_courses },
+    { label: "Uwiano Mwalimu/Mwanafunzi", value: school.teacher_student_ratio_recommendation },
+    { label: "Namba ya Udhibiti", value: school.control_number },
+    { label: "Namba ya Faili", value: school.file_number },
+    { label: "Folio", value: school.school_folio },
+    { label: "Folio ya Upeo", value: school.max_folio },
+    { label: "Uwezo wa Wanafunzi Wakiume", value: school.male_capacity },
+    { label: "Uwezo wa Wanafunzi Wakike", value: school.female_capacity },
+    { label: "Latitude", value: latitudeDisplay },
+    { label: "Longitude", value: longitudeDisplay },
+    { label: "Ramani (Google Maps)", value: "Fungua Ramani", href: googleMapsLink },
+  ].filter((field) => {
+    if (Object.prototype.hasOwnProperty.call(field, "href")) {
+      return hasDisplayValue(field?.href);
+    }
+    return hasDisplayValue(field?.value);
+  });
+  const extraSchoolRows = [];
+  for (let i = 0; i < extraSchoolFields.length; i += 2) {
+    extraSchoolRows.push(extraSchoolFields.slice(i, i + 2));
+  }
+
+  const sidebarQuickRows = [
+    { label: "Namba ya Ombi", value: app.tracking_number || "-" },
+    { label: "Jina la Shule", value: toText(school.school_name) },
+    { label: "Mwombaji", value: applicantDisplayName || "-" },
+    ...(registrationNumberDisplay
+      ? [{ label: "Namba ya Usajili", value: registrationNumberDisplay }]
+      : []),
+  ];
+
+  const statusWorkflowSteps = [
+    { key: 0, label: "Imewasilishwa" },
+    { key: 1, label: "Inachakatwa" },
+    { key: 2, label: "Imethibitishwa" },
+    { key: 3, label: "Imekataliwa" },
+    { key: 4, label: "Imerudishwa" },
+  ];
+
+  const statusStepClass = (stepKey) => {
+    if (approvalStatus === 2) {
+      if (stepKey === 0 || stepKey === 1) return "done";
+      if (stepKey === 2) return "current";
+      return "todo";
+    }
+    if (approvalStatus === 3) {
+      if (stepKey === 0 || stepKey === 1) return "done";
+      if (stepKey === 3) return "current";
+      return "todo";
+    }
+    if (approvalStatus === 4) {
+      if (stepKey === 0 || stepKey === 1) return "done";
+      if (stepKey === 4) return "current";
+      return "todo";
+    }
+    if (approvalStatus === 1) {
+      if (stepKey === 0) return "done";
+      if (stepKey === 1) return "current";
+      return "todo";
+    }
+    if (stepKey === 0) return "current";
+    return "todo";
+  };
+
+  const statusStepIcon = (stepKey, stepState) => {
+    if (stepKey === 2) return "ri-checkbox-circle-fill";
+    if (stepKey === 3) return stepState === "todo" ? "ri-close-circle-line" : "ri-close-circle-fill";
+    if (stepKey === 4) return stepState === "todo" ? "ri-arrow-go-back-line" : "ri-arrow-go-back-fill";
+    if (stepState === "done") return "ri-checkbox-circle-fill";
+    if (stepState === "current") return "ri-loader-4-line";
+    return "ri-checkbox-blank-circle-line";
+  };
+
+  const statusStepToneClass = (stepKey) => {
+    if (stepKey === 1) return "tone-primary";
+    if (stepKey === 2) return "tone-success";
+    if (stepKey === 3) return "tone-danger";
+    if (stepKey === 4) return "tone-warning";
+    return "tone-neutral";
+  };
+
+  const workflowSteps = (Array.isArray(app.workflow_steps) ? app.workflow_steps : [])
+    .slice()
+    .sort((left, right) => Number(left?._order || 0) - Number(right?._order || 0));
+  const currentProcess = app.current_process || {};
+  const currentProcessWorkflowId = Number(currentProcess?.work_flow_id || 0);
+
+  const normalizeProcessStatus = (value) => String(value || "").trim().toLowerCase();
+  const currentStepFromWorkflow = workflowSteps.find(
+    (step) => Number(step?.work_flow_id || 0) === currentProcessWorkflowId,
+  );
+  const currentWorkflowOrder = Number(currentStepFromWorkflow?._order || currentProcess?.step_order || 0);
+
+  const workflowStepState = (step, index) => {
+    const stepWorkflowId = Number(step?.work_flow_id || 0);
+    const stepOrder = Number(step?._order || index + 1);
+    const processStatus = normalizeProcessStatus(step?.process_status);
+
+    if (currentProcessWorkflowId && stepWorkflowId === currentProcessWorkflowId) return "current";
+    if (processStatus && processStatus !== "pending") return "done";
+    if (currentWorkflowOrder && stepOrder < currentWorkflowOrder) return "done";
+    if (processStatus === "pending") return "queue";
+    return "todo";
+  };
+
+  const workflowStepStateLabel = (state) => {
+    if (state === "done") return "Imekamilika";
+    if (state === "current") return "Hatua ya Sasa";
+    if (state === "queue") return "Inasubiri";
+    return "Haijaanza";
+  };
+
+  const workflowStepStateIcon = (state) => {
+    if (state === "done") return "ri-checkbox-circle-fill";
+    if (state === "current") return "ri-loader-4-line";
+    if (state === "queue") return "ri-time-line";
+    return "ri-checkbox-blank-circle-line";
+  };
+
+  const workflowStepBadgeClass = (state) => {
+    if (state === "done") return "bg-success-subtle text-success";
+    if (state === "current") return "bg-primary-subtle text-primary";
+    if (state === "queue") return "bg-warning-subtle text-warning";
+    return "bg-light text-muted";
+  };
+
+  const normalizeCommentAction = (value) => {
+    const action = String(value || "").trim().toLowerCase();
+    if (!action) return "";
+    if (action === "assign") return "Assign";
+    if (action === "review" || action === "submit") return "Review";
+    if (action === "forward") return "Forward";
+    if (action === "approve") return "Approve";
+    if (action === "reject") return "Reject";
+    if (action === "return") return "Return";
+    if (action === "return_back" || action === "return back") return "Return_back";
+    return "";
+  };
+
+  const commentActionPastLabel = (comment) => {
+    const action = normalizeCommentAction(comment?.action);
+    if (!action) return "";
+    if (action === "Assign") return "Assigned";
+    if (action === "Review") return "Reviewed";
+    if (action === "Forward") return "Forwarded";
+    if (action === "Approve") return "Approved";
+    if (action === "Reject") return "Rejected";
+    if (action === "Return") return "Returned";
+    if (action === "Return_back") return "Returned to Applicant";
+    return action;
+  };
+
+  const commentActionTimelineIcon = (comment) => {
+    const action = normalizeCommentAction(comment?.action);
+    if (action === "Assign") return "ri-user-add-line";
+    if (action === "Review") return "ri-send-plane-line";
+    if (action === "Forward") return "ri-arrow-right-up-line";
+    if (action === "Approve") return "ri-checkbox-circle-line";
+    if (action === "Reject") return "ri-close-circle-line";
+    if (action === "Return") return "ri-arrow-go-back-line";
+    if (action === "Return_back") return "ri-reply-line";
+    return "ri-message-3-fill";
+  };
+
+  const toStaffId = (value) => {
+    const parsed = Number.parseInt(value, 10);
+    return Number.isFinite(parsed) ? parsed : null;
+  };
+
+  const sortCommentsDesc = (list) => {
+    return (Array.isArray(list) ? list : [])
+      .slice()
+      .sort((left, right) => {
+        const leftIdParsed = Number.parseInt(left?.id, 10);
+        const rightIdParsed = Number.parseInt(right?.id, 10);
+        const leftId = Number.isFinite(leftIdParsed) ? leftIdParsed : 0;
+        const rightId = Number.isFinite(rightIdParsed) ? rightIdParsed : 0;
+        if (rightId !== leftId) return rightId - leftId;
+
+        const leftDate = left?.created_at ? new Date(left.created_at).getTime() : 0;
+        const rightDate = right?.created_at ? new Date(right.created_at).getTime() : 0;
+        return rightDate - leftDate;
+      });
+  };
+
+  const commentFlow = comments.map((comment, index) => {
+    const key = commentDepartmentKey(comment);
+    const nextKey = index < comments.length - 1 ? commentDepartmentKey(comments[index + 1]) : null;
+    const actionLabel = commentActionPastLabel(comment);
+    return {
+      comment,
+      key,
+      actionLabel,
+      timelineIcon: commentActionTimelineIcon(comment),
+      isTransition: index === comments.length - 1 || key !== nextKey,
+      sequence: comments.length - index,
+    };
+  });
+%>
+
+<style>
+  :root {
+    --attend-primary: #0b5e3b;
+    --attend-primary-soft: #e8f4ee;
+    --attend-secondary: #1f4f9f;
+    --attend-secondary-soft: #eaf1ff;
+    --attend-border: #b9d7ff;
+    --attend-text-muted: #4f5b6b;
+    --attend-surface: #ffffff;
+    --attend-surface-soft: #fcfdff;
+    --attend-demo-header-soft: #fff8ea;
+    --attend-time-soft: #eef6ff;
+    --attend-time-highlight-soft: #e8f2ff;
+    --attend-approved-time-soft: #ecf9f0;
+    --attend-approved-time-highlight-soft: #dff3e6;
+    --attend-approved-time-border: #bfe7ce;
+    --attend-value-color: #223149;
+  }
+
+  [data-layout-mode="dark"] {
+    --attend-primary-soft: rgba(11, 94, 59, 0.18);
+    --attend-secondary-soft: rgba(31, 79, 159, 0.2);
+    --attend-border: #4a6283;
+    --attend-text-muted: #a9b8cf;
+    --attend-surface: #283447;
+    --attend-surface-soft: #222f42;
+    --attend-demo-header-soft: #3a3323;
+    --attend-time-soft: #24364f;
+    --attend-time-highlight-soft: #30435f;
+    --attend-approved-time-soft: #253b30;
+    --attend-approved-time-highlight-soft: #2e4539;
+    --attend-approved-time-border: #406251;
+    --attend-value-color: #e1e9f5;
+  }
+
+  .attend-summary-card,
+  .attend-main-card,
+  .attend-extra-card {
+    border: 1px solid var(--attend-border);
+    border-radius: 14px;
+    box-shadow: 0 10px 24px rgba(11, 94, 59, 0.08);
+    overflow: hidden;
+    background: var(--attend-surface);
+  }
+
+  .attend-page-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.8rem;
+    margin: 0 0 0.7rem;
+    padding: 0.15rem 0.2rem 0.4rem;
+  }
+
+  .attend-page-title {
+    margin: 0;
+    font-size: 1.12rem;
+    line-height: 1.2;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+    color: #1b2940;
+    text-transform: uppercase;
+  }
+
+  .attend-page-subtitle {
+    margin: 0.35rem 0 0;
+    color: var(--attend-text-muted);
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+  }
+
+  .attend-status-chip {
+    margin-top: 0.1rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    padding: 0.35rem 0.6rem;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .attend-status-chip.status-secondary {
+    background: #eef1f5;
+    border-color: #d6dce5;
+    color: #556071;
+  }
+
+  .attend-status-chip.status-primary {
+    background: #e9f1ff;
+    border-color: #cfe1ff;
+    color: #0d6efd;
+  }
+
+  .attend-status-chip.status-success {
+    background: #e9f7ef;
+    border-color: #c7ead6;
+    color: #198754;
+  }
+
+  .attend-status-chip.status-warning {
+    background: #fff7e8;
+    border-color: #ffe4b8;
+    color: #c97a00;
+  }
+
+  .attend-status-chip.status-danger {
+    background: #feedef;
+    border-color: #f7cfd5;
+    color: #dc3545;
+  }
+
+  .attend-status-chip i {
+    font-size: 13px;
+    line-height: 1;
+  }
+
+  .attend-summary-card .card-body {
+    padding: 1rem;
+    background: linear-gradient(180deg, var(--attend-primary-soft) 0%, var(--attend-surface) 100%);
+  }
+
+  .attend-summary-card .table-card,
+  .attend-time-card .table-card {
+    border: 0;
+    background: transparent;
+  }
+
+  .col-xxl-3 .attend-summary-card,
+  .col-xxl-3 .attend-extra-card,
+  .col-xxl-3 .attend-time-card {
+    border-color: rgba(185, 215, 255, 0.65);
+    box-shadow: 0 4px 10px rgba(11, 94, 59, 0.04);
+  }
+
+  .attend-summary-card .card-header {
+    border-bottom: 1px solid var(--attend-border);
+    background: linear-gradient(135deg, var(--attend-surface) 0%, var(--attend-primary-soft) 100%);
+    padding: 0.75rem 1rem;
+  }
+
+  .attend-summary-title {
+    font-weight: 700;
+    color: var(--attend-primary);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    font-size: 13px;
+    margin: 0;
+  }
+
+  .attend-extra-card .card-header {
+    border-bottom: 1px solid var(--attend-border);
+    background: linear-gradient(135deg, var(--attend-surface) 0%, var(--attend-secondary-soft) 100%);
+    padding: 0.75rem 1rem;
+  }
+
+  .attend-extra-title {
+    font-weight: 700;
+    color: var(--attend-secondary);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    font-size: 13px;
+    margin: 0;
+  }
+
+  .attend-extra-card .card-body {
+    padding: 1rem;
+    background: var(--attend-surface);
+  }
+
+  .attend-demo-card .card-header {
+    border-bottom: 1px solid var(--attend-border);
+    background: linear-gradient(135deg, var(--attend-surface) 0%, var(--attend-demo-header-soft) 100%);
+    padding: 0.75rem 1rem;
+  }
+
+  .attend-demo-title {
+    font-weight: 700;
+    color: #8a5a00;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    font-size: 13px;
+    margin: 0;
+  }
+
+  .attend-demo-card .card-body {
+    padding: 1rem;
+    background: var(--attend-surface);
+  }
+
+  .attend-time-card {
+    border-color: var(--attend-border);
+    background: linear-gradient(135deg, var(--attend-time-soft) 0%, var(--attend-surface) 100%);
+    box-shadow: 0 10px 20px rgba(31, 79, 159, 0.12);
+  }
+
+  .attend-time-card .card-body {
+    background: transparent;
+  }
+
+  .attend-time-card .table-card {
+    border-color: var(--attend-border);
+  }
+
+  .time-highlight-row td {
+    background: linear-gradient(135deg, var(--attend-time-highlight-soft) 0%, var(--attend-time-soft) 100%);
+  }
+
+  .attend-approved-time-card {
+    border-color: var(--attend-approved-time-border);
+    background: linear-gradient(135deg, var(--attend-approved-time-soft) 0%, var(--attend-surface) 100%);
+    box-shadow: 0 10px 20px rgba(25, 135, 84, 0.12);
+  }
+
+  .attend-approved-time-card .table-card {
+    border-color: var(--attend-approved-time-border);
+  }
+
+  .approved-time-highlight-row td {
+    background: linear-gradient(135deg, var(--attend-approved-time-highlight-soft) 0%, var(--attend-approved-time-soft) 100%);
+  }
+
+  .attend-main-card .card-header {
+    border-bottom: 1px solid var(--attend-border);
+    background: linear-gradient(135deg, var(--attend-secondary-soft) 0%, var(--attend-surface) 100%);
+    padding: 0.75rem 1rem 0;
+  }
+
+  .attend-main-card .card-body {
+    padding: 1rem;
+    background: var(--attend-surface-soft);
+  }
+
+  .attend-summary-table {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  .attend-summary-table td:first-child {
+    width: 46%;
+    color: var(--attend-text-muted);
+    font-weight: 600;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+  }
+
+  .attend-summary-table td:last-child {
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+  }
+
+  .attend-summary-table > :not(caption) > * > * {
+    padding-top: 0.66rem;
+    padding-bottom: 0.66rem;
+    border-color: #e9edf3;
+    vertical-align: middle;
+  }
+
+  .attend-summary-table tbody tr {
+    transition: background-color 0.2s ease;
+  }
+
+  .attend-summary-table tbody tr:hover {
+    background-color: var(--attend-primary-soft);
+  }
+
+  .attend-summary-table .summary-highlight {
+    font-weight: 700;
+  }
+
+  .attend-tabs .nav-link {
+    font-weight: 600;
+    color: var(--attend-text-muted);
+    border: 0;
+    border-radius: 8px 8px 0 0;
+    padding: 0.5rem 0.45rem;
+    margin-right: 0.2rem;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+  }
+
+  .attend-tabs {
+    flex-wrap: nowrap !important;
+    gap: 0.25rem;
+  }
+
+  .attend-tabs .nav-item {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .attend-tabs .nav-link:hover {
+    color: var(--attend-secondary);
+    background: rgba(31, 79, 159, 0.1);
+  }
+
+  .attend-tabs .nav-link.active {
+    color: var(--attend-primary);
+    background: #fff;
+    box-shadow: 0 -2px 0 var(--attend-primary) inset;
+  }
+
+  .status-workflow-inline {
+    list-style: none;
+    margin: 0 0 0.75rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .status-workflow-inline li {
+    display: inline-flex;
+    align-items: center;
+    color: #7b8797;
+    font-weight: 600;
+    font-size: 13px;
+    flex: 0 0 auto;
+  }
+
+  .status-workflow-inline .status-icon {
+    font-size: 15px;
+    line-height: 1;
+    margin-right: 0.42rem;
+    color: #b3becd;
+  }
+
+  .status-workflow-inline .status-sep {
+    width: 30px;
+    height: 1px;
+    background: #cfd8e6;
+    margin: 0 0.2rem 0 0.35rem;
+    flex: 0 0 30px;
+  }
+
+  .status-workflow-inline li.done {
+    color: #1d7b51;
+  }
+
+  .status-workflow-inline li.done .status-icon {
+    color: #1d7b51;
+  }
+
+  .status-workflow-inline li.current {
+    color: #0e4d9b;
+  }
+
+  .status-workflow-inline li.current .status-icon {
+    color: #0e4d9b;
+  }
+
+  .status-workflow-inline li.tone-primary.current .status-icon,
+  .status-workflow-inline li.tone-primary.done .status-icon { color: #0d6efd; }
+  .status-workflow-inline li.tone-success.current .status-icon,
+  .status-workflow-inline li.tone-success.done .status-icon { color: #198754; }
+  .status-workflow-inline li.tone-danger.current .status-icon,
+  .status-workflow-inline li.tone-danger.done .status-icon { color: #dc3545; }
+  .status-workflow-inline li.tone-warning.current .status-icon,
+  .status-workflow-inline li.tone-warning.done .status-icon { color: #f59f00; }
+
+  .status-workflow-inline li.tone-primary.current,
+  .status-workflow-inline li.tone-primary.done { color: #0d6efd; }
+  .status-workflow-inline li.tone-success.current,
+  .status-workflow-inline li.tone-success.done { color: #198754; }
+  .status-workflow-inline li.tone-danger.current,
+  .status-workflow-inline li.tone-danger.done { color: #dc3545; }
+  .status-workflow-inline li.tone-warning.current,
+  .status-workflow-inline li.tone-warning.done { color: #f59f00; }
+
+  .details-table td:first-child {
+    width: 32%;
+    color: var(--attend-text-muted);
+    font-weight: 600;
+  }
+
+  .details-table td:last-child {
+    font-weight: 500;
+    word-break: break-word;
+  }
+
+  .details-table > :not(caption) > * > * {
+    border-color: #e9edf3;
+    padding-top: 0.72rem;
+    padding-bottom: 0.72rem;
+    vertical-align: middle;
+  }
+
+  .table-card {
+    border: 1px solid var(--attend-border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--attend-surface);
+  }
+
+  .table-card table {
+    margin-bottom: 0;
+  }
+
+  .attachments-file-col {
+    width: 1%;
+    white-space: nowrap;
+  }
+
+  .attachments-file-col .btn {
+    white-space: nowrap;
+  }
+
+  .attend-main-card .table > :not(caption) > * > *,
+  .attend-summary-card .table > :not(caption) > * > *,
+  .attend-extra-card .table > :not(caption) > * > * {
+    border-color: #e9edf3 !important;
+  }
+
+  .overview-grid {
+    --bs-gutter-x: 1.1rem;
+    --bs-gutter-y: 1.1rem;
+  }
+
+  .overview-grid .overview-item {
+    border: 1px solid var(--attend-border);
+    border-radius: 8px;
+    border-left: 3px solid #c9dbef;
+    padding: calc(0.45rem + 1px) 0.6rem;
+    background: var(--attend-surface);
+    min-height: 58px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: none;
+    margin-top: 2px;
+    margin-bottom: 2px;
+  }
+
+  .section-card {
+    border: 1px solid rgba(185, 215, 255, 0.5);
+    border-radius: 10px;
+    background: var(--attend-surface);
+    overflow: hidden;
+    margin-bottom: 0.9rem;
+  }
+
+  .section-title {
+    margin: 0;
+    padding: 0.6rem 0.9rem;
+    font-size: 16px;
+    font-weight: 700;
+    color: #32405d;
+    background: rgba(185, 215, 255, 0.18);
+    border-bottom: 1px solid rgba(185, 215, 255, 0.5);
+    text-transform: uppercase;
+  }
+
+  .split-table td {
+    border-color: #e9edf3;
+    padding: 0.6rem 0.85rem;
+  }
+
+  .split-table td:nth-child(odd) {
+    color: var(--attend-text-muted);
+    width: 25%;
+  }
+
+  .split-table td:nth-child(even) {
+    font-weight: 600;
+    width: 25%;
+  }
+
+  .overview-grid .overview-label {
+    font-size: 10px;
+    line-height: 1.2;
+    color: var(--attend-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 1px;
+  }
+
+  .overview-grid .overview-value {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--attend-value-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 2px;
+  }
+
+  .comment-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .comment-compose-card {
+    border: 1px solid var(--attend-border);
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--attend-secondary-soft) 0%, var(--attend-surface) 100%);
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+
+  .comment-compose-title {
+    margin: 0 0 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--attend-value-color);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .comment-compose-note {
+    margin: 0 0 10px;
+    font-size: 12px;
+    color: var(--attend-text-muted);
+  }
+
+  .comment-compose-input {
+    min-height: 120px;
+    resize: vertical;
+    border-radius: 10px;
+    border-color: var(--attend-border);
+    background: var(--attend-surface);
+  }
+
+  .comment-compose-input:focus {
+    border-color: #4b8df0;
+    box-shadow: 0 0 0 0.2rem rgba(47, 127, 229, 0.12);
+  }
+
+  .workflow-rich-editor .ck.ck-editor {
+    width: 100%;
+  }
+
+  .workflow-rich-editor .ck.ck-editor__editable_inline {
+    min-height: 200px;
+    border-color: var(--attend-border);
+    background: var(--attend-surface);
+  }
+
+  .workflow-rich-editor.is-invalid .ck.ck-editor__editable_inline {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.12);
+  }
+
+  .workflow-select-wrap {
+    display: none;
+  }
+
+  .workflow-select-wrap.is-visible {
+    display: block;
+  }
+
+  .workflow-action-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .workflow-action-btn {
+    min-width: 144px;
+    border-radius: 999px;
+    font-weight: 700;
+  }
+
+  .workflow-action-btn.workflow-return-right {
+    margin-left: auto;
+  }
+
+  @media (max-width: 767.98px) {
+    .workflow-action-btn.workflow-return-right {
+      margin-left: 0;
+    }
+  }
+
+  .select2-container--open {
+    z-index: 9999;
+  }
+
+  .workflow-launch {
+    display: flex;
+    justify-content: flex-start;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .workflow-toggle-btn {
+    margin-left: auto;
+  }
+
+  .workflow-track-card {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: 0;
+    margin-bottom: 14px;
+  }
+
+  .workflow-track-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .workflow-track-head .section-title {
+    margin-bottom: 0;
+  }
+
+  .workflow-current-chip {
+    border: 1px solid var(--attend-border);
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--attend-value-color);
+    background: var(--attend-secondary-soft);
+    white-space: nowrap;
+  }
+
+  .workflow-vertical-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .wf-step {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .wf-step-lane {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .wf-line {
+    width: 0;
+    border-left: 2px dashed #d4deec;
+    flex: 1;
+    min-height: 10px;
+  }
+
+  .wf-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    border: 1px solid #b7c9e5;
+    background: #e4ebf7;
+    color: #54627a;
+  }
+
+  .wf-step.done .wf-dot {
+    background: #198754;
+    color: #fff;
+    border-color: #198754;
+  }
+
+  .wf-step.current .wf-dot {
+    background: #0d6efd;
+    color: #fff;
+    border-color: #0d6efd;
+  }
+
+  .wf-step.queue .wf-dot {
+    background: #f59f00;
+    color: #fff;
+    border-color: #f59f00;
+  }
+
+  .wf-step-body {
+    padding: 2px 0 8px;
+    border-bottom: 1px dashed #d9e3f2;
+  }
+
+  .wf-step-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+
+  .wf-step-order {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--attend-value-color);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .wf-step-unit {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--vz-body-color);
+    margin-bottom: 3px;
+  }
+
+  .wf-step-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    font-size: 11px;
+    color: var(--attend-text-muted);
+    margin-bottom: 6px;
+  }
+
+  .wf-step-note {
+    font-style: italic;
+    color: #64748b;
+    font-size: 12px;
+    margin: 0;
+  }
+
+  .wf-step-comments {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .wf-step-comment-item {
+    padding-left: 0;
+    border-left: none !important;
+  }
+
+  .wf-step-comment-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--attend-text-muted);
+    margin-bottom: 2px;
+  }
+
+  .wf-step-comment-action {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 8px;
+    border-radius: 999px;
+    border: 1px solid #bfe7ce;
+    background: #e8f4ee;
+    color: #0b5e3b;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+
+  .wf-step-comment-body {
+    font-size: 13px;
+    color: var(--vz-body-color);
+    white-space: pre-line;
+  }
+
+  .comment-flow-item {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr);
+    gap: 0;
+    align-items: stretch;
+  }
+
+  .comment-flow-lane {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+  }
+
+  .comment-flow-connector {
+    width: 0;
+    border-left: 2px dashed #cfd8e6;
+  }
+
+  .comment-flow-connector.top,
+  .comment-flow-connector.bottom {
+    flex: 1;
+    min-height: 10px;
+  }
+
+  .comment-flow-connector.full {
+    flex: 1;
+    min-height: 100%;
+  }
+
+  .comment-flow-node {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid var(--attend-border);
+    background: #2f7fe5;
+    color: #fff;
+    font-size: 11px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+
+  .comment-flow-node.placeholder {
+    background: #d7deea;
+    color: #d7deea;
+    border-color: #d7deea;
+  }
+
+  .comment-card {
+    --comment-meta-indent: 2.6rem;
+    border: 1px solid #cfd8e6;
+    border-left: none !important;
+    border-radius: 0;
+    background: var(--attend-surface);
+    padding: 10px 12px;
+    box-shadow: 0 2px 8px rgba(31, 79, 159, 0.07);
+    margin-left: -8px;
+  }
+
+  .comment-card::before {
+    display: none;
+  }
+
+  .comment-meta-main {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--vz-body-color);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .comment-sender-name {
+    min-width: 0;
+    flex: 1 1 auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .comment-meta-date {
+    margin-left: auto;
+    flex: 0 0 auto;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--attend-text-muted);
+    white-space: nowrap;
+  }
+
+  .comment-seq {
+    font-size: 11px;
+    line-height: 1;
+    font-weight: 800;
+    color: #1d4f99;
+    border: 1px solid var(--attend-border);
+    border-radius: 999px;
+    padding: 0.22rem 0.36rem;
+    background: var(--attend-secondary-soft);
+    flex: 0 0 auto;
+  }
+
+  .comment-meta-sub {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--attend-text-muted);
+    margin-top: 2px;
+    padding-left: var(--comment-meta-indent);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .comment-action-separator {
+    color: #8a97ab;
+    margin: 0 4px 0 2px;
+  }
+
+  .comment-action-inline {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 8px;
+    border-radius: 999px;
+    border: 1px solid #bfe7ce;
+    background: #e8f4ee;
+    color: #0b5e3b;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+
+  .comment-divider {
+    border-bottom: 1px solid #e9edf3;
+    margin: 8px 0;
+  }
+
+  .comment-body {
+    color: #2e3646;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: justify;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  @media (max-width: 768px) {
+    .comment-flow-item {
+      grid-template-columns: 24px minmax(0, 1fr);
+    }
+  }
+</style>
+
+<% if (!success || !application) { %>
+  <div class="card">
+    <div class="card-body">
+      <div class="alert alert-danger mb-0">Imeshindikana kupata taarifa za ombi hili.</div>
+    </div>
+  </div>
+<% } else { %>
+  <div class="row">
+    <div class="col-xxl-3">
+      <div class="card mb-3 attend-extra-card attend-time-card">
+        <div class="card-body">
+          <div class="table-card">
+            <table class="table mb-0 attend-summary-table">
+              <tbody>
+                <tr class="time-highlight-row">
+                  <td class="fw-medium">Muda wa Ombi</td>
+                  <td class="ellipsis-tooltip"><%= toText(createdAt) %></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3 attend-summary-card">
+        <div class="card-header">
+          <h6 class="attend-summary-title">TAARIFA ZA MSINGI</h6>
+        </div>
+        <div class="card-body">
+          <div class="table-card">
+            <table class="table mb-0 attend-summary-table">
+              <tbody>
+                <% sidebarQuickRows.forEach((row) => { %>
+                  <tr>
+                    <td class="fw-medium"><%= row.label %></td>
+                    <td class="ellipsis-tooltip"><%= row.value %></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3 attend-extra-card attend-demo-card">
+        <div class="card-header">
+          <h6 class="attend-demo-title">TAARIFA ZINAZOOMBEWA</h6>
+        </div>
+        <div class="card-body">
+          <table class="table mb-0 attend-summary-table">
+            <tbody>
+              <tr>
+                <td class="fw-medium">Aina ya Mabadiliko</td>
+                <td class="ellipsis-tooltip">Kubadili Jina la Shule</td>
+              </tr>
+              <tr>
+                <td class="fw-medium">Jina Jipya Linalopendekezwa</td>
+                <td class="ellipsis-tooltip">-</td>
+              </tr>
+              <tr>
+                <td class="fw-medium">Sababu ya Mabadiliko</td>
+                <td class="ellipsis-tooltip">-</td>
+              </tr>
+              <tr>
+                <td class="fw-medium">Tarehe Inayolengwa</td>
+                <td class="ellipsis-tooltip">-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <% if (approvedAtDisplay) { %>
+        <div class="card attend-extra-card attend-time-card attend-approved-time-card">
+          <div class="card-body">
+            <div class="table-card">
+              <table class="table mb-0 attend-summary-table">
+                <tbody>
+                  <tr class="approved-time-highlight-row">
+                    <td class="fw-medium">Tarehe ya Kuthibitishwa</td>
+                    <td class="ellipsis-tooltip always-tooltip" title="<%= approvedAtDisplay %>"><%= approvedAtDisplay %></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="col-xxl-9">
+      <div class="card attend-main-card mt-2">
+        <div class="card-header">
+          <div class="attend-page-head">
+            <div>
+              <div class="mb-2">
+                <a href="/my-applications?work_tab=pending" class="btn btn-sm btn-outline-primary">
+                  <i class="ri-arrow-left-line align-middle me-1"></i>Rudi Maombi Yangu
+                </a>
+              </div>
+              <h4 class="attend-page-title">OMBI LA <%= toText(category.app_name) %></h4>
+              <p class="attend-page-subtitle">
+                <span class="ellipsis-tooltip always-tooltip" title="Namba ya Ombi"><%= toText(app.tracking_number) %></span>
+                <span>-</span>
+                <span class="ellipsis-tooltip always-tooltip" title="Shule"><%= toText(school.school_name) %> <%= toText(school.school_type?.category) %></span>
+                <span>-</span>
+                <span class="ellipsis-tooltip always-tooltip" title="Mkoa"><%= toText(locationHierarchy.region?.name) %></span>
+                <span>-</span>
+                <span class="ellipsis-tooltip always-tooltip" title="Wilaya"><%= toText(locationHierarchy.district?.name) %></span>
+                <span>-</span>
+                <span class="ellipsis-tooltip always-tooltip" title="Kata"><%= toText(locationHierarchy.ward?.name) %></span>
+                <span>-</span>
+                <span class="ellipsis-tooltip always-tooltip" title="Mtaa"><%= toText(locationHierarchy.street?.name) %></span>
+              </p>
+            </div>
+            <span class="attend-status-chip status-<%= chipMeta.tone %>">
+              <i class="<%= chipMeta.icon %>"></i>
+              <span><%= statusLabel %></span>
+            </span>
+          </div>
+          <ul class="status-workflow-inline">
+            <% statusWorkflowSteps.forEach((step, index) => { %>
+              <% const stepState = statusStepClass(step.key); %>
+              <li class="<%= stepState %> <%= statusStepToneClass(step.key) %>">
+                <span class="status-icon">
+                  <i class="<%= statusStepIcon(step.key, stepState) %>"></i>
+                </span>
+                <span><%= step.label %></span>
+              </li>
+              <% if (index < statusWorkflowSteps.length - 1) { %>
+                <li aria-hidden="true" class="status-sep"></li>
+              <% } %>
+            <% }) %>
+          </ul>
+          <ul class="nav nav-pills nav-justified mb-3 attend-tabs flex-wrap" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active ellipsis-tooltip" data-bs-toggle="tab" href="#overview-info" role="tab">Taarifa Kuu</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link ellipsis-tooltip" data-bs-toggle="tab" href="#applicant-info" role="tab">Mwombaji</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link ellipsis-tooltip" data-bs-toggle="tab" href="#attachments-info" role="tab">Viambatisho</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link ellipsis-tooltip" data-bs-toggle="tab" href="#comments-info" role="tab">Maoni</a>
+            </li>
+            <% if (isDevelopment) { %>
+              <li class="nav-item">
+                <a class="nav-link ellipsis-tooltip" data-bs-toggle="tab" href="#raw-endpoint-info" role="tab">Raw</a>
+              </li>
+            <% } %>
+          </ul>
+        </div>
+        <div class="card-body">
+          <div class="tab-content">
+            <div class="tab-pane active" id="overview-info" role="tabpanel">
+              <div class="section-card">
+                <h6 class="section-title">Taarifa za Shule</h6>
+                <table class="table mb-0 split-table">
+                  <tbody>
+                    <tr>
+                      <td>Jina la Shule</td><td class="ellipsis-tooltip"><%= toText(school.school_name) %></td>
+                      <td>Aina ya Shule</td><td class="ellipsis-tooltip"><%= toText(school.school_type?.category) %></td>
+                    </tr>
+                    <tr>
+                      <td>Ngazi ya Elimu</td><td class="ellipsis-tooltip"><%= elimuNgaziDisplay %></td>
+                      <td>Umiliki</td><td class="ellipsis-tooltip"><%= toText(school.registry_type?.registry) %></td>
+                    </tr>
+                    <% if (registrationNumberDisplay) { %>
+                      <tr>
+                        <td>Namba ya Usajili</td><td class="ellipsis-tooltip"><%= registrationNumberDisplay %></td>
+                        <td>Mwombaji</td><td class="ellipsis-tooltip"><%= toText(applicantDisplayName) %></td>
+                      </tr>
+                    <% } else { %>
+                      <tr>
+                        <td>Mwombaji</td><td class="ellipsis-tooltip" colspan="3"><%= toText(applicantDisplayName) %></td>
+                      </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="section-card">
+                <h6 class="section-title">Eneo la Shule</h6>
+                <table class="table mb-0 split-table">
+                  <tbody>
+                    <tr>
+                      <td>Mkoa</td><td class="ellipsis-tooltip"><%= toText(locationHierarchy.region?.name) %></td>
+                      <td>Halmashauri</td><td class="ellipsis-tooltip"><%= toText(locationHierarchy.district?.name) %></td>
+                    </tr>
+                    <tr>
+                      <td>Kata</td><td class="ellipsis-tooltip"><%= toText(locationHierarchy.ward?.name) %></td>
+                      <td>Mtaa</td><td class="ellipsis-tooltip"><%= toText(locationHierarchy.street?.name) %></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="section-card">
+                <h6 class="section-title">Taarifa za Elimu</h6>
+                <table class="table mb-0 split-table">
+                  <tbody>
+                    <tr>
+                      <td>Lugha ya Kufundishia</td><td class="ellipsis-tooltip"><%= toText(lughaYaKufundishiaDisplay) %></td>
+                      <td>Mikondo</td><td class="ellipsis-tooltip"><%= toText(mikondoDisplay) %></td>
+                    </tr>
+                    <% if (hasDisplayValue(michepuoValue) || hasDisplayValue(tahasusiValue)) { %>
+                      <tr>
+                        <td>Michepuo</td><td class="ellipsis-tooltip"><%= toText(michepuoValue) %></td>
+                        <td>Tahasusi</td><td class="ellipsis-tooltip"><%= toText(tahasusiValue) %></td>
+                      </tr>
+                    <% } %>
+                    <tr>
+                      <td>Wanafunzi</td><td class="ellipsis-tooltip"><%= toText(school.number_of_students) %></td>
+                      <td>Walimu</td><td class="ellipsis-tooltip"><%= toText(school.number_of_teachers) %></td>
+                    </tr>
+                    <tr>
+                      <td>Hosteli</td><td class="ellipsis-tooltip"><%= toText(school.is_hostel) %></td>
+                      <td>Mahitaji Maalum</td><td class="ellipsis-tooltip"><%= toText(school.is_for_disabled) %></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <% if (extraSchoolRows.length) { %>
+                <div class="section-card">
+                  <h6 class="section-title">Taarifa za Ziada za Shule</h6>
+                  <table class="table mb-0 split-table">
+                    <tbody>
+                      <% extraSchoolRows.forEach((pair) => { %>
+                        <tr>
+                          <td><%= pair?.[0]?.label || "" %></td>
+                          <td class="ellipsis-tooltip">
+                            <% if (pair?.[0]?.href) { %>
+                              <a href="<%= pair[0].href %>" target="_blank" rel="noopener noreferrer"> <%= toText(pair?.[0]?.value) %> </a>
+                            <% } else { %>
+                              <%= toText(pair?.[0]?.value) %>
+                            <% } %>
+                          </td>
+                          <% if (pair?.[1]) { %>
+                            <td><%= pair[1].label %></td>
+                            <td class="ellipsis-tooltip">
+                              <% if (pair?.[1]?.href) { %>
+                                <a href="<%= pair[1].href %>" target="_blank" rel="noopener noreferrer"> <%= toText(pair[1].value) %> </a>
+                              <% } else { %>
+                                <%= toText(pair[1].value) %>
+                              <% } %>
+                            </td>
+                          <% } else { %>
+                            <td></td><td></td>
+                          <% } %>
+                        </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+              <% } %>
+            </div>
+
+            <div class="tab-pane" id="applicant-info" role="tabpanel">
+              <div class="section-card">
+                <h6 class="section-title">Taarifa za Mwombaji</h6>
+                <table class="table mb-0 split-table">
+                  <tbody>
+                    <tr>
+                      <td><%= applicantPrimaryLabel %></td><td class="ellipsis-tooltip"><%= toText(applicantDisplayName) %></td>
+                      <td>Aina ya Mwombaji</td><td class="ellipsis-tooltip"><%= toText(applicantTypeDisplay) %></td>
+                    </tr>
+                    <% if (isInstitutionApplicant && (hasDisplayValue(institutionRegistrationDisplay) || hasDisplayValue(institutionCategoryDisplay))) { %>
+                      <tr>
+                        <td>Namba ya Usajili wa Taasisi</td><td class="ellipsis-tooltip"><%= toText(institutionRegistrationDisplay) %></td>
+                        <td>Aina ya Taasisi</td><td class="ellipsis-tooltip"><%= toText(institutionCategoryDisplay) %></td>
+                      </tr>
+                    <% } %>
+                    <% if (hasDisplayValue(applicantEmailDisplay) || hasDisplayValue(applicantPhoneDisplay)) { %>
+                      <tr>
+                        <td>Barua Pepe</td><td class="ellipsis-tooltip"><%= toText(applicantEmailDisplay) %></td>
+                        <td>Simu</td><td class="ellipsis-tooltip"><%= toText(applicantPhoneDisplay) %></td>
+                      </tr>
+                    <% } %>
+                    <% if (hasDisplayValue(applicantPoBoxDisplay) || hasDisplayValue(applicantLgaDisplay)) { %>
+                      <tr>
+                        <td>S. L. P</td><td class="ellipsis-tooltip"><%= toText(applicantPoBoxDisplay) %></td>
+                        <td>Halmashauri ya S. L. P</td><td class="ellipsis-tooltip"><%= toText(applicantLgaDisplay) %></td>
+                      </tr>
+                    <% } %>
+                    <% if (hasDisplayValue(applicantAddressDisplay) || hasDisplayValue(applicantStreetDisplay)) { %>
+                      <tr>
+                        <td>Anwani</td><td class="ellipsis-tooltip"><%= toText(applicantAddressDisplay) %></td>
+                        <td>Mtaa</td><td class="ellipsis-tooltip"><%= toText(applicantStreetDisplay) %></td>
+                      </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="tab-pane" id="attachments-info" role="tabpanel">
+              <% if (!attachments.length) { %>
+                <div class="alert alert-light mb-0">Hakuna viambatisho vilivyorekodiwa kwa tracking hii.</div>
+              <% } %>
+              <% if (attachments.length) { %>
+                <div class="table-responsive table-card">
+                  <table class="table align-middle mb-0">
+                    <thead class="table-light">
+                      <tr>
+                        <th>#</th>
+                        <th>AINA YA KIAMBATISHO</th>
+                        <th>TAREHE YA KUPAKIWA</th>
+                        <th class="attachments-file-col">KIAMBATA</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% attachments.forEach((att, idx) => { %>
+                        <% const attachmentPath = String(att?.attachment_path || "").trim(); %>
+                        <% const attachmentViewerPath = toAttachmentViewerPath(attachmentPath); %>
+                        <tr>
+                          <td><%= idx + 1 %></td>
+                          <td><%= toText(att.attachment_type?.attachment_name).toUpperCase() %></td>
+                          <td><%= toText(att.created_at ? dateFormat(att.created_at, "DD/MM/YYYY HH:mm:ss") : null) %></td>
+                          <td class="attachments-file-col">
+                            <% if (canOpenAttachment(attachmentPath) && attachmentViewerPath) { %>
+                              <a href="<%= attachmentViewerPath %>" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">
+                                Soma Kiambatisho
+                              </a>
+                            <% } else { %>
+                              <span>-</span>
+                            <% } %>
+                          </td>
+                        </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+              <% } %>
+            </div>
+
+            <div class="tab-pane" id="comments-info" role="tabpanel">
+              <div class="workflow-launch">
+                <% if (canTakeActionNow) { %>
+                  <button
+                    type="button"
+                    class="btn btn-success"
+                    data-bs-toggle="modal"
+                    data-bs-target="#workflow-action-modal"
+                  >
+                    <i class="ri-message-2-line align-middle me-1"></i>Andika Maoni
+                  </button>
+                <% } %>
+                <button
+                  type="button"
+                  class="btn btn-outline-primary workflow-toggle-btn"
+                  id="toggle-workflow-steps-btn"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#workflow-track-collapse"
+                  aria-expanded="false"
+                  aria-controls="workflow-track-collapse"
+                >
+                  <i id="toggle-workflow-steps-icon" class="ri-eye-off-line align-middle me-1"></i>
+                  <span id="toggle-workflow-steps-label">Onesha Workflow</span>
+                </button>
+              </div>
+              <div class="collapse" id="workflow-track-collapse">
+                <div class="workflow-track-card">
+                  <% if (currentProcessWorkflowId) { %>
+                    <div class="workflow-track-head justify-content-end">
+                      <span class="workflow-current-chip">
+                        Hatua ya sasa: <%= toText(currentWorkflowOrder || currentProcess.step_order) %>
+                      </span>
+                    </div>
+                  <% } %>
+                  <% if (!workflowSteps.length) { %>
+                    <div class="alert alert-light mb-0">Hakuna hatua za workflow kwa aina hii ya ombi.</div>
+                  <% } else { %>
+                    <div class="workflow-vertical-timeline">
+                      <% workflowSteps.forEach((step, index) => { %>
+                        <% const stepState = workflowStepState(step, index); %>
+                        <% const stepOrder = Number(step?._order || (index + 1)); %>
+                        <% const stepAssigned = step?.assigned_to ? `STAFF #${step.assigned_to}` : "-"; %>
+                        <% const stepDate = step?.process_updated_at || step?.process_created_at; %>
+                        <div class="wf-step <%= stepState %>">
+                          <div class="wf-step-lane">
+                            <% if (index > 0) { %><span class="wf-line"></span><% } %>
+                            <span class="wf-dot"><i class="<%= workflowStepStateIcon(stepState) %>"></i></span>
+                            <% if (index < workflowSteps.length - 1) { %><span class="wf-line"></span><% } %>
+                          </div>
+                          <div class="wf-step-body">
+                            <div class="wf-step-head">
+                              <span class="wf-step-order">Hatua <%= stepOrder %></span>
+                              <span class="badge <%= workflowStepBadgeClass(stepState) %>"><%= workflowStepStateLabel(stepState) %></span>
+                            </div>
+                            <div class="wf-step-unit"><%= toText(step?.unit_name || step?.role_name || ("UNIT #" + toText(step?.unit_id))) %></div>
+                            <div class="wf-step-meta">
+                              <span>Status: <%= toText(step?.process_status || "Waiting") %></span>
+                              <span>Assigned: <%= stepAssigned %></span>
+                              <span>Tarehe: <%= stepDate ? dateFormat(stepDate, "DD/MM/YYYY HH:mm:ss") : "-" %></span>
+                            </div>
+                          </div>
+                        </div>
+                      <% }) %>
+                    </div>
+                  <% } %>
+                </div>
+              </div>
+              <% if (canTakeActionNow && !workflowActions.length) { %>
+                <div class="alert alert-warning">Hakuna hatua ya workflow unayoruhusiwa kufanya kwa sasa kwenye ombi hili.</div>
+              <% } %>
+              <% if (!comments.length) { %>
+                <div class="alert alert-light mb-0">Hakuna maoni yaliyowekwa kwa sasa.</div>
+              <% } %>
+              <div class="comment-timeline">
+                <% commentFlow.forEach((entry, index) => { %>
+                  <% const comment = entry.comment; %>
+                  <% const mainCommentAction = commentActionPastLabel(comment); %>
+                  <div class="comment-flow-item">
+                    <div class="comment-flow-lane">
+                      <% if (entry.isTransition) { %>
+                        <% if (index > 0) { %>
+                          <span class="comment-flow-connector top"></span>
+                        <% } %>
+                        <span
+                          class="comment-flow-node ellipsis-tooltip"
+                          title="<%= entry.actionLabel ? `${entry.key} - ${entry.actionLabel}` : entry.key %>"
+                        >
+                          <i class="<%= entry.timelineIcon %>"></i>
+                        </span>
+                        <% if (index < commentFlow.length - 1) { %>
+                          <span class="comment-flow-connector bottom"></span>
+                        <% } %>
+                      <% } else { %>
+                        <span class="comment-flow-connector full"></span>
+                      <% } %>
+                    </div>
+                    <div class="comment-card">
+                      <div class="comment-meta-main">
+                        <span class="comment-seq">M.<%= entry.sequence %></span>
+                        <span class="ellipsis-tooltip comment-sender-name"><%= commentSenderDisplayName(comment) %></span>
+                        <span class="comment-meta-date"><%= comment.created_at ? dateFormat(comment.created_at , 'ddd DD/MM/YYYY HH:mm:ss') : "-" %></span>
+                      </div>
+                      <div class="comment-meta-sub">
+                        Kwa: <%= comment.receiver?.name || "-" %>
+                        <% if (mainCommentAction) { %>
+                          <span class="comment-action-separator">|</span>
+                          <span class="comment-action-inline"><%= mainCommentAction %></span>
+                        <% } %>
+                      </div>
+                      <div class="comment-divider"></div>
+                      <div class="comment-body"><%= cleanCommentText(comment.coments || comment.comment || comment.content) %></div>
+                    </div>
+                  </div>
+                <% }) %>
+              </div>
+            </div>
+
+            <% if (isDevelopment) { %>
+              <div class="tab-pane" id="raw-endpoint-info" role="tabpanel">
+                <pre class="bg-light border rounded p-3 mb-0" style="max-height: 560px; overflow: auto;"><%= JSON.stringify(app, null, 2) %></pre>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <% if (canTakeActionNow) { %>
+    <div
+      class="modal fade"
+      id="workflow-action-modal"
+      tabindex="-1"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-light">
+            <div>
+              <h5 class="modal-title mb-1">Andika Maoni</h5>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="comment-compose-card mb-0">
+              <form id="workflow-action-form" method="post" action="/my-applications/<%= encodeURIComponent(app.tracking_number) %>/workflow">
+                <input type="hidden" name="action" id="workflow-action-input" value="">
+                <% if (hasAssignStaffPermission) { %>
+                  <div class="mb-3 workflow-select-wrap is-visible" id="workflow-target-wrap">
+                    <label class="form-label fw-semibold">Chagua Afisa</label>
+                    <select
+                      class="form-select js-workflow-target-select"
+                      name="target_staff_id"
+                      id="workflow-target-staff"
+                    >
+                      <option value="">Chagua Afisa</option>
+                      <% assignableStaffOptions.forEach((staff) => { %>
+                        <option value="<%= staff.id %>"><%= staff.name %> - <%= toText(staff.role_name) %></option>
+                      <% }) %>
+                    </select>
+                    <% if (!assignableStaffOptions.length) { %>
+                      <small class="text-muted fst-italic">Hakuna officer wa ku-assign kwa sasa.</small>
+                    <% } %>
+                  </div>
+                <% } %>
+                <div class="mb-3 workflow-rich-editor" id="workflow-rich-editor-wrap">
+                  <div class="ck-editor-reverse">
+                    <div id="workflow-comment-editor"></div>
+                  </div>
+                  <textarea
+                    class="form-control comment-compose-input d-none"
+                    name="content"
+                    id="workflow-comment-content"
+                    rows="5"
+                    placeholder="Andika maoni hapa..."
+                    required
+                  ></textarea>
+                </div>
+                <div class="workflow-action-grid">
+                  <% workflowActionButtons.forEach((action) => { %>
+                    <% if (shouldHideWorkflowAction(action)) return; %>
+                    <% const isAssignAction = action === "Assign"; %>
+                    <button
+                      type="button"
+                      class="btn btn-<%= actionTone(action) %> workflow-action-btn <%= isAssignAction ? 'workflow-assign-btn d-none' : 'workflow-non-assign-btn' %> <%= (alignReturnToPreviousStepRight ? action === 'Return' : action === 'Return_back') ? 'workflow-return-right' : '' %>"
+                      data-workflow-action="<%= action %>"
+                      data-needs-target="<%= actionNeedsTarget(action) ? '1' : '0' %>"
+                    >
+                      <%= actionLabel(action) %>
+                    </button>
+                  <% }) %>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% } %>
+<% } %>
+
+<script>
+  (function () {
+    const tabStorageKey = `attend-active-tab:${window.location.pathname}`;
+    const workflowForm = document.getElementById("workflow-action-form");
+    const workflowActionInput = document.getElementById("workflow-action-input");
+    const workflowTargetWrap = document.getElementById("workflow-target-wrap");
+    const workflowTargetSelect = document.getElementById("workflow-target-staff");
+    const workflowActionModal = document.getElementById("workflow-action-modal");
+    const hasAssignStaffPermission = <%= (canTakeActionNow && hasAssignStaffPermission) ? "true" : "false" %>;
+    const workflowAssignButtons = Array.from(document.querySelectorAll(".workflow-assign-btn"));
+    const workflowNonAssignButtons = Array.from(document.querySelectorAll(".workflow-non-assign-btn"));
+    const workflowCommentEditorElement = document.getElementById("workflow-comment-editor");
+    const workflowCommentContentInput = document.getElementById("workflow-comment-content");
+    const workflowRichEditorWrap = document.getElementById("workflow-rich-editor-wrap");
+    const workflowTrackCollapse = document.getElementById("workflow-track-collapse");
+    const workflowTrackToggleLabel = document.getElementById("toggle-workflow-steps-label");
+    const workflowTrackToggleIcon = document.getElementById("toggle-workflow-steps-icon");
+    let workflowCommentEditorInstance = null;
+
+    const toPlainText = (html) => String(html || "")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&nbsp;/gi, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    const currentWorkflowCommentContent = () => {
+      if (workflowCommentEditorInstance) return workflowCommentEditorInstance.getData();
+      return workflowCommentContentInput?.value || "";
+    };
+
+    const syncWorkflowCommentContent = () => {
+      if (!workflowCommentContentInput) return;
+      workflowCommentContentInput.value = currentWorkflowCommentContent();
+    };
+
+    const clearWorkflowCommentValidation = () => {
+      workflowCommentContentInput?.classList.remove("is-invalid");
+      workflowRichEditorWrap?.classList.remove("is-invalid");
+    };
+
+    const markWorkflowCommentInvalid = () => {
+      workflowCommentContentInput?.classList.add("is-invalid");
+      workflowRichEditorWrap?.classList.add("is-invalid");
+      if (workflowCommentEditorInstance) {
+        workflowCommentEditorInstance.editing.view.focus();
+      } else {
+        workflowCommentContentInput?.focus();
+      }
+    };
+
+    const initWorkflowCommentEditor = () => {
+      if (!workflowCommentEditorElement) return;
+      if (workflowCommentEditorInstance) return;
+      if (typeof window.ClassicEditor === "undefined") return;
+
+      window.ClassicEditor.create(workflowCommentEditorElement, {
+        placeholder: "Andika maoni hapa...",
+      })
+        .then((editor) => {
+          workflowCommentEditorInstance = editor;
+          editor.ui.view.editable.element.style.minHeight = "200px";
+          syncWorkflowCommentContent();
+          clearWorkflowCommentValidation();
+          editor.model.document.on("change:data", () => {
+            syncWorkflowCommentContent();
+            if (toPlainText(editor.getData())) {
+              clearWorkflowCommentValidation();
+            }
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+          if (workflowCommentContentInput) {
+            workflowCommentContentInput.classList.remove("d-none");
+          }
+        });
+    };
+
+    const initWorkflowTargetSearch = () => {
+      if (!workflowTargetSelect || workflowTargetSelect.disabled) return;
+      if (typeof window.jQuery === "undefined") return;
+      if (typeof window.jQuery.fn.select2 !== "function") return;
+
+      const $target = window.jQuery(workflowTargetSelect);
+      if ($target.data("select2")) {
+        $target.select2("destroy");
+      }
+
+      $target.select2({
+        width: "100%",
+        placeholder: "Chagua Afisa",
+        allowClear: true,
+        minimumResultsForSearch: 0,
+        dropdownParent: workflowActionModal ? window.jQuery(workflowActionModal) : window.jQuery("body"),
+        matcher: (params, data) => {
+          const term = String(params?.term || "").trim().toLowerCase();
+          if (!term) return data;
+          const haystack = String(data?.text || "")
+            .replace(/\s+/g, " ")
+            .trim()
+            .toLowerCase();
+          return haystack.includes(term) ? data : null;
+        },
+      });
+
+      // Select2 can emit jQuery events without always triggering native listeners reliably.
+      $target.off(".workflowAssignVisibility");
+      $target.on("change.workflowAssignVisibility", () => {
+        syncAssignButtonVisibility();
+      });
+      $target.on("select2:select.workflowAssignVisibility", () => {
+        syncAssignButtonVisibility();
+      });
+      $target.on("select2:clear.workflowAssignVisibility", () => {
+        syncAssignButtonVisibility();
+      });
+    };
+
+    const syncAssignButtonVisibility = () => {
+      if (!hasAssignStaffPermission) {
+        workflowAssignButtons.forEach((button) => {
+          button.classList.add("d-none");
+        });
+        workflowNonAssignButtons.forEach((button) => {
+          button.classList.remove("d-none");
+        });
+        return;
+      }
+
+      const hasTargetStaff = Boolean(workflowTargetSelect && workflowTargetSelect.value);
+      workflowAssignButtons.forEach((button) => {
+        button.classList.toggle("d-none", !hasTargetStaff);
+      });
+      workflowNonAssignButtons.forEach((button) => {
+        button.classList.toggle("d-none", hasTargetStaff);
+      });
+    };
+
+    const syncWorkflowTrackToggleLabel = () => {
+      if (!workflowTrackCollapse || !workflowTrackToggleLabel) return;
+      const isExpanded = workflowTrackCollapse.classList.contains("show");
+      workflowTrackToggleLabel.textContent = isExpanded ? "Ficha Workflow" : "Onesha Workflow";
+      if (workflowTrackToggleIcon) {
+        workflowTrackToggleIcon.classList.toggle("ri-eye-line", isExpanded);
+        workflowTrackToggleIcon.classList.toggle("ri-eye-off-line", !isExpanded);
+      }
+    };
+
+    const activateAttendTab = (tabId) => {
+      if (!tabId || !window.bootstrap || !window.bootstrap.Tab) return;
+
+      const tabTrigger = document.querySelector(`.attend-tabs [data-bs-toggle="tab"][href="${tabId}"]`);
+      if (!tabTrigger) return;
+
+      window.bootstrap.Tab.getOrCreateInstance(tabTrigger).show();
+    };
+
+    const resolveInitialTab = () => {
+      const currentHash = window.location.hash;
+      if (currentHash && document.querySelector(`.tab-content ${currentHash}`)) {
+        return currentHash;
+      }
+
+      const savedTab = window.localStorage.getItem(tabStorageKey);
+      if (savedTab && document.querySelector(`.tab-content ${savedTab}`)) {
+        return savedTab;
+      }
+
+      return null;
+    };
+
+    const applyEllipsisTooltips = () => {
+      const nodes = document.querySelectorAll(".ellipsis-tooltip");
+      nodes.forEach((node) => {
+        const existingToggle = node.getAttribute("data-bs-toggle");
+        const isTabLink =
+          node.classList.contains("nav-link") ||
+          node.getAttribute("role") === "tab" ||
+          existingToggle === "tab";
+        if (isTabLink) return;
+
+        const text = (node.textContent || "").trim();
+        const alwaysTooltip = node.classList.contains("always-tooltip");
+        const isTruncated = node.scrollWidth > node.clientWidth;
+
+        if ((alwaysTooltip || isTruncated) && text) {
+          if (!node.getAttribute("title")) {
+            node.setAttribute("title", text);
+          }
+          node.setAttribute("data-bs-toggle", "tooltip");
+          node.setAttribute("data-bs-placement", "top");
+          if (window.bootstrap && window.bootstrap.Tooltip) {
+            if (!window.bootstrap.Tooltip.getInstance(node)) {
+              new window.bootstrap.Tooltip(node);
+            }
+          }
+        } else {
+          if (window.bootstrap && window.bootstrap.Tooltip) {
+            const tooltip = window.bootstrap.Tooltip.getInstance(node);
+            if (tooltip) tooltip.dispose();
+          }
+          if (!alwaysTooltip) {
+            node.removeAttribute("title");
+          }
+          if (node.getAttribute("data-bs-toggle") === "tooltip") {
+            node.removeAttribute("data-bs-toggle");
+          }
+          node.removeAttribute("data-bs-placement");
+        }
+      });
+    };
+
+    if (workflowForm && workflowActionInput) {
+      const hasSweetAlert = Boolean(window.Swal && typeof window.Swal.fire === "function");
+      const workflowActionElements = Array.from(document.querySelectorAll("[data-workflow-action]"));
+      let workflowSubmitInProgress = false;
+
+      const buildWorkflowActionConfirmation = (action, needsTarget) => {
+        const actionLabel = String(action || "").trim();
+        let message = `Una uhakika unataka kuendelea na kitendo hiki?\n\nKITENDO: ${actionLabel}`;
+
+        if (needsTarget && workflowTargetSelect) {
+          const selectedText = String(
+            workflowTargetSelect.options?.[workflowTargetSelect.selectedIndex]?.text || ""
+          ).trim();
+          if (selectedText) {
+            message += `\nAFISA: ${selectedText}`;
+          }
+        }
+
+        message += "\n\nBonyeza OK kuendelea au Cancel kurudi.";
+        return message;
+      };
+
+      const confirmWorkflowAction = async (action, needsTarget) => {
+        const message = buildWorkflowActionConfirmation(action, needsTarget);
+        if (!hasSweetAlert) {
+          return window.confirm(message);
+        }
+
+        const result = await window.Swal.fire({
+          title: "Thibitisha Kitendo",
+          text: message,
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonText: "Ndio, Endelea",
+          cancelButtonText: "Hapana",
+          confirmButtonClass: "btn btn-primary w-xs me-2",
+          cancelButtonClass: "btn btn-light w-xs",
+          buttonsStyling: false,
+        });
+
+        return Boolean(result?.isConfirmed);
+      };
+
+      const setWorkflowSubmittingState = (isSubmitting, activeButton = null) => {
+        workflowActionElements.forEach((button) => {
+          button.disabled = isSubmitting;
+          button.classList.toggle("disabled", isSubmitting);
+        });
+
+        if (activeButton && isSubmitting) {
+          if (!activeButton.dataset.originalHtml) {
+            activeButton.dataset.originalHtml = activeButton.innerHTML;
+          }
+          activeButton.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Inatuma...';
+        }
+
+        if (!isSubmitting) {
+          workflowActionElements.forEach((button) => {
+            if (button.dataset.originalHtml) {
+              button.innerHTML = button.dataset.originalHtml;
+              delete button.dataset.originalHtml;
+            }
+          });
+        }
+      };
+
+      const showSubmittingAlert = (action) => {
+        if (!hasSweetAlert) return;
+        window.Swal.fire({
+          title: "Inatuma...",
+          text: `Kitendo (${String(action || "").trim()}) kinaendelea. Tafadhali subiri.`,
+          icon: "info",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: false,
+          didOpen: () => {
+            window.Swal.showLoading();
+          },
+        });
+      };
+
+      workflowActionElements.forEach((button) => {
+        button.addEventListener("click", async () => {
+          if (workflowSubmitInProgress) return;
+
+          const action = button.getAttribute("data-workflow-action") || "";
+          const needsTarget = button.getAttribute("data-needs-target") === "1";
+
+          workflowActionInput.value = action;
+          syncWorkflowCommentContent();
+
+          if (needsTarget && (!workflowTargetSelect || !workflowTargetSelect.value)) {
+            if (workflowTargetSelect) {
+              workflowTargetSelect.classList.add("is-invalid");
+              workflowTargetSelect.focus();
+            }
+            return;
+          }
+
+          if (!toPlainText(currentWorkflowCommentContent())) {
+            markWorkflowCommentInvalid();
+            return;
+          }
+
+          const confirmed = await confirmWorkflowAction(action, needsTarget);
+          if (!confirmed) {
+            return;
+          }
+
+          workflowSubmitInProgress = true;
+          setWorkflowSubmittingState(true, button);
+          showSubmittingAlert(action);
+          workflowForm.submit();
+        });
+      });
+
+      if (workflowTargetSelect) {
+        workflowTargetSelect.addEventListener("change", () => {
+          if (workflowTargetWrap?.classList.contains("is-visible")) {
+            workflowTargetSelect.classList.remove("is-invalid");
+          }
+          syncAssignButtonVisibility();
+        });
+      }
+
+      if (workflowCommentContentInput) {
+        workflowCommentContentInput.addEventListener("input", () => {
+          if (toPlainText(workflowCommentContentInput.value)) {
+            clearWorkflowCommentValidation();
+          }
+        });
+      }
+    }
+
+    if (workflowActionModal) {
+      workflowActionModal.addEventListener("shown.bs.modal", () => {
+        initWorkflowTargetSearch();
+        initWorkflowCommentEditor();
+        syncAssignButtonVisibility();
+        setTimeout(syncAssignButtonVisibility, 0);
+      });
+    }
+
+    if (workflowTrackCollapse) {
+      workflowTrackCollapse.addEventListener("shown.bs.collapse", syncWorkflowTrackToggleLabel);
+      workflowTrackCollapse.addEventListener("hidden.bs.collapse", syncWorkflowTrackToggleLabel);
+    }
+
+    window.addEventListener("load", () => {
+      activateAttendTab(resolveInitialTab());
+      applyEllipsisTooltips();
+      initWorkflowCommentEditor();
+      syncAssignButtonVisibility();
+      syncWorkflowTrackToggleLabel();
+    });
+    window.addEventListener("resize", applyEllipsisTooltips);
+    document.addEventListener("shown.bs.tab", (event) => {
+      const activeTabId = event.target?.getAttribute("href");
+      if (activeTabId && activeTabId.startsWith("#")) {
+        window.localStorage.setItem(tabStorageKey, activeTabId);
+        if (window.location.hash !== activeTabId) {
+          window.history.replaceState(null, "", activeTabId);
+        }
+      }
+      applyEllipsisTooltips();
+    });
+  })();
+</script>
+
+<%- include('../layouts/partials/footer.ejs' , {
+  card_title : ''
+}) %>

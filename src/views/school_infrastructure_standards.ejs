@@ -1,0 +1,828 @@
+<% var card_title = '' %>
+<%- include('layouts/partials/header.ejs' , {
+    title : 'Viwango vya Miundombinu',
+    page_title : 'Usimamizi wa Viwango vya Miundombinu',
+    card_title : 'Kiwango cha Miundombinu',
+    breadcrumb_main : 'Mipangilio',
+    styles : [
+                { href: '/css/datatables/dataTables.dataTables.css' },
+                { href: '/css/datatables/buttons.dataTables.css' }
+            ]
+}) %>
+
+<ul class="nav nav-pills nav-customs nav-danger mb-3" id="infra-tabs" role="tablist">
+    <li class="nav-item">
+        <button class="nav-link active" id="infra-items-tab" data-bs-toggle="tab" data-bs-target="#infra-items-pane" type="button" role="tab" aria-controls="infra-items-pane" aria-selected="true">
+            Vipengele vya Miundombinu
+        </button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" id="infra-standards-tab" data-bs-toggle="tab" data-bs-target="#infra-standards-pane" type="button" role="tab" aria-controls="infra-standards-pane" aria-selected="false">
+            Viwango vya Miundombinu ya Shule
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="infra-tabs-content">
+    <div class="tab-pane fade show active" id="infra-items-pane" role="tabpanel" aria-labelledby="infra-items-tab" tabindex="0">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title mb-0">Vipengele vya Miundombinu</h4>
+                <button type="button" class="btn btn-success btn-sm" id="create-item-btn">
+                    <i class="ri-add-line align-bottom me-1"></i> Ongeza Kipengele
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive table-card mt-1 mb-1">
+                    <table class="table align-middle table-nowrap" id="items-datatable">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="5%">Na.</th>
+                                <th>Msimbo</th>
+                                <th>Jina</th>
+                                <th>Kundi</th>
+                                <th>Kipimo</th>
+                                <th>Hali</th>
+                                <th>Imesasishwa</th>
+                                <th class="text-center" width="12%">Vitendo</th>
+                            </tr>
+                        </thead>
+                        <tbody class="list form-check-all"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="infra-standards-pane" role="tabpanel" aria-labelledby="infra-standards-tab" tabindex="0">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title mb-0">Viwango vya Miundombinu ya Shule</h4>
+                <button type="button" class="btn btn-primary btn-sm" id="create-standard-btn">
+                    <i class="ri-add-line align-bottom me-1"></i> Ongeza Kiwango
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive table-card mt-1 mb-1">
+                    <table class="table align-middle table-nowrap" id="standards-datatable">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="5%">Na.</th>
+                                <th>Aina ya Shule</th>
+                                <th>Aina ya Malazi</th>
+                                <th>Tahasusi</th>
+                                <th>Jinsia</th>
+                                <th>Mkondo</th>
+                                <th>Kipengele</th>
+                                <th>Idadi</th>
+                                <th>Hali</th>
+                                <th>Imesasishwa</th>
+                                <th class="text-center" width="12%">Vitendo</th>
+                            </tr>
+                        </thead>
+                        <tbody class="list form-check-all"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showItemModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title">Sajili Kipengele cha Miundombinu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Msimbo *</label>
+                            <input type="text" id="c-item-code" class="form-control" maxlength="50" placeholder="Mfano: CLASSROOM" />
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label">Jina *</label>
+                            <input type="text" id="c-item-name" class="form-control" placeholder="Mfano: Chumba cha Darasa" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Kundi</label>
+                            <input type="text" id="c-item-group-name" class="form-control" placeholder="Mfano: Madarasa" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Kipimo</label>
+                            <input type="text" id="c-item-unit" class="form-control" value="count" placeholder="Mfano: count" />
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Maelezo</label>
+                            <textarea id="c-item-description" class="form-control" rows="3" placeholder="Mfano: Idadi ya vyumba vinavyotakiwa kwa shule."></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Hali</label>
+                            <select id="c-item-is-active" class="form-select">
+                                <option value="1">Inatumika</option>
+                                <option value="0">Imesitishwa</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-danger" id="c-item-error" style="display:none;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Funga</button>
+                    <button type="button" class="btn btn-success" onclick="sajiliKipengeleMiundombinu()">Sajili</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showEditItemModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title">Badili Kipengele cha Miundombinu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <input type="hidden" id="e-item-id" />
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Msimbo *</label>
+                            <input type="text" id="e-item-code" class="form-control" maxlength="50" placeholder="Mfano: CLASSROOM" />
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label">Jina *</label>
+                            <input type="text" id="e-item-name" class="form-control" placeholder="Mfano: Chumba cha Darasa" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Kundi</label>
+                            <input type="text" id="e-item-group-name" class="form-control" placeholder="Mfano: Madarasa" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Kipimo</label>
+                            <input type="text" id="e-item-unit" class="form-control" placeholder="Mfano: count" />
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Maelezo</label>
+                            <textarea id="e-item-description" class="form-control" rows="3" placeholder="Mfano: Idadi ya vyumba vinavyotakiwa kwa shule."></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Hali</label>
+                            <select id="e-item-is-active" class="form-select">
+                                <option value="1">Inatumika</option>
+                                <option value="0">Imesitishwa</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-danger" id="e-item-error" style="display:none;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Funga</button>
+                    <button type="button" class="btn btn-success" onclick="sasishaKipengeleMiundombinu()">Hifadhi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showStandardModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title">Sajili Kiwango cha Miundombinu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Aina ya Shule *</label>
+                            <select id="c-std-school-category-id" class="form-select"></select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Aina ya Malazi</label>
+                            <select id="c-std-school-sub-category-id" class="form-select"></select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Tahasusi</label>
+                            <select id="c-std-school-specialization-id" class="form-select"></select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Jinsia ya Shule</label>
+                            <select id="c-std-school-gender-type-id" class="form-select"></select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Band ya Mkondo *</label>
+                            <select id="c-std-stream-band" class="form-select"></select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Kipengele cha Miundombinu *</label>
+                            <select id="c-std-infrastructure-item-id" class="form-select"></select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Idadi Inayotakiwa *</label>
+                            <input type="number" step="0.01" id="c-std-required-quantity" class="form-control" placeholder="Mfano: 4" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Hali</label>
+                            <select id="c-std-is-active" class="form-select">
+                                <option value="1">Inatumika</option>
+                                <option value="0">Imesitishwa</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Maelezo</label>
+                            <textarea id="c-std-notes" class="form-control" rows="3" placeholder="Mfano: Kwa Sekondari Kutwa (1-4), darasa 8 zinahitajika."></textarea>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-danger" id="c-std-error" style="display:none;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Funga</button>
+                    <button type="button" class="btn btn-success" onclick="sajiliKiwangoMiundombinu()">Sajili</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showEditStandardModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title">Badili Kiwango cha Miundombinu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <input type="hidden" id="e-std-id" />
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Aina ya Shule *</label>
+                            <select id="e-std-school-category-id" class="form-select"></select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Aina ya Malazi</label>
+                            <select id="e-std-school-sub-category-id" class="form-select"></select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Tahasusi</label>
+                            <select id="e-std-school-specialization-id" class="form-select"></select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Jinsia ya Shule</label>
+                            <select id="e-std-school-gender-type-id" class="form-select"></select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Band ya Mkondo *</label>
+                            <select id="e-std-stream-band" class="form-select"></select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Kipengele cha Miundombinu *</label>
+                            <select id="e-std-infrastructure-item-id" class="form-select"></select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Idadi Inayotakiwa *</label>
+                            <input type="number" step="0.01" id="e-std-required-quantity" class="form-control" placeholder="Mfano: 4" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Hali</label>
+                            <select id="e-std-is-active" class="form-select">
+                                <option value="1">Inatumika</option>
+                                <option value="0">Imesitishwa</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Maelezo</label>
+                            <textarea id="e-std-notes" class="form-control" rows="3" placeholder="Mfano: Kwa Sekondari Kutwa (1-4), darasa 8 zinahitajika."></textarea>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-danger" id="e-std-error" style="display:none;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Funga</button>
+                    <button type="button" class="btn btn-success" onclick="sasishaKiwangoMiundombinu()">Hifadhi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('layouts/partials/footer.ejs' , {
+    card_title :  card_title,
+    scripts : [
+            { src : '/js/datatables/dataTables.js'},
+            { src : '/js/datatables/dataTables.buttons.js'},
+            { src : '/js/datatables/buttons.dataTables.js'},
+            { src : '/js/datatables/buttons.html5.min.js'},
+            { src : '/js/datatables/jszip.min.js'},
+            { src : '/js/datatables/pdfmake.min.js'},
+            { src : '/js/datatables/vfs_fonts.js'},
+            { src : '/js/datatables/buttons.print.min.js'}
+          ]
+    }) %>
+
+<script>
+    let infraLookups = {
+        school_categories: [],
+        school_sub_categories: [],
+        school_specializations: [],
+        school_gender_types: [],
+        infrastructure_items: [],
+        stream_bands: []
+    };
+
+    const streamBandLabel = (value) => {
+        if (value === "single_stream") return "Mkondo Mmoja";
+        if (value === "multiple_stream") return "Mikondo Mingi";
+        return value || "-";
+    };
+
+    const setOptions = (selectId, items, selectedValue = "", placeholder = "-- Chagua --") => {
+        const select = $(selectId);
+        select.empty();
+        select.append(`<option value="">${placeholder}</option>`);
+        (items || []).forEach((item) => {
+            const value = String(item.id || item.value || "");
+            const selected = String(selectedValue || "") === value ? "selected" : "";
+            const label = item.name || item.label || "";
+            select.append(`<option value="${value}" ${selected}>${label}</option>`);
+        });
+    };
+
+    const loadInfraLookups = (callback = null) => {
+        ajaxRequest("/SchoolInfrastructureStandardLookups", "GET", (response) => {
+            if (Number(response?.statusCode || 306) === 300) {
+                infraLookups = response?.data || {};
+
+                const streams = (infraLookups.stream_bands || []).map((stream) => ({
+                    value: stream,
+                    label: streamBandLabel(stream)
+                }));
+
+                setOptions("#c-std-school-category-id", infraLookups.school_categories, "");
+                setOptions("#e-std-school-category-id", infraLookups.school_categories, "");
+
+                setOptions("#c-std-school-sub-category-id", infraLookups.school_sub_categories, "", "-- Si lazima --");
+                setOptions("#e-std-school-sub-category-id", infraLookups.school_sub_categories, "", "-- Si lazima --");
+
+                setOptions("#c-std-school-specialization-id", infraLookups.school_specializations, "", "-- Si lazima --");
+                setOptions("#e-std-school-specialization-id", infraLookups.school_specializations, "", "-- Si lazima --");
+
+                setOptions("#c-std-school-gender-type-id", infraLookups.school_gender_types, "", "-- Si lazima --");
+                setOptions("#e-std-school-gender-type-id", infraLookups.school_gender_types, "", "-- Si lazima --");
+
+                setOptions("#c-std-stream-band", streams, "");
+                setOptions("#e-std-stream-band", streams, "");
+
+                const itemOptions = (infraLookups.infrastructure_items || []).map((item) => ({
+                    id: item.id,
+                    name: `${item.code || ""} - ${item.name || ""}`
+                }));
+                setOptions("#c-std-infrastructure-item-id", itemOptions, "");
+                setOptions("#e-std-infrastructure-item-id", itemOptions, "");
+
+                if (typeof callback === "function") callback();
+            } else {
+                alertMessage("Tahadhari", response?.message || "Imeshindikana kuvuta lookups.", "warning");
+            }
+        }, {}, false);
+    };
+
+    const reloadItemsTable = () => {
+        $("#items-datatable").DataTable().ajax.reload(null, false);
+    };
+
+    const reloadStandardsTable = () => {
+        $("#standards-datatable").DataTable().ajax.reload(null, false);
+    };
+
+    const payloadFromItemForm = (mode = "create") => {
+        const p = mode === "edit" ? "e" : "c";
+        return {
+            code: $(`#${p}-item-code`).val(),
+            name: $(`#${p}-item-name`).val(),
+            group_name: $(`#${p}-item-group-name`).val(),
+            unit: $(`#${p}-item-unit`).val(),
+            description: $(`#${p}-item-description`).val(),
+            is_active: $(`#${p}-item-is-active`).val(),
+        };
+    };
+
+    const payloadFromStandardForm = (mode = "create") => {
+        const p = mode === "edit" ? "e" : "c";
+        return {
+            school_category_id: $(`#${p}-std-school-category-id`).val(),
+            school_sub_category_id: $(`#${p}-std-school-sub-category-id`).val(),
+            school_specialization_id: $(`#${p}-std-school-specialization-id`).val(),
+            school_gender_type_id: $(`#${p}-std-school-gender-type-id`).val(),
+            stream_band: $(`#${p}-std-stream-band`).val(),
+            infrastructure_item_id: $(`#${p}-std-infrastructure-item-id`).val(),
+            required_quantity: $(`#${p}-std-required-quantity`).val(),
+            notes: $(`#${p}-std-notes`).val(),
+            is_active: $(`#${p}-std-is-active`).val(),
+        };
+    };
+
+    const clearItemCreateForm = () => {
+        $("#c-item-error").hide();
+        $("#c-item-code").val("");
+        $("#c-item-name").val("");
+        $("#c-item-group-name").val("");
+        $("#c-item-unit").val("count");
+        $("#c-item-description").val("");
+        $("#c-item-is-active").val("1");
+    };
+
+    const clearStandardCreateForm = () => {
+        $("#c-std-error").hide();
+        $("#c-std-school-category-id").val("");
+        $("#c-std-school-sub-category-id").val("");
+        $("#c-std-school-specialization-id").val("");
+        $("#c-std-school-gender-type-id").val("");
+        $("#c-std-stream-band").val("");
+        $("#c-std-infrastructure-item-id").val("");
+        $("#c-std-required-quantity").val("");
+        $("#c-std-notes").val("");
+        $("#c-std-is-active").val("1");
+    };
+
+    $("#create-item-btn").on("click", function () {
+        clearItemCreateForm();
+        modal("showItemModal", true);
+    });
+
+    $("#create-standard-btn").on("click", function () {
+        clearStandardCreateForm();
+        loadInfraLookups(() => {
+            modal("showStandardModal", true);
+        });
+    });
+
+    function sajiliKipengeleMiundombinu() {
+        const payload = payloadFromItemForm("create");
+        if (!payload.code || !payload.name) {
+            $("#c-item-error").text("Code na Jina ni lazima.").show();
+            return;
+        }
+
+        $("#c-item-error").hide();
+        ajaxRequest(
+            "/tengenezaKipengeleMiundombinu",
+            "POST",
+            (response) => {
+                const statusCode = Number(response?.statusCode || 306);
+                alertMessage(
+                    statusCode === 300 ? "Umefanikiwa" : "Haujafanikiwa",
+                    response?.message || "Kuna tatizo, jaribu tena.",
+                    statusCode === 300 ? "success" : "warning",
+                    () => {
+                        if (statusCode === 300) {
+                            modal("showItemModal", false);
+                            reloadItemsTable();
+                            loadInfraLookups();
+                        }
+                    }
+                );
+            },
+            JSON.stringify(payload)
+        );
+    }
+
+    function BadiliItem(button) {
+        const rowData = JSON.parse(button.getAttribute("data-row"));
+        $("#e-item-error").hide();
+        $("#e-item-id").val(rowData.id || "");
+        $("#e-item-code").val(rowData.code || "");
+        $("#e-item-name").val(rowData.name || "");
+        $("#e-item-group-name").val(rowData.group_name || "");
+        $("#e-item-unit").val(rowData.unit || "count");
+        $("#e-item-description").val(rowData.description || "");
+        $("#e-item-is-active").val(Number(rowData.is_active) === 0 ? "0" : "1");
+        modal("showEditItemModal", true);
+    }
+
+    function sasishaKipengeleMiundombinu() {
+        const id = Number($("#e-item-id").val() || 0);
+        const payload = payloadFromItemForm("edit");
+
+        if (!id) {
+            $("#e-item-error").text("Kipengele hakijapatikana.").show();
+            return;
+        }
+
+        if (!payload.code || !payload.name) {
+            $("#e-item-error").text("Code na Jina ni lazima.").show();
+            return;
+        }
+
+        $("#e-item-error").hide();
+        ajaxRequest(
+            `/badiliKipengeleMiundombinu/${id}`,
+            "POST",
+            (response) => {
+                const statusCode = Number(response?.statusCode || 306);
+                alertMessage(
+                    statusCode === 300 ? "Umefanikiwa" : "Haujafanikiwa",
+                    response?.message || "Kuna tatizo, jaribu tena.",
+                    statusCode === 300 ? "success" : "warning",
+                    () => {
+                        if (statusCode === 300) {
+                            modal("showEditItemModal", false);
+                            reloadItemsTable();
+                            loadInfraLookups();
+                        }
+                    }
+                );
+            },
+            JSON.stringify(payload)
+        );
+    }
+
+    function FutaItem(button) {
+        const rowData = JSON.parse(button.getAttribute("data-row"));
+        const id = Number(rowData.id || 0);
+        if (!id) {
+            alertMessage("Haujafanikiwa", "Kipengele hakijapatikana.", "warning");
+            return;
+        }
+
+        confirmAction(
+            () => {
+                ajaxRequest(`/futaKipengeleMiundombinu/${id}`, "POST", (response) => {
+                    const statusCode = Number(response?.statusCode || 306);
+                    alertMessage(
+                        statusCode === 300 ? "Umefanikiwa" : "Haujafanikiwa",
+                        response?.message || "Kuna tatizo, jaribu tena.",
+                        statusCode === 300 ? "success" : "warning",
+                        () => {
+                            if (statusCode === 300) {
+                                reloadItemsTable();
+                                loadInfraLookups();
+                            }
+                        }
+                    );
+                });
+            },
+            "Futa",
+            "warning",
+            "Ukifuta kipengele hiki, kitaondoka kwenye setup ya viwango.",
+            "Futa Kipengele cha Miundombinu?"
+        );
+    }
+
+    function sajiliKiwangoMiundombinu() {
+        const payload = payloadFromStandardForm("create");
+        if (!payload.school_category_id || !payload.stream_band || !payload.infrastructure_item_id || payload.required_quantity === "") {
+            $("#c-std-error").text("Jaza Aina ya Shule, Band, Kipengele na Idadi Inayotakiwa.").show();
+            return;
+        }
+
+        $("#c-std-error").hide();
+        ajaxRequest(
+            "/tengenezaKiwangoMiundombinu",
+            "POST",
+            (response) => {
+                const statusCode = Number(response?.statusCode || 306);
+                alertMessage(
+                    statusCode === 300 ? "Umefanikiwa" : "Haujafanikiwa",
+                    response?.message || "Kuna tatizo, jaribu tena.",
+                    statusCode === 300 ? "success" : "warning",
+                    () => {
+                        if (statusCode === 300) {
+                            modal("showStandardModal", false);
+                            reloadStandardsTable();
+                        }
+                    }
+                );
+            },
+            JSON.stringify(payload)
+        );
+    }
+
+    function BadiliStandard(button) {
+        const rowData = JSON.parse(button.getAttribute("data-row"));
+        $("#e-std-error").hide();
+        $("#e-std-id").val(rowData.id || "");
+
+        loadInfraLookups(() => {
+            $("#e-std-school-category-id").val(String(rowData.school_category_id || ""));
+            $("#e-std-school-sub-category-id").val(String(rowData.school_sub_category_id || ""));
+            $("#e-std-school-specialization-id").val(String(rowData.school_specialization_id || ""));
+            $("#e-std-school-gender-type-id").val(String(rowData.school_gender_type_id || ""));
+            $("#e-std-stream-band").val(rowData.stream_band || "");
+            $("#e-std-infrastructure-item-id").val(String(rowData.infrastructure_item_id || ""));
+            $("#e-std-required-quantity").val(rowData.required_quantity ?? "");
+            $("#e-std-notes").val(rowData.notes || "");
+            $("#e-std-is-active").val(Number(rowData.is_active) === 0 ? "0" : "1");
+            modal("showEditStandardModal", true);
+        });
+    }
+
+    function sasishaKiwangoMiundombinu() {
+        const id = Number($("#e-std-id").val() || 0);
+        const payload = payloadFromStandardForm("edit");
+
+        if (!id) {
+            $("#e-std-error").text("Kiwango hakijapatikana.").show();
+            return;
+        }
+
+        if (!payload.school_category_id || !payload.stream_band || !payload.infrastructure_item_id || payload.required_quantity === "") {
+            $("#e-std-error").text("Jaza Aina ya Shule, Band, Kipengele na Idadi Inayotakiwa.").show();
+            return;
+        }
+
+        $("#e-std-error").hide();
+        ajaxRequest(
+            `/badiliKiwangoMiundombinu/${id}`,
+            "POST",
+            (response) => {
+                const statusCode = Number(response?.statusCode || 306);
+                alertMessage(
+                    statusCode === 300 ? "Umefanikiwa" : "Haujafanikiwa",
+                    response?.message || "Kuna tatizo, jaribu tena.",
+                    statusCode === 300 ? "success" : "warning",
+                    () => {
+                        if (statusCode === 300) {
+                            modal("showEditStandardModal", false);
+                            reloadStandardsTable();
+                        }
+                    }
+                );
+            },
+            JSON.stringify(payload)
+        );
+    }
+
+    function FutaStandard(button) {
+        const rowData = JSON.parse(button.getAttribute("data-row"));
+        const id = Number(rowData.id || 0);
+        if (!id) {
+            alertMessage("Haujafanikiwa", "Kiwango hakijapatikana.", "warning");
+            return;
+        }
+
+        confirmAction(
+            () => {
+                ajaxRequest(`/futaKiwangoMiundombinu/${id}`, "POST", (response) => {
+                    const statusCode = Number(response?.statusCode || 306);
+                    alertMessage(
+                        statusCode === 300 ? "Umefanikiwa" : "Haujafanikiwa",
+                        response?.message || "Kuna tatizo, jaribu tena.",
+                        statusCode === 300 ? "success" : "warning",
+                        () => {
+                            if (statusCode === 300) {
+                                reloadStandardsTable();
+                            }
+                        }
+                    );
+                });
+            },
+            "Futa",
+            "warning",
+            "Ukifuta kiwango hiki, hakitatumika tena kwenye setup.",
+            "Futa Kiwango cha Miundombinu?"
+        );
+    }
+
+    $(document).ready(function() {
+        loadInfraLookups();
+
+        tableData('items-datatable' ,'/MiundombinuItemsList' , 'POST',
+            [
+                {
+                    data: null,
+                    render: function (data, type, row , meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                },
+                { data: "code", name: "code", render: (data) => data || "-" },
+                { data: "name", name: "name", render: (data) => data || "-" },
+                { data: "group_name", name: "group_name", render: (data) => data || "-" },
+                { data: "unit", name: "unit", render: (data) => data || "-" },
+                {
+                    data: "is_active",
+                    name: "is_active",
+                    render: (data) => Number(data) === 1
+                        ? '<span class="badge bg-success-subtle text-success">Inatumika</span>'
+                        : '<span class="badge bg-danger-subtle text-danger">Imesitishwa</span>'
+                },
+                {
+                    data: "updated_at",
+                    name: "updated_at",
+                    render: (data) => data ? changeDateFormat(data) : "-"
+                },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        const elements = [
+                            {
+                                show : true,
+                                type : 'link',
+                                class : 'btn btn-sm btn-outline-primary me-1',
+                                icon : 'bx bx-pencil me-1',
+                                function : 'BadiliItem',
+                                btnText : 'Edit'
+                            },
+                            {
+                                show : true,
+                                type : 'link',
+                                class : 'btn btn-sm btn-outline-danger',
+                                icon : 'bx bx-trash me-1',
+                                function : 'FutaItem',
+                                btnText : 'Futa'
+                            }
+                        ];
+                        return actionButtons(row, elements);
+                    },
+                    orderable: false,
+                    searchable: false,
+                    className: "text-center"
+                }
+            ]
+        );
+
+        tableData('standards-datatable' ,'/ViwangoMiundombinuList' , 'POST',
+            [
+                {
+                    data: null,
+                    render: function (data, type, row , meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                },
+                { data: "school_category_name", name: "school_category_name", render: (data) => data || "-" },
+                { data: "school_sub_category_name", name: "school_sub_category_name", render: (data) => data || "-" },
+                { data: "school_specialization_name", name: "school_specialization_name", render: (data) => data || "-" },
+                { data: "school_gender_type_name", name: "school_gender_type_name", render: (data) => data || "-" },
+                { data: "stream_band", name: "stream_band", render: (data) => streamBandLabel(data) },
+                {
+                    data: null,
+                    name: "infrastructure_item_name",
+                    render: (data, type, row) => {
+                        const code = row.infrastructure_item_code || "";
+                        const name = row.infrastructure_item_name || "-";
+                        return code ? `${code} - ${name}` : name;
+                    }
+                },
+                { data: "required_quantity", name: "required_quantity", render: (data) => data ?? "-" },
+                {
+                    data: "is_active",
+                    name: "is_active",
+                    render: (data) => Number(data) === 1
+                        ? '<span class="badge bg-success-subtle text-success">Inatumika</span>'
+                        : '<span class="badge bg-danger-subtle text-danger">Imesitishwa</span>'
+                },
+                {
+                    data: "updated_at",
+                    name: "updated_at",
+                    render: (data) => data ? changeDateFormat(data) : "-"
+                },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        const elements = [
+                            {
+                                show : true,
+                                type : 'link',
+                                class : 'btn btn-sm btn-outline-primary me-1',
+                                icon : 'bx bx-pencil me-1',
+                                function : 'BadiliStandard',
+                                btnText : 'Edit'
+                            },
+                            {
+                                show : true,
+                                type : 'link',
+                                class : 'btn btn-sm btn-outline-danger',
+                                icon : 'bx bx-trash me-1',
+                                function : 'FutaStandard',
+                                btnText : 'Futa'
+                            }
+                        ];
+                        return actionButtons(row, elements);
+                    },
+                    orderable: false,
+                    searchable: false,
+                    className: "text-center"
+                }
+            ]
+        );
+
+        $('#infra-tabs button[data-bs-toggle="tab"]').on('shown.bs.tab', function () {
+            if ($.fn.DataTable.isDataTable('#items-datatable')) {
+                $('#items-datatable').DataTable().columns.adjust();
+            }
+            if ($.fn.DataTable.isDataTable('#standards-datatable')) {
+                $('#standards-datatable').DataTable().columns.adjust();
+            }
+        });
+    });
+</script>
+</body>
+</html>

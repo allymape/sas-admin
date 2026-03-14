@@ -1,10 +1,66 @@
-<% var card_title = '' %> 
+<%
+    var card_title = ''
+    var workflowQuery = req.query || {}
+    var headerApplicationCategoryId = String(workflowQuery.application_category_id || '').trim()
+    var headerDeletedScope = String(workflowQuery.deleted_scope || '').toLowerCase()
+    var headerShowDeleted = String(workflowQuery.show_deleted || '').toLowerCase()
+    var headerViewMode = 'active'
+
+    if (
+        headerShowDeleted === '1' ||
+        headerShowDeleted === 'true' ||
+        headerShowDeleted === 'deleted' ||
+        headerDeletedScope === 'deleted'
+    ) {
+        headerViewMode = 'deleted'
+    } else if (headerShowDeleted === 'all' || headerDeletedScope === 'all') {
+        headerViewMode = 'all'
+    }
+
+    var buildWorkflowHeaderUrl = function(mode) {
+        var params = []
+        if (headerApplicationCategoryId) {
+            params.push('application_category_id=' + encodeURIComponent(headerApplicationCategoryId))
+        }
+
+        if (mode === 'deleted') {
+            params.push('show_deleted=1')
+        } else if (mode === 'all') {
+            params.push('show_deleted=all')
+        }
+
+        return '/Workflow' + (params.length ? '?' + params.join('&') : '')
+    }
+
+    var deletedViewUrl = buildWorkflowHeaderUrl('deleted')
+    var activeViewUrl = buildWorkflowHeaderUrl('active')
+    var allViewUrl = buildWorkflowHeaderUrl('all')
+    var card_header_actions = ''
+    if (headerViewMode === 'deleted') {
+        card_header_actions = '<a href="' + activeViewUrl + '" class="btn btn-sm btn-outline-primary">Ona zilizosajiliwa</a>'
+    } else if (headerViewMode === 'all') {
+        card_header_actions = '<a href="' + activeViewUrl + '" class="btn btn-sm btn-outline-primary">Ona zilizosajiliwa</a><a href="' + deletedViewUrl + '" class="btn btn-sm btn-outline-danger">Ona zilizofutwa</a>'
+    } else {
+        card_header_actions = '<a href="' + deletedViewUrl + '" class="btn btn-sm btn-outline-danger">Ona zilizofutwa</a><a href="' + allViewUrl + '" class="btn btn-sm btn-outline-secondary">Ona zote</a>'
+    }
+%> 
 <%- include('layouts/partials/header.ejs' , {
-    title : 'Mfumo wa Utendaji Kazi',
-    page_title : 'Mfumo wa Utendaji Kazi',
-    card_title : 'Utendaji Kazi',
-    breadcrumb_main : 'Mipangilio' 
+    title : 'Muundo wa Kuchakata Maombi',
+    page_title : 'Muundo wa Kuchakata Maombi',
+    card_title : '',
+    breadcrumb_main : 'Mipangilio',
+    card_header_actions : card_header_actions
 }) %>
+<style>
+    #workflowTable th,
+    #workflowTable td {
+        border-color: transparent !important;
+    }
+
+    #workflowTable tr.workflow-row-active td {
+        background: #fff8db !important;
+    }
+</style>
 <% 
     var errorMessage = req.flash('errorMessage') 
     var successMessage = req.flash('successMessage') 
@@ -13,15 +69,20 @@
     var to = req.flash('to') 
     var from = req.flash('from') 
     var order = req.flash('order') 
+    var deletedScope = String(req.query.deleted_scope || '').toLowerCase()
+    var showDeleted = String(req.query.show_deleted || '').toLowerCase()
+    var isDeletedView = deletedScope === 'deleted' || showDeleted === '1' || showDeleted === 'true' || showDeleted === 'deleted'
 %>
   <div class="card-body">
     <div id="customerList">
         <!-- <form action="<%= eWorkflow ? `/Workflow/${eWorkflow.id}` : 'Workflow'%>" method="get" id="form-application-categories-filter">
         </form> -->
+        <% if (!isDeletedView) { %>
         <form action="/Tengenezaworkflow" method="post">
                 <div class="row mb-3">
                 <div class="col-md-12">
                     <input type="hidden" name="action" value="<%= eWorkflow ? 'kubadili' : 'kuongeza' %>">
+                    <label for="select-application-categories-filter" class="form-label">Aina ya Ombi</label>
                     <select name="application_categories" class="form-control" 
                         id="select-application-categories-filter"
                         data-choices 
@@ -47,9 +108,6 @@
                 </div>
                 <!-- <div class="col-md-2">
                     <button class="btn btn-success" type="submit">Filter</button>
-                    <% if(req.query.application_categories && req.query.application_categories.length > 0) {%>
-                        <a href="/Workflow" class="btn btn-danger ml-3">Clear</a>
-                    <% } %>
                 </div> -->
                 </div>
            
@@ -57,6 +115,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <!-- <input type="hidden"  name="application_categories" value="<%= application_categories %>"> -->
+                        <label for="from" class="form-label">Kutoka Unit</label>
                         <select name="from[]" required class="form-control" id="from"
                         data-choices 
                             data-choices-sorting-false 
@@ -72,6 +131,7 @@
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
+                        <label for="to" class="form-label">Kwenda Unit</label>
                         <select name="to[]" required class="form-control" id="to" 
                         data-choices 
                             data-choices-sorting-false 
@@ -87,6 +147,7 @@
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
+                        <label for="order" class="form-label">Step Order</label>
                         <!-- <input type="number" min="0" value="<%= eWorkflow ? eWorkflow._order : order %>" required name="order" class="form-control" placeholder="Ingiza Order 0,1 ..."> -->
                         <select name="order[]" id="order" class="form-control" 
                         data-choices 
@@ -105,15 +166,14 @@
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
+                        <label class="form-label d-block">&nbsp;</label>
                         <button type="submit" class="btn btn-<%= eWorkflow ? 'primary' : 'success'%>"><%= eWorkflow ? 'Sasisha' : 'Sajili' %></button>
-                        <% if(eWorkflow){ %>
-                            <a href="/Workflow" class="btn btn-danger ml-3"> Clear</a>
-                            <% } %>
                         </div>
                     </div>
                   </div>
             
          </form>
+         <% } %>
             <% if(errorMessage != '') { %>
                     <div class="alert alert-danger alert-dismissible alert-label-icon rounded-label shadow fade show" role="alert">
                         <i class="ri-error-warning-line label-icon"></i><strong>Error!</strong> - <%= errorMessage %>
@@ -131,10 +191,11 @@
             <table class="table align-middle table-nowrap" id="workflowTable">
                 <thead class="table-light">
                     <tr>
-                        <th scope="col" width="5%">Na.</th>
+                        <th scope="col" width="8%">Steps</th>
+                        <th >Unit</th>
                         <th >Aina</th>
-                        <th >Workflow</th>
-                        <th >Order</th>
+                        <th >Flags</th>
+                        <th >Step Order</th>
                         <th width="5%">Action</th>
                     </tr>
                 </thead>
@@ -146,6 +207,9 @@
     </div>
     </div><!-- end card -->
 <%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
+<script>
+    window.currentWorkflowEditId = <%- eWorkflow ? Number(eWorkflow.id) : 'null' %>;
+</script>
 <script type="text/javascript" src="/design/layouts/scripts/workflow_scripts.js"></script>
 </body>
 </html>

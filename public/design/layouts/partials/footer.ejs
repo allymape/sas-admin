@@ -65,7 +65,7 @@
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
     <script src="/design/assets/js/pages/notifications.init.js"></script>
       <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
-    <script src="/../js/select2.min.js"></script>
+    <script src="/js/select2.min.js"></script>
     <script src="/design/assets/js/pagination.js"></script>
     <script src="/design/assets/js/alert/confirm.js"></script>
     <script src="/design/assets/js/spin/spin.min.js"></script>
@@ -81,62 +81,122 @@
         }
         function formatState(e){return e.id?$('<span><img src="assets/images/flags/select2/'+e.element.value.toLowerCase()+'.png" class="img-flag rounded" height="18" /> '+e.text+"</span>"):e.text}function formatState(e){var t;return e.id?((t=$('<span><img class="img-flag rounded" height="18" /> <span></span></span>')).find("span").text(e.text),t.find("img").attr("src","assets/images/flags/select2/"+e.element.value.toLowerCase()+".png"),t):e.text}$(document).ready(function(){$(".js-example-basic-single").select2(),$(".js-example-basic-multiple").select2();$(".js-example-data-array").select2({data:[{id:0,text:"enhancement"},{id:1,text:"bug"},{id:2,text:"duplicate"},{id:3,text:"invalid"},{id:4,text:"wontfix"}]})}),$(".js-example-templating").select2({templateResult:formatState}),$(".select-flag-templating").select2({templateSelection:formatState}),$(".js-example-disabled").select2(),$(".js-example-disabled-multi").select2(),$(".js-programmatic-enable").on("click",function(){$(".js-example-disabled").prop("disabled",!1),$(".js-example-disabled-multi").prop("disabled",!1)}),$(".js-programmatic-disable").on("click",function(){$(".js-example-disabled").prop("disabled",!0),$(".js-example-disabled-multi").prop("disabled",!0)});
         $(function(){
-            setInterval(() => {
+            const SESSION_CHECK_INTERVAL_MS = 30000;
+            const SESSION_WARNING_THRESHOLD_SECONDS = 125;
+            const SESSION_EXPIRED_SECONDS = 0;
+
+            let isSessionPromptOpen = false;
+            let isSessionCheckInFlight = false;
+            let countdownInterval = null;
+
+            const toInt = (value, fallback = 0) => {
+                const parsed = Number.parseInt(value, 10);
+                return Number.isFinite(parsed) ? parsed : fallback;
+            };
+
+            const clearCountdown = () => {
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                }
+            };
+
+            const closeSessionPrompt = () => {
+                clearCountdown();
+                isSessionPromptOpen = false;
+            };
+
+            const extendSession = () => {
+                $.ajax({
+                    url : '/ExtendSession',
+                    type : 'post',
+                    data : {},
+                    success : (response) => {
+                        const { statusCode, message } = response || {};
+                        if (toInt(statusCode) === 300) {
+                            alertMessage('Alert', message || 'Session extended successfully', 'success', () => {}, null);
+                        } else {
+                            window.location.reload();
+                        }
+                        closeSessionPrompt();
+                    },
+                    error : (xhr , xhrStatus , xhrText) => {
+                        console.log(xhr , xhrStatus , xhrText);
+                        closeSessionPrompt();
+                    }
+                });
+            };
+
+            const showSessionPrompt = (remainSeconds) => {
+                if (isSessionPromptOpen || (window.Swal && Swal.isVisible())) return;
+
+                isSessionPromptOpen = true;
+                confirmAction(
+                    extendSession,
+                    'Extend Session',
+                    'warning',
+                    ``,
+                    'Are you still here?',
+                    `Your session is about to expire in <strong><span id="timer">${remainSeconds}</span></strong> seconds.`,
+                    () => {
+                        let timeLeft = remainSeconds;
+                        clearCountdown();
+                        countdownInterval = setInterval(() => {
+                            timeLeft -= 1;
+                            const container = window.Swal ? Swal.getHtmlContainer() : null;
+                            const timerNode = container ? container.querySelector('#timer') : null;
+                            if (timerNode) timerNode.textContent = timeLeft;
+
+                            if (timeLeft <= SESSION_EXPIRED_SECONDS) {
+                                clearCountdown();
+                                if (window.Swal) Swal.close();
+                                closeSessionPrompt();
+                                setTimeout(() => window.location.reload(), 500);
+                            }
+                        }, 1000);
+                    }
+                );
+            };
+
+            const checkSessionExpiry = () => {
+                if (isSessionCheckInFlight) return;
+                if (document.hidden) return;
+
+                isSessionCheckInFlight = true;
                 $.ajax({
                     url : '/CheckSessionExpire',
                     type : 'post',
                     data : {},
                     success : (response) => {
-                        var { remain_seconds } = response
-                        if(remain_seconds < 125){
-                            confirmAction( 
-                             () => {
-                                 $.ajax({
-                                      url : '/ExtendSession',
-                                      type : 'post',
-                                      data : {},
-                                      success : (response) => {
-                                        const {statusCode , message} = response
-                                            if(statusCode == 300){
-                                                alertMessage('Alert' , message , statusCode == 300 ? 'success' : 'error' , () => {} , null)
-                                            }else{
-                                                window.location.reload()
-                                            }
-                                      },
-                                       error : (xhr , xhrStatus , xhrText) => {
-                                            console.log(xhr , xhrStatus , xhrText);
-                                      }
-                                 })
-                            } , //call function
-                            'Extend Session' , 
-                            'warning' , 
-                            `` , 
-                            'Are you still here?',
-                            `Your session is about to expire in <strong><span id="timer">${remain_seconds}</span></strong> seconds.`,
-                            () => {
-                                    const interval = setInterval(() => {
-                                            remain_seconds--; // Decrease the time left
-                                            Swal.getHtmlContainer().querySelector('#timer').textContent = remain_seconds; // Update the timer in SweetAlert
-                                            // If time runs out, reload the page
-                                            if (remain_seconds <= 0) {
-                                                    clearInterval(interval);
-                                                    Swal.close(); // Close the SweetAlert
-                                                    setTimeout( () => {
-                                                        window.location.reload(); 
-                                                    }, 1000)
-                                                    // Reload the page to simulate session expiry
-                                            }
-                                        }, 1000);
-                            }
-                        );
-                     }
+                        const remainSeconds = toInt(response?.remain_seconds, 0);
+                        const statusCode = toInt(response?.statusCode, 300);
+
+                        if (statusCode !== 300 || remainSeconds <= SESSION_EXPIRED_SECONDS) {
+                            window.location.reload();
+                            return;
+                        }
+
+                        if (remainSeconds < SESSION_WARNING_THRESHOLD_SECONDS) {
+                            showSessionPrompt(remainSeconds);
+                        }
                     },
                     error : (xhr , xhrStatus , xhrText) => {
                         console.log(xhr , xhrStatus , xhrText);
-                        window.location.reload()
+                        if (xhr?.status === 401 || xhr?.status === 403) {
+                            window.location.reload();
+                        }
+                    },
+                    complete: () => {
+                        isSessionCheckInFlight = false;
                     }
-                 })
-            }, 780000);
+                });
+            };
+
+            checkSessionExpiry();
+            setInterval(checkSessionExpiry, SESSION_CHECK_INTERVAL_MS);
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) checkSessionExpiry();
+            });
         })
     </script>
     <% if(typeof scripts !== 'undefined' && scripts){ %>

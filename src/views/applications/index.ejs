@@ -1,0 +1,803 @@
+<%- include('../layouts/partials/header.ejs' , {
+  title : 'Applications',
+  page_title : pageTitle || 'Maombi Yote',
+  card_title : ''
+}) %>
+
+<%
+  const toStatusMeta = (statusId) => {
+    const id = Number(statusId);
+    if (id === 2) return { icon: "ri-check-line", text: "Limekubaliwa", badgeClass: "badge bg-success" };
+    if (id === 3) return { icon: "ri-close-line", text: "Limekataliwa", badgeClass: "badge bg-danger" };
+    if (id === 4) return { icon: "ri-reply-line", text: "Limerudishwa kwa Mwombaji", badgeClass: "badge bg-warning text-dark" };
+    if (id === 1) return { icon: "ri-loader-4-line", text: "Linafanyiwa kazi", badgeClass: "badge bg-info" };
+    return { icon: "ri-upload-cloud-2-line", text: "Limewasilishwa", badgeClass: "badge bg-secondary" };
+  };
+  const getCategoryIcon = (label) => {
+    const name = String(label || "").toLowerCase();
+    if (name.includes("kuanzisha shule")) return "ri-building-4-line";
+    if (name.includes("uthibitisho wa umiliki na meneja wa shule")) return "ri-shield-check-line";
+    if (name.includes("kusajili shule")) return "ri-file-list-3-line";
+    if (name.includes("kuongeza mikondo")) return "ri-git-merge-line";
+    if (name.includes("kubadili aina ya usajili")) return "ri-file-edit-line";
+    if (name.includes("kubadili mmiliki wa shule")) return "ri-user-shared-line";
+    if (name.includes("kubadili meneja wa shule")) return "ri-user-settings-line";
+    if (name.includes("kubadili jina la shule")) return "ri-edit-2-line";
+    if (name.includes("kuhamisha shule")) return "ri-route-line";
+    if (name.includes("kufuta usajili wa shule")) return "ri-delete-bin-line";
+    if (name.includes("kuongeza tahasusi")) return "ri-book-open-line";
+    if (name.includes("kuongeza dahalia")) return "ri-home-4-line";
+    if (name.includes("kuongeza bweni")) return "ri-hotel-bed-line";
+    return "ri-price-tag-3-fill";
+  };
+  const getCategoryIconColor = (label) => {
+    const name = String(label || "").toLowerCase();
+    if (name.includes("kuanzisha shule")) return "text-primary";
+    if (name.includes("uthibitisho wa umiliki na meneja wa shule")) return "text-info";
+    if (name.includes("kusajili shule")) return "text-success";
+    if (name.includes("kuongeza mikondo")) return "text-warning";
+    if (name.includes("kubadili aina ya usajili")) return "text-secondary";
+    if (name.includes("kubadili mmiliki wa shule")) return "text-danger";
+    if (name.includes("kubadili meneja wa shule")) return "text-dark";
+    if (name.includes("kubadili jina la shule")) return "text-primary";
+    if (name.includes("kuhamisha shule")) return "text-info";
+    if (name.includes("kufuta usajili wa shule")) return "text-danger";
+    if (name.includes("kuongeza tahasusi")) return "text-success";
+    if (name.includes("kuongeza dahalia")) return "text-warning";
+    if (name.includes("kuongeza bweni")) return "text-secondary";
+    return "text-muted";
+  };
+  const categories = Array.isArray(categorySummary) ? categorySummary : [];
+  const formatCount = (value) => {
+    const num = Number(value);
+    if (!Number.isFinite(num)) return "0";
+    return num.toLocaleString("en-US");
+  };
+  const statusFilters = [
+    { id: null, label: "Yote", icon: "ri-filter-3-line" },
+    { id: 0, label: "Yaliyowasilishwa", icon: "ri-upload-cloud-2-line" },
+    { id: 1, label: "Yanayochakatwa", icon: "ri-loader-4-line" },
+    { id: 2, label: "Yaliyokubaliwa", icon: "ri-check-line" },
+    { id: 3, label: "Yaliyokataliwa", icon: "ri-close-line" },
+    { id: 4, label: "Yaliyorudishwa", icon: "ri-reply-line" },
+  ];
+  const workFilters = [
+    { id: "pending", label: "Maombi Yanayosubiri", icon: "ri-time-line" },
+    { id: "handled", label: "Maombi Yaliyoshughulikiwa", icon: "ri-checkbox-circle-line" },
+  ];
+  const allCount = categories.length
+    ? categories.reduce((sum, category) => sum + (Number(category.total) || 0), 0)
+    : pagination.total;
+  const activeCategoryId = selectedCategoryId || null;
+  const activeStatusId = selectedStatusId === 0 || selectedStatusId ? Number(selectedStatusId) : null;
+  const currentWorkTab = (typeof selectedWorkTab !== "undefined" && selectedWorkTab !== null)
+    ? selectedWorkTab
+    : "";
+  const activeWorkTab = (currentWorkTab === "handled" || currentWorkTab === "pending")
+    ? currentWorkTab
+    : "pending";
+  const activeSearch = String(searchTerm || "").trim();
+  const routeBase = routeBasePath || "/applications";
+  const isMyApplications = routeBase === "/my-applications";
+  const showAttendAction = true;
+  const showStaffColumn = !(isMyApplications && activeWorkTab === "pending");
+  const showApplicantColumn = !isMyApplications;
+  const staffColumnHeader = isMyApplications ? "Afisa" : "Mwombaji";
+  const isSubmittedTab = !isMyApplications && Number(activeStatusId) === 0;
+  const loggedInStaffId = Number(req?.user?.staff_id || req?.user?.id);
+  const allowUnreadHighlight = isMyApplications && activeWorkTab !== "handled";
+  const canTakeActionForItem = (item) => {
+    if (typeof item?.can_attend === "boolean") {
+      return item.can_attend;
+    }
+
+    const approvalStatus = Number(item?.is_approved);
+    const assignedStaffId = Number(
+      item?.staff_id ||
+      item?.assigned_staff?.id ||
+      item?.current_staff?.id
+    );
+    const workflow = item?.workflow || {};
+    const allowedActions = Array.isArray(workflow?.allowed_actions)
+      ? workflow.allowed_actions
+      : [];
+    const isCurrentAssigneeByWorkflow = Boolean(workflow?.is_current_assignee);
+    const isAssignedToLoggedInStaff = Number.isFinite(loggedInStaffId)
+      && Number.isFinite(assignedStaffId)
+      && loggedInStaffId === assignedStaffId;
+
+    return [0, 1].includes(approvalStatus)
+      && (isCurrentAssigneeByWorkflow || allowedActions.length > 0 || isAssignedToLoggedInStaff);
+  };
+  const shouldHighlightUnread = (item) => {
+    const approvalStatus = Number(item?.is_approved);
+    const assignedStaffId = Number(item?.assigned_staff?.id || item?.staff_id);
+    const isPendingLike = [0, 1].includes(approvalStatus);
+
+    if (isMyApplications) {
+      return activeWorkTab !== "handled" && isPendingLike;
+    }
+
+    const isUnreadTab = activeStatusId === null || [0, 1].includes(Number(activeStatusId));
+    return isUnreadTab
+      && isPendingLike
+      && Number.isFinite(loggedInStaffId)
+      && Number.isFinite(assignedStaffId)
+      && loggedInStaffId === assignedStaffId;
+  };
+  const buildQuery = (
+    page,
+    categoryId = activeCategoryId,
+    statusId = activeStatusId,
+    workTab = activeWorkTab
+  ) => {
+    const query = [`page=${page}`, `per_page=${pagination.per_page}`];
+    if (categoryId) query.push(`application_category_id=${categoryId}`);
+    if (isMyApplications) {
+      query.push(`work_tab=${workTab}`);
+    } else if (statusId === 0 || statusId) {
+      query.push(`is_approved=${statusId}`);
+    }
+    if (activeSearch) query.push(`search=${encodeURIComponent(activeSearch)}`);
+    return query.join("&");
+  };
+  const isActiveStatus = (id) => {
+    if (id === null || id === undefined) return activeStatusId === null;
+    if (activeStatusId === null || activeStatusId === undefined) return false;
+    return Number(id) === Number(activeStatusId);
+  };
+  const pageStart = applications.length ? ((pagination.current_page - 1) * pagination.per_page) + 1 : 0;
+  const pageEnd = applications.length ? ((pagination.current_page - 1) * pagination.per_page) + applications.length : 0;
+  const pageRangeText = `${formatCount(pageStart)}-${formatCount(pageEnd)} of ${formatCount(pagination.total)}`;
+  const perPageOptions = [10, 15, 20, 50, 100];
+%>
+
+<style>
+  .tooltip.custom-black-tooltip .tooltip-inner {
+    background-color: #000;
+    color: #fff;
+  }
+
+  .tooltip.custom-black-tooltip.bs-tooltip-top .tooltip-arrow::before {
+    border-top-color: #000;
+  }
+
+  .tooltip.custom-black-tooltip.bs-tooltip-bottom .tooltip-arrow::before {
+    border-bottom-color: #000;
+  }
+
+  .tooltip.custom-black-tooltip.bs-tooltip-start .tooltip-arrow::before {
+    border-left-color: #000;
+  }
+
+  .tooltip.custom-black-tooltip.bs-tooltip-end .tooltip-arrow::before {
+    border-right-color: #000;
+  }
+
+  .mail-list .mail-list-link {
+    display: block;
+    flex: 1;
+    max-width: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+  }
+
+  .mail-list a {
+    padding: 8px 10px 8px 12px;
+    border-radius: 6px;
+    border-bottom: 1px solid var(--vz-border-color);
+  }
+
+  .mail-list a.active,
+  .mail-list a.active i {
+    color: var(--vz-primary) !important;
+  }
+
+  .mail-list a i {
+    color: inherit;
+  }
+
+  .mail-list a.active i {
+    color: inherit !important;
+  }
+
+  .blink-number {
+    animation: blinkNumber 1s step-start infinite;
+  }
+
+  @keyframes blinkNumber {
+    50% { opacity: 0.25; }
+  }
+
+  .applications-no-icons .message-list li .col-mail-1 {
+    width: 0;
+  }
+
+  .applications-no-icons .message-list li {
+    height: auto;
+    line-height: normal;
+  }
+
+  .applications-no-icons .message-list li .col-mail {
+    float: none;
+  }
+
+  .applications-no-icons .message-list li .col-mail-1 .title {
+    left: 16px;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 {
+    position: relative;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .subject {
+    display: grid;
+    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 1fr 72px 1.1fr;
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    align-items: start;
+    width: 100%;
+    gap: 10px;
+    padding: 5px 0 3px 8px;
+    box-sizing: border-box;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .subject-col {
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: flex-start;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--vz-body-color);
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .staff-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    min-width: 0;
+    max-width: none;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    line-height: 1.25;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .staff-col .applicant-name {
+    display: block;
+    width: 100%;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .category-col {
+    min-width: 0;
+    max-width: none;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .tracking-col {
+    min-width: 0;
+    max-width: none;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .school-name-col {
+    min-width: 0;
+    max-width: none;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .school-type-col {
+    min-width: 0;
+    max-width: none;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .ownership-col {
+    min-width: 0;
+    max-width: none;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .status-col {
+    min-width: 0;
+    max-width: none;
+    font-weight: 600;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    min-height: 32px;
+    padding-top: 0;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .status-col .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: auto;
+    min-height: auto;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .created-col {
+    min-width: 0;
+    max-width: none;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .attend-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 88px;
+    border: 1px solid rgba(11, 94, 59, 0.2);
+    border-radius: 999px;
+    background: #f4fbf7;
+    color: #0b5e3b;
+    text-transform: none;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    padding: 7px 12px;
+    box-shadow: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .attend-btn:hover,
+  .applications-no-icons .message-list li .col-mail-2 .attend-btn:focus {
+    background: #0b5e3b;
+    border-color: #0b5e3b;
+    color: #fff;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .attend-btn i {
+    font-size: 13px;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .attend-btn.attend-view-btn {
+    border-color: rgba(108, 117, 125, 0.25);
+    background: #f7f8fa;
+    color: #495057;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .attend-btn.attend-view-btn:hover,
+  .applications-no-icons .message-list li .col-mail-2 .attend-btn.attend-view-btn:focus {
+    background: #495057;
+    border-color: #495057;
+    color: #fff;
+  }
+
+  .applications-no-icons.with-attend-action .message-list li .col-mail-2 .subject {
+    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 1fr 72px 1.1fr 138px;
+  }
+
+  .applications-no-icons.with-attend-action .list-header-grid {
+    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 1fr 72px 1.1fr 138px;
+  }
+
+  .applications-no-icons.without-staff-column .message-list li .col-mail-2 .subject {
+    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 72px 1.1fr;
+  }
+
+  .applications-no-icons.without-staff-column .list-header-grid {
+    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 72px 1.1fr;
+  }
+
+  .applications-no-icons.without-staff-column.with-attend-action .message-list li .col-mail-2 .subject {
+    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 72px 1.1fr 138px;
+  }
+
+  .applications-no-icons.without-staff-column.with-attend-action .list-header-grid {
+    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 72px 1.1fr 138px;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .action-col {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    text-align: right;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: nowrap;
+    text-transform: none;
+  }
+
+  .applications-no-icons .message-list li:nth-child(odd) {
+    background-color: rgba(53, 119, 241, 0.04);
+  }
+
+  .applications-no-icons .message-list li {
+    border-bottom: 1px solid var(--vz-border-color);
+  }
+
+  .applications-no-icons.submitted-tab .message-list li {
+    border-bottom: 1px solid #fff;
+  }
+
+  .applications-no-icons .message-list li.unread {
+    background-color: rgba(53, 119, 241, 0.1);
+  }
+
+  .applications-no-icons .message-list li.unread .subject-col {
+    font-weight: 700;
+    color: var(--vz-body-color);
+  }
+
+  .applications-no-icons .list-header-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 1fr 72px 1.1fr;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 0;
+    padding-left: 8px;
+    border-bottom: 1px solid var(--vz-border-color);
+    color: var(--vz-body-color);
+    border: 1px solid var(--vz-border-color);
+    border-radius: 6px;
+    margin-top: 8px;
+    margin-bottom: 4px;
+    box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.08);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.55px;
+    text-align: left;
+  }
+
+  .applications-no-icons .list-header-grid span {
+    display: flex;
+    align-items: flex-start;
+    text-align: left;
+    min-width: 0;
+  }
+
+  .applications-no-icons .list-header-grid .tracking-col {
+    white-space: nowrap;
+  }
+
+  .applications-no-icons .list-header-grid .status-col {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .applications-no-icons .list-header-grid .action-col {
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding-right: 20px;
+  }
+
+  .all-applications-theme .applications-no-icons .list-header-grid {
+    background-color: rgba(53, 119, 241, 0.12) !important;
+  }
+
+  .my-applications-theme .applications-no-icons .list-header-grid {
+    background-color: rgba(16, 185, 129, 0.14) !important;
+  }
+
+  html[data-layout-mode="dark"] .all-applications-theme .applications-no-icons .list-header-grid,
+  html[data-bs-theme="dark"] .all-applications-theme .applications-no-icons .list-header-grid {
+    background-color: rgba(53, 119, 241, 0.22) !important;
+  }
+
+  html[data-layout-mode="dark"] .my-applications-theme .applications-no-icons .list-header-grid,
+  html[data-bs-theme="dark"] .my-applications-theme .applications-no-icons .list-header-grid {
+    background-color: rgba(16, 185, 129, 0.24) !important;
+  }
+
+  .applications-toolbar-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .applications-per-page {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .applications-per-page select {
+    min-width: 84px;
+  }
+
+  @media (max-width: 575.98px) {
+    .applications-no-icons .message-list li .col-mail-1 {
+      width: 0;
+    }
+
+    .applications-no-icons .message-list li .col-mail-2 {
+      left: 0;
+    }
+  }
+
+  @media (max-width: 1399.98px) {
+    .applications-no-icons .message-list li .col-mail-2 .subject {
+      grid-template-columns: 1fr 1fr 1.2fr 1fr 0.95fr;
+    }
+
+    .applications-no-icons .list-header-grid {
+      grid-template-columns: 1fr 1fr 1.2fr 1fr 0.95fr;
+    }
+
+    .applications-no-icons.with-attend-action .message-list li .col-mail-2 .subject {
+      grid-template-columns: 1fr 1fr 1.2fr 1fr 0.95fr 138px;
+    }
+
+    .applications-no-icons.with-attend-action .list-header-grid {
+      grid-template-columns: 1fr 1fr 1.2fr 1fr 0.95fr 138px;
+    }
+  }
+</style>
+
+<div class="email-wrapper d-lg-flex gap-1 mx-n4 mt-n4 p-1 <%= isMyApplications ? 'my-applications-theme' : 'all-applications-theme' %>">
+  <div class="email-menu-sidebar">
+    <div class="p-4 d-flex flex-column h-100">
+      <div class="mx-n4 px-4 email-menu-sidebar-scroll" data-simplebar>
+        <div class="mail-list mt-3">
+          <a href="<%= routeBase %>?page=1&per_page=<%= pagination.per_page %>" class="<%= !activeCategoryId ? 'active' : '' %>">
+            <i class="ri-inbox-archive-line text-primary me-3 align-middle fw-medium"></i>
+            <span
+              class="mail-list-link"
+              data-bs-toggle="tooltip"
+              data-bs-custom-class="custom-black-tooltip"
+              data-bs-title="Yote"
+            >Yote</span>
+            <% if (Number(allCount) > 0) { %>
+            <span class="badge bg-danger text-white ms-auto"><span class="<%= isMyApplications && activeWorkTab === 'pending' ? 'blink-number' : '' %>"><%= formatCount(allCount) %></span></span>
+            <% } %>
+          </a>
+          <% categories.forEach((category) => { %>
+            <a
+              href="<%= routeBase %>?<%= buildQuery(1, category.id, activeStatusId, activeWorkTab) %>"
+              class="<%= Number(category.id) === Number(activeCategoryId) ? 'active' : '' %>"
+            >
+              <i class="<%= getCategoryIcon(category.label) %> <%= getCategoryIconColor(category.label) %> me-3 align-middle fw-medium"></i>
+              <span
+                class="mail-list-link"
+                data-bs-toggle="tooltip"
+                data-bs-custom-class="custom-black-tooltip"
+                data-bs-title="<%= category.label %>"
+              ><%= category.label %></span>
+              <% if (Number(category.total) > 0) { %>
+              <span class="badge bg-soft-danger text-danger ms-auto"><%= formatCount(category.total) %></span>
+              <% } %>
+            </a>
+          <% }) %>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="email-content">
+    <div class="p-4 pb-0">
+      <div class="border-bottom border-bottom-dashed">
+        <div class="row mt-n2 mb-3 mb-sm-0">
+          <div class="col col-sm-auto order-1 d-block d-lg-none">
+            <button type="button" class="btn btn-soft-success btn-icon btn-sm fs-16 email-menu-btn">
+              <i class="ri-menu-2-fill align-bottom"></i>
+            </button>
+          </div>
+          <div class="col-sm order-3 order-sm-2">
+            <div class="hstack gap-sm-1 align-items-center flex-wrap email-topbar-link">
+              <div class="applications-per-page">
+                <form method="GET" action="<%= routeBase %>">
+                  <input type="hidden" name="page" value="1">
+                  <% if (activeCategoryId) { %>
+                  <input type="hidden" name="application_category_id" value="<%= activeCategoryId %>">
+                  <% } %>
+                  <% if (isMyApplications) { %>
+                  <input type="hidden" name="work_tab" value="<%= activeWorkTab %>">
+                  <% } else if (activeStatusId === 0 || activeStatusId) { %>
+                  <input type="hidden" name="is_approved" value="<%= activeStatusId %>">
+                  <% } %>
+                  <% if (activeSearch) { %>
+                  <input type="hidden" name="search" value="<%= activeSearch %>">
+                  <% } %>
+                  <select id="applications-per-page" name="per_page" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <% perPageOptions.forEach((size) => { %>
+                      <option value="<%= size %>" <%= Number(pagination.per_page) === size ? 'selected' : '' %>><%= size %></option>
+                    <% }) %>
+                  </select>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="col-auto order-2 order-sm-3">
+            <div class="d-flex gap-sm-1 email-topbar-link">
+              <a href="<%= routeBase %>?<%= buildQuery(pagination.current_page) %>" class="btn btn-ghost-secondary btn-icon shadow-none btn-sm fs-16"><i class="ri-refresh-line align-bottom"></i></a>
+              <a
+                href="<%= routeBase %>?<%= buildQuery(Math.max(1, pagination.current_page - 1)) %>"
+                class="btn btn-ghost-secondary btn-icon shadow-none btn-sm fs-16 <%= pagination.current_page <= 1 ? 'disabled' : '' %>"
+                aria-label="Previous page"
+              >
+                <i class="ri-arrow-left-s-line align-bottom"></i>
+              </a>
+              <a
+                href="<%= routeBase %>?<%= buildQuery(Math.min(pagination.last_page, pagination.current_page + 1)) %>"
+                class="btn btn-ghost-secondary btn-icon shadow-none btn-sm fs-16 <%= pagination.current_page >= pagination.last_page ? 'disabled' : '' %>"
+                aria-label="Next page"
+              >
+                <i class="ri-arrow-right-s-line align-bottom"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="row align-items-end mt-3">
+          <div class="col">
+            <div id="mail-filter-navlist">
+              <ul class="nav nav-tabs nav-tabs-custom gap-1 text-center border-bottom-0" role="tablist">
+                <% if (isMyApplications) { %>
+                  <% workFilters.forEach((filter) => { %>
+                    <li class="nav-item">
+                      <a
+                        href="<%= routeBase %>?<%= buildQuery(1, activeCategoryId, null, filter.id) %>"
+                        class="nav-link fw-semibold <%= activeWorkTab === filter.id ? 'active' : '' %>"
+                      >
+                        <i class="<%= filter.icon %> align-bottom d-inline-block"></i>
+                        <span class="ms-1 d-none d-sm-inline-block"><%= filter.label %></span>
+                      </a>
+                    </li>
+                  <% }) %>
+                <% } else { %>
+                  <% statusFilters.forEach((filter) => { %>
+                    <li class="nav-item">
+                      <a
+                        href="<%= routeBase %>?<%= buildQuery(1, activeCategoryId, filter.id) %>"
+                        class="nav-link fw-semibold <%= isActiveStatus(filter.id) ? 'active' : '' %>"
+                      >
+                        <i class="<%= filter.icon %> align-bottom d-inline-block"></i>
+                        <span class="ms-1 d-none d-sm-inline-block"><%= filter.label %></span>
+                      </a>
+                    </li>
+                  <% }) %>
+                <% } %>
+              </ul>
+            </div>
+          </div>
+          <div class="col-auto">
+            <div class="applications-toolbar-meta mb-2">
+              <div class="text-muted"><%= pageRangeText %></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <% if (!success) { %>
+        <div class="alert alert-warning mt-3">Failed to load applications.</div>
+      <% } %>
+
+      <div class="message-list-content mx-n4 px-4 message-list-scroll applications-no-icons <%= showAttendAction ? 'with-attend-action' : '' %> <%= !showStaffColumn ? 'without-staff-column' : '' %> <%= isSubmittedTab ? 'submitted-tab' : '' %>" data-simplebar>
+        <div class="list-header-grid">
+          <span class="category-col">Aina ya Ombi</span>
+          <span class="tracking-col">Namba ya ombi</span>
+          <span class="school-name-col">Jina la Shule</span>
+          <span class="school-type-col">Aina ya Shule</span>
+          <span class="ownership-col">Umiliki</span>
+          <% if (showStaffColumn) { %><span class="staff-col"><%= staffColumnHeader %></span><% } %>
+          <span class="status-col">Hali</span>
+          <span class="created-col">Muda</span>
+          <% if (showAttendAction) { %><span class="action-col">Hatua</span><% } %>
+        </div>
+        <ul class="message-list">
+          <% if (applications.length === 0) { %>
+            <li>
+              <div class="col-mail col-mail-2 text-center text-danger py-2">No applications found.</div>
+            </li>
+          <% } %>
+
+          <% applications.forEach((item, index) => { %>
+            <% const status = toStatusMeta(item.is_approved); %>
+            <% const canTakeAction = (isMyApplications && activeWorkTab === "pending")
+              ? true
+              : canTakeActionForItem(item); %>
+            <li class="<%= shouldHighlightUnread(item) ? 'unread' : '' %>">
+              <div class="col-mail col-mail-1"></div>
+              <div class="col-mail col-mail-2">
+                <div class="subject">
+                  <span class="subject-col category-col" data-bs-toggle="tooltip" data-bs-custom-class="custom-black-tooltip" data-bs-title="<%= item.application_category?.app_name || '-' %>"><%= item.application_category?.app_name || "-" %></span>
+                  <span class="subject-col tracking-col" data-bs-toggle="tooltip" data-bs-custom-class="custom-black-tooltip" data-bs-title="<%= item.tracking_number || '-' %>"><%= item.tracking_number || "-" %></span>
+                  <span class="subject-col school-name-col" data-bs-toggle="tooltip" data-bs-custom-class="custom-black-tooltip" data-bs-title="<%= item.establishing_school?.school_name || '-' %>"><%= item.establishing_school?.school_name || "-" %></span>
+                  <span class="subject-col school-type-col" data-bs-toggle="tooltip" data-bs-custom-class="custom-black-tooltip" data-bs-title="<%= item.establishing_school?.school_type || '-' %>"><%= item.establishing_school?.school_type || "-" %></span>
+                  <span class="subject-col ownership-col" data-bs-toggle="tooltip" data-bs-custom-class="custom-black-tooltip" data-bs-title="<%= item.establishing_school?.registry_type?.registry || '-' %>"><%= item.establishing_school?.registry_type?.registry || "-" %></span>
+                  <% if (showStaffColumn) { %>
+                    <% if (showApplicantColumn) { %>
+                      <span class="subject-col staff-col" data-bs-toggle="tooltip" data-bs-custom-class="custom-black-tooltip" data-bs-title="<%= item.applicant?.name || '' %>">
+                        <span class="applicant-name"><%= item.applicant?.name || "" %></span>
+                      </span>
+                    <% } else { %>
+                      <span class="subject-col staff-col" data-bs-toggle="tooltip" data-bs-custom-class="custom-black-tooltip" data-bs-title="<%= item.assigned_staff?.cheo || '' %>">
+                        <%= item.assigned_staff?.cheo || "" %>
+                      </span>
+                    <% } %>
+                  <% } %>
+                  <span class="subject-col status-col">
+                    <span
+                      class="<%= status.badgeClass %>"
+                      data-bs-toggle="tooltip"
+                      data-bs-custom-class="custom-black-tooltip"
+                      data-bs-title="<%= status.text %>"
+                      aria-label="<%= status.text %>"
+                    ><i class="<%= status.icon %>"></i></span>
+                  </span>
+                  <span class="subject-col created-col" data-bs-toggle="tooltip" data-bs-custom-class="custom-black-tooltip" data-bs-title="<%= item.created_at ? dateFormat(item.created_at, 'DD MMM YYYY, HH:mm') : '-' %>">
+                    <%= item.created_at ? dateFormat(item.created_at, "DD MMM YYYY, HH:mm") : "-" %>
+                  </span>
+                  <% if (showAttendAction) { %>
+                    <span class="subject-col action-col">
+                      <% if (item.tracking_number) { %>
+                        <a
+                          href="/my-applications/<%= encodeURIComponent(item.tracking_number) %>/attend#overview-info"
+                          class="btn btn-sm attend-btn <%= canTakeAction ? '' : 'attend-view-btn' %>"
+                        ><i class="<%= canTakeAction ? 'ri-arrow-right-up-line' : 'ri-eye-line' %> align-bottom"></i><%= canTakeAction ? 'Fungua' : 'Tazama' %></a>
+                      <% } else { %>
+                        -
+                      <% } %>
+                    </span>
+                  <% } %>
+                </div>
+              </div>
+            </li>
+          <% }) %>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (window.bootstrap && bootstrap.Tooltip) {
+      document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
+        bootstrap.Tooltip.getOrCreateInstance(el);
+      });
+    }
+
+    const topSearchForm = document.querySelector("#page-topbar .app-search");
+    const topSearchInput = document.getElementById("search-options");
+    if (topSearchForm && topSearchInput) {
+      topSearchInput.value = <%- JSON.stringify(activeSearch) %>;
+      topSearchForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        const searchValue = (topSearchInput.value || "").trim();
+        const params = new URLSearchParams();
+        params.set("page", "1");
+        params.set("per_page", "<%= pagination.per_page %>");
+
+        <% if (activeCategoryId) { %>
+        params.set("application_category_id", "<%= activeCategoryId %>");
+        <% } %>
+
+        <% if (isMyApplications) { %>
+        params.set("work_tab", "<%= activeWorkTab %>");
+        <% } else if (activeStatusId === 0 || activeStatusId) { %>
+        params.set("is_approved", "<%= activeStatusId %>");
+        <% } %>
+
+        if (searchValue) params.set("search", searchValue);
+        window.location.href = "<%= routeBase %>?" + params.toString();
+      }, true);
+    }
+  });
+</script>
+
+<%- include('../layouts/partials/footer.ejs' , {
+  card_title : ''
+}) %>

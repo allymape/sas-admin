@@ -1,0 +1,360 @@
+<% var card_title = '' 
+   const {page , per_page , tab} = req.query 
+%> 
+<% const has_pagination = page != undefined && per_page != undefined ? page > 0 || per_page > 0  : false   %>
+<% const kaimisha = tab != undefined && tab == 'kaimisha' ? true : false   %>
+<%- include('layouts/partials/header.ejs' , {
+    title : 'Profile',
+    page_title : 'My Profile',
+    card_title : '',
+    breadcrumb_main : 'Dashboard' 
+}) %>
+  <div class="card-body">
+                    <div class="position-relative mx-n4 mt-n4">
+                        <div class=" profile-wid-bg profile-setting-img" style="height: 110px;">
+                            <img src="/design/assets/images/login_bg.png" class="profile-wid-img" alt="">
+                            <div class="overlay-content">
+                                <div class="text-end p-3">
+                                    <div class="p-0 ms-auto rounded-circle profile-photo-edit">
+                                       
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xxl-3">
+                            <div class="card mt-n5">
+                                <div class="card-body p-4">
+                                    <div class="text-center">
+                                        <div class="profile-user position-relative d-inline-block mx-auto  mb-4">
+                                            <img src="/design/assets/images/users/user-dummy-img.jpg"
+                                                class="rounded-circle avatar-xl img-thumbnail user-profile-image  shadow"
+                                                alt="user-profile-image">
+                                            <div class="avatar-xs p-0 rounded-circle profile-photo-edit">
+                                                <input id="profile-img-file-input" type="file"
+                                                    class="profile-img-file-input">
+                                                <label for="profile-img-file-input"
+                                                    class="profile-photo-edit avatar-xs">
+                                                    <span class="avatar-title rounded-circle bg-light text-body shadow">
+                                                        <i class="ri-camera-fill"></i>
+                                                    </span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <h5 class="fs-16 mb-1"><%= user.name %></h5>
+                                        <p class="text-muted mb-0">(<%= req.user.cheo %>)</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end card-->
+                            <!-- <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-5">
+                                        <div class="flex-grow-1">
+                                            <h5 class="card-title mb-0">Complete Your Profile</h5>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <a href="javascript:void(0);" class="badge bg-light text-primary fs-12"><i
+                                                    class="ri-edit-box-line align-bottom me-1"></i> Edit</a>
+                                        </div>
+                                    </div>
+                                    <div class="progress animated-progress custom-progress progress-label">
+                                        <div class="progress-bar bg-danger" role="progressbar" style="width: 30%"
+                                            aria-valuenow="30" aria-valuemin="0" aria-valuemax="100">
+                                            <div class="label">30%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-4">
+                                        <div class="flex-grow-1">
+                                            <h5 class="card-title mb-0">Ofisi</h5>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <!-- <a href="javascript:void(0);" class="badge bg-light text-primary fs-12"><i
+                                                    class="ri-add-fill align-bottom me-1"></i> Add</a> -->
+                                        </div>
+                                    </div>
+                                    <% const {officeName , kanda } = req.session %>
+                                    <!-- <%= JSON.stringify(req.session)%> -->
+                                    <div class="mb-3 d-flex">
+                                        <div class="avatar-xs d-block flex-shrink-0 me-3">
+                                            <span class="avatar-title rounded-circle fs-16 bg-dark text-light shadow">
+                                                <i class=" ri-building-2-fill"></i>
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control" id="gitUsername" placeholder="Office" disabled readonly
+                                            value="<%= officeName %>">
+                                    </div>
+                                   <% if(kanda && req.user.district_code ){ %>
+                                     <div class="mb-3 d-flex">
+                                        <div class="avatar-xs d-block flex-shrink-0 me-3">
+                                            <span class="avatar-title rounded-circle fs-16 bg-primary shadow">
+                                                <i class="ri-map-pin-2-fill"></i>
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control" id="websiteInput" readonly disabled
+                                            placeholder="kanda" value="<%= kanda %>">
+                                    </div>
+                                    <% } %>
+                                 
+                                </div>
+                            </div>
+                            <!--end card-->
+                        </div>
+                        <!--end col-->
+                        <div class="col-xxl-9">
+                            <div class="card mt-xxl-n5">
+                                <div class="card-header">
+                                    <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0"
+                                        role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link <%= kaimisha || has_pagination ? '' : 'active'%>" data-bs-toggle="tab" href="#personalDetails"
+                                                role="tab">
+                                                <i class="fas fa-home"></i>
+                                                Taarifa Binafsi
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link " data-bs-toggle="tab" href="#changePassword" role="tab">
+                                                <i class="far fa-user"></i>
+                                                Badili Nywila
+                                            </a>
+                                        </li>
+                                        <% if(permission(req , 'create-handover')){ %>
+                                            <li class="nav-item">
+                                            <a class="nav-link <%= kaimisha || has_pagination ? 'active' : ''%>" data-bs-toggle="tab" href="#handover" role="tab">
+                                                <i class="far fa-user"></i>
+                                                Kaimisha
+                                            </a>
+                                        </li>
+                                        <% } %>
+                                    </ul>
+                                </div>
+                                <div class="card-body p-4">
+                                    <div class="tab-content">
+                                        <div class="tab-pane <%= kaimisha || has_pagination ? '' : 'active'%>" id="personalDetails" role="tabpanel">
+                                            <form action="javascript:void(0);">
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="mb-3">
+                                                            <label for="phonenumberInput" class="form-label">Namba ya Simu</label>
+                                                            <input type="text" class="form-control"
+                                                                id="phonenumberInput"
+                                                                placeholder="Enter your phone number"
+                                                                value="<%= user.phone_no %>">
+                                                        </div>
+                                                    </div>
+                                                    <!--end col-->
+                                                    <div class="col-lg-6">
+                                                        <div class="mb-3">
+                                                            <label for="emailInput" class="form-label">Baruapepe</label>
+                                                            <input type="email" class="form-control" id="emailInput"
+                                                                placeholder="Enter your email"
+                                                                disabled readonly
+                                                                value="<%= user.email %>">
+                                                        </div>
+                                                    </div>
+                                                    <!--end col-->
+                                                    <div class="col-lg-6">
+                                                        <div class="mb-3">
+                                                            <label for="JoiningdatInput" class="form-label">Tarehe ya Kusajiliwa</label>
+                                                            <input type="text" class="form-control"
+                                                                data-provider="flatpickr" id="JoiningdatInput"
+                                                                data-date-format="d M, Y H:i:s"
+                                                                disabled readonly
+                                                                data-deafult-date="<%= user.created_at %>"
+                                                                placeholder="Select date" />
+                                                        </div>
+                                                    </div>
+                                                    <!--end col-->
+                                                    <div class="col-lg-4">
+                                                        <div class="mb-3 mt-4 pt-3 form-check form-switch form-switch-secondary">
+                                                            <label for="emailNotifyInput" class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" id="emailNotifyInput"
+                                                                <%= user.email_notify ? 'checked' : '' %> />
+                                                                Nijulishe kwa baruapepe
+                                                             </label>
+                                                        </div>
+                                                    </div>
+                                                    <!--end col-->
+                                                    <div class="col-lg-12">
+                                                        <div class="hstack gap-2 justify-content-end">
+                                                            <button type="submit" id="btn-update-details"
+                                                                class="btn btn-outline-primary">
+                                                                <span class="ri ri-user-add-fill"></span> Badili Taarifa
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <!--end col-->
+                                                </div>
+                                                <!--end row-->
+                                            </form>
+                                        </div>
+                                        <!--end tab-pane-->
+                                        <div class="tab-pane" id="changePassword" role="tabpanel">
+                                            <div class="alert alert-info"></span>
+                                              <b>Tafadhali hakikisha nywila yako mpya ina characters angalau 8 na ikiwa na mchanganyiko wa 
+                                              angalau herufi moja kubwa mfano. "ACK", herufi moja ndogo mfano. "ayz" na special character mfano. "$#-.".
+                                            </b>
+                                            </div>
+                                            <form action="" method="POST">
+                                                <div class="row g-2">
+                                                    <div class="col-lg-4">
+                                                        <div>
+                                                            <label for="oldpasswordInput" class="form-label">Nywila ya zamani*</label>
+                                                            <input type="password" class="form-control" required
+                                                                id="oldpasswordInput"
+                                                                placeholder="Nywila ya sasa ...">
+                                                        </div>
+                                                    </div>
+                                                    <!--end col-->
+                                                    <div class="col-lg-4">
+                                                        <div>
+                                                            <label for="newpasswordInput" class="form-label">Nywila mpya*</label>
+                                                            <input type="password" class="form-control" required
+                                                                id="newpasswordInput" placeholder="Nywila mpya ...">
+                                                        </div>
+                                                    </div>
+                                                    <!--end col-->
+                                                    <div class="col-lg-4">
+                                                        <div>
+                                                            <label for="confirmpasswordInput" class="form-label">Rudia nywila mpya*</label>
+                                                            <input type="password" class="form-control" required
+                                                                id="confirmpasswordInput"
+                                                                placeholder="Rudia nywila mpya ...">
+                                                        </div>
+                                                    </div>
+                                                    <!--end col-->
+                                                    <!-- <div class="col-lg-12">
+                                                        <div class="mb-3">
+                                                            <a href="javascript:void(0);"
+                                                                class="link-primary text-decoration-underline">Forgot
+                                                                Password ?</a>
+                                                        </div>
+                                                    </div> -->
+                                                    <!--end col-->
+                                                    <div class="col-lg-12">
+                                                        <div class="text-end">
+                                                            <button type="submit" id="btn-change-password" class="btn btn-success">Badili
+                                                                Nywila</button>
+                                                        </div>
+                                                    </div>
+                                                    <!--end col-->
+                                                </div>
+                                                <!--end row-->
+                                            </form>
+                                            <div class="mt-4 mb-3 border-bottom pb-2">
+                                                <h5 class="card-title">Last 10 Login History</h5>
+                                                 <div class="float-end">
+                                                    <a href="javascript:void(0);" class="link-primary">IP</a>
+                                                </div>
+                                            </div>
+                                            <% activities.forEach(item => { %>
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="flex-shrink-0 avatar-sm">
+                                                    <div
+                                                        class="avatar-title bg-light text-primary rounded-3 fs-18 shadow">
+                                                        <i class="ri-<%= item.device == 'Phone' ? 'smartphone' : 'computer'%>-line"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <h6><%= item.device %> </h6>
+                                                    <p class="text-muted mb-0"><%= item.browser %>
+                                                   - <%= dateFormat(item.created_at , 'dddd MMM DD, YYYY') %>
+                                                   at <%= dateFormat(item.created_at , 'HH:mm:ss') %>
+                                                 </p>
+                                                </div>
+                                                <div>
+                                                    <span class="badge badge-label bg-primary">
+                                                        <i class="mdi mdi-circle-medium"></i>
+                                                        <%= item.ip %>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <% }) %>
+                                        </div>
+                                        <div class="tab-pane <%= kaimisha || has_pagination ? 'active' : ''%>" id="handover" role="tabpanel">
+                                           <div id="handover-form">
+                                             <form method="POST">
+                                                <div class="row g-2">
+                                                    <div class="col-lg-3">
+                                                        <div>
+                                                            <label for="oldpasswordInput" class="form-label">Anayekaimishwa *</label>
+                                                            <select name="staff" class="form-control" required id="handover-staff"
+                                                                placeholder="Chagua Mtumishi ...">
+                                                                <option value="">Chagua Mtumishi ...</option>
+                                                                <% staffs.forEach(staff => { %>
+                                                                    <option value="<%= staff.userId%>"> <%= staff.name.toUpperCase() %> (<%= staff.role.toUpperCase() %>)</option>
+                                                                <% }) %>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <!--end col-->
+                                                    <div class="col-lg-3">
+                                                        <div>
+                                                            <label for="newpasswordInput" class="form-label">Tarehe *</label>
+                                                            <!-- <input type="text" class="form-control" required id="date" placeholder="Chagua tarehe"> -->
+                                                             <input type="text" name="date" required id="handover-date" class="form-control border-0 dash-filter-picker shadow"
+                                                                data-provider="flatpickr" 
+                                                                data-range-date="true"
+                                                                data-date-format="d M, Y"
+                                                                placeholder="<%= dateFormat(new Date() , 'DD MMM YYYY')+" to "+dateFormat(new Date() , 'DD MMM YYYY') %>"
+                                                            >
+                                                        </div>
+                                                    </div>
+                                                    <!--end col-->
+                                                    <div class="col-lg-6">
+                                                        <div>
+                                                            <label for="confirmpasswordInput" class="form-label">Sababu *</label>
+                                                            <textarea class="form-control" name="reason" rows="4" required id="handover-reason" placeholder="Sababu ya kukaimisha ..."></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12">
+                                                        <div class="text-end">
+                                                            <button type="submit" id="btn-handover" class="btn btn-success">Kaimisha</button>
+                                                        </div>
+                                                    </div>
+                                                    <!--end col-->
+                                                </div>
+                                                <!--end row-->
+                                            </form>
+                                           </div>
+                                           <div id="handover-stop" class="text-center d-none">
+                                                <button type="button" class="btn  btn-danger">
+                                                    <span class="ri-stop-circle-fill"></span> ONDOA KUKAIMISHA
+                                                </button>
+                                           </div>
+                                            <div class="mt-4 mb-3 border-bottom pb-2">
+                                                <h5 class="card-title">Taarifa za Makaimisho</h5>
+                                            </div>
+                                            <table class="table table-striped" id="handover-table">
+                                                <thead>
+                                                    <th>Na</th>
+                                                    <th>Jina</th>
+                                                    <th>Kuanzia</th>
+                                                    <th>Hadi</th>
+                                                    <th>Sababu</th>
+                                                    <th>Hali</th>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                            <%- include('./paginations/ajax_pagination') %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end col-->
+                    </div>
+                    <!--end row-->
+  </div><!-- end card -->
+<%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
+<script type="text/javascript" src="/design/layouts/scripts/profile_scripts.js"></script>
+</body>
+</html>

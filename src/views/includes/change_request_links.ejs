@@ -1,0 +1,79 @@
+<% 
+  const tabs = [
+        {
+            link : 'RipotiKuongezaMikondo',
+            title : 'Kuongeza Mikondo',
+            name : 'Mikondo',
+            permission : 'view-addition-of-streams-report'
+        },
+        {
+            link : 'RipotiKubadiliUsajili',
+            title : 'Kubadili Aina ya Usajili',
+            name : 'Usajili',
+            permission : 'view-change-registration-type'
+        },
+        {
+            link : 'RipotiKuhamishaShule',
+            title : 'Kuhamisha Shule',
+            name : 'Uhamisho',
+            permission : 'view-change-school-location-report'
+        },
+        {
+            link : 'RipotiKubadiliUmiliki',
+            title : 'Kubadili Umiliki',
+            name : 'Umiliki',
+            permission : 'view-change-school-owners-report'
+        },
+        {
+            link : 'RipotiKubadiliMeneja',
+            title : 'Kubadili Meneja',
+            name : 'Meneja',
+            permission : 'view-change-school-managers-report'
+        },
+        {
+            link : 'RipotiKubadiliJina',
+            title : 'Kubadili Jina',
+            name : 'Kubadili Jina',
+            permission : 'view-change-school-name-report'
+        },
+        {
+            link : 'RipotiKufutaShule',
+            title : 'Kufuta Usajili',
+            name : 'Kufuta',
+            permission : 'view-deregistration-report'
+        },
+        {
+            link : 'RipotiKuongezaTahasusi',
+            title : 'Kuongeza Tahasusi',
+            name : 'Tahasusi',
+            permission : 'view-addition-of-bias-report'
+        },
+        {
+            link : 'RipotiKuongezaDahalia',
+            title : 'Kuongeza Dahalia',
+            name : 'Dahalia',
+            permission : 'view-addition-of-hostel-report'
+        },
+        {
+            link : 'RipotiKuongezaBweni',
+            title : ' Kuongeza Bweni',
+            name : 'Bweni',
+            permission : 'view-addition-of-domitory-report'
+        },
+
+  ]
+ %>
+<ul class="nav nav-tabs nav-border-top nav-border-top-primary mb-3 nav-justified" role="tablist">
+    <% tabs.forEach(tab => { %>
+        <% if(permission(req , tab.permission)){ %>
+            <li class="nav-item" onclick="window.location.href='<%= tab.link %>';"  data-bs-toggle="tooltip" title="<%= tab.title %>">
+                <a class="nav-link <%= req.originalUrl.includes(tab.link) ? 'active' : '' %>" data-bs-toggle="tab" 
+                    href="<%= tab.link %>" role="tab" 
+                    aria-selected="<%= req.originalUrl == '/'+ tab.link ? 'true' : 'false' %>"
+                >
+                    <%= tab.name %>
+                </a>
+            </li>
+        <% } %>
+    <% }); %>
+</ul>

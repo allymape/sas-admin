@@ -1,0 +1,88 @@
+
+<% if([0,1].includes(is_approved)) { %>
+    <form class="mt-4">
+  <div class="row g-3">
+    <div class="col-lg-12" id="editor-div">
+      <label for="comment-editor" class="form-label">Andika Maoni</label>
+      <textarea class="ckeditor-classic" id="comment-editor" rows="3" ></textarea>
+    </div>
+    <% if(typeof sharti !== 'undefined' && req.user.sehemu == 'adsa' && typeof registry_type_id !== 'undefined' && registry_type_id == 3){ %>
+    <div class="col-lg-12" id="editor-div">
+      <label for="sharti-editor" class="form-label">Masharti ya usajili</label>
+      <textarea class="ckeditor-classic" id="sharti-editor" ><%= typeof sharti !== 'undefined' && sharti ? sharti : ''%></textarea>
+    </div>
+    <% } %>
+    <div class="col-lg-12" id="staff-div">
+      <label for="exampleFormControlTextarea1" class="form-label">Tuma kwa</label>
+      <select class="js-example-basic-single form-control bg-light border-light" id="staffs" name="state">
+        <option value="#">--Chagua--</option>
+        <% for(var i=0; i < staffs.length; i++){ %>
+        <option value="<%= staffs[i].userId %>-<%= staffs[i].roleId %>">
+          <%= staffs[i].name %> (<%= staffs[i].role %>)
+        </option>
+        <% } %>
+      </select>
+    </div>
+    <input type="hidden" value="<%= userLevel %>" id="userLevel" />
+    <input type="hidden" value="0" id="gamechanger" />
+    <div class="col-lg-12">
+    <div id="viambataDiv" class="viambataDiv d-none justify-content-lg-start">
+          <div class="form-group mb-2">
+          <select name="department" id="faili" class="form-control js-example-basic-single">
+                <option value="">Chagua Aina ya Kiambatisho</option>
+                <% for(var i=0; i < objAttachment.length; i++){ %>
+                <option value="<%= objAttachment[i].registry_id %>">
+                  <%= objAttachment[i].attachment_name %>
+                </option>
+                <% } %>
+              </select>
+        </div>
+         <div class="form-group mb-2">
+          <input type="file" name="empname" id="failiAttached" accept="application/pdf" />
+        </div>
+      <div class="form-group mb-3">
+              <button type="button" class="btn btn-success btn-sm" onclick="Pandisha()">Pandisha</button>
+              <button type="button" class="btn btn-danger btn-sm ml-4" onclick="showViambata()">Ghairi</button>
+            </div>
+    </div>
+
+    </div>
+    <div class="col-12">
+      <button type="button" onclick="showViambata()" class="btn btn-outline-secondary btn-sm" title="ambatisha kiambatisho kwenye ombi hili">
+        <i class="ri-attachment-line fs-12"></i> Bonyeza hapa kuweka Taarifa
+      </button>
+    </div>
+    <hr>
+    <div class="col-6">      
+      <button type="button" id="btn-tuma" onclick="tuma(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" 
+        title="Kwa kubonyeza kitufe hiki unatuma ombi kwa afisa/kiongozi uliyemchagua hapo juu." data-bs-toggle="tooltip" class="btn btn-primary d-none">Tuma</button>
+
+      <% if( ['w1','kw1' , 'k1','kk1','mus','kmus','adsa','kadsa','ke','kke','dsne','kdsne' , 'dlsu','kdlsu'].includes(userLevel)){ %>
+        <% if(['ke','kke'].includes(userLevel) ){ %>
+              <% if(has_adsa_commented){ %>
+                <button type="button" id="btn-thibitisha" onclick="thibitisha(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" data-bs-toggle="tooltip" 
+                  title="Kwa kubonyeza kitufe hiki unathibitisha ombi hili" class="btn btn-success">
+                  Thibitisha
+                </button>
+                &nbsp;&nbsp;
+                <button type="button" id="btn-kataa" onclick="kataa(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" data-bs-toggle="tooltip" 
+                  title="Kwa kubonyeza kitufe hiki unakataa ombi hili" 
+                  class="btn btn-danger">Kataa</button>
+            <% } %>
+        <% }else{ %>
+          <button type="button" id="btn-wasilisha" onclick="wasilisha(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" data-bs-toggle="tooltip" 
+            title="Kwa kubonyeza kitufe hiki unaliwasisha ombi hili ngazi ya juu" class="btn btn-success">
+           Wasilisha
+          </button>
+        <% }  %>
+          <button type="button" id="btn-rudisha" onclick="rudisha(`<%= commentUrl%>` , `<%= commentRedirectUrl %>`)" 
+            data-bs-toggle="tooltip" 
+            title="Kwa kubonyeza kitufe hiki unalirudisha ombi kwa mwombaji" class="btn btn-warning float-end">Rudisha kwa
+              Mwombaji
+          </button>
+      <% } %>
+    </div>
+  </div>
+  <!--end row-->
+</form>
+<% } %>

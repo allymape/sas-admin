@@ -1,0 +1,51 @@
+<% var card_title = '' %>
+<%- include('../layouts/partials/header.ejs' , {
+    title : 'Shule Zilizosajiliwa',
+    page_title : 'Taarifa ya Shule',
+    card_title : 'Angalia Taarifa ya Shule',
+    breadcrumb_main : 'Ripoti',
+}) %>
+<div class="col-xl-12">
+    <div class="card-body form-steps">
+      <% var statusCode = req.flash('statusCode') %>
+      <% var message = req.flash('message') %>
+      <% if(statusCode != '' || message != ''){ %>
+            <div class="alert alert-<%=statusCode == 300 ? 'success' : 'danger'%>"><%= message %></div>
+        <% } %>
+        <div class="step-arrow-nav mb-4">
+          <ul class="nav nav-pills custom-nav nav-justified" role="tablist">
+            <%- include('./includes/buttons.ejs') %>
+          </ul>
+        </div>
+        <div class="tab-content">
+          <%- include('./includes/school_info.ejs') %>
+          <!-- end tab pane -->
+           <%- include('./includes/owner.ejs') %>
+          <!-- end tab pane -->
+           <%- include('./includes/manager.ejs') %>
+          <!-- end tab pane -->
+            <%- include('./includes/school_combinations.ejs') %>
+          <!-- end tab pane -->
+        </div>
+        <!-- end tab content -->
+    </div>
+    <!-- end card body -->
+  </div>
+  <!-- end card -->
+<%- include('../layouts/partials/footer.ejs' , {card_title :  card_title}) %>
+<script type="text/javascript" src="/design/layouts/scripts/shule_scripts.js"></script>
+<script>
+  $(function(){
+       $('#btn-save-schoolinfo').on('click' ,function(e){
+        e.preventDefault();
+          confirmAction( (response) => {
+            $(this).closest('form').submit()
+          } , confirmBtnText = 'Yes' , icon='warning' , text = `Are you sure you want to save this changes!` , 
+          title = 'Confirmation')
+       })
+       
+  })
+</script>
+</body>
+
+</html>

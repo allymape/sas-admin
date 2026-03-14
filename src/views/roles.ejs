@@ -1,0 +1,119 @@
+<% var card_title = '' %> 
+<%- include('layouts/partials/header.ejs' , {
+    title : 'Roles',
+    page_title : 'Orodha ya Roles',
+    card_title : 'Roles zilizopo',
+    breadcrumb_main : 'Mipangilio' 
+}) %>
+<div class="card-body">
+    <div class="ribbon-three ribbon-three-info">
+        <span class="badge"><%=`${pagination.total}`%></span>
+    </div>
+     <div id="customerList">
+    <div class="row g-4 mb-3">
+        <div class="col-sm-auto">
+            <div>
+                <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn" onclick="sajiliRole()"><i class="ri-add-line align-bottom me-1"></i> Sajili</button>
+                <!-- <button class="btn  btn-outline-danger" id="sync-all">
+                    Tengeneza Roles na Permission (System Defaults)
+                </button> -->
+            </div>
+        </div>
+        <div class="col-sm">
+            <div class="d-flex justify-content-sm-end">
+                <div class="search-box ms-2">
+                    <input type="text" class="form-control search" placeholder="Tafuta...">
+                    <i class="ri-search-line search-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive table-card mt-3 mb-1">
+        <table class="table align-middle table-nowrap" id="customerTable" style="width:100%">
+            <thead class="table-light">
+                <tr>
+                    <!-- <th scope="col" style="width: 50px;">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="checkAll" value="option">
+                        </div>
+                    </th> -->
+                    <th width="5%">Na.</th>
+                    <th>Jina</th>
+                    <th width="80%">Permissions</th>
+                    <th class="text-center" width="15%">Action</th>
+                </tr>
+            </thead>
+            <tbody class="list form-check-all">
+                <% for(var i = 0; i < data.length; i++){ %>
+                <tr>
+                    <td class="id"><a href="javascript:void(0);" class="fw-medium link-primary">
+                        <%= (Number(pagination.current) - 1) * Number(pagination.per_page) + i + 1 %></a></td>
+                    <td class="date"><%= data[i].role_name %></td>
+                    <td class="text-wrap">
+                            <% 
+                            var permissions = data[i].permissions;
+                            var permission_names = data[i].permission_names;
+                            // ? data[i].permissions.split(",").filter( function(el) { return el !== ''}) : []; 
+                            %>
+                            <% var hideStart = 5 %>
+                            <% var totalHidden = 0 %>
+                            <% permissions.forEach( (permission , i ) => { 
+                            if( i >= hideStart) totalHidden++;
+                            %>
+                            <span title="<%=permission_names[i]%>" 
+                                  data-bs-toggle="tooltip" 
+                                  class=" cursor-pointer badge rounded-pill permission badge-outline-<%= permission.includes('Futa ') ? 'danger' : (
+                                    permission.includes('Ona ') ? 'success' : (
+                                        permission.includes('Tengeneza') ? 'primary' : (
+                                            permission.includes('Badili') ? 'secondary' : '' ) )
+                                ) %>
+                                <%= i >= hideStart  ? 'hidden-permission' : '' %>">
+                                    <%=permission%>
+                                </span>
+                            <% }) %>
+                        <% if(permissions.length > hideStart){ %>
+                             <button type="button" class="btn btn-sm btn-rounded read-more" >
+                                <i class="ri ri-add-circle-line ri-lg text-primary" title="Ona zaidi ..." data-bs-toggle="tooltip"></i> 
+                                (<%= permissions.length - hideStart %>) More
+                            </button>
+                        <% } %>
+                    </td>
+                    <td class="text-center"> 
+                        <a class="btn btn-link text-primary add-btn"
+                        href="/EditRole/<%= data[i].id %>"><svg xmlns="http://www.w3.org/2000/svg" 
+                        width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+                        class="feather feather-edit-3"><path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></a>
+                        <button type="button" class="btn btn-link text-danger add-btn" 
+                        data-bs-toggle="modal" data-id="<%= data[i].rolesId %>" 
+                        id="create-btn" 
+                        onclick="AddZone1(this); return false;"><svg xmlns="http://www.w3.org/2000/svg" 
+                        width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+                        class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
+                    </td>
+
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+        <div class="noresult" style="display: none">
+            <div class="text-center">
+                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                <h5 class="mt-2">Sorry! No Result Found</h5>
+                <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
+            </div>
+        </div>
+    </div>
+    <%- include('paginations/html_pagination.ejs') %>
+</div>
+
+</div><!-- end card -->
+<%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
+<script type="text/javascript" src="/design/layouts/scripts/roles_scripts.js?v=20260311b"></script>
+</body>
+</html>

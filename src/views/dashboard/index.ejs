@@ -1,0 +1,826 @@
+
+<%- include('../layouts/partials/header.ejs' , {
+        title : 'Dashibodi',
+        page_title : 'Dashibodi',
+        card_title :  '',
+        breadcrumb_main : 'Dashboard' 
+}) %>
+<style>
+    .dashboard-modern {
+        --dash-accent: #198754;
+        --dash-ink: #1f2a37;
+        --dash-soft-bg: #f6f8fc;
+        --dash-soft-border: #e7edf6;
+        --dash-glow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        --dash-glow-hover: 0 16px 36px rgba(15, 23, 42, 0.12);
+    }
+
+    .dashboard-modern .page-content,
+    .dashboard-modern .main-content {
+        background: radial-gradient(1200px 500px at -10% -10%, rgba(25, 135, 84, 0.09), transparent 50%),
+                    radial-gradient(900px 400px at 110% 0%, rgba(13, 110, 253, 0.10), transparent 55%),
+                    var(--dash-soft-bg);
+    }
+
+    .dashboard-modern .dashboard-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+        color: #0f5132;
+        background: rgba(25, 135, 84, 0.14);
+        border: 1px solid rgba(25, 135, 84, 0.24);
+        border-radius: 30px;
+        padding: 0.35rem 0.65rem;
+    }
+
+    .dashboard-modern .card {
+        border: 1px solid var(--dash-soft-border);
+        border-radius: 14px;
+        box-shadow: var(--dash-glow);
+        transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+    }
+
+    .dashboard-modern .card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--dash-glow-hover);
+        border-color: rgba(25, 135, 84, 0.25);
+    }
+
+    .dashboard-modern .card .card-header {
+        border-bottom: 1px solid var(--dash-soft-border);
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        border-top-left-radius: 14px;
+        border-top-right-radius: 14px;
+    }
+
+    .dashboard-modern .card-title,
+    .dashboard-modern h4 {
+        color: var(--dash-ink);
+    }
+
+    .dashboard-modern .card-animate .avatar-title {
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28), 0 8px 18px rgba(0, 0, 0, 0.14);
+    }
+
+    .dashboard-modern .apex-charts {
+        min-height: 320px;
+    }
+
+
+    .dashboard-modern .swiper-slide .card {
+        background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+    }
+
+    .dashboard-modern .alert-warning {
+        border-radius: 12px;
+        border: 1px solid #ffe3a3;
+        background: #fff8e7;
+    }
+
+    .dashboard-modern .row > [class*="col-"] {
+        animation: dash-fade-up 380ms ease both;
+    }
+
+    .dashboard-modern .row > [class*="col-"]:nth-child(2) { animation-delay: 40ms; }
+    .dashboard-modern .row > [class*="col-"]:nth-child(3) { animation-delay: 80ms; }
+    .dashboard-modern .row > [class*="col-"]:nth-child(4) { animation-delay: 120ms; }
+
+    @keyframes dash-fade-up {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+<div class="dashboard-modern">
+	   <div class="row">
+    <div class="col">
+        <div class="h-100">
+            <div class="row mb-3 pb-1">
+                <div class="col-12">
+                    <div class="d-flex align-items-lg-center flex-lg-row flex-column">
+                        <div class="flex-grow-1">
+                            <h4 class="fs-16 mb-1"><%= greating %></h4>
+                            <p class="text-muted mb-0">Yaliyojiri leo Kuhusu Uanzishaji na Usajili wa Shule.</p>
+                            <span class="dashboard-badge mt-2">
+                                <i class="ri-dashboard-3-line"></i> Takwimu Moja kwa Moja
+                            </span>
+                        </div>
+                        <div class="mt-3 mt-lg-0">
+                            <form action="javascript:void(0);">
+                                <div class="row g-3 mb-0 align-items-center">
+                                    <div class="col-sm-auto">
+                                        <div class="input-group">
+                                            <input type="text"
+                                                class="form-control border-0 dash-filter-picker shadow"
+                                                data-provider="flatpickr" data-range-date="true"
+                                                data-date-format="d M, Y"
+                                                data-deafult-date="01 Jan 2022 to 31 Jan 2022"
+                                                >
+                                            <div
+                                                class="input-group-text bg-primary border-primary text-white">
+                                                <i class="ri-calendar-2-line"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--end col-->
+                                    <!-- <div class="col-auto">
+                                        <button type="button"
+                                            class="btn btn-soft-success shadow-none"><i
+                                                class="ri-add-circle-line align-middle me-1"></i>
+                                            Add Product</button>
+                                    </div> -->
+                                    <!--end col-->
+                                    <div class="col-auto">
+                                        <button type="button"
+                                            class="btn btn-soft-info btn-icon waves-effect waves-light layout-rightside-btn shadow-none"><i
+                                                class="ri-pulse-line"></i></button>
+                                    </div>
+                                    <!--end col-->
+                                </div>
+                                <!--end row-->
+                            </form>
+                        </div>
+                    </div><!-- end card header -->
+                </div>
+                <!--end col-->
+            </div>
+            <!--end row-->
+            <% if (typeof dashboardDataStale !== "undefined" && dashboardDataStale) { %>
+                <div class="row mb-2">
+                    <div class="col-12">
+                        <div class="alert alert-warning py-2 mb-2">
+                            Dashibodi imefunguka haraka. Baadhi ya takwimu zinaweza kuchelewa kusasishwa.
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+
+            <div class="row">
+                <!-- SCHOOLS SUMMARY REGISTRATIONS -->
+                 <div class="col-xl-3 col-md-6">
+                    <!-- card -->
+                    <% var label = "Shule Zilizosajiliwa" %>
+                    <div class="card card-animate" title="<%= label %>" data-bs-toggle="tooltip">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <p
+                                        class="text-uppercase fw-medium text-muted text-truncate mb-0">
+                                        <%= label %>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between mt-4">
+                                <div>
+                                    <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span
+                                            class="counter-value" data-target="<%= schoolSummaryByRegistrations.total %>">0</span>
+                                    </h4>
+                                    <a href="/RipotiZilizosajiliwa" class="text-decoration-underline">Angalia Zaidi</a>
+                                </div>
+                                <div class="avatar-sm flex-shrink-0">
+                                    <span class="avatar-title bg-success rounded fs-3">
+                                        <i class="bx bxs-school"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div><!-- end card body -->
+                    </div><!-- end card -->
+                </div><!-- end col -->
+
+
+                <!-- SCHOOLS SUMMARY BY STRUCTURE -->
+                <% var colors = ['success' , 'warning']; %>
+                <%  var icons = ['bxs-school' , 'bxs-user-circle' , 'bxs-school' , 'bxs-school']; %>
+                <% var  colorIndex = 0 %>
+                <% for (let index = 0; index < schoolSummaryByStructures.length; index++) { %>
+                <% const element = schoolSummaryByStructures[index] %>
+                <% var label = 'Kibali cha kuanzisha shule '+element.label.replace('Hakuna' , 'Bila').replace('Kuna' , 'kwa')  %>
+                    <div class="col-xl-3 col-md-6">
+                        <!-- card -->
+                        <div class="card card-animate" title="<%= label %>" data-bs-toggle="tooltip">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1 overflow-hidden">
+                                        <p
+                                            class="text-uppercase fw-medium text-muted text-truncate mb-0">
+                                            <%= label %>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-end justify-content-between mt-4">
+                                    <div>
+                                        <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span
+                                                class="counter-value" data-target="<%= element.total %>">0</span>
+                                        </h4>
+                                        <a href="/RipotiKuanzisha?structure=<%=element.id%>" class="text-decoration-underline">Angalia Zaidi</a>
+                                    </div>
+                                    <div class="avatar-sm flex-shrink-0">
+                                        <span class="avatar-title bg-<%= colors[colorIndex] %> rounded fs-3">
+                                            <i class="bx <%= icons[colorIndex] %>"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div><!-- end card body -->
+                        </div><!-- end card -->
+                    </div><!-- end col -->
+                <% colorIndex++  %>
+                <% } %>
+                <!-- APPLICATION BY STRUCTURE IF NO DATA -->
+                <% if(schoolSummaryByStructures.length == 0) {%>
+                        <div class="col-xl-3 col-md-6">
+                        <!-- card -->
+                        <div class="card card-animate" title="" data-bs-toggle="tooltip" data-bs-original-title="Kibali cha kuanzisha shule kwa majengo">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1 overflow-hidden">
+                                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0">
+                                            Kibali cha kuanzisha shule kwa majengo
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-end justify-content-between mt-4">
+                                    <div>
+                                        <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="0">0</span>
+                                        </h4>
+                                        <a href="" class="text-decoration-underline">Angalia Zaidi</a>
+                                    </div>
+                                    <div class="avatar-sm flex-shrink-0">
+                                        <span class="avatar-title bg-warning rounded fs-3">
+                                            <i class="bx bxs-user-circle"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div><!-- end card body -->
+                        </div><!-- end card -->
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                            <!-- card -->
+                            <div class="card card-animate" title="" data-bs-toggle="tooltip" data-bs-original-title="Uthibitisho wa umiliki na meneja wa shule">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">
+                                                Uthibitisho wa umiliki na meneja wa shule
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-end justify-content-between mt-4">
+                                        <div>
+                                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="0">0</span>
+                                            </h4>
+                                            <a href="/RipotiWamiliki" class="text-decoration-underline">Angalia Zaidi Wamiliki</a> <br>
+                                            <a href="/RipotiMeneja" class="text-decoration-underline">Angalia Zaidi Meneja</a>
+                                        </div>
+                                        <div class="avatar-sm flex-shrink-0">
+                                            <span class="avatar-title bg-success rounded fs-3">
+                                                <i class="bx bxs-school"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div><!-- end card body -->
+                            </div><!-- end card -->
+                        </div>
+                <% } %>
+                <!-- APPLICATION CATEGORIES EXCEPT KUANZISHA -->
+                <% var colors = ['success' , 'warning' , 'info' , 'danger']; %>
+                <% var icons = ['bxs-school' , 'bxs-user-circle' , 'bxs-school' , 'bxs-school']; %>
+                <% var  colorIndex = 0 %>
+                <%  for (let index = 0; index < 1 && schoolSummaryByApplications.length > 0; index++) { %>
+                <% const element = schoolSummaryByApplications[index] %>
+                        <div class="col-xl-3 col-md-6">
+                            <!-- card -->
+                            <div class="card card-animate" title="<%= element.label %>" data-bs-toggle="tooltip">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <p
+                                                class="text-uppercase fw-medium text-muted text-truncate mb-0">
+                                                <%= element.label %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-end justify-content-between mt-4">
+                                        <div>
+                                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span
+                                                    class="counter-value" data-target="<%= element.total %>">0</span>
+                                            </h4>
+                                            <a href="" class="text-decoration-underline">Angalia Zaidi</a>
+                                             <!-- <a href="/RipotiWamiliki" class="text-decoration-underline">Angalia Zaidi Wamiliki]</a> <br>
+                                            <a href="/RipotiMeneja" class="text-decoration-underline">Angalia Zaidi Meneja </a> -->
+                                        </div>
+                                        <div class="avatar-sm flex-shrink-0">
+                                            <span class="avatar-title bg-<%= colors[colorIndex] %> rounded fs-3">
+                                                <i class="bx <%= icons[colorIndex] %>"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div><!-- end card body -->
+                            </div><!-- end card -->
+                        </div><!-- end col -->
+                <% colorIndex++  %>
+                <% } %>
+            </div> <!-- end row-->
+
+            <div class="row">
+                <div class="col-xl-8">
+                    <div class="card">
+                        <div class="card-header border-0 align-items-center d-flex">
+                            <% const office = req.session.office
+                               const label1 = (office == 1 ? 'Mikoa' : (office == 2 ? 'Wilaya' : (office == 3 ? 'Kata' : ' ...')))
+                            %>
+                            <h4 class="card-title mb-0 flex-grow-1" id="chart-summary-title"> 
+                                Idadi ya Shule Zilizosajiliwa kwa <%= label1 %> na Aina (Awali , Msingi , Sekondari na Vyuo vya Ualimu)</h4>
+                            <div>
+                                <!-- <button type="button"
+                                    class="btn btn-soft-secondary btn-sm shadow-none">
+                                    ALL
+                                </button>
+                                <button type="button"
+                                    class="btn btn-soft-secondary btn-sm shadow-none">
+                                    1M
+                                </button>
+                                <button type="button"
+                                    class="btn btn-soft-secondary btn-sm shadow-none">
+                                    6M
+                                </button> -->
+                                <button type="button" id="view-chart-modal"
+                                data-bs-toggle="tooltip" title="Angalia kwa Ukubwa"
+                                    class="btn btn-soft-primary btn-sm shadow-none">
+                                    <i class="ri-zoom-in-line"></i>
+                                </button>
+                            </div>
+                        </div><!-- end card header -->
+
+                        <div class="card-header p-0 border-0 bg-soft-light">
+                            <div class="row g-0 text-center">
+                                <% if(schoolsSummaryByCategories.length > 0) {%>
+                                 <!-- <div class="col-6 col-sm-4">
+                                        <div class="p-3 border border-dashed border-start-0">
+                                            <h5 class="mb-1"><span class="counter-value"
+                                                    data-target="<%= sumAssociativeArray(schoolsSummaryByCategories) %>"></span></h5>
+                                            <p class="text-muted mb-0">Zote</p>
+                                        </div>
+                                  </div> -->
+                                <% for (let index = 0; index < schoolsSummaryByCategories.length; index++) {const item = schoolsSummaryByCategories[index];%>
+                                    <div class="col-6 col-sm-3">
+                                        <div class="p-3 border border-dashed border-start-0">
+                                            <h5 class="mb-1">
+                                                <span class="counter-value"
+                                                    data-target="<%= item.total %>">
+                                                </span></h5>
+                                            <p class="text-muted mb-0"><%= String(item.category || "").replace('Chuo cha' ,'Vyuo vya') %></p>
+                                        </div>
+                                    </div>
+                                    <!--end col-->
+                                <%}}%> 
+                            </div>
+                        </div><!-- end card header -->
+
+                        <div class="card-body p-0 pb-2">
+                            <div class="w-100 px-3">
+                                <div id="school_registration_charts"
+                                     data-colors='["--vz-success","--vz-danger", "--vz-info", "--vz-warning", "--vz-primary"]'
+                                    class="apex-charts" dir="ltr">
+                                </div>
+                            </div>
+                        </div><!-- end card body -->
+                    </div><!-- end card -->
+                </div><!-- end col -->
+
+                    <div class="col-xl-4">
+                    <div class="card card-height-100">
+                        <div class="card-header align-items-center d-flex">
+                            <h4 class="card-title mb-0 flex-grow-1">Asilimia ya Shule kwa Aina</h4>
+                            <div class="flex-shrink-0">
+                                <div class="dropdown card-header-dropdown">
+                                    <a class="text-reset dropdown-btn" href="#"
+                                        data-bs-toggle="dropdown" aria-haspopup="true"
+                                        aria-expanded="false">
+                                        <span class="text-muted">Report<i
+                                                class="mdi mdi-chevron-down ms-1"></i></span>
+                                    </a>
+                                    <!-- <div class="dropdown-menu dropdown-menu-end">
+                                        <a class="dropdown-item" href="#">Download Report</a>
+                                        <a class="dropdown-item" href="#">Export</a>
+                                        <a class="dropdown-item" href="#">Import</a>
+                                    </div> -->
+                                </div>
+                            </div>
+                        </div><!-- end card header -->
+
+                        <div class="card-body">
+                            <div id="aina-za-shule-kwa-asilimia"
+                                data-colors='["--vz-danger", "--vz-info", "--vz-success", "--vz-warning"]'
+                                class="apex-charts" dir="ltr">
+                            </div>
+                        </div>
+                    </div> <!-- .card-->
+                </div> <!-- .col-->
+            </div>
+
+            <div class="row">
+                <div class="col-xl-8">
+                    <div class="card">
+                        <div class="card-header align-items-center d-flex">
+                            <h4 class="card-title mb-0 flex-grow-1">Idadi ya Shule zilizosajiliwa kwa Miaka iliyoanzishwa</h4>
+                            <div class="flex-shrink-0 d-flex align-items-center gap-2">
+                                <span id="years-window-range" class="text-muted small"></span>
+                                <button id="years-prev-window" type="button" class="btn btn-soft-secondary btn-sm shadow-none" title="Miaka 10 ya nyuma">
+                                    <i class="ri-arrow-left-s-line align-middle"></i>
+                                </button>
+                                <button id="years-next-window" type="button" class="btn btn-soft-secondary btn-sm shadow-none" title="Miaka 10 ya mbele">
+                                    <i class="ri-arrow-right-s-line align-middle"></i>
+                                </button>
+                            </div>
+                        </div><!-- end card header -->
+
+                         <div class="card-body p-0 pb-2">
+                            <div class="w-100 px-3">
+                                <div id="years-chart-loading" class="text-center py-4 text-muted" style="display:none;">
+                                    <div class="spinner-border spinner-border-sm text-primary me-2" role="status" aria-hidden="true"></div>
+                                    Inapakua taarifa za miaka...
+                                </div>
+                                <div id="school_registration_by_years"
+                                     data-colors='["--vz-danger"]'
+                                    class="apex-charts" dir="ltr">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end card body -->
+                    </div>
+                </div>
+                   <div class="col-xl-4">
+                    <div class="card card-height-100">
+                        <div class="card-header align-items-center d-flex">
+                            <h4 class="card-title mb-0 flex-grow-1">UMILIKI</h4>
+                            <!-- <div class="flex-shrink-0">
+                                <button type="button"
+                                    class="btn btn-soft-primary btn-sm shadow-none">
+                                    Export Report
+                                </button>
+                            </div> -->
+                        </div>
+                        <!-- end card header -->
+
+                        <!-- card body -->
+                        <div class="card-body">
+                            <div class="px-2 py-0 mt-1">
+                                <% var totalOwners = sumAssociativeArray(schoolsSummaryByOwners)  %>
+                                <% for (let index = 0; index < schoolsSummaryByOwners.length; index++) { const element = schoolsSummaryByOwners[index]; %>
+                                    <% var ratio = totalOwners > 0 ? numberFormat((element.total / totalOwners) * 100 , '0.00') : 0 %>
+                                    <% var color = ratio > 50 ? 'success' : (ratio > 25 ? 'primary' : 'danger'); %>
+                                    <p class="mb-3"><%= element.owner %>  (<%= numberFormat(element.total) %>)</p>
+                                    <div class="d-flex align-items-center pb-2 mb-lg-4 border-bottom border-gray-100" title="Idadi: <%= numberFormat(element.total) %>" data-bs-toggle="tooltip">
+                                            <div class="flex-shrink-0 me-3">
+                                                <div class="avatar-xs">
+                                                    <div class="avatar-title bg-light rounded-circle text-muted fs-18">
+                                                        <i class="mdi mdi-office-building-marker text-info"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="progress animated-progress custom-progress progress-label">
+                                                    <div class="progress-bar bg-<%=color%>" role="progressbar" style="width: <%= ratio %>%" 
+                                                    aria-valuenow="<%= ratio %>" aria-valuemin="0" aria-valuemax="100">
+                                                    <div class="label bg-<%=color%>"><%= ratio %>%</div></div>
+                                                </div>
+                                            </div>
+                                    </div>
+                                <% } %>
+                                <% if (!schoolsSummaryByOwners || schoolsSummaryByOwners.length === 0) { %>
+                                    <div class="alert alert-light border mb-0">
+                                        <%= dashboardDataStale ? 'Taarifa za umiliki zinachelewa kupatikana, jaribu kupakia upya.' : 'Hakuna taarifa za umiliki kwa vigezo vya ofisi yako.' %>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                        <!-- end card body -->
+                    </div>
+                    <!-- end card -->
+                </div>
+                <!-- end col -->
+                <!-- .col-->
+            </div> <!-- end row-->
+
+            <div class="row">
+            
+                <div class="col-xl-6">
+                    <div class="card">
+                        <div class="card-header align-items-center d-flex">
+                            <h4 class="card-title mb-0 flex-grow-1">Trend ya Idadi ya Shule zilizosajiliwa kwa Miaka</h4>
+                            <div class="flex-shrink-0 d-flex align-items-center gap-2">
+                                <span id="trend-window-range" class="text-muted small"></span>
+                                <button id="trend-prev-window" type="button" class="btn btn-soft-secondary btn-sm shadow-none" title="Miaka 10 ya nyuma">
+                                    <i class="ri-arrow-left-s-line align-middle"></i>
+                                </button>
+                                <button id="trend-next-window" type="button" class="btn btn-soft-secondary btn-sm shadow-none" title="Miaka 10 ya mbele">
+                                    <i class="ri-arrow-right-s-line align-middle"></i>
+                                </button>
+                                <button type="button" class="btn btn-soft-info btn-sm shadow-none">
+                                    <i class="ri-file-list-3-line align-middle"></i> Generate Report
+                                </button>
+                            </div>
+                        </div><!-- end card header -->
+                         <div class="card-body p-0 pb-2">
+                            <div class="w-100 px-3">
+                                <div id="trend-chart-loading" class="text-center py-4 text-muted" style="display:none;">
+                                    <div class="spinner-border spinner-border-sm text-primary me-2" role="status" aria-hidden="true"></div>
+                                    Inapakua taarifa za trend...
+                                </div>
+                                <div id="school_registration_by_years_trend"
+                                     data-colors='["--vz-secondary"]'
+                                    class="apex-charts" dir="ltr">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end card body -->
+                    </div> <!-- .card-->
+                </div> <!-- .col-->
+
+                <%
+                const registrationPeriods = registeredSchoolsByPeriod || {};
+                const todayRecentData = registrationPeriods.todayRecent || { rows: [], total: 0, source: "recent" };
+                const isTodaySource = (todayRecentData.source || "recent") === "today";
+                const todayCount = Number(todayRecentData.todayTotal || 0);
+                const recentVisibleCount = Number(todayRecentData.recentVisible || (todayRecentData.rows || []).length || 0);
+                const firstTabLabel = isTodaySource ? "Leo" : "Karibuni";
+                const registrationTabs = [
+                    { key: "today-recent", label: firstTabLabel, rows: todayRecentData.rows || [], total: Number(todayRecentData.total || 0) },
+                    { key: "week", label: "Wiki Hii", rows: (registrationPeriods.week && registrationPeriods.week.rows) || [], total: Number((registrationPeriods.week && registrationPeriods.week.total) || 0) },
+                    { key: "month", label: "Mwezi Huu", rows: (registrationPeriods.month && registrationPeriods.month.rows) || [], total: Number((registrationPeriods.month && registrationPeriods.month.total) || 0) },
+                    { key: "year", label: "Mwaka Huu", rows: (registrationPeriods.year && registrationPeriods.year.rows) || [], total: Number((registrationPeriods.year && registrationPeriods.year.total) || 0) },
+                ];
+                %>
+                <div class="col-xl-6">
+                    <div class="card">
+                        <div class="card-header align-items-center d-flex">
+                            <h4 class="card-title mb-0 flex-grow-1">Shule Zilizosajiliwa kwa Kipindi</h4>
+                        </div>
+                        <div class="card-body">
+                            <ul class="nav nav-tabs nav-tabs-custom nav-success mb-3" role="tablist">
+                                <% for (let index = 0; index < registrationTabs.length; index++) { const tab = registrationTabs[index]; %>
+                                    <li class="nav-item">
+                                        <a class="nav-link <%= index === 0 ? 'active' : '' %>"
+                                           data-bs-toggle="tab"
+                                           href="#registration-period-<%= tab.key %>"
+                                           data-registration-period-key="<%= tab.key %>"
+                                           data-registration-period-label="<%= tab.label %>"
+                                           data-registration-period-total="<%= tab.total || 0 %>"
+                                           role="tab">
+                                            <%= tab.label %>
+                                            <span class="badge bg-light text-primary ms-2"><%= numberFormat(tab.total || 0) %></span>
+                                        </a>
+                                    </li>
+                                <% } %>
+                            </ul>
+                            <div class="tab-content text-muted">
+                                <% for (let index = 0; index < registrationTabs.length; index++) { const tab = registrationTabs[index]; const rows = tab.rows || []; %>
+                                    <div class="tab-pane <%= index === 0 ? 'active show' : '' %>" id="registration-period-<%= tab.key %>" role="tabpanel">
+                                        <% if (tab.key === "today-recent") { %>
+                                            <div class="alert alert-light border mb-2 py-2 small">
+                                                Leo: <strong><%= numberFormat(todayCount || 0) %></strong>
+                                                <% if (!isTodaySource) { %>
+                                                    | Karibuni (inayoonyeshwa): <strong><%= numberFormat(recentVisibleCount || 0) %></strong>
+                                                    <span class="text-muted ms-1">
+                                                        (Hakuna usajili wa leo, unaona orodha ya karibuni.)
+                                                    </span>
+                                                <% } %>
+                                            </div>
+                                        <% } %>
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-striped align-middle mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th style="width: 46px;">#</th>
+                                                        <th>Jina la Shule</th>
+                                                        <th>Namba ya Usajili</th>
+                                                        <th>Aina</th>
+                                                        <th>Umiliki</th>
+                                                        <th>Eneo</th>
+                                                        <th>Tarehe ya Usajili</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <% if (rows.length === 0) { %>
+                                                        <tr>
+                                                            <td colspan="7" class="text-center text-muted py-3">
+                                                                Hakuna shule zilizosajiliwa kwa kipindi hiki.
+                                                            </td>
+                                                        </tr>
+                                                    <% } %>
+                                                    <% for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) { const row = rows[rowIndex]; %>
+                                                        <tr>
+                                                            <td><%= rowIndex + 1 %></td>
+                                                            <td>
+                                                                <a href="/TaarifaSajili/<%= row.tracking_number %>" class="fw-medium link-primary">
+                                                                    <%= row.school_name || '-' %>
+                                                                </a>
+                                                            </td>
+                                                            <td><%= row.registration_number || '-' %></td>
+                                                            <td><%= row.category || '-' %></td>
+                                                            <td><%= row.ownership || '-' %></td>
+                                                            <td><%= row.region || '-' %><%= row.district ? ' / ' + row.district : '' %></td>
+                                                            <td>
+                                                                <%= row.registration_date ? (typeof dateFormat === 'function' ? dateFormat(row.registration_date, "DD/MM/YYYY") : row.registration_date) : '-' %>
+                                                            </td>
+                                                        </tr>
+                                                    <% } %>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- end row-->
+
+        </div> <!-- end .h-100-->
+
+    </div> <!-- end col -->
+
+    <div class="col-auto layout-rightside-col">
+        <div class="overlay"></div>
+        <div class="layout-rightside">
+            <div class="card h-100 rounded-0">
+                <div class="card-body p-0">
+                      <div class="p-3">
+                        <h6 class="text-muted mb-3 text-uppercase fw-semibold">TAARIFA ZAIDI</h6>
+                        <!-- Swiper -->
+                        <div class="swiper vertical-swiper" id="vertical-swiper" style="height: 900px;">
+                            <div class="swiper-wrapper">
+                                <% colors = ['success' , 'warning' , 'info' , 'danger']; %>
+                                <% icons = ['bxs-school' , 'bxs-school' , 'bxs-school' , 'bxs-school']; %>
+                                <% var  colorIndex = 0 %>
+                                <% for (let index = 1; index < schoolSummaryByApplications.length; index++) { %>
+                                    <% const element = schoolSummaryByApplications[index] %>
+                                    <% colorIndex = (colorIndex == 4 ? 0 : colorIndex) %>
+                                    <div class="swiper-slide">
+                                        <div class="col-xl-12 col-md-6">
+                                            <!-- card -->
+                                            <div class="card card-animate" title="<%= element.label %>" data-bs-toggle="tooltip">
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-grow-1 overflow-hidden">
+                                                            <p
+                                                                class="text-uppercase fw-medium text-muted text-truncate mb-0">
+                                                                <%= element.label %>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex align-items-end justify-content-between mt-4">
+                                                        <div>
+                                                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span
+                                                                    class="counter-value" data-target="<%= element.total %>">0</span>
+                                                            </h4>
+                                                            <a href="" class="text-decoration-underline">Angalia Zaidi</a>
+                                                        </div>
+                                                        <div class="avatar-sm flex-shrink-0">
+                                                            <span class="avatar-title bg-<%= colors[colorIndex] %> rounded fs-3">
+                                                                <i class="bx <%= element.label.includes('mmiliki') ? 'bxs-user-circle' : icons[colorIndex] %>"></i>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div><!-- end card body -->
+                                            </div><!-- end card -->
+                                        </div><!-- end col -->
+                                    </div>
+                                    <% colorIndex ++; %>
+                                    <% } %>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div class="p-3 mt-2">
+                        <h6 class="text-muted mb-3 text-uppercase fw-semibold">Shule Zote Zilizosajiliwa
+                        </h6>
+                        <ol class="ps-3 text-muted" id="list-by-label">
+                        </ol>
+                        <div class="mt-3 text-center" id="angalia-zote" style="display: none;">
+                            <a href="javascript:void(0);" class="text-muted text-decoration-underline">Angalia Zote <i class=" mdi mdi-arrow-down-bold-outline"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- end card-->
+        </div> <!-- end .rightbar-->
+
+    </div> <!-- end col -->
+</div>
+
+
+  <div class="modal fade" id="chartModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                      <div class="ribbon-three ribbon-three-info">
+                            <span>CHATI</span>
+                        </div>
+                    <div class="modal-header">
+                        <h4 class="modal-title"></h4>
+                        <button class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card">
+                            <div class="card-header p-0 border-0 bg-soft-light">
+                            <div class="card-title">
+                            </div>
+                            <div class="row g-0 text-center">
+                                <% if(schoolsSummaryByCategories.length > 0) {%>
+                                 <div class="col-6 col-sm-3">
+                                        <div class="p-3 border border-dashed border-start-0">
+                                            <h5 class="mb-1"><span class="counter-value"
+                                                    data-target="<%= sumAssociativeArray(schoolsSummaryByCategories) %>"></span></h5>
+                                            <p class="text-muted mb-0">Zote</p>
+                                        </div>
+                                  </div>
+                                <% for (let index = 0; index < schoolsSummaryByCategories.length; index++) {const element = schoolsSummaryByCategories[index];%>
+                                    <div class="col-6 col-sm-2">
+                                        <div class="p-3 border border-dashed border-start-0">
+                                            <h5 class="mb-1"><span class="counter-value"
+                                                    data-target="<%= element.total %>">0</span></h5>
+                                            <p class="text-muted mb-0"><%= element.category %></p>
+                                        </div>
+                                    </div>
+                                    <!--end col-->
+                                <%}}%> 
+                            </div>
+                        </div><!-- end card header -->
+                           <div class="card-body p-0 pb-2">
+                            <div class="w-100 px-3">
+                                <div id="modal-school_registration_charts"
+                                    data-colors='["--vz-info","--vz-danger", "--vz-success", "--vz-warning", "--vz-primary"]'
+                                    class="apex-charts" dir="ltr">
+                                </div>
+                            </div>
+                        </div><!-- end card body -->
+                        </div>
+                    </div>
+                 </div>
+        </div>
+	  </div>
+</div>
+
+<%- include('../layouts/partials/footer.ejs' , {card_title :  ''}) %>
+
+    <!-- JAVASCRIPT -->
+    <!-- apexcharts -->
+    <script src="/design/assets/libs/apexcharts/apexcharts.min.js"></script>
+    <!-- design/assets/libs/apexcharts/apexcharts.min.js -->
+    <!-- Vector map-->
+    <script src="/design/assets/libs/jsvectormap/js/jsvectormap.min.js"></script>
+    <script src="/design/assets/libs/jsvectormap/maps/world-merc.js"></script>
+    <!--Swiper slider js-->
+    <script src="/design/assets/libs/swiper/swiper-bundle.min.js"></script>
+    <!-- Dashboard init -->
+    <!-- <scri/../design./../views/assets/js/pages/dashboard-ecommerce.init.js"></script> -->
+    <script type="text/javascript" src="/design/layouts/scripts/dashboard_scripts.js"></script>
+    <script>
+        (function () {
+            var periodTabs = document.querySelectorAll("[data-registration-period-key]");
+            if (!periodTabs.length) return;
+
+            var getPaneRowsCount = function (tabElement) {
+                var targetSelector = tabElement.getAttribute("href");
+                if (!targetSelector) return 0;
+
+                var pane = document.querySelector(targetSelector);
+                if (!pane) return 0;
+
+                var rows = pane.querySelectorAll("tbody tr");
+                if (!rows.length) return 0;
+
+                if (rows.length === 1 && rows[0].textContent.indexOf("Hakuna shule") !== -1) {
+                    return 0;
+                }
+
+                return rows.length;
+            };
+
+            var debugTabClick = function (tabElement) {
+                var payload = {
+                    period_key: tabElement.getAttribute("data-registration-period-key") || "",
+                    period_label: tabElement.getAttribute("data-registration-period-label") || "",
+                    total_badge: Number(tabElement.getAttribute("data-registration-period-total") || 0),
+                    rows_rendered: getPaneRowsCount(tabElement)
+                };
+
+                console.log("Registered schools period tab clicked:", payload);
+            };
+
+            periodTabs.forEach(function (tab) {
+                tab.addEventListener("click", function () {
+                    // Let Bootstrap activate the tab first so DOM state is up-to-date.
+                    setTimeout(function () {
+                        debugTabClick(tab);
+                    }, 0);
+                });
+            });
+        })();
+    </script>
+   
+</body>
+</html>

@@ -1,0 +1,320 @@
+<% var card_title = '' %> 
+<%- include('layouts/partials/header.ejs' , {
+    title : 'Aina za Viambatisho',
+    page_title : 'Orodha ya AIna za Vimabatisho',
+    card_title : 'Aina za Viambatisho zilivyopo',
+    breadcrumb_main : 'Mipangilio' 
+}) %>
+    <div class="card-body">
+      
+        <div id="customerList">
+            <div class="row g-4 mb-2">
+                <div class="col-sm-auto">
+                    <div>
+                        <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"><i class="ri-add-line align-bottom me-1"></i> Sajili</button>
+                        <% if(req.query.deleted == 'true') {%>
+                            <a href="/Viambatisho" class="btn btn-outline-success" >
+                                <i class="ri-check-double-fill"></i> Active Items
+                            </a>
+                        <% }else { %>
+                            <a href="/Viambatisho?deleted=true" class="btn btn-outline-danger" >
+                                <i class="ri-delete-bin-2-line"></i> Deleted Items</a> 
+                        <% } %>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="d-flex justify-content-sm-end">
+                      <form action="/Viambatisho" method="GET" class="d-flex">
+                                <div class="search-box ms-2">
+                                    <input type="text" name="tafuta" value="<%= req.query.tafuta %>" class="form-control search" placeholder="Tafuta...">
+                                    <i class="ri-search-line search-icon"></i>
+                                </div>
+                                 <div class="ms-2">
+                                    <select name="aina_ombi" id="aina_ombi" class="form-control">
+                                        <option value=""> --- Chagua Aina ya Ombi  --</option>
+                                        <% for (let index = 0; index < categories.length; index++) { %>
+                                        <% const category = categories[index]; %>
+                                            <option value="<%= category.id %>" <%= req.query.aina_ombi == category.id ? 'selected' : '' %> > 
+                                                <%= category.name %> 
+                                            </option>
+                                        <% } %>
+                                    </select>
+                                </div>
+                                <div class="ms-2">
+                                    <select name="umiliki" id="umiliki" class="form-control">
+                                        <option value=""> --- Chagua Umiliki --</option>
+                                        <option value="0" <%=req.query.umiliki == "0" ? 'selected' : ''%> > Wote </option>
+                                        <% for (let index = 0; index < ownerships.length; index++) { %>
+                                        <% const owner = ownerships[index]; %>
+                                            <option value="<%= owner.id %>" <%= req.query.umiliki == owner.id ? 'selected' : '' %> > 
+                                                <%= owner.name %> 
+                                            </option>
+                                        <% } %>
+                                    </select>
+                                </div>
+                                <div class="ms-2">
+                                    <select name="structure" id="structure" class="form-control">
+                                        <option value=""> --- Chagua Majengo -- </option>
+                                        <option value="0" <%= req.query.structure == '0' ? 'selected' : '' %>>Wote</option>
+                                        <% for (let index = 0; index < structures.length; index++) { %>
+                                        <% const structure = structures[index]; %>
+                                            <option value="<%= structure.id %>" <%= req.query.structure == structure.id ? 'selected' : '' %> > 
+                                                <%= structure.name %> 
+                                            </option>
+                                        <% } %>
+                                    </select>
+                                </div>
+                               
+                                <div class="ms-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        Tafuta
+                                    </button>
+                                </div>
+                                <% if(req.query.umiliki || req.query.aina_ombi || req.query.structure){%>
+                                    <div class="ms-2">
+                                        <a href="/Viambatisho" class="btn btn-danger"> Clear </a>
+                                    </div>
+                                <% } %>
+                      </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive table-card mt-3 mb-1">
+                <table class="table align-middle table-nowrap" id="attachmentTypeTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" style="width: 50px;">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="checkAll" value="option">
+                                </div>
+                            </th>
+                            <th>Na.</th>
+                            <th >Jina</th>
+                            <th >Mwombaji</th>
+                            <th >Aina ya Ombi</th>
+                            <th >Majengo</th>
+                            <th >Ukubwa wa kiambata (MB)</th>
+                            <th>Watumiaji wa Ndani</th>
+                            <th >Hali</th>
+                            <th class="text-center" width="15%">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="list form-check-all">
+                    </tbody>
+                </table>
+                <div class="noresult" style="display: none">
+                    <div class="text-center">
+                        <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                        <h5 class="mt-2">Sorry! No Result Found</h5>
+                        <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Pagination Start -->
+           <%- include('paginations/ajax_pagination.ejs') %>
+           <!-- Pagination End -->
+        </div>
+    </div><!-- end card -->
+<%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
+ <!-- Modal -->
+                    <div class="modal fade zoomIn" id="deleteRecordModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                 <div class="ribbon-three ribbon-three-info">
+                                        <span class="">Fomu</span>
+                                </div>
+                                <div class="modal-header">
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btn-close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mt-2 text-center">
+                                        <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
+                                        <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
+                                            <h4>Are you Sure ?</h4>
+                                            <p class="text-muted mx-4 mb-0">Are you Sure You want to Remove this Record ?</p>
+                                            <input type="hidden" id="code-field-edit" class="form-control" placeholder="Mfano: RF01"/>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+                                        <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn w-sm btn-danger " onclick="futaHati()" id="delete-record">Yes, Delete It!</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="showModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                 <div class="ribbon-three ribbon-three-info">
+                                        <span class="">Fomu</span>
+                                </div>
+                                <div class="modal-header bg-light p-3">
+                                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+                                </div>
+                                <form>
+                                    <div class="alert alert-success shadow" role="alert" id="alertsuccess" style="display: none;">
+                                        <strong> Hongera! </strong> Kiambatisho <b>kimesajiliwa</b> kikamilifu!
+                                    </div>
+                                    <div class="alert alert-danger shadow mb-xl-0" role="alert" id="alertexist" style="display: none;">
+                                        <strong> Imeshindwa Kusajili! </strong> Kiambatisho <b>kilishasajiliwa</b> kwenye mfumo tayari!
+                                     </div>
+                                     <div class="alert alert-warning shadow shadow" role="alert" id="alertmtandao" style="display: none;">
+                                        <strong> Uh oh, kuna tatizo </strong> la <b>mtandao,</b> tafadhali jaribu tena badae!
+                                    </div>
+                                    <div class="modal-body">
+
+                                        <!-- <div class="mb-2" id="modal-id" style="display: none;">
+                                            <label for="id-field" class="form-label">ID</label>
+                                            <input type="text" id="id-field" class="form-control" placeholder="ID" readonly />
+                                        </div> -->
+
+                                        <div class="mb-2">
+                                            <label for="name-field" class="form-label">Jina la Hati</label>
+                                            <input type="text" id="name-field" class="form-control" placeholder="Mfano: Hati ya Nyumba" required />
+                                            <span style="color: red;display: none;" id="jazahati">Tafadhali jaza Jina la hati</span>
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <label for="size-field" class="form-label">Ukubwa (MB)</label>
+                                            <input type="text" id="size-field" class="form-control" placeholder="Mfano: 2" required />
+                                            <span style="color: red;display: none;" id="jazaukubwa">Jaza ukubwa na hakikisha ni namba kubwa kuliko 0.</span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label for="format-field" class="form-label">Aina</label>
+                                            <select class="form-control" data-trigger name="format_field" id="format-field" disabled>
+                                                <option value="PDF">PDF</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <label for="application-category-field" class="form-label">Aina ya ombi</label>
+                                            <select class="form-control" data-trigger name="application_category_field" id="application-category-field">
+                                                <option value="#"> Chagua </option>
+                                             
+                                            </select>
+                                            <span style="color: red;display: none;" id="ainaombi">Tafadhali chagua aina ya ombi</span>
+                                        </div>
+
+                                        <div id="majengo">
+                                            <div class="mb-2">
+                                                <label for="registration-structure-id" class="form-label">Hali ya Majengo</label>
+                                                <select class="form-control" data-trigger name="application_category_majengo" id="registration-structure-field">
+                                                    <option value=""> Chagua ... </option>
+                                                    <option value="0"> Wote </option>
+                                                    <option value="1"> Hakuna majengo </option>
+                                                    <option value="2"> Kuna majengo </option>
+                                                </select>
+                                                <span style="color: red;display: none;" id="ainaombi">Tafadhali chagua aina ya ombi</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <label for="registration-type-field" class="form-label">Aina ya Mwombaji</label>
+                                            <select class="form-control" data-trigger name="registration_type_field" id="registration-type-field">
+                                                <option value=""> Chagua </option>
+                                            </select>
+                                            <span style="color: red;display: none;" id="ainamwombaji">Tafadhali chagua aina ya Mwombaji</span>
+                                        </div>
+                                        <div class="mb-2 form-check">
+                                            <label for="backend-field" class="form-label">
+                                            <input type="checkbox" class="form-check-input" name="" id="backend-field">
+                                            Kwa Watumiaji wa ndani tu.</label>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <div class="hstack gap-2 justify-content-end">
+                                            <button type="button" class="btn btn-light" onclick="" data-bs-dismiss="modal">Funga</button>
+                                            <button type="button" class="btn btn-success" onclick="sajiliHati()" id="add-btn">Sajili</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="showEditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                 <div class="ribbon-three ribbon-three-info">
+                                        <span class="">Fomu</span>
+                                </div>
+                                <div class="modal-header bg-light p-3">
+                                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+                                </div>
+                                <form>
+                                    <div class="modal-body">
+                                        <div class="mb-2" id="modal-id" style="display: none;">
+                                            <label for="id-field" class="form-label">ID</label>
+                                            <input type="text" id="id-field" class="form-control" placeholder="ID" readonly />
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <label for="name-field2" class="form-label">Jina la Hati</label>
+                                            <input type="text" id="name-field2" class="form-control" placeholder="Mfano: Hati ya Nyumba" required />
+                                            <!-- <input type="hidden" id="id-field" class="form-control"/> -->
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <label for="size-field2" class="form-label">Ukubwa (MB)</label>
+                                            <input type="email" id="size-field2" class="form-control" placeholder="Mfano: 2" required />
+                                        </div>
+                                        <div class="mb-2">
+                                            <label for="format-field2" class="form-label">Aina</label>
+                                            <select class="form-control" data-trigger name="format2_field" id="format-field2" disabled>
+                                                <option value="PDF">PDF</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <label for="application-category-field2" class="form-label">Aina ya Ombi</label>
+                                            <select class="form-control" data-trigger name="application_category_id" id="application-category-field2">
+                                                <option value="0"> Chagua </option>
+                                            </select>
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <label for="registration-type-field2" class="form-label">Aina ya Mwombaji</label>
+                                            <select class="form-control" data-trigger name="registration_type_id" id="registration-type-field2">
+                                                <option value="0"> Chagua </option>
+                                            </select>
+                                        </div>
+                                         <div id="majengo">
+                                            <div class="mb-4">
+                                                <label for="" class="form-label">Hali ya Majengo</label>
+                                                <select class="form-control" data-trigger name="application_category_majengo" id="registration-structure-field2">
+                                                    <option value=""> Chagua ... </option>
+                                                    <option value="0"> Wote </option>
+                                                    <option value="1"> Hakuna majengo </option>
+                                                    <option value="2"> Kuna majengo </option>
+                                                </select>
+                                                <span style="color: red;display: none;" id="ainaombi">Tafadhali chagua aina ya ombi</span>
+                                            </div>
+                                        </div>
+                                         <div class="mb-2 form-check">
+                                            <label for="backend-field2" class="form-label">
+                                            <input type="checkbox" class="form-check-input" name="" id="backend-field2">
+                                            Kwa Watumiaji wa ndani tu.</label>
+                                        </div>
+                                        <div class="mb-2 mt-4">
+                                            <label for="attachment-type-status" class="form-check">
+                                                <input type="checkbox" class="form-check-input" name="status" id="attachment-type-status" /> Irudishe kuwa hai
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <div class="hstack gap-2 justify-content-end">
+                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Funga</button>
+                                            <button type="button" class="btn btn-success" onclick="updateHati()" id="add-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!--end modal -->
+<script type="text/javascript" src="design/layouts/scripts/viambatisho_scripts.js"></script>
+</body>
+</html>

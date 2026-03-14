@@ -1,0 +1,349 @@
+<% var card_title = '' %>
+<%- include('layouts/partials/header.ejs' , {
+    title : 'Aina za Hatua',
+    page_title : 'Orodha ya Aina za Hatua',
+    card_title : 'Aina za Hatua zilizopo',
+    breadcrumb_main : 'Mipangilio',
+    styles : [
+                { href: '/css/datatables/dataTables.dataTables.css' },
+                { href: '/css/datatables/buttons.dataTables.css' }
+            ]
+}) %>
+<div class="card-body">
+    <div id="customerList">
+        <% if (canCreateActionType) { %>
+        <div class="row g-4 mb-3">
+            <div class="col-sm-auto">
+                <button type="button" class="btn btn-success add-btn" id="create-btn">
+                    <i class="ri-add-line align-bottom me-1"></i> Sajili
+                </button>
+            </div>
+        </div>
+        <% } %>
+
+        <div class="col-md-12">
+            <div class="table-responsive table-card mt-3 mb-1">
+                <table class="table align-middle table-nowrap" id="datatable">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="5%">Na.</th>
+                            <th>Jina la Hatua</th>
+                            <th>Code</th>
+                            <th>Maelezo</th>
+                            <th>Imetengenezwa</th>
+                            <th>Imesasishwa</th>
+                            <th class="text-center" width="10%">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="list form-check-all"></tbody>
+                </table>
+                <div class="noresult" style="display: none">
+                    <div class="text-center">
+                        <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                            colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                        <h5 class="mt-2">Hakuna matokeo</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title">Sajili Aina ya Hatua</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="name-field" class="form-label">Jina la Hatua</label>
+                        <input type="text" id="name-field" class="form-control" placeholder="Mfano: Return" required />
+                        <span class="text-danger" style="display: none;" id="jaza-name">Tafadhali jaza jina la hatua.</span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="code-field" class="form-label">Code</label>
+                        <input type="text" id="code-field" class="form-control" placeholder="Mfano: RETURN" required />
+                        <span class="text-danger" style="display: none;" id="jaza-code">Tafadhali jaza code.</span>
+                    </div>
+                    <div class="mb-1">
+                        <label for="description-field" class="form-label">Maelezo</label>
+                        <textarea id="description-field" class="form-control" rows="3" placeholder="Maelezo ya hatua (optional)"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Funga</button>
+                        <button type="button" class="btn btn-success" onclick="sajiliAinaYaHatua()">Sajili</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showEditModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title">Badili Aina ya Hatua</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <input type="hidden" id="id-field" />
+                    <div class="mb-3">
+                        <label for="name2-field" class="form-label">Jina la Hatua</label>
+                        <input type="text" id="name2-field" class="form-control" placeholder="Mfano: Return" required />
+                        <span class="text-danger" style="display: none;" id="jaza-name2">Tafadhali jaza jina la hatua.</span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="code2-field" class="form-label">Code</label>
+                        <input type="text" id="code2-field" class="form-control" placeholder="Mfano: RETURN" required />
+                        <span class="text-danger" style="display: none;" id="jaza-code2">Tafadhali jaza code.</span>
+                    </div>
+                    <div class="mb-1">
+                        <label for="description2-field" class="form-label">Maelezo</label>
+                        <textarea id="description2-field" class="form-control" rows="3" placeholder="Maelezo ya hatua (optional)"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Funga</button>
+                        <button type="button" class="btn btn-success" onclick="sasishaAinaYaHatua()">Hifadhi</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('layouts/partials/footer.ejs' , {
+    card_title :  card_title,
+    scripts : [
+            { src : '/js/datatables/dataTables.js'},
+            { src : '/js/datatables/dataTables.buttons.js'},
+            { src : '/js/datatables/buttons.dataTables.js'},
+            { src : '/js/datatables/buttons.html5.min.js'},
+            { src : '/js/datatables/jszip.min.js'},
+            { src : '/js/datatables/pdfmake.min.js'},
+            { src : '/js/datatables/vfs_fonts.js'},
+            { src : '/js/datatables/buttons.print.min.js'}
+          ]
+    }) %>
+
+<script>
+    const canCreateActionType = <%= canCreateActionType ? "true" : "false" %>;
+    const canUpdateActionType = <%= canUpdateActionType ? "true" : "false" %>;
+    const canDeleteActionType = <%= canDeleteActionType ? "true" : "false" %>;
+
+    const normalizeCodeValue = (value) => String(value || "").trim().toUpperCase().replace(/\s+/g, "_");
+
+    const reloadActionTypeTable = () => {
+        $('#datatable').DataTable().ajax.reload(null, false);
+    };
+
+    $("#create-btn").on("click", function () {
+        $("#name-field").val("");
+        $("#code-field").val("");
+        $("#description-field").val("");
+        $("#jaza-name").hide();
+        $("#jaza-code").hide();
+        modal("showModal", true);
+    });
+
+    function BadiliData(button) {
+        const rowData = JSON.parse(button.getAttribute("data-row"));
+        $("#id-field").val(rowData.id || "");
+        $("#name2-field").val(rowData.name || "");
+        $("#code2-field").val(rowData.code || "");
+        $("#description2-field").val(rowData.description || "");
+        $("#jaza-name2").hide();
+        $("#jaza-code2").hide();
+        modal("showEditModal", true);
+    }
+
+    function sajiliAinaYaHatua() {
+        const name = String($("#name-field").val() || "").trim();
+        const code = normalizeCodeValue($("#code-field").val());
+        const description = String($("#description-field").val() || "").trim();
+
+        $("#jaza-name").hide();
+        $("#jaza-code").hide();
+
+        if (!name) {
+            $("#jaza-name").show();
+            return;
+        }
+
+        if (!code) {
+            $("#jaza-code").show();
+            return;
+        }
+
+        ajaxRequest(
+            "/tengenezaAinaZaHatua",
+            "POST",
+            (response) => {
+                const statusCode = Number(response?.statusCode || 306);
+                alertMessage(
+                    statusCode === 300 ? "Umefanikiwa" : "Haujafanikiwa",
+                    response?.message || "Kuna tatizo, jaribu tena.",
+                    statusCode === 300 ? "success" : "warning",
+                    () => {
+                        if (statusCode === 300) {
+                            modal("showModal", false);
+                            reloadActionTypeTable();
+                        }
+                    }
+                );
+            },
+            JSON.stringify({ name, code, description })
+        );
+    }
+
+    function sasishaAinaYaHatua() {
+        const id = Number($("#id-field").val() || 0);
+        const name = String($("#name2-field").val() || "").trim();
+        const code = normalizeCodeValue($("#code2-field").val());
+        const description = String($("#description2-field").val() || "").trim();
+
+        $("#jaza-name2").hide();
+        $("#jaza-code2").hide();
+
+        if (!name) {
+            $("#jaza-name2").show();
+            return;
+        }
+
+        if (!code) {
+            $("#jaza-code2").show();
+            return;
+        }
+
+        if (!id) {
+            alertMessage("Haujafanikiwa", "Aina ya hatua haijapatikana.", "warning");
+            return;
+        }
+
+        ajaxRequest(
+            `/badiliAinaZaHatua/${id}`,
+            "POST",
+            (response) => {
+                const statusCode = Number(response?.statusCode || 306);
+                alertMessage(
+                    statusCode === 300 ? "Umefanikiwa" : "Haujafanikiwa",
+                    response?.message || "Kuna tatizo, jaribu tena.",
+                    statusCode === 300 ? "success" : "warning",
+                    () => {
+                        if (statusCode === 300) {
+                            modal("showEditModal", false);
+                            reloadActionTypeTable();
+                        }
+                    }
+                );
+            },
+            JSON.stringify({ name, code, description })
+        );
+    }
+
+    function FutaData(button) {
+        const rowData = JSON.parse(button.getAttribute("data-row"));
+        const id = Number(rowData.id || 0);
+        if (!id) {
+            alertMessage("Haujafanikiwa", "Aina ya hatua haijapatikana.", "warning");
+            return;
+        }
+
+        confirmAction(
+            () => {
+                ajaxRequest(`/futaAinaZaHatua/${id}`, "POST", (response) => {
+                    const statusCode = Number(response?.statusCode || 306);
+                    alertMessage(
+                        statusCode === 300 ? "Umefanikiwa" : "Haujafanikiwa",
+                        response?.message || "Kuna tatizo, jaribu tena.",
+                        statusCode === 300 ? "success" : "warning",
+                        () => {
+                            if (statusCode === 300) {
+                                reloadActionTypeTable();
+                            }
+                        }
+                    );
+                });
+            },
+            "Futa",
+            "warning",
+            "Ukifuta taarifa hii, haitatumika tena kwenye setup.",
+            "Futa Aina ya Hatua?"
+        );
+    }
+
+    $(document).ready(function() {
+        tableData('datatable' ,'/AinaZaHatuaList' , 'POST',
+            [
+                {
+                    data: null,
+                    render: function (data, type, row , meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                },
+                {
+                    data: "name",
+                    name: "name",
+                    render: (data) => data || "-"
+                },
+                {
+                    data: "code",
+                    name: "code",
+                    render: (data) => data || "-"
+                },
+                {
+                    data: "description",
+                    name: "description",
+                    render: (data) => data || "-"
+                },
+                {
+                    data: "created_at",
+                    name: "created_at",
+                    render: (data) => data ? changeDateFormat(data) : "-"
+                },
+                {
+                    data: "updated_at",
+                    name: "updated_at",
+                    render: (data) => data ? changeDateFormat(data) : "-"
+                },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        const elements = [
+                            {
+                                show : canUpdateActionType,
+                                type : 'link',
+                                class : 'btn btn-sm btn-outline-primary me-1',
+                                icon : 'bx bx-pencil me-1',
+                                function : 'BadiliData',
+                                btnText : 'Edit'
+                            },
+                            {
+                                show : canDeleteActionType,
+                                type : 'link',
+                                class : 'btn btn-sm btn-outline-danger',
+                                icon : 'bx bx-trash me-1',
+                                function : 'FutaData',
+                                btnText : 'Futa'
+                            }
+                        ];
+                        return actionButtons(row, elements);
+                    },
+                    orderable: false,
+                    searchable: false,
+                    className: "text-center"
+                }
+            ]
+        );
+    });
+</script>
+</body>
+</html>

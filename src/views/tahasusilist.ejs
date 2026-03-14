@@ -1,0 +1,168 @@
+<% var card_title = '' %>
+<%- include('layouts/partials/header.ejs' , {
+        title : 'Tahasusi',
+        page_title : 'Orodha ya Tahasusi',
+        card_title : 'Tahasusi',
+        breadcrumb_main : 'Mipangilio' 
+}) %>
+    <div class="card-body">
+        <div class="ribbon-three ribbon-three-info">
+                <span class="badge"><%=`${pagination.total}`%></span>
+        </div>
+        <div id="customerList">
+        <div class="row g-4 mb-3">
+                <div class="col-sm-auto">
+                <div>
+                        <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn" data-bs-target="#showModal"><i class="ri-add-line align-bottom me-1"></i> Sajili</button>
+                        <!-- <button class="btn btn-soft-danger" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button> -->
+                </div>
+                </div>
+                <div class="col-sm">
+                <div class="d-flex justify-content-sm-end">
+                        <div class="search-box ms-2">
+                        <input type="text" class="form-control search" placeholder="Tafuta...">
+                        <i class="ri-search-line search-icon"></i>
+                        </div>
+                </div>
+                </div>
+        </div>
+        <div class="col-md-12">
+                <div class="table-responsive mt-3 mb-1">
+                <table class="table align-middle table-nowrap" id="customerTable">
+                <thead class="table-light">
+                        <tr>
+                        <th class="sort" data-sort="customer_name">#</th>
+                        <th class="sort" data-sort="email">Tahasusi</th>
+                        <th class="sort" data-sort="email">Mchepuo</th>
+                        <th>Hali</th>
+                        <th class="sort" width="15%" data-sort="action">Action</th>
+                        </tr>
+                </thead>
+                <tbody class="list form-check-all">
+                        <% for(var i = 0; i < data.length; i++){ %>
+                        <tr>
+                        <td class="id"><a href="javascript:void(0);" class="fw-medium link-primary"><%= i+1 %></a></td>
+                        <td class=""><%= data[i].combination %></td>
+                        <td class=""><%= data[i].specialization %></td>
+                        <td class="" width="5%">
+                                <span class="badge bg-<%= data[i].status_id ? 'success' : 'danger' %>">
+                                        <%= data[i].status_id ? 'Active' : 'Deleted' %>
+                                </span>
+                        </td>
+                        <td>
+                                <% if(data[i].status_id) {%>
+                                <button type="button" class="btn btn-link text-primary add-btn" 
+                                data-bs-toggle="modal" 
+                                data-id="<%= data[i].comb_id %>" 
+                                data-name="<%= data[i].combination %>" 
+                                data-specialization_id="<%= data[i].school_specialization_id %>" 
+                                onclick="BadiliData(this); return false;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                                </button>
+                                <% } %>
+                                <button type="button" class="btn btn-link text-danger" 
+                                data-id="<%= data[i].comb_id %>" 
+                                data-bs-toggle="tooltip"
+                                title="<%= data[i].status_id ? 'Soft Delete' : 'Restore'  %>"
+                                data-status="<%= data[i].status_id %>"
+                                data-name="<%= data[i].combination %>" 
+                                onclick="deleteRestoreTahasusi(this); return false;">
+                                <% if(data[i].status_id){ %>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                <% }else{ %>
+                                        <i class="mdi mdi-restore mdi-24px"></i>
+                                <% } %>
+                                </button>
+                        </td>
+                        </tr>
+                        <% } %>
+                </tbody>
+                </table>
+        </div>
+        <%- include('paginations/html_pagination.ejs') %>
+        </div>
+        </div>
+        </div><!-- end card -->
+        <div class="modal fade" id="showModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-header bg-light p-3">
+        <h5 class="modal-title" id="exampleModalLabel"></h5>
+        <button type="button" class="btn-close btn-close-modal" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+        </div>
+        <form>
+        <div class="modal-body">
+        <div class="mb-3">
+                <label for="name-field" class="form-label">Jina la Tahasusi</label>
+                <input type="text" id="name-field" class="form-control" placeholder="Mfano: PCM" required />
+        </div>
+        <div>
+                <label for="specialization-field" class="form-label">Mchepuo</label>
+                <select class="form-control" data-trigger name="specialization-field" id="specialization-field">
+                <option value="#"> Chagua </option>
+                <% for(var i = 0; i < michepuo.length; i++){ %>
+                        <option value="<%= michepuo[i].id %>"><%= michepuo[i].specialization %></option>
+                <% } %>
+                </select>
+        </div>
+        </div>
+        <div class="modal-footer">
+        <div class="hstack gap-2 justify-content-end">
+                <button type="button" class="btn btn-light btn-close-modal" data-bs-dismiss="modal">Funga</button>
+                <button type="button" class="btn btn-success" onclick="sajiliTahasusi()" id="add-btn">Sajili</button>
+        </div>
+        </div>
+        </form>
+        </div>
+        </div>
+        </div>
+        <div class="modal fade" id="showEditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-header bg-light p-3">
+        <h5 class="modal-title" id="exampleModalLabel"></h5>
+        <button type="button" class="btn-close btn-close-modal" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+        </div>
+        <form>
+        <div class="modal-body">
+
+        <div class="mb-3" id="modal-id" style="display: none;">
+                <label for="id-field" class="form-label">ID</label>
+                <input type="text" id="id-field" class="form-control" placeholder="ID" readonly />
+        </div>
+
+        <div class="mb-3">
+                <label for="name2-field" class="form-label">Jina la Tahasusi</label>
+                <input type="text" id="name2-field" class="form-control" placeholder="Mfano: PCM" required />
+                <!-- <input type="hidden" id="id1-field" class="form-control"/> -->
+        </div>
+        <div>
+                <label for="combination-field" class="form-label">Mchepuo</label>
+                <select class="form-control" data-trigger name="combination-field" id="specialization2-field">
+                <option value="#"> Chagua </option>
+                <% for(var i = 0; i < michepuo.length; i++){ %>
+                        <option value="<%= michepuo[i].id %>"><%= michepuo[i].specialization %></option>
+                <% } %>
+                </select>
+        </div>
+        </div>
+        <div class="modal-footer">
+        <div class="hstack gap-2 justify-content-end">
+                <button type="button" class="btn btn-light btn-close-modal" data-bs-dismiss="modal">Funga</button>
+                <button type="button" class="btn btn-success" onclick="sasishaTahasusi()" id="add-btn">
+                       Sasisha
+                </button>
+        </div>
+        </div>
+        </form>
+        </div>
+        </div>
+        </div>
+<%- include('layouts/partials/footer.ejs' , {
+                card_title :  card_title , 
+                pagination_script : false,
+}) %>
+<script type="text/javascript" src="design/layouts/scripts/tahasusi_scripts.js"></script>
+</body>
+
+</html>

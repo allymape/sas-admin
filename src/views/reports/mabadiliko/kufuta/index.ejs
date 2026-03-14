@@ -1,0 +1,224 @@
+<% var card_title = '' %> 
+<%- include('../../../layouts/partials/header.ejs' , {
+    title : 'Kufuta Usajili',
+    page_title : 'Taarifa ya Kufuta Usajili',
+    card_title : 'Kufuta Usajili wa Shule',
+    breadcrumb_main : 'Ripoti',
+    // top_header : '../../reports/top_headers/badili_dahalia_top_header.ejs',
+}) %>
+
+  <div class="card-body border border-dashed border-end-0 border-start-0">
+      <%- include('../../../includes/change_request_links.ejs') %>
+        <form>
+            <div class="row g-3">
+                <div class="col-xxl-3 col-sm-12">
+                    <div class="search-box">
+                        <input type="text" name="tracking_number" 
+                        value="<%= req.query.tracking_number %>" class="form-control search bg-light border-light" placeholder="Namba ya kumbukumbu ...">
+                        <i class="ri-search-line search-icon"></i>
+                    </div>
+                </div>
+                <!--end col-->
+
+                <div class="col-xxl-3 col-sm-4">
+                    <input type="date" class="form-control bg-light border-light" 
+                    id="demo-datepicker" data-provider="flatpickr" 
+                    data-date-format="d M, Y" data-range-date="true" 
+                    name="date_range"
+                    data-default-date="<%= req.query.date_range %>"
+                    placeholder="Chagua Tarehe ya Ombi">
+                </div>
+                 <!--end col-->
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select class="form-control" placeholder="Aina ..." data-choices data-choices-search-true name="category">
+                            <option> Aina ...</option>
+                            <% for (let index = 0; index < categories.length; index++) { %>
+                            <% const item = categories[index]; %>
+                                <option value="<%= item.id %>" <%= req.query.category == item.id ? 'selected' : '' %>>
+                                     <%= item.name %>
+                                </option>
+                            <% } %>
+                            
+                        </select>
+                    </div>
+                </div>
+
+                 <!--end col-->
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select class="form-control" placeholder="Umiliki ..." data-choices data-choices-search-true name="ownership">
+                            <option> Umiliki ...</option>
+                            <% for (let index = 0; index < ownerships.length; index++) { %>
+                            <% const item = ownerships[index];
+                                if(item.id == 3) continue;
+                            %>
+                                <option value="<%= item.id %>" <%= req.query.ownership == item.id ? 'selected' : '' %>>
+                                     <%= item.name %>
+                                </option>
+                            <% } %>
+                            
+                        </select>
+                    </div>
+                </div>
+
+                 <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select class="form-control" placeholder="Majengo ..." data-choices data-choices-search-true name="structure">
+                            <option> Majengo ...</option>
+                            <% for (let index = 0; index < structures.length; index++) { %>
+                            <% const item = structures[index]; %>
+                                <option value="<%= item.id %>" <%= req.query.structure == item.id ? 'selected' : '' %>>
+                                     <%= item.name %>
+                                </option>
+                            <% } %>
+                            
+                        </select>
+                    </div>
+                </div>
+                
+                <!--end col-->
+
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select class="form-control" placeholder="Hali ya Ombi ..." data-choices data-choices-search-false name="status" id="idStatus">
+                            <option>Hali ya Ombi ...</option>
+                            <option value="approved" <%= req.query.status == 'approved' ? 'selected' : '' %> >Yaliyothibitishwa</option>
+                            <option value="rejected" <%= req.query.status == 'rejected' ? 'selected' : '' %> >Yaliyokataliwa</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xxl-12 col-sm-6"></div>
+
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select id="mkoa-field"  data-choices-search-true class="form-control" placeholder="Mkoa ..."  name="region">
+                            <option value=""> Chagua Mkoa ...</option>
+                            <% for (let index = 0; index < regions.length; index++) { %>
+                            <% const item = regions[index]; %>
+                                <option value="<%= item.id %>" <%= req.query.region == item.id ? 'selected' : '' %>>
+                                     <%= item.name %>
+                                </option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+                  <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select id="lga-field" class="form-control" placeholder="Halmashauri ..."  name="district">
+                            <option value=""> Chagua Halmashauri ...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select id="kata-field" class="form-control" placeholder="Kata ..."  name="ward">
+                            <option value=""> Chagua Kata ...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-sm-4">
+                    <div class="input-light">
+                        <select id="mtaa-field" class="form-control" placeholder="Mtaa ..."  name="street">
+                            <option value=""> Chagua Mtaa ...</option>
+                        </select>
+                    </div>
+                </div>
+                <!--end col-->
+                <div class="col-xxl-2 col-sm-4 d-flex gap-2">
+                    <button title="" type="submit" class="btn btn-primary w-100"> 
+                        <!-- <i class="ri-equalizer-fill me-1 align-bottom"></i> -->
+                        Angalia
+                    </button>
+                     <% if(req.query.tracking_number || req.query.date_range || req.query.status) { %>
+                     <a href="RipotiKufutaShule" class="btn btn-danger w-100">
+                        <!-- <i class="ri-equalizer-fill me-1 align-bottom"></i> -->
+                        Futa
+                     </a>
+                     <% } %>
+                </div>
+                <div class="col-xxl-8 col-sm-8"></div>
+                <% if(pagination.total > 0){ %>
+                    <div class="col-xxl-2 col-sm-2">
+                      <%- include('../../../includes/export_excel_link.ejs' , {
+                        btn_color : 'info' 
+                       }) %>
+                    </div>
+                <% } %>
+                <!--end col-->
+            </div>
+            <!--end row-->
+        </form>
+    </div>
+    <!--end card-body-->
+    <div class="card-body">
+         <div class="ribbon-three ribbon-three-info">
+            <span class="badge"><%=`${pagination.total}`%></span>
+        </div>
+        <div class="table-responsive mb-4">
+             <div class="alert alert-success">
+                    <h6 class="text-primary text-uppercase">Jumla <%= pagination.total %></h6>
+                </div>
+            <table class="table align-middle table-nowrap mb-0" id="tasksTable">
+                <thead class="table-light text-muted">
+                    <tr>
+                        <th class="sort" data-sort="id">Namba ya Ombi</th>
+                        <th class="sort" data-sort="project_name">Jina la Shule</th>
+                        <th class="sort" data-sort="project_name">Aina</th>
+                        <th class="sort" data-sort="project_name">Majengo</th>
+                        <th class="sort" data-sort="project_name">Umiliki</th>
+                        <th class="sort" data-sort="assignedto">Mkoa</th>
+                        <th class="sort" data-sort="due_date">Halmashauri</th>
+                        <th class="sort" data-sort="due_date">Kata</th>
+                        <th class="sort" data-sort="due_date">Mtaa</th>
+                        <th class="sort" data-sort="due_date">Tarehe</th>
+                        <th class="sort" data-sort="status">Hali</th>
+                        <!--<th class="sort" data-sort="priority">Walioshughulikia</th>-->
+                    </tr>
+                </thead>
+                <tbody class="list form-check-all">
+                   <% for (let i = 0; i < data.length; i++) { %>
+                   <% const item = data[i];%>
+                    <tr>
+                        <td> <%= item.tracking_number %> </td>
+                        <td> <%= item.school_name %> </td>
+                        <td> <%= item.category %> </td>
+                        <td> <%= item.structure %> </td>
+                        <td> <%= item.registry %> </td>
+                        <td> <%= item.region %> </td>
+                        <td> <%= item.district %> </td>
+                        <td> <%= item.ward %> </td>
+                        <td> <%= item.street %> </td>
+                        <td> <%= dateFormat(item.approved_at) %> </td>
+                        <td> 
+                           <span class="badge bg-<%= item.status == 2 ? 'success' : 'danger' %>" >
+                             <%= item.status == 2 ? 'Limethibitshwa' : '' %> 
+                             <%= item.status == 3 ? 'Limekataliwa' : '' %> 
+                           </span>
+                        </td>
+                    </tr>
+                   <% } %>
+                </tbody>
+            </table>
+            <!--end table-->
+            <div class="noresult" style="display: none">
+                <div class="text-center">
+                    <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                    <h5 class="mt-2">Sorry! No Result Found</h5>
+                    <p class="text-muted mb-0">We've searched more than 200k+ tasks We did not find any tasks for you search.</p>
+                </div>
+            </div>
+        </div>
+          <!-- Pagination and page length -->
+            <%- include('../../../paginations/html_pagination.ejs'); %>
+               <!-- End pagination and page length -->
+            </div>
+    <!--end card-body-->
+<%- include('../../../layouts/partials/footer.ejs' , {
+     card_title :  '' , 
+     pagination_script : false,
+    }) %>
+  <%- include('../../../includes/locations' , { 'location' : null}) %>
+<!-- <script type="text/javascript" src="/design/layouts/scripts/anzishashule_scripts.js"></script> -->
+</body>
+</html>

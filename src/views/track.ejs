@@ -1,0 +1,179 @@
+<% var card_title = '' 
+%> 
+<%- include('layouts/partials/header.ejs' , {
+        title : 'Fuatilia Maombi',
+        page_title : 'Fuatilia Maombi',
+        card_title : `Maombi `,
+        breadcrumb_main : 'Track',
+        styles : [
+              { href: '/css/datatables/dataTables.dataTables.css' },
+              { href: '/css/datatables/buttons.dataTables.css' },
+          ]
+}) %>
+<div class="card-body">
+  <div id="customerList">
+    <div class="col-md-12">
+      <div class="table-responsive mt-3 mb-1">
+      <table class="table table-striped" id="datatable">
+        <thead class="table-light">
+          <tr>
+             <th width="5%">Na.</th>
+            <th width="5%">Action</A></th>
+            <th>Ombi</th>
+            <th>Namba ya Ombi</th>
+            <th>Jina</th>
+            <th>Aina</th>
+            <th>Umiliki</th>
+            <th>Mkoa</th>
+            <th>Halmashauri</th>
+            <th>Kata</th>
+            <th>Mtaa</th>
+            <th>Mwombaji</th>
+            <th>Limeombwa</th>
+            <th>Mahali lilipo</th>
+            <th>Limetumwa</th>
+            <th>Hali ya Ombi</th>
+            <th>Malipo</th>
+          </tr>
+        </thead>
+        <tbody class="list form-check-all">
+        </tbody>
+      </table>
+    </div>
+    </div>
+  </div>
+</div><!-- end card -->
+<div class="modal fade" id="comments-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-light p-3">
+        <h5 class="modal-title" id="commentModalTitle"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+      </div>
+      <div class="modal-body">
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('layouts/partials/footer.ejs' , {
+    card_title :  card_title,
+    scripts : [
+            {src : '/design/layouts/scripts/track_ombi_scripts.js'},
+            { src : '/js/datatables/dataTables.js'},
+            { src : '/js/datatables/dataTables.buttons.js'},
+            { src : '/js/datatables/buttons.dataTables.js'},
+            { src : '/js/datatables/buttons.html5.min.js'},
+            { src : '/js/datatables/jszip.min.js'},
+            { src : '/js/datatables/pdfmake.min.js'},
+            { src : '/js/datatables/vfs_fonts.js'},
+            { src : '/js/datatables/buttons.print.min.js'},
+            { src : '/js/datatables/buttons.colVis.min.js'},
+          ]
+    }) %>
+<script>
+    $(document).ready(function() {
+        tableData('datatable' ,'/TrackList' , 'POST',
+            [
+              { data: null, render : (data , type , row , meta) => {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+              },
+              searchable : false,
+              orderable: false
+            },
+              {
+                    data: null, // No data source for this column
+                    render: function (data, type, row) {
+                            const elements = [{
+                                                show : row.office == 1 ? true : false,
+                                                type : 'button',
+                                                class : 'btn btn-sm btn-outline-secondary me-1',
+                                                icon : 'bx bx-comment me-1',
+                                                function : 'viewComments',
+                                                btnText : 'Maoni',
+                                                moreAttributes : `title='View Maoni' data-bs-toggle='tooltip'`
+                                            },
+                                        ]
+                        return actionButtons(row , elements);
+                    },
+                    orderable: false, // Disable sorting for the action buttons column
+                    searchable : false,
+                    class : 'text-center text-nowrap'
+                    },
+                    
+                    { data: "application_category", name: "application_category" , class : 'text-primary' , render : (data , type , row) => {
+                          return `<strong>${data.toUpperCase()}</strong>`
+                    } },
+                    { data: "tracking_number", name: "tracking_number" ,  class : 'text-nowrap', render : (data , type , row) => {
+                          return `<strong>${data.toUpperCase()}</strong>`
+                    } },
+                    { data: "school_name", name: "school_name" ,  class : 'text-dark' },
+                    { data: "category", name: "category" ,  class : 'text-nowrap' },
+                    { data: "registry", name: "registry" ,  class : '' },
+                    { data: "region_name", name: "region_name" },
+                    { data: "district_name", name: "district_name" },
+                    { data: "ward_name", name: "ward_name" },
+                    { data: "street_name", name: "street_name" },
+                    { data: "applicant_name", name: "applicant_name" },
+                    {
+                      data: "application_created_at", name: "application_created_at",
+                            render: (data, type, row) => {
+                                return changeDateFormat(data);
+                            },
+                    },
+                    { data: "title", name: "title"  , render : (data , type , row) => {
+                          var location = ''
+                          const rank = row.ngazi
+                          if(row.status == 1 || row.status == 0) {
+                              location += data ? (rank == 2 ? data +' - '+row.zone_name : (rank == 3 ? data + ' - '+row.district_name : data + (rank == 1 ? ' - HQ' : ''))) : 'W1 - '+ row.district_name
+                          }
+                          if(row.status == 4){
+                            location += `<span class='text-danger'>Mwombaji</span>`;
+                          }
+                          return `<strong>${location}</strong>`;
+                    } , class : 'text-nowrap'},
+                    {
+                      data: "submitted_created_at", name: "submitted_created_at",
+                            render: (data, type, row) => {
+                                const diff = findDiffDaysFromNow(data);
+                                var overdue =  diff > row.overdue && row.status != 4 ? 
+                                            ` <span class='badge bg-danger' title='Ombi hili limekaa zaidi ya siku ${row.overdue}' data-bs-toggle='tooltip'>Overdue</span>` :
+                                             ''; 
+                                return changeDateFormat(data) + overdue 
+                            },
+                    },
+                    { data: "status", name: "status"  , render : (data , type , row) => {
+                         if(row.payment_status_id == 2){ 
+                          return `<span class="badge bg-${ data == 1 || data == '' ? `info` : ( data == 2 ? 'success' : (data == 3 ? 'danger' : 'warning'))}">
+                                    ${data == 1 || data == 0 || data == '' ? 'Linashughulikiwa' : ( data == 2 ? 'Limethibitishwa' : (data == 3 ? 'Limekatiliwa' : 'Limerudishwa'))}
+                                </span>`
+                        } 
+                    }
+                    },
+                    { data: "payment_status", name: "payment_status"  , render : (data , type , row) => {
+                       
+                          if(!data){ 
+                            return `<button type="button" class="btn btn-sm btn-outline-primary btn-make-payment" 
+                            onclick="makePayment(this)" data-tracking_number="${row.tracking_number }" >Lipa</button>`
+                          }else{
+                            return `<span class="${row.payment_status_id == 1 ? 'badge bg-danger' : (row.payment_status_id == 2 ? 'badge bg-success' : '')}">
+                                        ${data}
+                                       </span>`
+                          }
+                      }
+                    },
+            ],
+            null,
+            [
+              {
+                targets: [7 , 8 , 9 , 10 , 11 , 16],
+                visible: false,
+              },
+            ]
+        );
+    });
+</script>
+<!-- <script type="text/javascript" src="/design/layouts/scripts/track_ombi_scripts.js"></script> -->
+</body>
+
+</html>

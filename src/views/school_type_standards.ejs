@@ -1,0 +1,737 @@
+<% var card_title = '' %>
+<%- include('layouts/partials/header.ejs' , {
+    title : 'Viwango vya Aina za Shule',
+    page_title : 'Orodha ya Viwango vya Aina za Shule',
+    card_title : 'Viwango vilivyosajiliwa',
+    breadcrumb_main : 'Mipangilio',
+    styles : [
+                { href: '/css/datatables/dataTables.dataTables.css' },
+                { href: '/css/datatables/buttons.dataTables.css' }
+            ]
+}) %>
+<style>
+    .standards-table-wrap {
+        border: 1px solid #e9ebec;
+        border-radius: 8px;
+        background: #ffffff;
+        overflow: auto;
+    }
+
+    .label-nowrap {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .db-field-name {
+        display: block;
+        margin-top: 4px;
+        font-size: 11px;
+    }
+
+    #datatable {
+        width: 100% !important;
+        min-width: 2100px;
+    }
+
+    #datatable th,
+    #datatable td {
+        white-space: normal !important;
+        word-break: break-word;
+        vertical-align: top;
+    }
+
+    #datatable thead th {
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1.2;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        text-align: center;
+        vertical-align: middle;
+        background: #f8fafc !important;
+        border-bottom: 1px solid #dfe5ec !important;
+        position: sticky;
+        top: 0;
+        z-index: 4;
+    }
+
+    #datatable tbody td {
+        font-size: 12px;
+        line-height: 1.25;
+    }
+
+    #datatable tbody tr:nth-child(even) td {
+        background-color: #fbfcff;
+    }
+
+    #datatable tbody tr:hover td {
+        background-color: #f2f8ff;
+    }
+
+    #datatable th:first-child,
+    #datatable td:first-child {
+        position: sticky;
+        left: 0;
+        z-index: 5;
+        background: #ffffff;
+        box-shadow: 1px 0 0 #e9ebec;
+    }
+
+    #datatable thead th:first-child {
+        z-index: 6;
+        background: #f8fafc !important;
+    }
+
+    #datatable th:last-child,
+    #datatable td:last-child {
+        position: sticky;
+        right: 0;
+        z-index: 5;
+        background: #ffffff;
+        box-shadow: -1px 0 0 #e9ebec;
+    }
+
+    #datatable thead th:last-child {
+        z-index: 6;
+        background: #f8fafc !important;
+    }
+</style>
+<div class="card-body">
+    <div id="customerList">
+        <div class="row g-4 mb-3">
+            <div class="col-sm-auto">
+                <button type="button" class="btn btn-success add-btn" id="create-btn">
+                    <i class="ri-add-line align-bottom me-1"></i> Sajili
+                </button>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="table-responsive table-card standards-table-wrap mt-3 mb-1">
+                <table class="table table-sm align-middle" id="datatable">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="5%">Na.</th>
+                            <th title="Aina ya Shule">Aina</th>
+                            <th title="Aina ya Malazi">Malazi</th>
+                            <th title="Eneo la Ardhi Msambao (Ekari)">Ardhi Msambao</th>
+                            <th title="Eneo la Ardhi Ghorofa (Ekari)">Ardhi Ghorofa</th>
+                            <th title="Uwiano wa Jengo kwa Uwanja">Uwiano</th>
+                            <th title="Eneo la Jengo la Juu (%)">Eneo %</th>
+                            <th title="Idadi ya Juu ya Ghorofa">Max Ghorofa</th>
+                            <th title="Nafasi ya Mbele (Mita)">Mbele (m)</th>
+                            <th title="Nafasi ya Nyuma (Mita)">Nyuma (m)</th>
+                            <th title="Nafasi ya Pembeni (Mita)">Pembeni (m)</th>
+                            <th title="Idadi ya Juu kwa Mkondo">Juu/Mkondo</th>
+                            <th title="Idadi ya Chini ya Mikondo">Chini/Mikondo</th>
+                            <th title="Idadi ya wanafunzi kwa shule ya mkondo mmoja">Shule Mkondo 1</th>
+                            <th title="Idadi ya Juu ya Mikondo kwa Shule">Juu Mikondo/Shule</th>
+                            <th title="Jumla ya Juu ya Wanafunzi kwa Darasa">Juu/Darasa</th>
+                            <th title="Idadi ya Chini ya Madarasa">Chini Madarasa</th>
+                            <th title="Idadi ya Juu ya Wanafunzi kwa Shule">Juu/Shule</th>
+                            <th>Hali</th>
+                            <th title="Imetengenezwa">Created</th>
+                            <th title="Imesasishwa">Updated</th>
+                            <th class="text-center" width="12%">Vitendo</th>
+                        </tr>
+                    </thead>
+                    <tbody class="list form-check-all"></tbody>
+                </table>
+                <div class="noresult" style="display: none">
+                    <div class="text-center">
+                        <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                            colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                        <h5 class="mt-2">Hakuna matokeo</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title">Sajili Kiwango cha Aina ya Shule</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label label-nowrap">Aina ya Shule *</label>
+                            <select id="c-school-category-id" class="form-select"></select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label label-nowrap">Aina ya Malazi</label>
+                            <select id="c-school-sub-category-id" class="form-select"></select>
+                        </div>
+                        <input type="hidden" id="c-education-track" value="" />
+
+                        <div class="col-md-3"><label class="form-label label-nowrap">Eneo la Ardhi Msambao (Ekari)</label><input type="number" step="0.01" id="c-min-plot-size-spread-acre" class="form-control" placeholder="Mfano: 3.50" /></div>
+                        <div class="col-md-3"><label class="form-label label-nowrap">Eneo la Ardhi Ghorofa (Ekari)</label><input type="number" step="0.01" id="c-min-plot-size-storey-acre" class="form-control" placeholder="Mfano: 2.50" /></div>
+                        <div class="col-md-3"><label class="form-label label-nowrap">Uwiano wa Jengo kwa Uwanja</label><input type="number" step="0.01" id="c-max-plot-ratio" class="form-control" placeholder="Mfano: 1.50" /></div>
+                        <div class="col-md-3"><label class="form-label label-nowrap">Eneo la Jengo la Juu (%)</label><input type="number" step="0.01" id="c-max-built-area-percent" class="form-control" placeholder="Mfano: 40" /></div>
+
+                        <div class="col-md-3"><label class="form-label label-nowrap">Idadi ya Juu ya Ghorofa</label><input type="number" id="c-max-storeys" class="form-control" placeholder="Mfano: 3" /></div>
+                        <div class="col-md-3"><label class="form-label label-nowrap">Nafasi ya Mbele (Mita)</label><input type="number" step="0.01" id="c-min-front-setback-m" class="form-control" placeholder="Mfano: 15.0" /></div>
+                        <div class="col-md-3"><label class="form-label label-nowrap">Nafasi ya Nyuma (Mita)</label><input type="number" step="0.01" id="c-min-rear-setback-m" class="form-control" placeholder="Mfano: 5.0" /></div>
+                        <div class="col-md-3"><label class="form-label label-nowrap">Nafasi ya Pembeni (Mita)</label><input type="number" step="0.01" id="c-min-side-setback-m" class="form-control" placeholder="Mfano: 5.0" /></div>
+
+                        <div class="col-md-3"><label class="form-label label-nowrap">Idadi ya Juu kwa Mkondo</label><input type="number" id="c-max-students-per-stream" class="form-control" placeholder="Mfano: 45" /></div>
+                        <div class="col-md-3"><label class="form-label label-nowrap">Idadi ya Chini ya Mikondo</label><input type="number" id="c-min-streams" class="form-control" placeholder="Mfano: 1" /></div>
+                        <div class="col-md-3">
+                            <label class="form-label label-nowrap">Idadi ya wanafunzi kwa shule ya mkondo mmoja</label>
+                            <input type="number" id="c-students-per-single-stream-school" class="form-control" placeholder="Hesabu otomatiki" readonly />
+                        </div>
+                        <div class="col-md-3"><label class="form-label label-nowrap">Idadi ya Juu ya Mikondo kwa Shule</label><input type="number" id="c-max-streams-per-school" class="form-control" placeholder="Mfano: 4" /></div>
+
+                        <div class="col-md-4"><label class="form-label label-nowrap">Jumla ya Juu ya Wanafunzi kwa Darasa</label><input type="number" id="c-max-students-per-class" class="form-control" placeholder="Hesabu otomatiki" readonly /></div>
+                        <div class="col-md-4"><label class="form-label label-nowrap">Idadi ya Chini ya Madarasa</label><input type="number" id="c-min-total-classes" class="form-control" placeholder="Mfano: 6" /></div>
+                        <div class="col-md-4"><label class="form-label label-nowrap">Idadi ya Juu ya Wanafunzi kwa Shule</label><input type="number" id="c-max-students-per-school" class="form-control" placeholder="Hesabu otomatiki" readonly /></div>
+
+                        <div class="col-md-4">
+                            <label class="form-label label-nowrap">Hali</label>
+                            <select id="c-is-active" class="form-select">
+                                <option value="1">Inatumika</option>
+                                <option value="0">Imesitishwa</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-danger" id="c-form-error" style="display:none;"></div>
+                </div>
+                <div class="modal-footer">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Funga</button>
+                        <button type="button" class="btn btn-success" onclick="sajiliKiwangoAinaYaShule()">Sajili</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showEditModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title">Badili Kiwango cha Aina ya Shule</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <input type="hidden" id="e-id" />
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label label-nowrap">Aina ya Shule *</label>
+                            <select id="e-school-category-id" class="form-select"></select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label label-nowrap">Aina ya Malazi</label>
+                            <select id="e-school-sub-category-id" class="form-select"></select>
+                        </div>
+                        <input type="hidden" id="e-education-track" value="" />
+
+                        <div class="col-md-3"><label class="form-label label-nowrap">Eneo la Ardhi Msambao (Ekari)</label><input type="number" step="0.01" id="e-min-plot-size-spread-acre" class="form-control" placeholder="Mfano: 3.50" /></div>
+                        <div class="col-md-3"><label class="form-label label-nowrap">Eneo la Ardhi Ghorofa (Ekari)</label><input type="number" step="0.01" id="e-min-plot-size-storey-acre" class="form-control" placeholder="Mfano: 2.50" /></div>
+                        <div class="col-md-3"><label class="form-label label-nowrap">Uwiano wa Jengo kwa Uwanja</label><input type="number" step="0.01" id="e-max-plot-ratio" class="form-control" placeholder="Mfano: 1.50" /></div>
+                        <div class="col-md-3"><label class="form-label label-nowrap">Eneo la Jengo la Juu (%)</label><input type="number" step="0.01" id="e-max-built-area-percent" class="form-control" placeholder="Mfano: 40" /></div>
+
+                        <div class="col-md-3"><label class="form-label label-nowrap">Idadi ya Juu ya Ghorofa</label><input type="number" id="e-max-storeys" class="form-control" placeholder="Mfano: 3" /></div>
+                        <div class="col-md-3"><label class="form-label label-nowrap">Nafasi ya Mbele (Mita)</label><input type="number" step="0.01" id="e-min-front-setback-m" class="form-control" placeholder="Mfano: 15.0" /></div>
+                        <div class="col-md-3"><label class="form-label label-nowrap">Nafasi ya Nyuma (Mita)</label><input type="number" step="0.01" id="e-min-rear-setback-m" class="form-control" placeholder="Mfano: 5.0" /></div>
+                        <div class="col-md-3"><label class="form-label label-nowrap">Nafasi ya Pembeni (Mita)</label><input type="number" step="0.01" id="e-min-side-setback-m" class="form-control" placeholder="Mfano: 5.0" /></div>
+
+                        <div class="col-md-3"><label class="form-label label-nowrap">Idadi ya Juu kwa Mkondo</label><input type="number" id="e-max-students-per-stream" class="form-control" placeholder="Mfano: 45" /></div>
+                        <div class="col-md-3"><label class="form-label label-nowrap">Idadi ya Chini ya Mikondo</label><input type="number" id="e-min-streams" class="form-control" placeholder="Mfano: 1" /></div>
+                        <div class="col-md-3">
+                            <label class="form-label label-nowrap">Idadi ya wanafunzi kwa shule ya mkondo mmoja</label>
+                            <input type="number" id="e-students-per-single-stream-school" class="form-control" placeholder="Hesabu otomatiki" readonly />
+                        </div>
+                        <div class="col-md-3"><label class="form-label label-nowrap">Idadi ya Juu ya Mikondo kwa Shule</label><input type="number" id="e-max-streams-per-school" class="form-control" placeholder="Mfano: 4" /></div>
+
+                        <div class="col-md-4"><label class="form-label label-nowrap">Jumla ya Juu ya Wanafunzi kwa Darasa</label><input type="number" id="e-max-students-per-class" class="form-control" placeholder="Hesabu otomatiki" readonly /></div>
+                        <div class="col-md-4"><label class="form-label label-nowrap">Idadi ya Chini ya Madarasa</label><input type="number" id="e-min-total-classes" class="form-control" placeholder="Mfano: 6" /></div>
+                        <div class="col-md-4"><label class="form-label label-nowrap">Idadi ya Juu ya Wanafunzi kwa Shule</label><input type="number" id="e-max-students-per-school" class="form-control" placeholder="Hesabu otomatiki" readonly /></div>
+
+                        <div class="col-md-4">
+                            <label class="form-label label-nowrap">Hali</label>
+                            <select id="e-is-active" class="form-select">
+                                <option value="1">Inatumika</option>
+                                <option value="0">Imesitishwa</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-danger" id="e-form-error" style="display:none;"></div>
+                </div>
+                <div class="modal-footer">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Funga</button>
+                        <button type="button" class="btn btn-success" onclick="sasishaKiwangoAinaYaShule()">Hifadhi</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('layouts/partials/footer.ejs' , {
+    card_title :  card_title,
+    scripts : [
+            { src : '/js/datatables/dataTables.js'},
+            { src : '/js/datatables/dataTables.buttons.js'},
+            { src : '/js/datatables/buttons.dataTables.js'},
+            { src : '/js/datatables/buttons.html5.min.js'},
+            { src : '/js/datatables/jszip.min.js'},
+            { src : '/js/datatables/pdfmake.min.js'},
+            { src : '/js/datatables/vfs_fonts.js'},
+            { src : '/js/datatables/buttons.print.min.js'}
+          ]
+    }) %>
+
+<script>
+    const applyWrapTooltips = () => {
+        document.querySelectorAll(".label-nowrap, #datatable thead th").forEach((element) => {
+            const isTableHeader = element.matches("#datatable thead th");
+            const existingTitle = String(element.getAttribute("title") || "").trim();
+            const fullText = String(element.dataset.fullText || existingTitle || element.textContent || "").trim();
+            element.dataset.fullText = fullText;
+            const hasOverflow = element.scrollWidth > element.clientWidth;
+
+            if (isTableHeader || hasOverflow) {
+                element.setAttribute("title", fullText);
+                element.setAttribute("data-bs-toggle", "tooltip");
+                if (!bootstrap.Tooltip.getInstance(element)) {
+                    new bootstrap.Tooltip(element, { container: "body" });
+                }
+            } else {
+                const instance = bootstrap.Tooltip.getInstance(element);
+                if (instance) instance.dispose();
+                element.removeAttribute("title");
+                element.removeAttribute("data-bs-toggle");
+            }
+        });
+    };
+
+    const calculateDerivedStudents = (mode = "create") => {
+        const p = mode === "edit" ? "e" : "c";
+        const maxPerStream = Number($(`#${p}-max-students-per-stream`).val() || 0);
+        const minStreams = Number($(`#${p}-min-streams`).val() || 0);
+        const maxStreamsPerSchool = Number($(`#${p}-max-streams-per-school`).val() || 0);
+        const minTotalClasses = Number($(`#${p}-min-total-classes`).val() || 0);
+
+        const studentsPerSingleStreamSchool = maxPerStream > 0 && minStreams > 0
+            ? (maxPerStream * minStreams)
+            : "";
+
+        const maxPerClass = maxPerStream > 0 && maxStreamsPerSchool > 0
+            ? (maxPerStream * maxStreamsPerSchool)
+            : "";
+        const maxPerSchool = maxPerClass !== "" && minTotalClasses > 0
+            ? (Number(maxPerClass) * minTotalClasses)
+            : "";
+
+        $(`#${p}-students-per-single-stream-school`).val(studentsPerSingleStreamSchool);
+        $(`#${p}-max-students-per-class`).val(maxPerClass);
+        $(`#${p}-max-students-per-school`).val(maxPerSchool);
+    };
+
+    const toDbFieldName = (id = "") => (
+        String(id || "")
+            .replace(/^[ce]-/, "")
+            .replace(/-/g, "_")
+    );
+
+    const attachDbFieldNames = () => {
+        document
+            .querySelectorAll("#showModal [id^='c-'], #showEditModal [id^='e-']")
+            .forEach((input) => {
+                if (!input || input.type === "hidden") return;
+                if (!(input.classList.contains("form-control") || input.classList.contains("form-select"))) return;
+
+                const wrapper = input.parentElement;
+                if (!wrapper) return;
+                if (wrapper.querySelector(`small[data-db-for='${input.id}']`)) return;
+
+                const dbFieldName = toDbFieldName(input.id);
+                const small = document.createElement("small");
+                small.className = "text-muted db-field-name";
+                small.dataset.dbFor = input.id;
+                small.textContent = dbFieldName;
+                input.insertAdjacentElement("afterend", small);
+            });
+    };
+
+    let schoolTypeLookups = {
+        school_categories: [],
+        school_sub_categories: []
+    };
+
+    const setOptions = (selectId, items, selectedValue = "", placeholder = "-- Chagua --") => {
+        const select = $(selectId);
+        select.empty();
+        select.append(`<option value="">${placeholder}</option>`);
+        (items || []).forEach((item) => {
+            const value = String(item.id || "");
+            const selected = String(selectedValue || "") === value ? "selected" : "";
+            select.append(`<option value="${value}" ${selected}>${item.name || ""}</option>`);
+        });
+    };
+
+    const loadSchoolTypeLookups = (callback = null) => {
+        ajaxRequest("/SchoolTypeStandardLookups", "GET", (response) => {
+            if (Number(response?.statusCode || 306) === 300) {
+                schoolTypeLookups = response?.data || {};
+                setOptions("#c-school-category-id", schoolTypeLookups.school_categories, "");
+                setOptions("#e-school-category-id", schoolTypeLookups.school_categories, "");
+                setOptions("#c-school-sub-category-id", schoolTypeLookups.school_sub_categories, "", "-- Si lazima --");
+                setOptions("#e-school-sub-category-id", schoolTypeLookups.school_sub_categories, "", "-- Si lazima --");
+                if (typeof callback === "function") callback();
+            } else {
+                alertMessage("Tahadhari", response?.message || "Imeshindikana kuvuta lookups.", "warning");
+            }
+        }, {}, false);
+    };
+
+    const reloadTable = () => {
+        $("#datatable").DataTable().ajax.reload(null, false);
+    };
+
+    const clearCreateForm = () => {
+        $("#c-form-error").hide();
+        $("#c-school-category-id").val("");
+        $("#c-school-sub-category-id").val("");
+        $("#c-education-track").val("");
+        $("#c-min-plot-size-spread-acre").val("");
+        $("#c-min-plot-size-storey-acre").val("");
+        $("#c-max-plot-ratio").val("");
+        $("#c-max-built-area-percent").val("");
+        $("#c-max-storeys").val("");
+        $("#c-min-front-setback-m").val("");
+        $("#c-min-rear-setback-m").val("");
+        $("#c-min-side-setback-m").val("");
+        $("#c-max-students-per-stream").val("");
+        $("#c-min-streams").val("");
+        $("#c-students-per-single-stream-school").val("");
+        $("#c-max-streams-per-school").val("");
+        $("#c-max-students-per-class").val("");
+        $("#c-min-total-classes").val("");
+        $("#c-max-students-per-school").val("");
+        $("#c-is-active").val("1");
+        calculateDerivedStudents("create");
+    };
+
+    const payloadFromForm = (mode = "create") => {
+        const p = mode === "edit" ? "e" : "c";
+        return {
+            school_category_id: $(`#${p}-school-category-id`).val(),
+            school_sub_category_id: $(`#${p}-school-sub-category-id`).val(),
+            education_track: $(`#${p}-education-track`).val(),
+            min_plot_size_spread_acre: $(`#${p}-min-plot-size-spread-acre`).val(),
+            min_plot_size_storey_acre: $(`#${p}-min-plot-size-storey-acre`).val(),
+            max_plot_ratio: $(`#${p}-max-plot-ratio`).val(),
+            max_built_area_percent: $(`#${p}-max-built-area-percent`).val(),
+            max_storeys: $(`#${p}-max-storeys`).val(),
+            min_front_setback_m: $(`#${p}-min-front-setback-m`).val(),
+            min_rear_setback_m: $(`#${p}-min-rear-setback-m`).val(),
+            min_side_setback_m: $(`#${p}-min-side-setback-m`).val(),
+            max_students_per_stream: $(`#${p}-max-students-per-stream`).val(),
+            min_streams: $(`#${p}-min-streams`).val(),
+            students_per_single_stream_school: $(`#${p}-students-per-single-stream-school`).val(),
+            max_streams_per_school: $(`#${p}-max-streams-per-school`).val(),
+            max_students_per_class: $(`#${p}-max-students-per-class`).val(),
+            min_total_classes: $(`#${p}-min-total-classes`).val(),
+            max_students_per_school: $(`#${p}-max-students-per-school`).val(),
+            is_active: $(`#${p}-is-active`).val(),
+        };
+    };
+
+    $("#create-btn").on("click", function () {
+        clearCreateForm();
+        loadSchoolTypeLookups(() => {
+            modal("showModal", true);
+        });
+    });
+
+    function BadiliData(button) {
+        const rowData = JSON.parse(button.getAttribute("data-row"));
+        $("#e-form-error").hide();
+        $("#e-id").val(rowData.id || "");
+
+        loadSchoolTypeLookups(() => {
+            $("#e-school-category-id").val(String(rowData.school_category_id || ""));
+            $("#e-school-sub-category-id").val(String(rowData.school_sub_category_id || ""));
+            $("#e-education-track").val(rowData.education_track || "");
+            $("#e-min-plot-size-spread-acre").val(rowData.min_plot_size_spread_acre ?? "");
+            $("#e-min-plot-size-storey-acre").val(rowData.min_plot_size_storey_acre ?? "");
+            $("#e-max-plot-ratio").val(rowData.max_plot_ratio ?? "");
+            $("#e-max-built-area-percent").val(rowData.max_built_area_percent ?? "");
+            $("#e-max-storeys").val(rowData.max_storeys ?? "");
+            $("#e-min-front-setback-m").val(rowData.min_front_setback_m ?? "");
+            $("#e-min-rear-setback-m").val(rowData.min_rear_setback_m ?? "");
+            $("#e-min-side-setback-m").val(rowData.min_side_setback_m ?? "");
+            $("#e-max-students-per-stream").val(rowData.max_students_per_stream ?? "");
+            $("#e-min-streams").val(rowData.min_streams ?? "");
+            $("#e-students-per-single-stream-school").val(rowData.students_per_single_stream_school ?? "");
+            $("#e-max-streams-per-school").val(rowData.max_streams_per_school ?? "");
+            $("#e-max-students-per-class").val(rowData.max_students_per_class ?? "");
+            $("#e-min-total-classes").val(rowData.min_total_classes ?? "");
+            $("#e-max-students-per-school").val(rowData.max_students_per_school ?? "");
+            $("#e-is-active").val(Number(rowData.is_active) === 0 ? "0" : "1");
+            calculateDerivedStudents("edit");
+            modal("showEditModal", true);
+        });
+    }
+
+    function sajiliKiwangoAinaYaShule() {
+        const payload = payloadFromForm("create");
+        if (!payload.school_category_id) {
+            $("#c-form-error").text("Tafadhali chagua Aina ya Shule.").show();
+            return;
+        }
+
+        $("#c-form-error").hide();
+        ajaxRequest(
+            "/tengenezaKiwangoAinaYaShule",
+            "POST",
+            (response) => {
+                const statusCode = Number(response?.statusCode || 306);
+                alertMessage(
+                    statusCode === 300 ? "Umefanikiwa" : "Haujafanikiwa",
+                    response?.message || "Kuna tatizo, jaribu tena.",
+                    statusCode === 300 ? "success" : "warning",
+                    () => {
+                        if (statusCode === 300) {
+                            modal("showModal", false);
+                            reloadTable();
+                        }
+                    }
+                );
+            },
+            JSON.stringify(payload)
+        );
+    }
+
+    function sasishaKiwangoAinaYaShule() {
+        const id = Number($("#e-id").val() || 0);
+        const payload = payloadFromForm("edit");
+
+        if (!payload.school_category_id) {
+            $("#e-form-error").text("Tafadhali chagua Aina ya Shule.").show();
+            return;
+        }
+
+        if (!id) {
+            $("#e-form-error").text("Kiwango hakijapatikana.").show();
+            return;
+        }
+
+        $("#e-form-error").hide();
+        ajaxRequest(
+            `/badiliKiwangoAinaYaShule/${id}`,
+            "POST",
+            (response) => {
+                const statusCode = Number(response?.statusCode || 306);
+                alertMessage(
+                    statusCode === 300 ? "Umefanikiwa" : "Haujafanikiwa",
+                    response?.message || "Kuna tatizo, jaribu tena.",
+                    statusCode === 300 ? "success" : "warning",
+                    () => {
+                        if (statusCode === 300) {
+                            modal("showEditModal", false);
+                            reloadTable();
+                        }
+                    }
+                );
+            },
+            JSON.stringify(payload)
+        );
+    }
+
+    function FutaData(button) {
+        const rowData = JSON.parse(button.getAttribute("data-row"));
+        const id = Number(rowData.id || 0);
+        if (!id) {
+            alertMessage("Haujafanikiwa", "Kiwango hakijapatikana.", "warning");
+            return;
+        }
+
+        confirmAction(
+            () => {
+                ajaxRequest(`/futaKiwangoAinaYaShule/${id}`, "POST", (response) => {
+                    const statusCode = Number(response?.statusCode || 306);
+                    alertMessage(
+                        statusCode === 300 ? "Umefanikiwa" : "Haujafanikiwa",
+                        response?.message || "Kuna tatizo, jaribu tena.",
+                        statusCode === 300 ? "success" : "warning",
+                        () => {
+                            if (statusCode === 300) {
+                                reloadTable();
+                            }
+                        }
+                    );
+                });
+            },
+            "Futa",
+            "warning",
+            "Ukifuta taarifa hii, haitatumika tena kwenye setup.",
+            "Futa Kiwango cha Aina ya Shule?"
+        );
+    }
+
+    $(document).ready(function() {
+        loadSchoolTypeLookups();
+        attachDbFieldNames();
+        applyWrapTooltips();
+        $(window).on("resize", applyWrapTooltips);
+        $("#c-max-students-per-stream, #c-min-streams, #c-max-streams-per-school, #c-min-total-classes").on("input", () => calculateDerivedStudents("create"));
+        $("#e-max-students-per-stream, #e-min-streams, #e-max-streams-per-school, #e-min-total-classes").on("input", () => calculateDerivedStudents("edit"));
+
+        tableData('datatable' ,'/ViwangoAinaZaShuleList' , 'POST',
+            [
+                {
+                    data: null,
+                    render: function (data, type, row , meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                },
+                {
+                    data: "school_category_name",
+                    name: "school_category_name",
+                    render: (data) => data || "-"
+                },
+                {
+                    data: "school_sub_category_name",
+                    name: "school_sub_category_name",
+                    render: (data) => data || "-"
+                },
+                {
+                    data: "min_plot_size_spread_acre",
+                    name: "min_plot_size_spread_acre",
+                    render: (data) => (data === null || typeof data === "undefined" || data === "") ? "-" : data
+                },
+                {
+                    data: "min_plot_size_storey_acre",
+                    name: "min_plot_size_storey_acre",
+                    render: (data) => (data === null || typeof data === "undefined" || data === "") ? "-" : data
+                },
+                {
+                    data: "max_plot_ratio",
+                    name: "max_plot_ratio",
+                    render: (data) => (data === null || typeof data === "undefined" || data === "") ? "-" : data
+                },
+                {
+                    data: "max_built_area_percent",
+                    name: "max_built_area_percent",
+                    render: (data) => (data === null || typeof data === "undefined" || data === "") ? "-" : data
+                },
+                {
+                    data: "max_storeys",
+                    name: "max_storeys",
+                    render: (data) => (data === null || typeof data === "undefined" || data === "") ? "-" : data
+                },
+                {
+                    data: "min_front_setback_m",
+                    name: "min_front_setback_m",
+                    render: (data) => (data === null || typeof data === "undefined" || data === "") ? "-" : data
+                },
+                {
+                    data: "min_rear_setback_m",
+                    name: "min_rear_setback_m",
+                    render: (data) => (data === null || typeof data === "undefined" || data === "") ? "-" : data
+                },
+                {
+                    data: "min_side_setback_m",
+                    name: "min_side_setback_m",
+                    render: (data) => (data === null || typeof data === "undefined" || data === "") ? "-" : data
+                },
+                {
+                    data: "max_students_per_stream",
+                    name: "max_students_per_stream",
+                    render: (data) => (data === null || typeof data === "undefined" || data === "") ? "-" : data
+                },
+                {
+                    data: "min_streams",
+                    name: "min_streams",
+                    render: (data) => (data === null || typeof data === "undefined" || data === "") ? "-" : data
+                },
+                {
+                    data: "students_per_single_stream_school",
+                    name: "students_per_single_stream_school",
+                    render: (data) => (data === null || typeof data === "undefined" || data === "") ? "-" : data
+                },
+                {
+                    data: "max_streams_per_school",
+                    name: "max_streams_per_school",
+                    render: (data) => (data === null || typeof data === "undefined" || data === "") ? "-" : data
+                },
+                {
+                    data: "max_students_per_class",
+                    name: "max_students_per_class",
+                    render: (data) => (data === null || typeof data === "undefined" || data === "") ? "-" : data
+                },
+                {
+                    data: "min_total_classes",
+                    name: "min_total_classes",
+                    render: (data) => (data === null || typeof data === "undefined" || data === "") ? "-" : data
+                },
+                {
+                    data: "max_students_per_school",
+                    name: "max_students_per_school",
+                    render: (data) => (data === null || typeof data === "undefined" || data === "") ? "-" : data
+                },
+                {
+                    data: "is_active",
+                    name: "is_active",
+                    render: (data) => Number(data) === 1
+                        ? '<span class="badge bg-success-subtle text-success">Inatumika</span>'
+                        : '<span class="badge bg-danger-subtle text-danger">Imesitishwa</span>'
+                },
+                {
+                    data: "created_at",
+                    name: "created_at",
+                    render: (data) => data ? changeDateFormat(data) : "-"
+                },
+                {
+                    data: "updated_at",
+                    name: "updated_at",
+                    render: (data) => data ? changeDateFormat(data) : "-"
+                },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        const elements = [
+                            {
+                                show : true,
+                                type : 'link',
+                                class : 'btn btn-sm btn-outline-primary me-1',
+                                icon : 'bx bx-pencil me-1',
+                                function : 'BadiliData',
+                                btnText : 'Edit'
+                            },
+                            {
+                                show : true,
+                                type : 'link',
+                                class : 'btn btn-sm btn-outline-danger',
+                                icon : 'bx bx-trash me-1',
+                                function : 'FutaData',
+                                btnText : 'Futa'
+                            }
+                        ];
+                        return actionButtons(row, elements);
+                    },
+                    orderable: false,
+                    searchable: false,
+                    className: "text-center"
+                }
+            ]
+        );
+
+        setTimeout(applyWrapTooltips, 300);
+    });
+</script>
+</body>
+</html>

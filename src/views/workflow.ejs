@@ -1,0 +1,296 @@
+<%
+    var card_title = ''
+    var workflowQuery = req.query || {}
+    var headerApplicationCategoryId = String(workflowQuery.application_category_id || '').trim()
+    var headerDeletedScope = String(workflowQuery.deleted_scope || '').toLowerCase()
+    var headerShowDeleted = String(workflowQuery.show_deleted || '').toLowerCase()
+    var headerViewMode = 'active'
+
+    if (
+        headerShowDeleted === '1' ||
+        headerShowDeleted === 'true' ||
+        headerShowDeleted === 'deleted' ||
+        headerDeletedScope === 'deleted'
+    ) {
+        headerViewMode = 'deleted'
+    } else if (headerShowDeleted === 'all' || headerDeletedScope === 'all') {
+        headerViewMode = 'all'
+    }
+
+    var buildWorkflowHeaderUrl = function(mode) {
+        var params = []
+        if (headerApplicationCategoryId) {
+            params.push('application_category_id=' + encodeURIComponent(headerApplicationCategoryId))
+        }
+
+        if (mode === 'deleted') {
+            params.push('show_deleted=1')
+        } else if (mode === 'all') {
+            params.push('show_deleted=all')
+        }
+
+        return '/Workflow' + (params.length ? '?' + params.join('&') : '')
+    }
+
+    var deletedViewUrl = buildWorkflowHeaderUrl('deleted')
+    var activeViewUrl = buildWorkflowHeaderUrl('active')
+    var allViewUrl = buildWorkflowHeaderUrl('all')
+    var card_header_actions = ''
+    if (headerViewMode === 'deleted') {
+        card_header_actions = '<a href="' + activeViewUrl + '" class="btn btn-sm btn-outline-primary">Ona zilizosajiliwa</a>'
+    } else if (headerViewMode === 'all') {
+        card_header_actions = '<a href="' + activeViewUrl + '" class="btn btn-sm btn-outline-primary">Ona zilizosajiliwa</a><a href="' + deletedViewUrl + '" class="btn btn-sm btn-outline-danger">Ona zilizofutwa</a>'
+    } else {
+        card_header_actions = '<a href="' + deletedViewUrl + '" class="btn btn-sm btn-outline-danger">Ona zilizofutwa</a><a href="' + allViewUrl + '" class="btn btn-sm btn-outline-secondary">Ona zote</a>'
+    }
+%> 
+<%- include('layouts/partials/header.ejs' , {
+    title : 'Muundo wa Kuchakata Maombi',
+    page_title : 'Muundo wa Kuchakata Maombi',
+    card_title : '',
+    breadcrumb_main : 'Mipangilio',
+    card_header_actions : card_header_actions
+}) %>
+<style>
+    #customerList {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .workflow-form-card {
+        border: 1px solid #dbe7df;
+        border-radius: 14px;
+        background: linear-gradient(180deg, #f7fbf9 0%, #ffffff 100%);
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+        padding: 1rem 1rem 0.5rem;
+    }
+
+    .workflow-form-card .form-label {
+        color: #334155;
+        font-weight: 600;
+        margin-bottom: 0.35rem;
+    }
+
+    .workflow-form-card .form-control {
+        border-color: #d1d9e6;
+        min-height: 42px;
+    }
+
+    .workflow-form-card .form-check.form-switch {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.6rem 0.75rem 0.55rem 2.4rem;
+        min-height: 44px;
+    }
+
+    .workflow-form-card .form-check-label {
+        color: #334155;
+        font-weight: 600;
+    }
+
+    #is_start.form-check-input:disabled {
+        opacity: 1;
+    }
+
+    .workflow-form-card .btn {
+        min-width: 108px;
+    }
+
+    .workflow-table-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        overflow: hidden;
+        background: #ffffff;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+    }
+
+    .workflow-status-alert {
+        margin-top: 0.25rem;
+    }
+
+    #workflowTable {
+        margin-bottom: 0;
+    }
+
+    #workflowTable th,
+    #workflowTable td {
+        border-color: transparent !important;
+        vertical-align: middle;
+    }
+
+    #workflowTable thead.table-light th {
+        background: #eef5f1 !important;
+        color: #1f2937;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+    }
+
+    #workflowTable tbody tr {
+        border-top: 1px solid #edf2f7;
+    }
+
+    #workflowTable tr.workflow-row-active td {
+        background: #fff8db !important;
+    }
+</style>
+<% 
+    var errorMessage = req.flash('errorMessage') 
+    var successMessage = req.flash('successMessage') 
+    var application_categories = req.flash('application_categories') 
+    var application_category_ids = req.query.application_category_id
+    var unit_id = req.flash('unit_id')
+    var order = req.flash('order') 
+    var deletedScope = String(req.query.deleted_scope || '').toLowerCase()
+    var showDeleted = String(req.query.show_deleted || '').toLowerCase()
+    var isDeletedView = deletedScope === 'deleted' || showDeleted === '1' || showDeleted === 'true' || showDeleted === 'deleted'
+    var formAction = eWorkflow ? `/Badiliworkflow/${eWorkflow.id}` : '/Tengenezaworkflow'
+    var selectedApplicationCategory = (application_categories && application_categories[0]) || (eWorkflow && eWorkflow.application_category_id)
+%>
+  <div class="card-body">
+    <div id="customerList">
+        <!-- <form action="<%= eWorkflow ? `/Workflow/${eWorkflow.id}` : 'Workflow'%>" method="get" id="form-application-categories-filter">
+        </form> -->
+        <% if (!isDeletedView) { %>
+        <div class="workflow-form-card">
+        <form action="<%= formAction %>" method="post">
+                <input type="hidden" name="action" value="<%= eWorkflow ? 'kubadili' : 'kuongeza' %>">
+                <div class="row g-4 mb-3 align-items-end">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                        <label for="select-application-categories-filter" class="form-label">Aina ya Ombi</label>
+                        <select name="application_category_id" class="form-control" 
+                            id="select-application-categories-filter"
+                            data-choices 
+                            data-choices-sorting-false
+                            placeholder="Chagua Aina ya Ombi ..." >
+                                    <option value=""></option>
+                                    <% categories.forEach(item => { %>
+                                        <option value="<%= item.id %>" 
+                                            <%= application_categories && (
+                                                (!Array.isArray(application_categories) && application_categories == item.id) || 
+                                                (Array.isArray(application_categories) &&  application_categories.length > 1 && application_categories.map(Number).includes(item.id))
+                                                )
+                                                ||
+                                                application_category_ids == item.id ||
+                                                selectedApplicationCategory == item.id
+                                            ? 'selected' : ''%> > <%= item.name %></option>
+                                    <% }); %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                        <label for="unit_id" class="form-label">Unit</label>
+                        <select name="unit_id" id="unit_id" required class="form-control" data-choices data-choices-sorting-false>
+                            <option value="">Unit ...</option>
+                            <% hierarchies.forEach(item => { %>
+                                <option value="<%= item.id %>" <%= unit_id == item.id || (eWorkflow && (Number(eWorkflow.unit_id) === Number(item.id) || Number(eWorkflow.start_from) === Number(item.id))) ? 'selected' : '' %>><%= item.unit_name && item.name ? `${item.unit_name} (${item.name})` : (item.unit_name || item.name || '-') %></option>
+                            <% }) %>
+                        </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                        <label for="order" class="form-label">Step Order</label>
+                        <select name="order" id="order" class="form-control" 
+                        data-choices 
+                            data-choices-sorting-false
+                            onchange="window.applyWorkflowStartByOrder && window.applyWorkflowStartByOrder()"
+                            placeholder="Mpangilio ...">
+                        <option value="">Mpangilio ...</option>
+                            <% [1,2,3,4,5,6,7,8,9,10].forEach( _order => { %>
+                            <option value="<%= _order %>" <%= order == _order || (eWorkflow && eWorkflow._order == _order) ? 'selected' : ''%> >
+                                <%= _order %>
+                            </option>
+                            <% }) %>
+                        </select>
+                        </div>
+                    </div>
+                </div>
+
+           <div class="row g-4 mb-3">
+                    <div class="col-md-2">
+                        <div class="form-check form-switch">
+                            <input type="hidden" id="is_start_value" name="is_start" value="<%= eWorkflow && Number(eWorkflow.is_start) === 1 ? '1' : '0' %>">
+                            <input class="form-check-input" type="checkbox" id="is_start" <%= eWorkflow && Number(eWorkflow.is_start) === 1 ? 'checked' : '' %> disabled>
+                            <label class="form-check-label" for="is_start">Is Start</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="is_final" name="is_final" <%= eWorkflow && Number(eWorkflow.is_final) === 1 ? 'checked' : '' %>>
+                            <label class="form-check-label" for="is_final">Is Final</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="can_assign" name="can_assign" <%= eWorkflow && Number(eWorkflow.can_assign) === 1 ? 'checked' : '' %>>
+                            <label class="form-check-label" for="can_assign">Can Assign</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="can_approve" name="can_approve" <%= eWorkflow && Number(eWorkflow.can_approve) === 1 ? 'checked' : '' %>>
+                            <label class="form-check-label" for="can_approve">Can Approve</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="can_return" name="can_return" <%= eWorkflow && Number(eWorkflow.can_return) === 1 ? 'checked' : '' %>>
+                            <label class="form-check-label" for="can_return">Can Return</label>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="row mt-2">
+                    <div class="col-12 d-flex justify-content-start gap-2">
+                      <button type="submit" class="btn btn-<%= eWorkflow ? 'primary' : 'success'%>"><%= eWorkflow ? 'Sasisha' : 'Sajili' %></button>
+                      <% if (application_category_ids && String(application_category_ids).trim() !== '') { %>
+                        <a href="/Workflow" class="btn btn-outline-danger">Cancel</a>
+                      <% } %>
+                    </div>
+                  </div>
+
+         </form>
+         </div>
+         <% } %>
+            <% if(errorMessage != '') { %>
+                    <div class="alert alert-danger alert-dismissible alert-label-icon rounded-label shadow fade show workflow-status-alert" role="alert">
+                        <i class="ri-error-warning-line label-icon"></i><strong>Error!</strong> - <%= errorMessage %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+            <% } %>
+
+            <% if(successMessage != '') { %>
+                    <div class="alert alert-success alert-dismissible alert-label-icon rounded-label shadow fade show workflow-status-alert" role="alert">
+                        <i class="ri-error-warning-line label-icon"></i><strong>Success!</strong> - <%= successMessage %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+            <% } %>
+        <div class="table-responsive workflow-table-card mt-1 mb-1">
+            <table class="table align-middle table-nowrap" id="workflowTable">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" width="8%">Steps</th>
+                        <th >Unit</th>
+                        <th >Aina</th>
+                        <th >Flags</th>
+                        <th >Step Order</th>
+                        <th width="5%">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="list form-check-all">
+                </tbody>
+            </table>
+        </div>
+        <%- include('paginations/ajax_pagination.ejs') %>
+    </div>
+    </div><!-- end card -->
+<%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
+<script>
+    window.currentWorkflowEditId = <%- eWorkflow ? Number(eWorkflow.id) : 'null' %>;
+</script>
+<script type="text/javascript" src="/design/layouts/scripts/workflow_scripts.js"></script>
+</body>
+</html>

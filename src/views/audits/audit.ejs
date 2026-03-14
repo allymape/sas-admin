@@ -1,0 +1,233 @@
+<% var card_title = '' %> 
+<%- include('../layouts/partials/header.ejs' , {
+    title : 'Audit Trail',
+    page_title : 'Mwenendo wa Watumiaji wa Mfumo',
+    card_title : 'Taarifa ya Matukio ya Mfumo.',
+    breadcrumb_main : 'Dashboard',
+    styles : [
+            { href: '/css/datatables/dataTables.dataTables.css' },
+            { href: '/css/datatables/buttons.dataTables.css' }
+        ]
+}) %>
+  <div class="card-body">
+   
+    <div id="customerList">
+       
+
+        <div class="table-responsive mt-3 mb-1">
+            <table class="table table-striped table-nowrap" id="datatable">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Staff</th>
+                        <th>Event Type</th>
+                        <th>IP Address</th>
+                        <th>Reference #</th>
+                        <th>URL</th>
+                        <th>Message</th>
+                        <th>When</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                 <tbody class="list">
+                </tbody>
+            </table>
+        </div>
+         <div class="modal fade bs-example-modal-xl" id="modal" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-xl">
+                            <div class="modal-content">
+                                <div class="modal-header bg-light p-3">
+                                    <h5 class="modal-title" id="modal-title"></h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
+                                </div>
+                                <form>
+                                    <div class="modal-body">
+                                       <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                    <label for="customername-field" class="form-label">Staff Name</label>
+                                                    <input type="text" id="staffname-field" class="form-control" disabled />
+                                                    <input type="hidden" id="id1-field3" class="form-control" placeholder="ID" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                    <label for="customername-field" class="form-label">Browser Used</label>
+                                                    <input type="text" id="customername1-field" class="form-control" disabled />
+                                                    <input type="hidden" id="id1-field3" class="form-control" placeholder="ID" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                 <div class="mb-3">
+                                                    <label for="customername-field" class="form-label">Event Type</label>
+                                                    <input type="text" id="event-field" class="form-control" disabled />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                    <label for="customername-field" class="form-label">Table Name</label>
+                                                    <input type="text" id="table-field" class="form-control" disabled />
+                                                </div>
+                                            </div>
+                                       </div>
+                                       <div class="row">
+                                        <div class="col-md-3">
+                                             <div class="mb-3">
+                                            <label for="customername-field" class="form-label">Designation</label>
+                                            <input type="text" id="roll-field" class="form-control" disabled />
+                                        </div>
+                                        </div>
+                                        <div class="col-md-3"> 
+                                         <div class="mb-3">
+                                            <label for="customername-field" class="form-label">IP Address</label>
+                                            <input type="text" id="ipaddress-field" class="form-control" disabled />
+                                        </div></div>
+                                        <div class="col-md-3">
+                                             <div class="mb-3">
+                                            <label for="customername-field" class="form-label">API Router</label>
+                                            <input type="text" id="apirouter-field" class="form-control" disabled />
+                                        </div>
+                                        </div>
+                                        <div class="col-md-3"><div class="mb-3">
+                                            <label for="customername-field" class="form-label">Date Created</label>
+                                            <input type="text" id="created-field" class="form-control" disabled />
+                                        </div></div>
+                                       </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="mb-3">
+                                            <label for="customername-field" class="form-label">Old Body</label>
+                                            <textarea class="form-control" id="old-field" rows="4" disabled></textarea>
+                                            <!-- <input type="textarea" id="old-field" class="form-control" disabled /> -->
+                                        </div>
+                                            </div>
+                                        </div>
+                                       <div class="row">
+                                        <div class="col-md-12">
+                                             <div class="mb-3">
+                                            <label for="customername-field" class="form-label">New Body</label>
+                                            <textarea class="form-control" id="new-field" rows="4" disabled></textarea>
+                                            <!-- <input type="textarea" id="new-field" class="form-control" disabled /> -->
+                                        </div>
+                                        </div>
+                                       </div>
+                                       <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="mb-3">
+                                            <label for="customername-field" class="form-label">Message</label>
+                                            <input type="textarea" id="msg-field" class="form-control" disabled />
+                                        </div>
+                                        </div>
+                                       </div>
+                                        
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <div class="hstack gap-2 justify-content-end">
+                                            <button type="button" class="btn btn-success" data-bs-dismiss="modal">Funga</button>
+                                            <!-- <button type="button" class="btn btn-success" onclick="sasishaHati()" id="add-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></button> -->
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /.modal-dialog -->
+                    </div><!-- /.modal -->
+    </div>
+    </div><!-- end card -->
+    
+<%- include('../layouts/partials/footer.ejs' , {
+    card_title :  card_title,
+    scripts : [
+            { src : '/js/datatables/dataTables.js'},
+            { src : '/js/datatables/dataTables.buttons.js'},
+            { src : '/js/datatables/buttons.dataTables.js'},
+            { src : '/js/datatables/buttons.html5.min.js'},
+            { src : '/js/datatables/jszip.min.js'},
+            { src : '/js/datatables/pdfmake.min.js'},
+            { src : '/js/datatables/vfs_fonts.js'},
+            { src : '/js/datatables/buttons.print.min.js'},
+          ]
+    }) %>
+<script>
+    $(document).ready(function() {
+        tableData('datatable' ,'/AuditTrailList' , 'POST',
+            [
+                    { data: null, render : (data , type , row , meta) => {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    } },
+                    { data: "name", name: "name" },
+                    { data: "event_type", name: "event_type" , render : function(data, type , row){
+                        return `<span class='badge bg-${data == 'created' ? 'success' : (data == 'updated' ? 'primary' : 'danger')}'>${data.toUpperCase()}</span>`;
+                    } },
+                    { data: "ip_address", name: "ip_address" },
+                    { data: "id", name: "id" , class: 'text-center font-weight-bold text-lg'},
+                    { data: "api_router", name: "api_router" },
+                    { data: "message", name: "message" },
+                    {
+                      data: "created_at", name: "created_at",
+                            render: (data, type, row) => {
+                                return changeDateFormat(data);
+                            },
+                    },
+                    {
+                    data: null, // No data source for this column
+                    render: function (data, type, row) {
+                            const elements = [
+                                            {
+                                                show : true,
+                                                type : 'link',
+                                                class : 'btn btn-sm btn-outline-success me-1',
+                                                icon : 'bx bx-show me-1',
+                                                function : 'viewDetails',
+                                                btnText : 'View'
+                                            },
+                                        ]
+                        return actionButtons(row , elements);
+                    },
+                    orderable: false, // Disable sorting for the action buttons column
+                    class : 'text-center'
+                    },
+            ]
+        );
+    });
+</script>
+<!-- <script type="text/javascript" src="/design/layouts/scripts/kanda_scripts.js"></script> -->
+ <script>
+    function viewDetails(button){
+    const rowData = JSON.parse(button.getAttribute('data-row'));
+    var nameId = rowData.id;
+    var name = rowData.browser_used;
+    var event = rowData.event_type;
+    var rollId = rowData.rollId;
+    var staffname = rowData.name;
+    var tableName = rowData.tableName;
+    var ipaddress = rowData.ip_address;
+    var apirouter = rowData.api_router;
+    var oldbody = rowData.old_body;
+    var newbody = rowData.new_body;
+    var created = changeDateFormat(rowData.created_at);
+    var message = rowData.message;
+    document.getElementById("id1-field3").value = nameId;
+    document.getElementById("customername1-field").value = name;
+    document.getElementById("staffname-field").value = staffname;
+    document.getElementById("event-field").value = event;
+    document.getElementById("roll-field").value = rollId;
+    document.getElementById("table-field").value = tableName;
+    document.getElementById("ipaddress-field").value = ipaddress;
+    document.getElementById("apirouter-field").value = apirouter;
+    document.getElementById("created-field").value = created;
+    document.getElementById("old-field").value = oldbody;
+    document.getElementById("new-field").value = newbody;
+    document.getElementById("msg-field").value = message;
+    $("#modal-title").html(`Reference Code: ${nameId}`)
+    $('#modal').modal('show');
+}
+
+</script>
+</body>
+
+</html>
+
+
+
+

@@ -1,0 +1,50 @@
+  <% for(var i = 0; i < data.length; i++){ %>
+                                                    <tr>
+                                                        <!-- <th scope="row">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" name="chk_child" value="option1">
+                                                            </div>
+                                                        </th> -->
+                                                        <td class="id"><a href="javascript:void(0);" class="fw-medium link-primary"><%= i+1 %></a></td>
+                                                        <td class=""><a href="#"class="fw-medium link-primary"><%= data[i].name %></a></td>
+                                                        <td class="date"><%= data[i].phone_no %></td>
+                                                        <td class="date"><%= data[i].username %></td>
+                                                        <td class=""><%= data[i].role_name %></td>
+                                                        <td class=""><%= data[i].level_name %></td>
+                                                        <td class="" data-bs-toggle="tooltip" <%=data[i].lga_name ? 'style=cursor:pointer;' : ''%> title="<%= data[i].lga_name ? 'Kanda ya '+ data[i].zone_name : '' %>" >
+                                                            <%= data[i].lga_name ? data[i].lga_name : (data[i].zone_name ? ('Kanda ya '+data[i].zone_name).toUpperCase() : '') %></td>
+                                                        <td class="date"><%= data[i].last_login %></td>
+                                                        <td class="text-center"> 
+                                                            <button type="button" class="btn btn-link text-primary" 
+                                                                data-bs-toggle="" 
+                                                                data-id="<%= data[i].userId %>" 
+                                                                data-name="<%= data[i].name %>" 
+                                                                data-email="<%= data[i].email %>" 
+                                                                data-phone="<%= data[i].phoneNumber %>"  
+                                                                onclick="editUser(this); return false;"
+                                                            >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" 
+                                                                width="24" height="24" viewBox="0 0 24 24" 
+                                                                fill="none" stroke="currentColor" stroke-width="2" 
+                                                                stroke-linecap="round" stroke-linejoin="round" 
+                                                                class="feather feather-edit-3"><path d="M12 20h9"
+                                                            >
+                                                                </path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z">
+                                                                </path>
+                                                           </svg>
+                                                           </button>
+                                                            <button type="button" class="btn btn-link text-danger add-btn" 
+                                                                data-bs-toggle="modal" data-id="<%= data[i].userId %>" 
+                                                                data-name="<%= data[i].name %>" 
+                                                                onclick="AddZone1(this); return false;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                                            </button>
+                                                            <button type="button" class="btn btn-link text-warning add-btn" 
+                                                                data-bs-toggle="modal" data-id="<%= data[i].userId %>" 
+                                                                data-name="<%= data[i].name %>" data-email="<%= data[i].email %>"
+                                                                onclick="ResetPassword(this); return false;"
+                                                            ><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-unlock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>
+                                                            </button>
+                                                        </td>
+
+                                                    </tr>
+                                                    <% } %>

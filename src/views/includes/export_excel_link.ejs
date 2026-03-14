@@ -1,0 +1,14 @@
+<% 
+const selectedFormat = typeof export_format !== 'undefined' ? export_format : 'xlsx';
+const selectedText = typeof btn_text !== 'undefined' ? btn_text : 'Export to Excel';
+const appendMax = selectedFormat === 'xlsx' ? '&max=' + pagination.total : '';
+%>
+ <a href="<%= req.protocol + '://' + req.get('host') + 
+        req.originalUrl + 
+        (req.originalUrl.includes('?') ? '&export=true' : '?export=true') + appendMax + '&export_format=' + selectedFormat %>" 
+        id="btn-export-excel" 
+        class="btn btn-<%=btn_color%> w-100"
+       
+>
+    <%= selectedText %> 
+</a>

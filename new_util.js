@@ -14,7 +14,7 @@ const json2xls = require("json2xls");
 const Cryptr = require("cryptr");
 const cheerio = require("cheerio");
 const path = require("path");
-const PDFDocument = require("./public/controllers/barua/pdfkitTable");
+const PDFDocument = require("./src/controllers/barua/pdfkitTable");
 const url = require("url");
 
 const { toSwahili } = require("digits-to-swahili");

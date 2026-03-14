@@ -1,0 +1,308 @@
+<% var card_title = '' %>
+<%- include('layouts/partials/header.ejs' , {
+    title : 'Aina za Shule',
+    page_title : 'Orodha ya Aina za Shule',
+    card_title : 'Aina za Shule zilizopo',
+    breadcrumb_main : 'Mipangilio',
+    styles : [
+                { href: '/css/datatables/dataTables.dataTables.css' },
+                { href: '/css/datatables/buttons.dataTables.css' }
+            ]
+}) %>
+<div class="card-body">
+    <div id="customerList">
+        <div class="row g-4 mb-3">
+            <div class="col-sm-auto">
+                <button type="button" class="btn btn-success add-btn" id="create-btn">
+                    <i class="ri-add-line align-bottom me-1"></i> Sajili
+                </button>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="table-responsive table-card mt-3 mb-1">
+                <table class="table align-middle table-nowrap" id="datatable">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="5%">Na.</th>
+                            <th>Aina ya Shule</th>
+                            <th>Code</th>
+                            <th>Imetengenezwa</th>
+                            <th>Imesasishwa</th>
+                            <th class="text-center" width="10%">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="list form-check-all"></tbody>
+                </table>
+                <div class="noresult" style="display: none">
+                    <div class="text-center">
+                        <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                            colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                        <h5 class="mt-2">Hakuna matokeo</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title">Sajili Aina ya Shule</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="category-field" class="form-label">Aina ya Shule</label>
+                        <input type="text" id="category-field" class="form-control" placeholder="Mfano: Sekondari" required />
+                        <span class="text-danger" style="display: none;" id="jaza-category">Tafadhali jaza Aina ya Shule.</span>
+                    </div>
+                    <div class="mb-1">
+                        <label for="code-field" class="form-label">Code</label>
+                        <input type="text" id="code-field" class="form-control" placeholder="Mfano: SE" maxlength="2" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Funga</button>
+                        <button type="button" class="btn btn-success" onclick="sajiliAinaYaShule()">Sajili</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showEditModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title">Badili Aina ya Shule</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <input type="hidden" id="id-field" />
+                    <div class="mb-3">
+                        <label for="category2-field" class="form-label">Aina ya Shule</label>
+                        <input type="text" id="category2-field" class="form-control" placeholder="Mfano: Sekondari" required />
+                        <span class="text-danger" style="display: none;" id="jaza-category2">Tafadhali jaza Aina ya Shule.</span>
+                    </div>
+                    <div class="mb-1">
+                        <label for="code2-field" class="form-label">Code</label>
+                        <input type="text" id="code2-field" class="form-control" placeholder="Mfano: SE" maxlength="2" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Funga</button>
+                        <button type="button" class="btn btn-success" onclick="sasishaAinaYaShule()">Hifadhi</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('layouts/partials/footer.ejs' , {
+    card_title :  card_title,
+    scripts : [
+            { src : '/js/datatables/dataTables.js'},
+            { src : '/js/datatables/dataTables.buttons.js'},
+            { src : '/js/datatables/buttons.dataTables.js'},
+            { src : '/js/datatables/buttons.html5.min.js'},
+            { src : '/js/datatables/jszip.min.js'},
+            { src : '/js/datatables/pdfmake.min.js'},
+            { src : '/js/datatables/vfs_fonts.js'},
+            { src : '/js/datatables/buttons.print.min.js'}
+          ]
+    }) %>
+
+<script>
+    const reloadSchoolCategoryTable = () => {
+        $('#datatable').DataTable().ajax.reload(null, false);
+    };
+
+    $("#create-btn").on("click", function () {
+        $("#category-field").val("");
+        $("#code-field").val("");
+        $("#jaza-category").hide();
+        modal("showModal", true);
+    });
+
+    function BadiliData(button) {
+        const rowData = JSON.parse(button.getAttribute("data-row"));
+        $("#id-field").val(rowData.id || "");
+        $("#category2-field").val(rowData.category || rowData.name || "");
+        $("#code2-field").val(rowData.code || "");
+        $("#jaza-category2").hide();
+        modal("showEditModal", true);
+    }
+
+    function sajiliAinaYaShule() {
+        const category = String($("#category-field").val() || "").trim();
+        const code = String($("#code-field").val() || "").trim();
+        $("#jaza-category").hide();
+
+        if (!category) {
+            $("#jaza-category").show();
+            return;
+        }
+
+        ajaxRequest(
+            "/tengenezaAinaZaShule",
+            "POST",
+            (response) => {
+                const statusCode = Number(response?.statusCode || 306);
+                alertMessage(
+                    statusCode === 300 ? "Umefanikiwa" : "Haujafanikiwa",
+                    response?.message || "Kuna tatizo, jaribu tena.",
+                    statusCode === 300 ? "success" : "warning",
+                    () => {
+                        if (statusCode === 300) {
+                            modal("showModal", false);
+                            reloadSchoolCategoryTable();
+                        }
+                    }
+                );
+            },
+            JSON.stringify({
+                category,
+                code
+            })
+        );
+    }
+
+    function sasishaAinaYaShule() {
+        const id = Number($("#id-field").val() || 0);
+        const category = String($("#category2-field").val() || "").trim();
+        const code = String($("#code2-field").val() || "").trim();
+        $("#jaza-category2").hide();
+
+        if (!category) {
+            $("#jaza-category2").show();
+            return;
+        }
+
+        if (!id) {
+            alertMessage("Haujafanikiwa", "Aina ya Shule haijapatikana.", "warning");
+            return;
+        }
+
+        ajaxRequest(
+            `/badiliAinaZaShule/${id}`,
+            "POST",
+            (response) => {
+                const statusCode = Number(response?.statusCode || 306);
+                alertMessage(
+                    statusCode === 300 ? "Umefanikiwa" : "Haujafanikiwa",
+                    response?.message || "Kuna tatizo, jaribu tena.",
+                    statusCode === 300 ? "success" : "warning",
+                    () => {
+                        if (statusCode === 300) {
+                            modal("showEditModal", false);
+                            reloadSchoolCategoryTable();
+                        }
+                    }
+                );
+            },
+            JSON.stringify({
+                category,
+                code
+            })
+        );
+    }
+
+    function FutaData(button) {
+        const rowData = JSON.parse(button.getAttribute("data-row"));
+        const id = Number(rowData.id || 0);
+        if (!id) {
+            alertMessage("Haujafanikiwa", "Aina ya Shule haijapatikana.", "warning");
+            return;
+        }
+
+        confirmAction(
+            () => {
+                ajaxRequest(`/futaAinaZaShule/${id}`, "POST", (response) => {
+                    const statusCode = Number(response?.statusCode || 306);
+                    alertMessage(
+                        statusCode === 300 ? "Umefanikiwa" : "Haujafanikiwa",
+                        response?.message || "Kuna tatizo, jaribu tena.",
+                        statusCode === 300 ? "success" : "warning",
+                        () => {
+                            if (statusCode === 300) {
+                                reloadSchoolCategoryTable();
+                            }
+                        }
+                    );
+                });
+            },
+            "Futa",
+            "warning",
+            "Ukifuta taarifa hii, haitatumika tena kwenye setup.",
+            "Futa Aina ya Shule?"
+        );
+    }
+
+    $(document).ready(function() {
+        tableData('datatable' ,'/AinaZaShuleList' , 'POST',
+            [
+                {
+                    data: null,
+                    render: function (data, type, row , meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                },
+                { data: "category", name: "category",
+                  render: (data, type, row) => data || row.name || "-" },
+                {
+                    data: "code",
+                    name: "code",
+                    render: (data) => data ? data : "-"
+                },
+                {
+                    data: "created_at",
+                    name: "created_at",
+                    render: (data) => data ? changeDateFormat(data) : "-"
+                },
+                {
+                    data: "updated_at",
+                    name: "updated_at",
+                    render: (data) => data ? changeDateFormat(data) : "-"
+                },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        const elements = [
+                            {
+                                show : true,
+                                type : 'link',
+                                class : 'btn btn-sm btn-outline-primary me-1',
+                                icon : 'bx bx-pencil me-1',
+                                function : 'BadiliData',
+                                btnText : 'Edit'
+                            },
+                            {
+                                show : true,
+                                type : 'link',
+                                class : 'btn btn-sm btn-outline-danger',
+                                icon : 'bx bx-trash me-1',
+                                function : 'FutaData',
+                                btnText : 'Futa'
+                            }
+                        ];
+                        return actionButtons(row, elements);
+                    },
+                    orderable: false,
+                    searchable: false,
+                    className: "text-center"
+                }
+            ]
+        );
+    });
+</script>
+</body>
+</html>
