@@ -341,6 +341,14 @@ const menuItems = [
                         hasPermissionTo : permission(req , 'view-schools'),
                     },
                     {
+                        label : "Majalada ya Shule",
+                        url  : "v2-MajaladaYaShule",
+                        icon : "",
+                        counterId : "",
+                        pattern : "v2-MajaladaYaShule|MajaladaYaShule",
+                        hasPermissionTo : permission(req , 'view-schools'),
+                    },
+                    {
                         label : "Aina za Shule",
                         url  : "v2-AinaZaShule",
                         icon : "",
@@ -544,6 +552,14 @@ const menuItems = [
                         hasPermissionTo : permission(req , 'view-algorithm'),
                     },
                     {
+                        label : "Namba za Majalada",
+                        url  : "v2-FileNumberMappings",
+                        icon : "",
+                        counterId : "",
+                        pattern : "v2-FileNumberMappings|FileNumberMappings",
+                        hasPermissionTo : permission(req , 'view-algorithm|view-workflow|view-track-application'),
+                    },
+                    {
                         label : "Workflow",
                         url  : "v2-Workflow",
                         icon : "",
@@ -583,6 +599,24 @@ const menuItems = [
         pattern : "AuditTrail",
         hasPermissionTo : permission(req , 'view-audit'),
    },
+   {
+        label : "System Logs",
+        url  : "v2-SystemLogs",
+        menuTitle : '',
+        icon : "ri-file-warning-line",
+        menuId : "",
+        pattern : "v2-SystemLogs|SystemLogs",
+        hasPermissionTo : permission(req , 'view-audit'),
+   },
+   {
+        label : "System Configurations",
+        url  : "v2-SystemConfigurations",
+        menuTitle : '',
+        icon : "ri-settings-3-line",
+        menuId : "",
+        pattern : "v2-SystemConfigurations|SystemConfigurations",
+        hasPermissionTo : permission(req , 'view-audit'),
+   },
     //    LOGIN ACTIVITY
     {
         label : "Login Activity",
@@ -596,7 +630,7 @@ const menuItems = [
    // LOGOUT
     {
         label : "Ondoka",
-        url  : "#",
+        url  : "logout",
         menuTitle : '',
         icon : "ri-logout-circle-r-line",
         menuId : "",

@@ -37,8 +37,18 @@
     </div>
   `;
 
-  const renderPendingList = (applications = []) => {
-    if (!applications.length) return renderEmptyState();
+  const renderPendingList = (
+    applications = [],
+    options = {},
+  ) => {
+    const {
+      emptyMessage = "Hakuna maombi yanayosubiri kwa sasa.",
+      ctaLabel = "Fungua Maombi Yanayosubiri",
+      ctaHref = "/my-applications?work_tab=pending",
+      ctaClass = "btn-soft-success",
+    } = options;
+
+    if (!applications.length) return renderEmptyState(emptyMessage);
 
     let html = `<div data-simplebar style="max-height: 320px;" class="pe-2">`;
 
@@ -77,8 +87,8 @@
     html += `
       </div>
       <div class="my-3 text-center">
-        <a href="/my-applications?work_tab=pending" class="btn btn-soft-success waves-effect waves-light">
-          Fungua Maombi Yanayosubiri <i class="ri-arrow-right-line align-middle"></i>
+        <a href="${escapeHtml(ctaHref)}" class="btn ${escapeHtml(ctaClass)} waves-effect waves-light">
+          ${escapeHtml(ctaLabel)} <i class="ri-arrow-right-line align-middle"></i>
         </a>
       </div>
     `;
@@ -86,19 +96,27 @@
     return html;
   };
 
-  const renderMyApplicationsTab = (totalPending = 0) => `
-    <div class="p-3 text-center">
-      <p class="mb-2 fs-13 text-muted">Una maombi yanayosubiri: <strong>${totalPending}</strong></p>
-      <a href="/my-applications?work_tab=pending" class="btn btn-soft-primary btn-sm">Fungua Maombi Yangu</a>
-    </div>
-  `;
-
   const setCounter = (totalPending = 0) => {
     const total = Number.parseInt(totalPending, 10) || 0;
-    $("#unread-notification-counter").text(total);
-    $("#all-noti-tab-count").text(`(${total})`);
-    $("#all-new-messages-count").text(total > 0 ? `${total} mapya` : "0 mapya");
-    $("#all-messages-tab-count").text(total > 0 ? `(${total})` : "");
+    const $unreadCounter = $("#unread-notification-counter");
+    const $allNotiTabCount = $("#all-noti-tab-count");
+    const $allNewMessagesCount = $("#all-new-messages-count");
+    const $allMessagesTabCount = $("#all-messages-tab-count");
+
+    if (total > 0) {
+      $unreadCounter
+        .removeClass("d-none")
+        .html(`${total}<span class="visually-hidden">unread messages</span>`);
+      $allNotiTabCount.text(`(${total})`);
+      $allNewMessagesCount.removeClass("d-none").text(`${total} mapya`);
+      $allMessagesTabCount.text(`(${total})`);
+      return;
+    }
+
+    $unreadCounter.addClass("d-none").empty();
+    $allNotiTabCount.text("");
+    $allNewMessagesCount.addClass("d-none").text("");
+    $allMessagesTabCount.text("");
   };
 
   const fetchPendingApplications = () => {
@@ -117,12 +135,19 @@
 
         setCounter(totalPending);
         $("#all-noti-tab").html(renderPendingList(rows));
-        $("#messages-tab").html(renderMyApplicationsTab(totalPending));
+        $("#messages-tab").html(
+          renderPendingList(rows, {
+            emptyMessage: "Hakuna maombi kwenye akaunti yako kwa sasa.",
+            ctaLabel: "Fungua Maombi Yangu",
+            ctaHref: "/my-applications?work_tab=pending",
+            ctaClass: "btn-soft-primary",
+          }),
+        );
       },
       error: () => {
         setCounter(0);
         $("#all-noti-tab").html(renderEmptyState("Imeshindikana kupata maombi yanayosubiri."));
-        $("#messages-tab").html(renderMyApplicationsTab(0));
+        $("#messages-tab").html(renderEmptyState("Imeshindikana kupata maombi yako."));
       },
     });
   };

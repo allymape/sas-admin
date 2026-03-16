@@ -102,10 +102,16 @@
                     </td>
                     <% if(status == 'approved' ){ %>
                         <td class="text-center">
-                             <% if(maombi[i].folio){ %>
-                                 <a target="_blank" title="Barua" data-bs-toggle="tooltip" href="/barua/<%= maombi[i].tracking_number %>">
-                                        <i class="ri-file-pdf-fill ri-2x align-bottom me-1 text-danger"></i>
-                                 </a>
+                             <% if(Number(maombi[i].is_approved) === 2){ %>
+                                <a
+                                    target="_blank"
+                                    title="Fungua Barua"
+                                    data-bs-toggle="tooltip"
+                                    href="/barua/<%= maombi[i].tracking_number %>"
+                                    class="btn btn-sm btn-danger"
+                                >
+                                    <i class="ri-file-pdf-fill align-bottom me-1"></i> Barua
+                                </a>
                             <% } %>
                         </td>
                     <% } %>

@@ -36,7 +36,7 @@ $("#btn-change-password").on("click", function (e) {
           $("#logout").remove();
            $(document)
              .find("body")
-             .append(`<form action="/Logout" method="POST" id="logout"><input name="logout" type="hidden" /></form>`);
+             .append(`<form action="/logout" method="POST" id="logout"><input name="logout" type="hidden" /></form>`);
            $("#logout").submit()
          }
        }
@@ -163,7 +163,6 @@ $("#btn-handover").on('click' , function(e){
     alertMessage('Onyo' , 'Jaza sehemu zote zinazotakiwa' , 'warning')
   }
 });
-
 
 
 

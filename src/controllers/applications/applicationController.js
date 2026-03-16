@@ -112,7 +112,14 @@ const buildPageTitle = (categories, selectedCategoryId, selectedStatusId) => {
   return `Maombi - ${parts.join(" | ")}`;
 };
 
-const buildApplicationsUrl = (page, perPage, selectedCategoryId, selectedStatusId, search = "") => {
+const buildApplicationsUrl = (
+  page,
+  perPage,
+  selectedCategoryId,
+  selectedStatusId,
+  search = "",
+  selectedEstablishingSchoolId = null,
+) => {
   const query = new URLSearchParams({
     page: String(page),
   });
@@ -131,6 +138,9 @@ const buildApplicationsUrl = (page, perPage, selectedCategoryId, selectedStatusI
   if (search) {
     query.set("search", search);
   }
+  if (selectedEstablishingSchoolId) {
+    query.set("establishing_school_id", String(selectedEstablishingSchoolId));
+  }
 
   return `${applicationsAPI}?${query.toString()}`;
 };
@@ -140,8 +150,16 @@ const index = (req, res) => {
   const perPage = toPerPage(req.query.per_page);
   const selectedCategoryId = toPositiveInt(req.query.application_category_id, null);
   const selectedStatusId = toNonNegativeInt(req.query.is_approved, null);
+  const selectedEstablishingSchoolId = toPositiveInt(req.query.establishing_school_id, null);
   const searchTerm = toSearch(req.query.search);
-  const url = buildApplicationsUrl(page, perPage, selectedCategoryId, selectedStatusId, searchTerm);
+  const url = buildApplicationsUrl(
+    page,
+    perPage,
+    selectedCategoryId,
+    selectedStatusId,
+    searchTerm,
+    selectedEstablishingSchoolId,
+  );
 
   sendRequest(req, res, url, "GET", {}, (jsonData) => {
     const { applications, pagination, success } = parseApplicationsPayload(
@@ -162,6 +180,7 @@ const index = (req, res) => {
       selectedCategoryId,
       selectedStatusId,
       selectedWorkTab: null,
+      selectedEstablishingSchoolId,
       searchTerm,
       pageTitle,
     });
@@ -173,8 +192,16 @@ const list = (req, res) => {
   const perPage = toPerPage(req.query.per_page, 10);
   const selectedCategoryId = toPositiveInt(req.query.application_category_id, null);
   const selectedStatusId = toNonNegativeInt(req.query.is_approved, null);
+  const selectedEstablishingSchoolId = toPositiveInt(req.query.establishing_school_id, null);
   const searchTerm = toSearch(req.query.search);
-  const url = buildApplicationsUrl(page, perPage, selectedCategoryId, selectedStatusId, searchTerm);
+  const url = buildApplicationsUrl(
+    page,
+    perPage,
+    selectedCategoryId,
+    selectedStatusId,
+    searchTerm,
+    selectedEstablishingSchoolId,
+  );
 
   sendRequest(req, res, url, "GET", {}, (jsonData) => {
     const { applications, pagination, success } = parseApplicationsPayload(

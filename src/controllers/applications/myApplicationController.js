@@ -149,10 +149,54 @@ const buildApplicationsUrl = (page, perPage, selectedCategoryId, selectedStatusI
 const buildAttendPath = (trackingNumber) =>
   `/my-applications/${encodeURIComponent(trackingNumber)}/attend`;
 
-const redirectAttendWithToast = (res, trackingNumber, toastType, message, hash = "") =>
-  res.redirect(
-    `${buildAttendPath(trackingNumber)}?toast_type=${encodeURIComponent(toastType)}&toast_message=${encodeURIComponent(message)}${hash ? `#${String(hash).replace(/^#/, "")}` : ""}`,
-  );
+const resolveFlashKeyFromToastType = (toastType = "warning") => {
+  const normalized = String(toastType || "").trim().toLowerCase();
+  if (normalized === "success") return "success";
+  if (normalized === "danger" || normalized === "error") return "error";
+  return "warning";
+};
+
+const pushToastFlash = (req, toastType, message) => {
+  if (!req || typeof req.flash !== "function") return;
+  const normalizedMessage = String(message || "").trim();
+  if (!normalizedMessage) return;
+  req.flash(resolveFlashKeyFromToastType(toastType), normalizedMessage);
+};
+
+const redirectAttendWithToast = (req, res, trackingNumber, toastType, message, hash = "") => {
+  pushToastFlash(req, toastType, message);
+  const hashSegment = hash ? `#${String(hash).replace(/^#/, "")}` : "";
+  return res.redirect(`${buildAttendPath(trackingNumber)}${hashSegment}`);
+};
+
+const redirectMyApplicationsWithToast = (req, res, toastType, message) => {
+  pushToastFlash(req, toastType, message);
+  return res.redirect("/my-applications");
+};
+
+const normalizeWorkflowToastMessage = (rawMessage) => {
+  const message = String(rawMessage || "").trim();
+  const lowered = message.toLowerCase();
+
+  if (
+    lowered.includes("workflow action is not allowed for you")
+    || lowered.includes("not allowed for you")
+  ) {
+    return "Huruhusiwi kufanya hatua hii ya workflow.";
+  }
+
+  if (
+    lowered.includes("approve/reject requires assign-staff permission and current workflow step with is_final = true and can_approve = true")
+    || lowered.includes("approve/reject is allowed only for assigned staff in current process")
+    || lowered.includes("approve/reject requires assign-staff permission")
+    || lowered.includes("approve/reject is allowed only on final workflow unit")
+    || lowered.includes("approve/reject is allowed only for workflow unit with can_approve")
+  ) {
+    return "Approve/Reject inaruhusiwa kwa mwenye permission ya assign-staff, na current workflow step yenye is_final=true pamoja na can_approve=true.";
+  }
+
+  return message || "Error! Unable to process workflow action.";
+};
 
 const fetchApplicationByTracking = (req, trackingNumber, callback) => {
   const url = `${applicationsAPI}/${encodeURIComponent(trackingNumber)}`;
@@ -266,6 +310,7 @@ const index = (req, res) => {
       selectedCategoryId,
       selectedStatusId,
       selectedWorkTab,
+      selectedEstablishingSchoolId: null,
       searchTerm,
       pageTitle,
     });
@@ -305,8 +350,11 @@ const attend = (req, res) => {
   fetchApplicationByTracking(req, trackingNumber, (result) => {
     if (!result?.ok) {
       const toastType = result?.statusCode === 404 ? "warning" : "error";
-      return res.redirect(
-        `/my-applications?toast_type=${encodeURIComponent(toastType)}&toast_message=${encodeURIComponent(result?.message || "Error! Something went wrong. Try again.")}`,
+      return redirectMyApplicationsWithToast(
+        req,
+        res,
+        toastType,
+        result?.message || "Error! Something went wrong. Try again.",
       );
     }
 
@@ -332,12 +380,13 @@ const addComment = (req, res) => {
   }
 
   if (!content) {
-    return redirectAttendWithToast(res, trackingNumber, "warning", "Warning! Please enter your comment.", "comments-info");
+    return redirectAttendWithToast(req, res, trackingNumber, "warning", "Warning! Please enter your comment.", "comments-info");
   }
 
   fetchApplicationByTracking(req, trackingNumber, (result) => {
     if (!result?.ok) {
       return redirectAttendWithToast(
+        req,
         res,
         trackingNumber,
         result?.statusCode === 404 ? "warning" : "error",
@@ -348,6 +397,7 @@ const addComment = (req, res) => {
 
     if (!canCurrentUserTakeAction(req, result.application)) {
       return redirectAttendWithToast(
+        req,
         res,
         trackingNumber,
         "warning",
@@ -372,6 +422,7 @@ const addComment = (req, res) => {
       (error, response, body) => {
         if (error) {
           return redirectAttendWithToast(
+            req,
             res,
             trackingNumber,
             "danger",
@@ -382,10 +433,11 @@ const addComment = (req, res) => {
 
         if (!response || response.statusCode >= 400 || body?.success === false) {
           const message = body?.message || "Error! Unable to save comment.";
-          return redirectAttendWithToast(res, trackingNumber, "error", message, "comments-info");
+          return redirectAttendWithToast(req, res, trackingNumber, "error", message, "comments-info");
         }
 
         return redirectAttendWithToast(
+          req,
           res,
           trackingNumber,
           "success",
@@ -408,16 +460,17 @@ const submitWorkflowAction = (req, res) => {
   }
 
   if (!action) {
-    return redirectAttendWithToast(res, trackingNumber, "warning", "Warning! Please choose workflow action.", "comments-info");
+    return redirectAttendWithToast(req, res, trackingNumber, "warning", "Warning! Please choose workflow action.", "comments-info");
   }
 
   if (!content) {
-    return redirectAttendWithToast(res, trackingNumber, "warning", "Warning! Please enter recommendation or comment.", "comments-info");
+    return redirectAttendWithToast(req, res, trackingNumber, "warning", "Warning! Please enter recommendation or comment.", "comments-info");
   }
 
   fetchApplicationByTracking(req, trackingNumber, (result) => {
     if (!result?.ok) {
       return redirectAttendWithToast(
+        req,
         res,
         trackingNumber,
         result?.statusCode === 404 ? "warning" : "error",
@@ -428,6 +481,7 @@ const submitWorkflowAction = (req, res) => {
 
     if (!canCurrentUserTakeAction(req, result.application)) {
       return redirectAttendWithToast(
+        req,
         res,
         trackingNumber,
         "warning",
@@ -454,6 +508,7 @@ const submitWorkflowAction = (req, res) => {
       (error, response, body) => {
         if (error) {
           return redirectAttendWithToast(
+            req,
             res,
             trackingNumber,
             "danger",
@@ -463,15 +518,16 @@ const submitWorkflowAction = (req, res) => {
         }
 
         if (!response || response.statusCode >= 400 || body?.success === false) {
-          const message = body?.message || "Error! Unable to process workflow action.";
-          return redirectAttendWithToast(res, trackingNumber, "error", message, "comments-info");
+          const message = normalizeWorkflowToastMessage(body?.message);
+          return redirectAttendWithToast(req, res, trackingNumber, "error", message, "comments-info");
         }
 
         return redirectAttendWithToast(
+          req,
           res,
           trackingNumber,
           "success",
-          "Success! Workflow action completed.",
+          "The action was successful.",
           "comments-info",
         );
       },

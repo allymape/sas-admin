@@ -1,0 +1,648 @@
+<% var card_title = "" %>
+<%- include('layouts/partials/header.ejs' , {
+    title : 'System Configurations',
+    page_title : 'System Configurations',
+    card_title : 'System Configurations',
+    breadcrumb_main : 'Monitoring'
+}) %>
+
+<style>
+  .config-header-row .form-label {
+    margin-bottom: 6px;
+  }
+
+  #target-select {
+    max-width: 360px;
+  }
+
+  .config-header-actions .btn {
+    min-width: 0;
+    white-space: nowrap;
+  }
+
+  .config-group-card .card-header h6 {
+    margin-bottom: 0;
+  }
+
+  .config-group-card .card-header {
+    border-bottom: 1px solid #dfe5ee;
+  }
+
+  .config-group-card[data-group="system"] .card-header {
+    background-color: #e7f1ff;
+  }
+
+  .config-group-card[data-group="database"] .card-header {
+    background-color: #e7f8ef;
+  }
+
+  .config-group-card[data-group="email"] .card-header {
+    background-color: #fff4e1;
+  }
+
+  .config-group-card[data-group="jwt"] .card-header {
+    background-color: #e9f7ff;
+  }
+
+  .config-group-card[data-group="debug"] .card-header {
+    background-color: #fff8d8;
+  }
+
+  .config-group-card[data-group="alerts"] .card-header {
+    background-color: #ffecef;
+  }
+
+  .config-group-card[data-group="other"] .card-header {
+    background-color: #f2f4f7;
+  }
+
+  .config-header-actions {
+    gap: 8px;
+    align-items: center;
+  }
+
+  .config-header-actions #add-group-select {
+    width: 170px;
+  }
+
+  @media (min-width: 992px) {
+    .config-header-actions {
+      flex-wrap: nowrap !important;
+      justify-content: flex-start !important;
+    }
+  }
+
+  @media (max-width: 991.98px) {
+    #target-select {
+      max-width: 100%;
+    }
+  }
+</style>
+
+<div class="card-body">
+  <div class="row g-3 align-items-end mb-2 config-header-row">
+    <div class="col-lg-3 col-md-12">
+      <label class="form-label">Target (NodeJS)</label>
+      <select class="form-select form-select-sm" id="target-select"></select>
+    </div>
+    <div class="col-lg-9 col-md-12">
+      <label class="form-label">Actions</label>
+      <div class="d-flex flex-wrap gap-2 config-header-actions">
+        <select class="form-select form-select-sm" id="add-group-select"></select>
+        <button type="button" class="btn btn-sm btn-soft-info" id="add-row-btn">
+          <i class="ri-add-line me-1"></i>Ongeza Key
+        </button>
+        <button type="button" class="btn btn-sm btn-primary" id="save-config-btn">
+          <i class="ri-save-line me-1"></i>Hifadhi Mabadiliko
+        </button>
+        <button type="button" class="btn btn-sm btn-warning" id="restart-service-btn">
+          <i class="ri-restart-line me-1"></i>Restart Service
+        </button>
+        <button type="button" class="btn btn-sm btn-light" id="reload-config-btn">
+          <i class="ri-refresh-line me-1"></i>Reload
+        </button>
+      </div>
+    </div>
+  </div>
+  <small class="text-muted d-block mb-3" id="target-path"></small>
+
+  <div class="alert alert-info py-2 mb-3">
+    <strong>Kumbuka:</strong> Badilisha <code>SYSTEM_LOGS_REFRESH_MS</code> hapa kisha bofya <strong>Restart Service</strong> ili logs dashboard ichukue muda mpya wa realtime refresh.
+  </div>
+
+  <div id="allowed-keys-wrapper" class="mb-2"></div>
+
+  <div id="grouped-env-sections" class="mb-3"></div>
+
+  <div class="card border">
+    <div class="card-body py-2">
+      <label class="form-label mb-1 fw-semibold">Output</label>
+      <pre class="mb-0 bg-light p-2 rounded" id="action-output" style="min-height: 90px;"></pre>
+    </div>
+  </div>
+</div>
+
+<%- include('layouts/partials/footer.ejs' , {
+  card_title : card_title
+}) %>
+
+<script>
+  let targets = [];
+  let selectedTargetId = "";
+  let pendingRemovedKeys = new Set();
+  let currentEntries = [];
+
+  const keyPattern = /^[A-Z_][A-Z0-9_]*$/;
+  const sensitiveKeyPattern =
+    /(PASSWORD|PASS|PWD|SECRET|TOKEN|API_KEY|PRIVATE_KEY|ACCESS_KEY|CLIENT_SECRET|AUTH|CREDENTIAL|SESSION|COOKIE|JWT|BEARER|ENCRYPTION|APP_KEY|DB_.*PASS|SMTP_.*PASS)/i;
+  const dateTimeKeyPattern =
+    /(_AT$|DATETIME|DATE_TIME|SCHEDULED|START_TIME$|END_TIME$|START_DATE$|END_DATE$|EXPIRES_AT$|EXPIRY_AT$|EXPIRATION_AT$|ISSUED_AT$|CREATED_AT$|UPDATED_AT$)/i;
+  const groups = [
+    { id: "system", label: "System / App" },
+    { id: "database", label: "Database" },
+    { id: "email", label: "Email" },
+    { id: "jwt", label: "JWT / Auth" },
+    { id: "debug", label: "Debug / Logging" },
+    { id: "alerts", label: "System Alert Notification" },
+    { id: "other", label: "Other" },
+  ];
+  const baseGroupIds = new Set(["system", "email", "debug", "alerts", "other"]);
+
+  const output = (text) => {
+    $("#action-output").text(String(text || ""));
+  };
+
+  const getCurrentTarget = () => targets.find((item) => item.id === selectedTargetId) || null;
+  const getVisibleGroups = () => {
+    const visible = new Set([...baseGroupIds]);
+    currentEntries.forEach((entry) => {
+      const groupId = detectGroup(entry?.key || "");
+      visible.add(groupId);
+    });
+    return groups.filter((group) => visible.has(group.id));
+  };
+  const normalizeGroup = (groupId = "other") => {
+    const visibleIds = new Set(getVisibleGroups().map((item) => item.id));
+    if (visibleIds.has(groupId)) return groupId;
+    return visibleIds.has("other") ? "other" : (getVisibleGroups()[0]?.id || "other");
+  };
+
+  const detectGroup = (key = "") => {
+    const upper = String(key || "").trim().toUpperCase();
+    if (!upper) return "other";
+    if (/^(SYSTEM_LOG_ALERT_|ADMIN_EMAIL$|SYSTEM_ADMIN_EMAIL$)/.test(upper)) return "alerts";
+    if (/^(APP_|SYSTEM_|SERVICE_|PORT$|NODE_ENV$|TZ$|APP_URL$|APP_NAME$)/.test(upper)) return "system";
+    if (/^(DB_|DATABASE_|MYSQL_|PG_|POSTGRES_|MONGO_|REDIS_)/.test(upper)) return "database";
+    if (/^(MAIL_|SMTP_|SENDGRID_|SES_|EMAIL_)/.test(upper)) return "email";
+    if (/^(JWT_|AUTH_|OAUTH_|SANCTUM_|PASSPORT_|TOKEN_|TOKEN$|SECRET_)/.test(upper)) return "jwt";
+    if (/^(DEBUG$|DEBUG_|LOG_|LOGGER_|SYSTEM_LOGS_)/.test(upper)) return "debug";
+    return "other";
+  };
+
+  const pad2 = (value) => String(value).padStart(2, "0");
+  const toDateTimeLocalValue = (value = "") => {
+    const raw = String(value ?? "").trim();
+    if (!raw) return "";
+
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(raw)) {
+      return raw.slice(0, 16);
+    }
+
+    if (/^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}/.test(raw)) {
+      return raw.replace(" ", "T").slice(0, 16);
+    }
+
+    const parsed = new Date(raw);
+    if (Number.isNaN(parsed.getTime())) return "";
+
+    return [
+      parsed.getFullYear(),
+      "-",
+      pad2(parsed.getMonth() + 1),
+      "-",
+      pad2(parsed.getDate()),
+      "T",
+      pad2(parsed.getHours()),
+      ":",
+      pad2(parsed.getMinutes()),
+    ].join("");
+  };
+
+  const isDateTimeKey = (key = "") => dateTimeKeyPattern.test(String(key || "").trim().toUpperCase());
+  const dateRangeInfo = (key = "") => {
+    const upper = String(key || "").trim().toUpperCase();
+    if (!upper) return null;
+
+    if (upper.endsWith("START_DATE")) {
+      return {
+        base: upper.replace(/START_DATE$/, ""),
+        order: 0,
+      };
+    }
+
+    if (upper.endsWith("END_DATE")) {
+      return {
+        base: upper.replace(/END_DATE$/, ""),
+        order: 1,
+      };
+    }
+
+    return null;
+  };
+
+  const arrangeDateRangePairs = (rows = []) => {
+    const arranged = Array.isArray(rows) ? [...rows] : [];
+
+    for (let i = 0; i < arranged.length; i += 1) {
+      const key = String(arranged[i]?.key || "").trim().toUpperCase();
+      const info = dateRangeInfo(key);
+      if (!info || info.order !== 0) continue;
+
+      const endIndex = arranged.findIndex((item, idx) => {
+        if (idx === i) return false;
+        const itemInfo = dateRangeInfo(item?.key || "");
+        return Boolean(itemInfo) && itemInfo.base === info.base && itemInfo.order === 1;
+      });
+
+      if (endIndex === -1 || endIndex === i + 1) continue;
+
+      const [endRow] = arranged.splice(endIndex, 1);
+      arranged.splice(i + 1, 0, endRow);
+    }
+
+    return arranged;
+  };
+
+  const createRow = (entry = {}, originalKey = "", groupId = "other") => {
+    const target = getCurrentTarget();
+    const isSensitive = Boolean(entry?.is_sensitive);
+    const hasValue = Boolean(entry?.has_value);
+    const row = $("<tr>")
+      .addClass("env-row")
+      .attr("data-original-key", String(originalKey || "").trim())
+      .attr("data-is-sensitive", isSensitive ? "1" : "0")
+      .attr("data-has-value", hasValue ? "1" : "0")
+      .attr("data-group", groupId);
+
+    const keyInput = $("<input>")
+      .attr("type", "text")
+      .addClass("form-control form-control-sm env-key")
+      .val(String(entry.key || "").trim())
+      .attr("placeholder", "Mfano: SYSTEM_LOGS_REFRESH_MS");
+
+    if (target && !target.allow_all_keys) {
+      keyInput.attr("list", "allowed-env-keys");
+    }
+
+    const keyValue = String(entry.key || "").trim();
+    const rawValue = String(entry.value ?? "");
+    const dateTimeValue = toDateTimeLocalValue(rawValue);
+    const shouldUseDateTime = !isSensitive && isDateTimeKey(keyValue) && (rawValue === "" || Boolean(dateTimeValue));
+
+    const valueInput = $("<input>")
+      .attr("type", isSensitive ? "password" : shouldUseDateTime ? "datetime-local" : "text")
+      .addClass("form-control form-control-sm env-value")
+      .attr("autocomplete", "off")
+      .attr("placeholder", isSensitive && hasValue ? "******" : "")
+      .val(shouldUseDateTime ? dateTimeValue : rawValue);
+
+    const removeBtn = $("<button>")
+      .attr("type", "button")
+      .addClass("btn btn-sm btn-soft-danger remove-row-btn")
+      .html('<i class="ri-subtract-line me-1"></i>Ondoa');
+
+    const keyCell = $("<td>").append(keyInput);
+    row.append(keyCell);
+    row.append($("<td>").append(valueInput));
+    row.append($("<td>").addClass("text-center").append(removeBtn));
+
+    return row;
+  };
+
+  const refreshRowSensitivity = (row) => {
+    const originalKey = String(row.attr("data-original-key") || "").trim().toUpperCase();
+    const currentKey = String(row.find(".env-key").val() || "").trim().toUpperCase();
+    const originalSensitive = String(row.attr("data-is-sensitive") || "0") === "1";
+    const originalHasValue = String(row.attr("data-has-value") || "0") === "1";
+
+    const isSensitiveNow = sensitiveKeyPattern.test(currentKey) || (originalSensitive && currentKey === originalKey);
+    const valueInput = row.find(".env-value");
+    const currentValue = String(valueInput.val() ?? "");
+
+    if (isSensitiveNow) {
+      valueInput.attr("type", "password");
+      valueInput.attr(
+        "placeholder",
+        originalHasValue && currentKey === originalKey ? "******" : ""
+      );
+      return;
+    }
+
+    valueInput.attr("placeholder", "");
+    if (isDateTimeKey(currentKey)) {
+      const normalizedValue = toDateTimeLocalValue(currentValue);
+      if (currentValue === "" || normalizedValue) {
+        valueInput.attr("type", "datetime-local");
+        if (normalizedValue && normalizedValue !== currentValue) {
+          valueInput.val(normalizedValue);
+        }
+        return;
+      }
+    }
+
+    valueInput.attr("type", "text");
+  };
+
+  const renderGroupSelector = () => {
+    const select = $("#add-group-select");
+    const current = String(select.val() || "");
+    const visibleGroups = getVisibleGroups();
+    const options = visibleGroups
+      .map((group) => `<option value="${group.id}">${group.label}</option>`)
+      .join("");
+    select.html(options);
+
+    const hasCurrent = visibleGroups.some((group) => group.id === current);
+    if (hasCurrent) {
+      select.val(current);
+    } else if (visibleGroups.length) {
+      select.val(visibleGroups[0].id);
+    }
+  };
+
+  const buildGroupSections = () => {
+    const visibleGroups = getVisibleGroups();
+    const html = visibleGroups
+      .map(
+        (group) => `
+          <div class="card border mb-3 config-group-card" data-group="${group.id}">
+            <div class="card-header py-2 d-flex justify-content-between align-items-center">
+              <h6>${group.label}</h6>
+              <span class="badge bg-light text-dark" id="group-count-${group.id}">0</span>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th width="30%">Key</th>
+                      <th>Value</th>
+                      <th width="10%" class="text-center">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="env-group-body-${group.id}"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        `
+      )
+      .join("");
+
+    $("#grouped-env-sections").html(html);
+  };
+
+  const updateGroupCounts = () => {
+    getVisibleGroups().forEach((group) => {
+      const count = $(`#env-group-body-${group.id} .env-row`).length;
+      $(`#group-count-${group.id}`).text(String(count));
+    });
+  };
+
+  const renderAllowedKeys = () => {
+    const target = getCurrentTarget();
+    if (!target || target.allow_all_keys) {
+      $("#allowed-keys-wrapper").html("");
+      return;
+    }
+
+    const keys = Array.isArray(target.editable_keys) ? target.editable_keys : [];
+    const options = keys.map((key) => `<option value="${String(key)}"></option>`).join("");
+
+    $("#allowed-keys-wrapper").html(`
+      <small class="text-muted">Allowed keys: ${keys.join(", ") || "hakuna"}</small>
+      <datalist id="allowed-env-keys">${options}</datalist>
+    `);
+  };
+
+  const renderEntries = (entries = []) => {
+    const rows = arrangeDateRangePairs(Array.isArray(entries) ? entries : []);
+    currentEntries = rows;
+    renderGroupSelector();
+    buildGroupSections();
+
+    if (!rows.length) {
+      const defaultGroup = normalizeGroup(String($("#add-group-select").val() || "system"));
+      $(`#env-group-body-${defaultGroup}`).append(createRow({}, "", defaultGroup));
+      updateGroupCounts();
+      return;
+    }
+
+    rows.forEach((entry) => {
+      const key = String(entry?.key || "").trim();
+      const groupId = normalizeGroup(detectGroup(key));
+      const row = createRow(entry, key, groupId);
+      $(`#env-group-body-${groupId}`).append(row);
+      refreshRowSensitivity(row);
+    });
+    updateGroupCounts();
+  };
+
+  const renderTargets = () => {
+    const select = $("#target-select");
+    select.empty();
+
+    targets.forEach((target) => {
+      select.append(
+        $("<option>").attr("value", target.id).text(target.name)
+      );
+    });
+
+    if (targets.length && !targets.some((target) => target.id === selectedTargetId)) {
+      selectedTargetId = targets[0].id;
+    }
+
+    select.val(selectedTargetId);
+  };
+
+  const renderTargetMeta = () => {
+    const target = getCurrentTarget();
+    if (!target) {
+      $("#target-path").text("");
+      $("#restart-service-btn").prop("disabled", true);
+      return;
+    }
+
+    const restartState = target.restart_configured ? "restart configured" : "restart not configured";
+    $("#target-path").text(`${target.env_path} (${restartState})`);
+    $("#restart-service-btn").prop("disabled", !target.restart_configured);
+  };
+
+  const loadData = (preferredTargetId = "") => {
+    const query = preferredTargetId ? `?target_id=${encodeURIComponent(preferredTargetId)}` : "";
+    ajaxRequest(`/SystemConfigurationsData${query}`, "GET", (response) => {
+      const statusCode = Number(response?.statusCode || 306);
+      if (statusCode !== 300) {
+        alertMessage("Imeshindikana", response?.message || "Data haijapatikana.", "warning");
+        return;
+      }
+
+      const data = response?.data || {};
+      targets = Array.isArray(data.targets) ? data.targets : [];
+      selectedTargetId = String(data.selected_target_id || "");
+      pendingRemovedKeys = new Set();
+      currentEntries = Array.isArray(data.entries) ? data.entries : [];
+
+      renderTargets();
+      renderAllowedKeys();
+      renderTargetMeta();
+      renderEntries(data.entries || []);
+      output("Configuration loaded.");
+    }, {}, false);
+  };
+
+  const collectFormData = () => {
+    const target = getCurrentTarget();
+    if (!target) {
+      alertMessage("Tahadhari", "Chagua target kwanza.", "warning");
+      return null;
+    }
+
+    const entries = [];
+    const removeKeys = new Set([...pendingRemovedKeys]);
+    const seen = new Set();
+
+    let hasValidationError = false;
+
+    $("#grouped-env-sections tr.env-row").each(function () {
+      const row = $(this);
+      const originalKey = String(row.attr("data-original-key") || "").trim().toUpperCase();
+      const key = String(row.find(".env-key").val() || "").trim().toUpperCase();
+      const value = String(row.find(".env-value").val() ?? "");
+
+      if (!key) {
+        if (originalKey) removeKeys.add(originalKey);
+        return;
+      }
+
+      if (!keyPattern.test(key)) {
+        hasValidationError = true;
+        return;
+      }
+
+      if (!target.allow_all_keys && !(target.editable_keys || []).includes(key)) {
+        hasValidationError = true;
+        return;
+      }
+
+      if (seen.has(key)) {
+        hasValidationError = true;
+        return;
+      }
+      seen.add(key);
+
+      if (originalKey && originalKey !== key) {
+        removeKeys.add(originalKey);
+      }
+
+      const isSensitiveOriginal = String(row.attr("data-is-sensitive") || "0") === "1";
+      const hasValue = String(row.attr("data-has-value") || "0") === "1";
+      const isSensitive = sensitiveKeyPattern.test(key) || (isSensitiveOriginal && originalKey === key);
+      const keepExisting = isSensitive && hasValue && originalKey === key && value === "";
+
+      entries.push({ key, value, keep_existing: keepExisting });
+    });
+
+    if (hasValidationError) {
+      alertMessage("Tahadhari", "Kuna key batili, duplicate, au isiyoruhusiwa.", "warning");
+      return null;
+    }
+
+    if (!entries.length && !removeKeys.size) {
+      alertMessage("Tahadhari", "Hakuna mabadiliko ya kuhifadhi.", "warning");
+      return null;
+    }
+
+    return {
+      target_id: target.id,
+      entries,
+      remove_keys: Array.from(removeKeys),
+    };
+  };
+
+  $("#target-select").on("change", function () {
+    selectedTargetId = String($(this).val() || "");
+    loadData(selectedTargetId);
+  });
+
+  $("#add-row-btn").on("click", function () {
+    const groupId = normalizeGroup(String($("#add-group-select").val() || "other"));
+    $(`#env-group-body-${groupId}`).append(createRow({}, "", groupId));
+    updateGroupCounts();
+  });
+
+  $("#grouped-env-sections").on("click", ".remove-row-btn", function () {
+    const row = $(this).closest("tr");
+    const originalKey = String(row.attr("data-original-key") || "").trim().toUpperCase();
+    if (originalKey) pendingRemovedKeys.add(originalKey);
+    row.remove();
+    if (!$("#grouped-env-sections tr.env-row").length) {
+      const groupId = normalizeGroup(String($("#add-group-select").val() || "system"));
+      $(`#env-group-body-${groupId}`).append(createRow({}, "", groupId));
+    }
+    updateGroupCounts();
+  });
+
+  $("#grouped-env-sections").on("input change", ".env-key", function () {
+    const row = $(this).closest("tr");
+    const nextGroup = normalizeGroup(detectGroup($(this).val()));
+    const currentBody = row.closest("tbody");
+    const targetBody = $(`#env-group-body-${nextGroup}`);
+    if (targetBody.length && currentBody.attr("id") !== `env-group-body-${nextGroup}`) {
+      targetBody.append(row);
+    }
+    row.attr("data-group", nextGroup);
+    refreshRowSensitivity(row);
+    updateGroupCounts();
+  });
+
+  $("#reload-config-btn").on("click", function () {
+    loadData(selectedTargetId);
+  });
+
+  $("#save-config-btn").on("click", function () {
+    const payload = collectFormData();
+    if (!payload) return;
+
+    ajaxRequest("/SystemConfigurationsSave", "POST", (response) => {
+      const statusCode = Number(response?.statusCode || 306);
+      if (statusCode !== 300) {
+        alertMessage("Imeshindikana", response?.message || "Kuhifadhi kumeshindikana.", "warning");
+        output(response?.message || "Save failed.");
+        return;
+      }
+
+      alertMessage("Success", response?.message || "Imehifadhiwa.", "success");
+      pendingRemovedKeys = new Set();
+      loadData(selectedTargetId);
+      output(response?.message || "Saved.");
+    }, JSON.stringify(payload));
+  });
+
+  $("#restart-service-btn").on("click", function () {
+    const target = getCurrentTarget();
+    if (!target) return;
+
+    if (!target.restart_configured) {
+      alertMessage("Tahadhari", "Restart command haijawekwa kwenye target hii.", "warning");
+      return;
+    }
+
+    if (!window.confirm(`Una uhakika unataka restart service: ${target.name}?`)) {
+      return;
+    }
+
+    ajaxRequest(
+      "/SystemConfigurationsRestart",
+      "POST",
+      (response) => {
+        const statusCode = Number(response?.statusCode || 306);
+        const stdout = String(response?.data?.stdout || "").trim();
+        const stderr = String(response?.data?.stderr || "").trim();
+        output([response?.message || "", stdout, stderr].filter(Boolean).join("\n\n"));
+
+        if (statusCode !== 300) {
+          alertMessage("Imeshindikana", response?.message || "Restart imefeli.", "warning");
+          return;
+        }
+
+        alertMessage("Success", response?.message || "Restart command imekimbia.", "success");
+      },
+      JSON.stringify({ target_id: selectedTargetId })
+    );
+  });
+
+  $(document).ready(function () {
+    loadData();
+  });
+</script>

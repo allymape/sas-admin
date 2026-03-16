@@ -22,6 +22,7 @@ const { polygon } = require("pdfkit");
 const API_BASE_URL = process.env.API_BASE_URL;
 const myActivehandover = API_BASE_URL + "my-active-handover";
 const refreshTokenApi = API_BASE_URL + "refresh_token";
+const systemLogsApi = API_BASE_URL + "system-logs";
 // Example boundary for Tanzania (simplified for the example)
 const tanzaniaBoundary = turf.polygon([
   [
@@ -590,6 +591,40 @@ module.exports = {
       }
     );
   },
+  logSystemEvent: (req, payload = {}, callback = () => {}) => {
+    const token = req?.session?.Token || req?.body?.token || null;
+    if (!token) {
+      callback(new Error("Missing authentication token for system log submission."));
+      return;
+    }
+
+    const requestOptions = {
+      url: systemLogsApi,
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + token,
+        "Content-Type": "application/json",
+      },
+      json: payload,
+    };
+
+    request(requestOptions, (error, response, body) => {
+      if (error) {
+        console.error("[UI_LOG][FORWARD_ERROR]", error?.message || error);
+        callback(error);
+        return;
+      }
+
+      if (!response || Number(response.statusCode || 0) !== 200 || Number(body?.statusCode || 306) !== 300) {
+        console.error("[UI_LOG][FORWARD_FAILED]", {
+          status: response?.statusCode || null,
+          body: body || null,
+        });
+      }
+
+      callback(null, body || null);
+    });
+  },
   // Check user permission
   can: (permission) => {
     // return a middleware
@@ -830,6 +865,55 @@ module.exports = {
     old_category, // msingi, chuo cha ualimu,
     t_street, t_ward, t_district, t_region, t_old_region, t_old_district, t_old_ward, t_old_street
   ) => {
+    const asText = (value, fallback = "") => {
+      if (value === null || value === undefined) return fallback;
+      const normalized = String(value).trim();
+      return normalized.length > 0 ? normalized : fallback;
+    };
+    const asNumber = (value, fallback = 0) => {
+      const normalized = Number(value);
+      return Number.isFinite(normalized) ? normalized : fallback;
+    };
+
+    application_category_id = asNumber(application_category_id, 0);
+    registry_type = asNumber(registry_type, 0);
+    school_type_id = asNumber(school_type_id, 0);
+    school_name = asText(school_name, "........................");
+    old_school_name = asText(old_school_name, school_name);
+    school_type = asText(
+      school_type,
+      school_type_id === 4 ? "Chuo cha Ualimu" : "Shule"
+    );
+    approved_date = asText(approved_date, "........................");
+    registration_number = asText(registration_number, "........................");
+    registration_date = asText(registration_date, "........................");
+    uthibitisho = asText(uthibitisho, "");
+    owner_name = asText(owner_name, "........................");
+    old_owner_name = asText(old_owner_name, "........................");
+    manager_name = asText(manager_name, "........................");
+    old_manager_name = asText(old_manager_name, "........................");
+    region = asText(region, "........................");
+    council = asText(council, "........................");
+    ngazi_ya_wilaya = asText(ngazi_ya_wilaya, "........................");
+    subcategory = asText(subcategory, "........................");
+    stream = asNumber(stream, 0);
+    old_stream = asNumber(old_stream, 0);
+    language = asText(language, "........................");
+    ward = asText(ward, "........................");
+    combinations = asText(combinations, "........................");
+    number_of_students = asNumber(number_of_students, 0);
+    gender_type = asText(gender_type, "........................");
+    category = asText(category, "........................");
+    old_category = asText(old_category, category);
+    t_street = asText(t_street, "........................");
+    t_ward = asText(t_ward, "........................");
+    t_district = asText(t_district, "........................");
+    t_region = asText(t_region, "........................");
+    t_old_region = asText(t_old_region, "........................");
+    t_old_district = asText(t_old_district, "........................");
+    t_old_ward = asText(t_old_ward, "........................");
+    t_old_street = asText(t_old_street, "........................");
+
     let bodyContent = null;
     const name = getSchoolType(school_type_id, school_type, school_name);
     const old_name = getSchoolType(
@@ -1209,18 +1293,23 @@ const usajiliBinafsi = (
 };
 const getSchoolType = (school_type_id, school_type, school_name) => {
   var name = '';
-  if ([1, 2, 3].includes(school_type_id)) {
-    name = `shule ya ${school_type.toLowerCase()} ${school_name} `;
+  const normalizedType = String(school_type || "").trim();
+  const normalizedName = String(school_name || "").trim();
+  if ([1, 2, 3].includes(Number(school_type_id))) {
+    const typeLabel = normalizedType.length > 0 ? normalizedType.toLowerCase() : "haijajazwa";
+    name = `shule ya ${typeLabel} ${normalizedName}`.trim() + " ";
   } else {
-    name = `chuo cha Ualimu ${school_name}`;
+    name = `chuo cha Ualimu ${normalizedName}`.trim();
   }
   return name;
 };
 
 const getSchoolTypeOnly = (school_type_id, school_type) => {
   var name = '';
-  if ([1, 2, 3].includes(school_type_id)) {
-    name = `shule ya ${school_type.toLowerCase()} `;
+  const normalizedType = String(school_type || "").trim();
+  if ([1, 2, 3].includes(Number(school_type_id))) {
+    const typeLabel = normalizedType.length > 0 ? normalizedType.toLowerCase() : "haijajazwa";
+    name = `shule ya ${typeLabel} `;
   } else {
     name = `chuo cha ualimu `;
   }

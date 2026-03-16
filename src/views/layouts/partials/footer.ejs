@@ -248,6 +248,102 @@
         })
     </script>
     <script>
+      (() => {
+        const sentFingerprints = new Set();
+
+        const safeText = (value, fallback = "") => {
+          if (value === null || value === undefined) return fallback;
+          const text = String(value).trim();
+          return text.length ? text : fallback;
+        };
+
+        const findTrackingNumber = () => {
+          const source = `${window.location.pathname} ${window.location.search}`;
+          const match = source.match(/[A-Z]{2}-\d{8}-\d+/);
+          return match ? match[0] : "";
+        };
+
+        const shouldIgnore = (message = "", source = "") => {
+          const msg = safeText(message, "").toLowerCase();
+          const src = safeText(source, "").toLowerCase();
+          return msg.includes("systemlogsclienterror") || src.includes("systemlogsclienterror");
+        };
+
+        const submitClientLog = (payload = {}) => {
+          const message = safeText(payload.message, "");
+          const source = safeText(payload.source, "");
+          if (!message || shouldIgnore(message, source)) return;
+
+          const fingerprint = `${payload.event_type || ""}|${message}|${source}`;
+          if (sentFingerprints.has(fingerprint)) return;
+          sentFingerprints.add(fingerprint);
+
+          $.ajax({
+            url: "/SystemLogsClientError",
+            type: "POST",
+            contentType: "application/json",
+            dataType: "json",
+            data: JSON.stringify({
+              level: payload.level || "error",
+              event_type: payload.event_type || "client-runtime-error",
+              message,
+              source,
+              tracking_number: findTrackingNumber(),
+              context: payload.context || null,
+              error_details: payload.error_details || null,
+            }),
+          });
+        };
+
+        window.addEventListener("error", (event) => {
+          submitClientLog({
+            level: "error",
+            event_type: "window-error",
+            message: safeText(event?.message, "Unknown browser error"),
+            source: `${safeText(event?.filename, "unknown")}:${event?.lineno || 0}:${event?.colno || 0}`,
+            context: {
+              pathname: window.location.pathname,
+              search: window.location.search,
+            },
+            error_details: {
+              stack: safeText(event?.error?.stack, ""),
+            },
+          });
+        });
+
+        window.addEventListener("unhandledrejection", (event) => {
+          const reason = event?.reason;
+          const reasonMessage =
+            typeof reason === "string"
+              ? reason
+              : safeText(reason?.message, toPrettyString(reason));
+
+          submitClientLog({
+            level: "critical",
+            event_type: "unhandled-rejection",
+            message: safeText(reasonMessage, "Unhandled promise rejection"),
+            source: "window.unhandledrejection",
+            context: {
+              pathname: window.location.pathname,
+              search: window.location.search,
+            },
+            error_details: {
+              stack: safeText(reason?.stack, ""),
+            },
+          });
+        });
+
+        function toPrettyString(value) {
+          if (value === null || value === undefined) return "";
+          try {
+            return JSON.stringify(value);
+          } catch (error) {
+            return String(value);
+          }
+        }
+      })();
+    </script>
+    <script>
         (() => {
             const ELLIPSIS_SELECTOR = '.ellipsis-tooltip, .text-truncate';
 
@@ -391,3 +487,59 @@ function w() {
 
 </script>    -->
 <script src="/design/assets/js/app.js"></script>
+<script>
+  (function () {
+    const THEME_KEY = "sas_layout_mode";
+
+    const syncDefaultAttribute = () => {
+      try {
+        const attrs = {};
+        Array.from(document.documentElement.attributes || []).forEach((attr) => {
+          if (!attr || !attr.name) return;
+          attrs[attr.name] = attr.value;
+        });
+        sessionStorage.setItem("defaultAttribute", JSON.stringify(attrs));
+      } catch (error) {}
+    };
+
+    const persistTheme = (theme) => {
+      if (theme !== "dark" && theme !== "light") return;
+      try {
+        document.documentElement.setAttribute("data-layout-mode", theme);
+        localStorage.setItem(THEME_KEY, theme);
+        sessionStorage.setItem("data-layout-mode", theme);
+        syncDefaultAttribute();
+      } catch (error) {}
+    };
+
+    const resolveCurrentTheme = () => {
+      const htmlTheme = String(document.documentElement.getAttribute("data-layout-mode") || "").toLowerCase();
+      if (htmlTheme === "dark" || htmlTheme === "light") return htmlTheme;
+      const sessionTheme = String(sessionStorage.getItem("data-layout-mode") || "").toLowerCase();
+      if (sessionTheme === "dark" || sessionTheme === "light") return sessionTheme;
+      return "light";
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const savedTheme = String(localStorage.getItem(THEME_KEY) || "").toLowerCase();
+      if (savedTheme === "dark" || savedTheme === "light") {
+        persistTheme(savedTheme);
+      } else {
+        persistTheme(resolveCurrentTheme());
+      }
+
+      document.querySelectorAll(".light-dark-mode").forEach((button) => {
+        button.addEventListener("click", () => {
+          setTimeout(() => persistTheme(resolveCurrentTheme()), 0);
+        });
+      });
+
+      document.querySelectorAll("[name='data-layout-mode']").forEach((input) => {
+        input.addEventListener("change", (event) => {
+          const selected = String(event?.target?.value || "").toLowerCase();
+          persistTheme(selected);
+        });
+      });
+    });
+  })();
+</script>

@@ -6,6 +6,7 @@ const aliasMap = {
   // Setup / Mpangilio
   "v2-Waombaji": "Waombaji",
   "v2-Shule": "Shule",
+  "v2-MajaladaYaShule": "MajaladaYaShule",
   "v2-AinaZaShule": "AinaZaShule",
   "v2-AinaYaMalazi": "AinaYaMalazi",
   "v2-ViwangoAinaZaShule": "ViwangoAinaZaShule",
@@ -29,8 +30,11 @@ const aliasMap = {
   "v2-Tahasusi": "Tahasusi",
   "v2-Michepuo": "Michepuo",
   "v2-Algorithm": "Algorithm",
+  "v2-FileNumberMappings": "FileNumberMappings",
   "v2-Workflow": "Workflow",
   "v2-AinaZaHatua": "AinaZaHatua",
+  "v2-SystemLogs": "SystemLogs",
+  "v2-SystemConfigurations": "SystemConfigurations",
 
   // Reports / Ripoti
   "v2-RipotiKuanzisha": "RipotiKuanzisha",

@@ -66,14 +66,23 @@ function nata() {
                   </span>
                   </td>`;
                 if ($("#barua-column").is(":visible")) {
-                  if (data[i].folio) {
-                    row += `
-                            <td class="text-center">
-                                <a target="_blank" title="Barua" data-bs-toggle="tooltip" href="/barua/${data[i].tracking_number}">
-                                <i class="ri-file-pdf-fill ri-2x align-bottom me-1 text-danger"></i>
-                                </a>
-                           </td>`;
-                  }
+                  const isApproved = Number(data[i].is_approved) === 2;
+                  row += `
+                          <td class="text-center">
+                            ${
+                              isApproved
+                                ? `<a
+                                    target="_blank"
+                                    title="Fungua Barua"
+                                    data-bs-toggle="tooltip"
+                                    href="/barua/${data[i].tracking_number}"
+                                    class="btn btn-sm btn-danger"
+                                  >
+                                    <i class="ri-file-pdf-fill align-bottom me-1"></i> Barua
+                                  </a>`
+                                : ""
+                            }
+                          </td>`;
                 }
                 row = row + "</tr>";
                 $("#tasksTable").append(row);

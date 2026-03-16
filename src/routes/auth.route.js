@@ -15,7 +15,9 @@ router.get(["/", "/login"], authController.showLogin);
 // Auth routes
 router.post("/auth", authController.login);
 
-// Logout route
-router.post("/logout", authController.logout)
+// Logout route (compatibility for legacy links/buttons)
+router.post(["/logout", "/Logout"], authController.logout);
+router.delete(["/logout", "/Logout"], authController.logout);
+router.get(["/logout", "/Logout"], authController.logout);
 
 module.exports = router;

@@ -1,0 +1,576 @@
+<% var card_title = "" %>
+<%- include('layouts/partials/header.ejs' , {
+    title : 'System Logs',
+    page_title : 'Ufuatiliaji wa Logs',
+    card_title : 'Logs za Mfumo',
+    breadcrumb_main : 'Monitoring',
+    styles : [
+      { href: '/css/datatables/dataTables.dataTables.css' },
+      { href: '/css/datatables/buttons.dataTables.css' }
+    ]
+}) %>
+
+<div class="card-body">
+  <div class="row g-3 mb-3">
+    <div class="col-md-2">
+      <label class="form-label">Level</label>
+      <select id="level-filter" class="form-select">
+        <option value="">All</option>
+        <option value="critical">Critical</option>
+        <option value="error">Error</option>
+        <option value="warning">Warning</option>
+        <option value="info">Info</option>
+        <option value="debug">Debug</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Module</label>
+      <input type="text" id="module-filter" class="form-control" placeholder="Mfano: barua" />
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Type</label>
+      <input type="text" id="type-filter" class="form-control" placeholder="Mfano: required-fields-validation" />
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">From</label>
+      <input type="date" id="from-filter" class="form-control" />
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">To</label>
+      <input type="date" id="to-filter" class="form-control" />
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Search</label>
+      <input type="text" id="search-filter" class="form-control" placeholder="message, tracking, endpoint..." />
+    </div>
+    <div class="col-12 d-flex gap-2">
+      <button type="button" class="btn btn-primary" id="apply-filters-btn">
+        <i class="ri-filter-3-line me-1"></i>Tumia Filter
+      </button>
+      <button type="button" class="btn btn-light" id="reset-filters-btn">
+        <i class="ri-refresh-line me-1"></i>Reset
+      </button>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-md-2 col-6">
+      <div class="card border shadow-none mb-0">
+        <div class="card-body py-3">
+          <p class="text-muted mb-1">Total</p>
+          <h4 class="mb-0" id="metric-total">0</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2 col-6">
+      <div class="card border border-danger shadow-none mb-0">
+        <div class="card-body py-3">
+          <p class="text-danger mb-1">Critical</p>
+          <h4 class="mb-0 text-danger" id="metric-critical">0</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2 col-6">
+      <div class="card border border-warning shadow-none mb-0">
+        <div class="card-body py-3">
+          <p class="text-warning mb-1">Error</p>
+          <h4 class="mb-0 text-warning" id="metric-error">0</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2 col-6">
+      <div class="card border border-info shadow-none mb-0">
+        <div class="card-body py-3">
+          <p class="text-info mb-1">Warning</p>
+          <h4 class="mb-0 text-info" id="metric-warning">0</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2 col-6">
+      <div class="card border border-success shadow-none mb-0">
+        <div class="card-body py-3">
+          <p class="text-success mb-1">Info</p>
+          <h4 class="mb-0 text-success" id="metric-info">0</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2 col-6">
+      <div class="card border shadow-none mb-0">
+        <div class="card-body py-3">
+          <p class="text-muted mb-1">Debug</p>
+          <h4 class="mb-0" id="metric-debug">0</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-lg-4">
+      <div class="card mb-0">
+        <div class="card-header"><h5 class="card-title mb-0">Distribution by Level</h5></div>
+        <div class="card-body"><canvas id="levelChart" height="220"></canvas></div>
+      </div>
+    </div>
+    <div class="col-lg-8">
+      <div class="card mb-0">
+        <div class="card-header"><h5 class="card-title mb-0">Trend by Date</h5></div>
+        <div class="card-body"><canvas id="trendChart" height="220"></canvas></div>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="card mb-0">
+        <div class="card-header"><h5 class="card-title mb-0">Top Modules</h5></div>
+        <div class="card-body"><canvas id="moduleChart" height="100"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-responsive table-card mt-3 mb-1">
+    <table class="table align-middle" id="system-log-table">
+      <thead class="table-light">
+        <tr>
+          <th>Na.</th>
+          <th>Muda</th>
+          <th>Level</th>
+          <th>Module</th>
+          <th>Type</th>
+          <th>Message</th>
+          <th>Tracking</th>
+          <th>Endpoint</th>
+          <th class="text-center">Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal fade" id="logDetailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-light p-3">
+        <h5 class="modal-title">Log Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-2 mb-3">
+          <div class="col-md-6"><strong>ID:</strong> <span id="detail-id">-</span></div>
+          <div class="col-md-6"><strong>Created At:</strong> <span id="detail-created">-</span></div>
+          <div class="col-md-6"><strong>Level:</strong> <span id="detail-level">-</span></div>
+          <div class="col-md-6"><strong>Module:</strong> <span id="detail-module">-</span></div>
+          <div class="col-md-6"><strong>Type:</strong> <span id="detail-type">-</span></div>
+          <div class="col-md-6"><strong>Status Code:</strong> <span id="detail-status">-</span></div>
+          <div class="col-md-6"><strong>Staff:</strong> <span id="detail-staff">-</span></div>
+          <div class="col-md-6"><strong>Tracking:</strong> <span id="detail-tracking">-</span></div>
+          <div class="col-md-6"><strong>Endpoint:</strong> <span id="detail-endpoint">-</span></div>
+          <div class="col-md-6"><strong>Method:</strong> <span id="detail-method">-</span></div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Message</label>
+          <pre class="bg-light p-2 rounded mb-0" id="detail-message">-</pre>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Context</label>
+          <pre class="bg-light p-2 rounded mb-0" id="detail-context">-</pre>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Causes</label>
+          <pre class="bg-light p-2 rounded mb-0" id="detail-causes">-</pre>
+        </div>
+        <div class="mb-0">
+          <label class="form-label fw-semibold">Error Details</label>
+          <pre class="bg-light p-2 rounded mb-0" id="detail-error">-</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('layouts/partials/footer.ejs' , {
+  card_title : card_title,
+  scripts : [
+    { src : '/js/datatables/dataTables.js'},
+    { src : '/js/datatables/dataTables.buttons.js'},
+    { src : '/js/datatables/buttons.dataTables.js'},
+    { src : '/js/datatables/buttons.html5.min.js'},
+    { src : '/js/datatables/jszip.min.js'},
+    { src : '/js/datatables/pdfmake.min.js'},
+    { src : '/js/datatables/vfs_fonts.js'},
+    { src : '/js/datatables/buttons.print.min.js'}
+  ]
+}) %>
+
+<script src="/design/assets/libs/chart.js/chart.min.js"></script>
+
+<style>
+  #system-log-table {
+    width: 100% !important;
+    table-layout: fixed;
+  }
+
+  #system-log-table th,
+  #system-log-table td {
+    white-space: normal !important;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    vertical-align: top;
+  }
+
+  #system-log-table_wrapper .dataTables_scroll,
+  .table-responsive.table-card {
+    overflow-x: hidden !important;
+  }
+</style>
+
+<script>
+  let table = null;
+  let levelChart = null;
+  let trendChart = null;
+  let moduleChart = null;
+  let autoRefreshTimer = null;
+  const AUTO_REFRESH_INTERVAL_MS = Number("<%= typeof logsRefreshMs !== 'undefined' ? logsRefreshMs : 5000 %>") || 5000;
+
+  const levelColors = {
+    critical: "#dc3545",
+    error: "#fd7e14",
+    warning: "#0dcaf0",
+    info: "#198754",
+    debug: "#6c757d"
+  };
+
+  const filterPayload = () => ({
+    level: String($("#level-filter").val() || "").trim(),
+    module: String($("#module-filter").val() || "").trim(),
+    event_type: String($("#type-filter").val() || "").trim(),
+    search_text: String($("#search-filter").val() || "").trim(),
+    from_date: String($("#from-filter").val() || "").trim(),
+    to_date: String($("#to-filter").val() || "").trim()
+  });
+
+  const safe = (value, fallback = "-") => {
+    if (value === null || value === undefined) return fallback;
+    const text = String(value).trim();
+    return text.length ? text : fallback;
+  };
+
+  const escapeHtml = (value) =>
+    String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
+  const shortWithTooltip = (value, maxLength = 100) => {
+    const text = safe(value, "-");
+    const shortText = text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+    const escapedShort = escapeHtml(shortText);
+
+    if (text.length > maxLength) {
+      return `<span title="${escapeHtml(text)}">${escapedShort}</span>`;
+    }
+
+    return escapedShort;
+  };
+
+  const formatDateTime = (value, fallback = "-") => {
+    if (value === null || value === undefined || value === "") return fallback;
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return safe(value, fallback);
+
+    return new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Africa/Dar_es_Salaam",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false
+    })
+      .format(date)
+      .replace(",", "");
+  };
+
+  const toPrettyJson = (value) => {
+    if (value === null || value === undefined || value === "") return "-";
+    if (typeof value === "string") {
+      try {
+        return JSON.stringify(JSON.parse(value), null, 2);
+      } catch (error) {
+        return value;
+      }
+    }
+    try {
+      return JSON.stringify(value, null, 2);
+    } catch (error) {
+      return String(value);
+    }
+  };
+
+  const levelBadge = (value = "") => {
+    const level = String(value || "").toLowerCase();
+    const badgeClass = {
+      critical: "badge bg-danger",
+      error: "badge bg-warning text-dark",
+      warning: "badge bg-info text-dark",
+      info: "badge bg-success",
+      debug: "badge bg-secondary"
+    }[level] || "badge bg-secondary";
+
+    return `<span class="${badgeClass}">${safe(level.toUpperCase(), "N/A")}</span>`;
+  };
+
+  const updateMetrics = (totals = {}) => {
+    $("#metric-total").text(Number(totals.total || 0));
+    $("#metric-critical").text(Number(totals.critical || 0));
+    $("#metric-error").text(Number(totals.error || 0));
+    $("#metric-warning").text(Number(totals.warning || 0));
+    $("#metric-info").text(Number(totals.info || 0));
+    $("#metric-debug").text(Number(totals.debug || 0));
+  };
+
+  const renderLevelChart = (totals = {}) => {
+    const labels = ["critical", "error", "warning", "info", "debug"];
+    const values = labels.map((key) => Number(totals?.[key] || 0));
+    const colors = labels.map((key) => levelColors[key]);
+
+    if (levelChart) levelChart.destroy();
+    levelChart = new Chart(document.getElementById("levelChart"), {
+      type: "doughnut",
+      data: {
+        labels: labels.map((key) => key.toUpperCase()),
+        datasets: [{ data: values, backgroundColor: colors, borderWidth: 1 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  };
+
+  const renderTrendChart = (trend = []) => {
+    const rows = Array.isArray(trend) ? trend : [];
+    const dates = [...new Set(rows.map((row) => safe(row.log_date, "")))].filter(Boolean);
+    const levels = ["critical", "error", "warning", "info", "debug"];
+    const datasets = levels.map((level) => {
+      const data = dates.map((date) => {
+        const found = rows.find((row) => safe(row.log_date, "") === date && safe(row.level, "").toLowerCase() === level);
+        return Number(found?.total || 0);
+      });
+      return {
+        label: level.toUpperCase(),
+        data,
+        borderColor: levelColors[level],
+        backgroundColor: levelColors[level],
+        tension: 0.25,
+        fill: false
+      };
+    });
+
+    if (trendChart) trendChart.destroy();
+    trendChart = new Chart(document.getElementById("trendChart"), {
+      type: "line",
+      data: { labels: dates, datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  };
+
+  const renderModuleChart = (modules = []) => {
+    const labels = (modules || []).map((item) => safe(item.module, "unknown"));
+    const values = (modules || []).map((item) => Number(item.total || 0));
+    if (moduleChart) moduleChart.destroy();
+    moduleChart = new Chart(document.getElementById("moduleChart"), {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [{
+          label: "Idadi ya Logs",
+          data: values,
+          backgroundColor: "#405189"
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  };
+
+  const loadSummary = () => {
+    ajaxRequest(
+      "/SystemLogsSummary",
+      "POST",
+      (response) => {
+        const statusCode = Number(response?.statusCode || 306);
+        if (statusCode !== 300) {
+          updateMetrics({});
+          renderLevelChart({});
+          renderTrendChart([]);
+          renderModuleChart([]);
+          return;
+        }
+
+        const summary = response?.data || {};
+        updateMetrics(summary.level_totals || {});
+        renderLevelChart(summary.level_totals || {});
+        renderTrendChart(summary.trend || []);
+        renderModuleChart(summary.top_modules || []);
+      },
+      JSON.stringify(filterPayload()),
+      false
+    );
+  };
+
+  const showLogDetails = (id) => {
+    const logId = Number(id || 0);
+    if (!logId) return;
+
+    ajaxRequest(`/SystemLogDetails/${logId}`, "GET", (response) => {
+      const statusCode = Number(response?.statusCode || 306);
+      if (statusCode !== 300 || !response?.data) {
+        alertMessage("Haujafanikiwa", response?.message || "Log detail haijapatikana.", "warning");
+        return;
+      }
+
+      const row = response.data;
+      $("#detail-id").text(safe(row.id));
+      $("#detail-created").text(formatDateTime(row.created_at));
+      $("#detail-level").html(levelBadge(row.level));
+      $("#detail-module").text(safe(row.module));
+      $("#detail-type").text(safe(row.event_type));
+      $("#detail-status").text(safe(row.status_code));
+      $("#detail-staff").text(safe(row.staff_name));
+      $("#detail-tracking").text(safe(row.tracking_number));
+      $("#detail-endpoint").text(safe(row.endpoint));
+      $("#detail-method").text(safe(row.http_method));
+      $("#detail-message").text(safe(row.message, "-"));
+      $("#detail-context").text(toPrettyJson(row.context));
+      $("#detail-causes").text(toPrettyJson(row.causes));
+      $("#detail-error").text(toPrettyJson(row.error_details));
+      modal("logDetailModal", true);
+    });
+  };
+
+  const initTable = () => {
+    table = $("#system-log-table").DataTable({
+      processing: true,
+      serverSide: true,
+      searching: false,
+      ordering: false,
+      autoWidth: false,
+      ajax: {
+        url: "/SystemLogsList",
+        type: "POST",
+        data: function (d) {
+          const filters = filterPayload();
+          d.level = filters.level;
+          d.module = filters.module;
+          d.event_type = filters.event_type;
+          d.search_text = filters.search_text;
+          d.from_date = filters.from_date;
+          d.to_date = filters.to_date;
+        }
+      },
+      columns: [
+        {
+          data: null,
+          render: function (data, type, row, meta) {
+            return meta.row + meta.settings._iDisplayStart + 1;
+          }
+        },
+        {
+          data: "created_at",
+          render: function (data) {
+            return formatDateTime(data);
+          }
+        },
+        {
+          data: "level",
+          render: function (data) {
+            return levelBadge(data);
+          }
+        },
+        { data: "module", defaultContent: "-" },
+        { data: "event_type", defaultContent: "-" },
+        {
+          data: "message",
+          render: function (data) {
+            return shortWithTooltip(data, 110);
+          }
+        },
+        { data: "tracking_number", defaultContent: "-" },
+        {
+          data: "endpoint",
+          render: function (data) {
+            return shortWithTooltip(data, 70);
+          }
+        },
+        {
+          data: "id",
+          className: "text-center",
+          render: function (data) {
+            return `<button type="button" class="btn btn-sm btn-soft-info" onclick="showLogDetails(${Number(data || 0)})">Detail</button>`;
+          }
+        }
+      ]
+    });
+  };
+
+  const refreshRealtime = () => {
+    if (table) {
+      table.ajax.reload(null, false);
+    }
+    loadSummary();
+  };
+
+  const startAutoRefresh = () => {
+    if (autoRefreshTimer) {
+      clearInterval(autoRefreshTimer);
+    }
+
+    autoRefreshTimer = setInterval(() => {
+      if (document.hidden) return;
+      refreshRealtime();
+    }, AUTO_REFRESH_INTERVAL_MS);
+  };
+
+  window.showLogDetails = showLogDetails;
+
+  $("#apply-filters-btn").on("click", function () {
+    if (table) table.ajax.reload();
+    loadSummary();
+  });
+
+  $("#reset-filters-btn").on("click", function () {
+    $("#level-filter").val("");
+    $("#module-filter").val("");
+    $("#type-filter").val("");
+    $("#search-filter").val("");
+    $("#from-filter").val("");
+    $("#to-filter").val("");
+    if (table) table.ajax.reload();
+    loadSummary();
+  });
+
+  $(document).ready(function () {
+    initTable();
+    loadSummary();
+    startAutoRefresh();
+  });
+
+  $(window).on("beforeunload", function () {
+    if (autoRefreshTimer) {
+      clearInterval(autoRefreshTimer);
+      autoRefreshTimer = null;
+    }
+  });
+
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) {
+      refreshRealtime();
+    }
+  });
+</script>

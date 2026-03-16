@@ -149,46 +149,98 @@
           ]
     }) %>
 <script>
+    function buildAuditColumns() {
+        return [
+            { data: null, render : (data , type , row , meta) => {
+                return meta.row + 1;
+            } },
+            { data: "name", name: "name", defaultContent: "" },
+            { data: "event_type", name: "event_type" , render : function(data){
+                const eventType = String(data || "").toLowerCase();
+                const badgeClass = eventType === "created" ? "success" : (eventType === "updated" ? "primary" : "danger");
+                return `<span class='badge bg-${badgeClass}'>${String(data || "-").toUpperCase()}</span>`;
+            } },
+            { data: "ip_address", name: "ip_address", defaultContent: "" },
+            { data: "id", name: "id" , class: 'text-center font-weight-bold text-lg', defaultContent: "" },
+            { data: "api_router", name: "api_router", defaultContent: "" },
+            { data: "message", name: "message", defaultContent: "" },
+            {
+              data: "created_at", name: "created_at",
+                    render: (data) => {
+                        return data ? changeDateFormat(data) : "";
+                    },
+            },
+            {
+              data: null,
+              render: function (data, type, row) {
+                    const elements = [
+                                    {
+                                        show : true,
+                                        type : 'link',
+                                        class : 'btn btn-sm btn-outline-success me-1',
+                                        icon : 'bx bx-show me-1',
+                                        function : 'viewDetails',
+                                        btnText : 'View'
+                                    },
+                                ];
+                return actionButtons(row , elements);
+              },
+              orderable: false,
+              class : 'text-center'
+            },
+        ];
+    }
+
+    function initAuditDataTable(rows = []) {
+        if ($.fn.DataTable.isDataTable("#datatable")) {
+            $("#datatable").DataTable().clear().rows.add(rows).draw();
+            return;
+        }
+
+        $("#datatable").DataTable({
+            data: rows,
+            columns: buildAuditColumns(),
+            lengthMenu: [
+              [10, 25, 50, 100, 500, -1],
+              ["10 rows", "25 rows", "50 rows", "100 rows", "500 rows", "Show all"],
+            ],
+            layout: {
+              topStart: {
+                buttons: [
+                  "pageLength",
+                  [
+                    { extend: "copyHtml5", footer: false, exportOptions: { columns: ":not(:last-child)" } },
+                    { extend: "excelHtml5", footer: false, text: "Export Excel", exportOptions: { columns: ":not(:last-child)" } },
+                    { extend: "csvHtml5", footer: false, text: "Export CSV", exportOptions: { columns: ":not(:last-child)" } },
+                    { extend: "pdfHtml5", footer: false, text: "Export PDF", exportOptions: { columns: ":not(:last-child)" }, orientation: "landscape", pageSize: "A4" },
+                    { extend: "print", footer: false, exportOptions: { columns: ":not(:last-child)" } },
+                  ],
+                ],
+              },
+            },
+            language: {
+              searchPlaceholder: "Search Here ...",
+            },
+        });
+    }
+
+    function loadAuditRows() {
+        $.ajax({
+            url: "/AuditTrailList",
+            type: "POST",
+            data: { draw: 1, start: 0, length: 500 },
+            success: function(response) {
+                const rows = Array.isArray(response?.data) ? response.data : [];
+                initAuditDataTable(rows);
+            },
+            error: function() {
+                initAuditDataTable([]);
+            }
+        });
+    }
+
     $(document).ready(function() {
-        tableData('datatable' ,'/AuditTrailList' , 'POST',
-            [
-                    { data: null, render : (data , type , row , meta) => {
-                        return meta.row + meta.settings._iDisplayStart + 1;
-                    } },
-                    { data: "name", name: "name" },
-                    { data: "event_type", name: "event_type" , render : function(data, type , row){
-                        return `<span class='badge bg-${data == 'created' ? 'success' : (data == 'updated' ? 'primary' : 'danger')}'>${data.toUpperCase()}</span>`;
-                    } },
-                    { data: "ip_address", name: "ip_address" },
-                    { data: "id", name: "id" , class: 'text-center font-weight-bold text-lg'},
-                    { data: "api_router", name: "api_router" },
-                    { data: "message", name: "message" },
-                    {
-                      data: "created_at", name: "created_at",
-                            render: (data, type, row) => {
-                                return changeDateFormat(data);
-                            },
-                    },
-                    {
-                    data: null, // No data source for this column
-                    render: function (data, type, row) {
-                            const elements = [
-                                            {
-                                                show : true,
-                                                type : 'link',
-                                                class : 'btn btn-sm btn-outline-success me-1',
-                                                icon : 'bx bx-show me-1',
-                                                function : 'viewDetails',
-                                                btnText : 'View'
-                                            },
-                                        ]
-                        return actionButtons(row , elements);
-                    },
-                    orderable: false, // Disable sorting for the action buttons column
-                    class : 'text-center'
-                    },
-            ]
-        );
+        loadAuditRows();
     });
 </script>
 <!-- <script type="text/javascript" src="/design/layouts/scripts/kanda_scripts.js"></script> -->
@@ -227,7 +279,6 @@
 </body>
 
 </html>
-
 
 
 

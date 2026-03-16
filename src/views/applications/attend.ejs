@@ -1244,6 +1244,13 @@
     border-bottom: 1px dashed #d9e3f2;
   }
 
+  .wf-step-inline {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+  }
+
   .wf-step-head {
     display: flex;
     justify-content: space-between;
@@ -1264,7 +1271,17 @@
     font-size: 13px;
     font-weight: 700;
     color: var(--vz-body-color);
-    margin-bottom: 3px;
+    margin-bottom: 0;
+  }
+
+  .wf-step-inline .badge {
+    flex: 0 0 auto;
+  }
+
+  .wf-step-inline .wf-step-meta-item {
+    font-size: 11px;
+    color: var(--attend-text-muted);
+    white-space: nowrap;
   }
 
   .wf-step-meta {
@@ -1404,12 +1421,21 @@
   }
 
   .comment-meta-date {
-    margin-left: auto;
     flex: 0 0 auto;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
+    line-height: 1.15;
     color: var(--attend-text-muted);
     white-space: nowrap;
+  }
+
+  .comment-meta-tail {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex: 0 0 auto;
+    min-width: 0;
   }
 
   .comment-seq {
@@ -1445,11 +1471,53 @@
     align-items: center;
     padding: 1px 8px;
     border-radius: 999px;
-    border: 1px solid #bfe7ce;
+    border: 1px solid #d6dbe5;
+    background: #f4f7fc;
+    color: #41506a;
+    font-weight: 600;
+    font-size: 11px;
+    line-height: 1.15;
+    letter-spacing: 0.1px;
+  }
+
+  .comment-action-inline.comment-action--primary {
+    border-color: #b9d0fb;
+    background: #eaf1ff;
+    color: #0d4ea4;
+  }
+
+  .comment-action-inline.comment-action--info {
+    border-color: #bfe6f4;
+    background: #eaf9ff;
+    color: #0b6b88;
+  }
+
+  .comment-action-inline.comment-action--success {
+    border-color: #bfe7ce;
     background: #e8f4ee;
     color: #0b5e3b;
-    font-weight: 700;
-    letter-spacing: 0.2px;
+  }
+
+  .comment-action-inline.comment-action--warning {
+    border-color: #efd89e;
+    background: #fff8e5;
+    color: #8b5d00;
+  }
+
+  .comment-action-inline.comment-action--danger {
+    border-color: #f0b9bf;
+    background: #ffecef;
+    color: #a52737;
+  }
+
+  .comment-action-inline.comment-action--secondary {
+    border-color: #d6dbe5;
+    background: #f4f7fc;
+    color: #41506a;
+  }
+
+  .comment-action-main {
+    margin-right: 2px;
   }
 
   .comment-divider {
@@ -1852,7 +1920,7 @@
                       <% workflowSteps.forEach((step, index) => { %>
                         <% const stepState = workflowStepState(step, index); %>
                         <% const stepOrder = Number(step?._order || (index + 1)); %>
-                        <% const stepAssigned = step?.assigned_to ? `STAFF #${step.assigned_to}` : "-"; %>
+                        <% const stepAssigned = step?.assigned_to ? `STAFF #${step.assigned_to}` : ""; %>
                         <% const stepDate = step?.process_updated_at || step?.process_created_at; %>
                         <div class="wf-step <%= stepState %>">
                           <div class="wf-step-lane">
@@ -1861,15 +1929,15 @@
                             <% if (index < workflowSteps.length - 1) { %><span class="wf-line"></span><% } %>
                           </div>
                           <div class="wf-step-body">
-                            <div class="wf-step-head">
+                            <div class="wf-step-inline">
                               <span class="wf-step-order">Hatua <%= stepOrder %></span>
                               <span class="badge <%= workflowStepBadgeClass(stepState) %>"><%= workflowStepStateLabel(stepState) %></span>
-                            </div>
-                            <div class="wf-step-unit"><%= toText(step?.unit_name || step?.role_name || ("UNIT #" + toText(step?.unit_id))) %></div>
-                            <div class="wf-step-meta">
-                              <span>Status: <%= toText(step?.process_status || "Waiting") %></span>
-                              <span>Assigned: <%= stepAssigned %></span>
-                              <span>Tarehe: <%= stepDate ? dateFormat(stepDate, "DD/MM/YYYY HH:mm:ss") : "-" %></span>
+                              <span class="wf-step-unit"><%= toText(step?.unit_name || step?.role_name || ("UNIT #" + toText(step?.unit_id))) %></span>
+                              <span class="wf-step-meta-item">Status: <%= toText(step?.process_status || "Waiting") %></span>
+                              <% if (stepAssigned) { %>
+                                <span class="wf-step-meta-item">Assigned: <%= stepAssigned %></span>
+                              <% } %>
+                              <span class="wf-step-meta-item">Tarehe: <%= stepDate ? dateFormat(stepDate, "DD/MM/YYYY HH:mm:ss") : "-" %></span>
                             </div>
                           </div>
                         </div>
@@ -1888,6 +1956,8 @@
                 <% commentFlow.forEach((entry, index) => { %>
                   <% const comment = entry.comment; %>
                   <% const mainCommentAction = commentActionPastLabel(comment); %>
+                  <% const mainCommentActionTone = actionTone(normalizeCommentAction(comment?.action)); %>
+                  <% const commentReceiverName = String(comment?.receiver?.name || "").trim(); %>
                   <div class="comment-flow-item">
                     <div class="comment-flow-lane">
                       <% if (entry.isTransition) { %>
@@ -1911,15 +1981,18 @@
                       <div class="comment-meta-main">
                         <span class="comment-seq">M.<%= entry.sequence %></span>
                         <span class="ellipsis-tooltip comment-sender-name"><%= commentSenderDisplayName(comment) %></span>
-                        <span class="comment-meta-date"><%= comment.created_at ? dateFormat(comment.created_at , 'ddd DD/MM/YYYY HH:mm:ss') : "-" %></span>
+                        <span class="comment-meta-tail">
+                          <% if (mainCommentAction) { %>
+                            <span class="comment-action-inline comment-action-main comment-action--<%= mainCommentActionTone %>"><%= mainCommentAction %></span>
+                          <% } %>
+                          <span class="comment-meta-date"><%= comment.created_at ? dateFormat(comment.created_at , 'ddd DD/MM/YYYY HH:mm:ss') : "-" %></span>
+                        </span>
                       </div>
-                      <div class="comment-meta-sub">
-                        Kwa: <%= comment.receiver?.name || "-" %>
-                        <% if (mainCommentAction) { %>
-                          <span class="comment-action-separator">|</span>
-                          <span class="comment-action-inline"><%= mainCommentAction %></span>
-                        <% } %>
-                      </div>
+                      <% if (commentReceiverName) { %>
+                        <div class="comment-meta-sub">
+                          Kwa: <%= commentReceiverName %>
+                        </div>
+                      <% } %>
                       <div class="comment-divider"></div>
                       <div class="comment-body"><%= cleanCommentText(comment.coments || comment.comment || comment.content) %></div>
                     </div>
@@ -2053,6 +2126,38 @@
     const clearWorkflowCommentValidation = () => {
       workflowCommentContentInput?.classList.remove("is-invalid");
       workflowRichEditorWrap?.classList.remove("is-invalid");
+    };
+
+    const showWorkflowValidationAlert = (message) => {
+      const msg = String(message || "").trim();
+      if (!msg) return;
+
+      if (window.Swal && typeof window.Swal.fire === "function") {
+        window.Swal.fire({
+          title: "Tahadhari",
+          text: msg,
+          icon: "warning",
+          confirmButtonText: "Sawa",
+          confirmButtonClass: "btn btn-primary w-xs",
+          buttonsStyling: false,
+        });
+        return;
+      }
+
+      if (typeof alertMessage === "function") {
+        alertMessage("Tahadhari", msg, "warning", () => {});
+        return;
+      }
+
+      window.alert(msg);
+    };
+
+    const showWorkflowCommentRequiredAlert = () => {
+      showWorkflowValidationAlert("Tafadhali andika maoni kwanza.");
+    };
+
+    const showWorkflowTargetRequiredAlert = () => {
+      showWorkflowValidationAlert("Tafadhali chagua Afisa wa kumpelekea.");
     };
 
     const markWorkflowCommentInvalid = () => {
@@ -2228,32 +2333,40 @@
     };
 
     if (workflowForm && workflowActionInput) {
-      const hasSweetAlert = Boolean(window.Swal && typeof window.Swal.fire === "function");
+      const hasSweetAlert = () => Boolean(window.Swal && typeof window.Swal.fire === "function");
       const workflowActionElements = Array.from(document.querySelectorAll("[data-workflow-action]"));
       let workflowSubmitInProgress = false;
+      const workflowActionTone = (action) => {
+        if (action === "Review") return "primary";
+        if (action === "Assign") return "info";
+        if (action === "Forward") return "success";
+        if (action === "Approve") return "success";
+        if (action === "Reject") return "danger";
+        if (action === "Return") return "warning";
+        if (action === "Return_back") return "warning";
+        return "secondary";
+      };
 
       const buildWorkflowActionConfirmation = (action, needsTarget) => {
         const actionLabel = String(action || "").trim();
-        let message = `Una uhakika unataka kuendelea na kitendo hiki?\n\nKITENDO: ${actionLabel}`;
+        const selectedText = String(
+          workflowTargetSelect?.options?.[workflowTargetSelect.selectedIndex]?.text || ""
+        ).trim();
 
-        if (needsTarget && workflowTargetSelect) {
-          const selectedText = String(
-            workflowTargetSelect.options?.[workflowTargetSelect.selectedIndex]?.text || ""
-          ).trim();
-          if (selectedText) {
-            message += `\nAFISA: ${selectedText}`;
-          }
+        if ((actionLabel === "Assign" || needsTarget) && selectedText) {
+          return `Una uhakika ungependa kutuma ombi hili kwenda kwa ${selectedText}? Bonyeza Ndio, Kuendelea au Hapana kurudi.`;
         }
 
-        message += "\n\nBonyeza OK kuendelea au Cancel kurudi.";
-        return message;
+        return `Una uhakika ungependa kuendelea na kitendo hiki? Bonyeza Ndio, Kuendelea au Hapana kurudi.`;
       };
 
       const confirmWorkflowAction = async (action, needsTarget) => {
         const message = buildWorkflowActionConfirmation(action, needsTarget);
-        if (!hasSweetAlert) {
+        if (!hasSweetAlert()) {
           return window.confirm(message);
         }
+
+        const tone = workflowActionTone(action);
 
         const result = await window.Swal.fire({
           title: "Thibitisha Kitendo",
@@ -2262,7 +2375,7 @@
           showCancelButton: true,
           confirmButtonText: "Ndio, Endelea",
           cancelButtonText: "Hapana",
-          confirmButtonClass: "btn btn-primary w-xs me-2",
+          confirmButtonClass: `btn btn-${tone} w-xs me-2`,
           cancelButtonClass: "btn btn-light w-xs",
           buttonsStyling: false,
         });
@@ -2294,7 +2407,7 @@
       };
 
       const showSubmittingAlert = (action) => {
-        if (!hasSweetAlert) return;
+        if (!hasSweetAlert()) return;
         window.Swal.fire({
           title: "Inatuma...",
           text: `Kitendo (${String(action || "").trim()}) kinaendelea. Tafadhali subiri.`,
@@ -2323,11 +2436,13 @@
               workflowTargetSelect.classList.add("is-invalid");
               workflowTargetSelect.focus();
             }
+            showWorkflowTargetRequiredAlert();
             return;
           }
 
           if (!toPlainText(currentWorkflowCommentContent())) {
             markWorkflowCommentInvalid();
+            showWorkflowCommentRequiredAlert();
             return;
           }
 

@@ -15,6 +15,22 @@
     <!--Swiper slider css-->
     <link href="/design/assets/libs/swiper/swiper-bundle.min.css" rel="stylesheet" type="text/css" />
     <!-- Layout config Js -->
+    <script>
+      (function () {
+        try {
+          var theme = localStorage.getItem("sas_layout_mode");
+          if (theme !== "dark" && theme !== "light") return;
+          document.documentElement.setAttribute("data-layout-mode", theme);
+          sessionStorage.setItem("data-layout-mode", theme);
+          var attrs = {};
+          Array.from(document.documentElement.attributes || []).forEach(function (attr) {
+            if (!attr || !attr.name) return;
+            attrs[attr.name] = attr.value;
+          });
+          sessionStorage.setItem("defaultAttribute", JSON.stringify(attrs));
+        } catch (error) {}
+      })();
+    </script>
     <script src="/design/assets/js/layout.js"></script>
     <!-- Bootstrap Css -->
     <link href="/design/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />

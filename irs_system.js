@@ -9,6 +9,7 @@ const RedisStore = require("connect-redis").default;
 const { createClient } = require("redis");
 const useragent = require("useragent");
 const { registerGlobals } = require("./src/bootstrap/globals");
+const { logSystemEvent } = require("./util");
 
 const webRoutes = require("./src/routes/web.js");
 
@@ -92,11 +93,55 @@ registerGlobals(app);
 
 app.use(clientInfoMiddleware);
 
+app.use((req, res, next) => {
+  const startedAt = Date.now();
+  res.on("finish", () => {
+    if (Number(res.statusCode || 0) < 400) return;
+    if (String(req?.originalUrl || "").includes("/SystemLogsClientError")) return;
+
+    logSystemEvent(req, {
+      level: res.statusCode >= 500 ? "critical" : "error",
+      module: "ui-server",
+      event_type: "http-response-error",
+      message: `${req.method} ${req.originalUrl} imerudisha status ${res.statusCode}.`,
+      source: "sas-admin/irs_system.js:response-monitor",
+      context: {
+        duration_ms: Date.now() - startedAt,
+        params: req?.params || null,
+        query: req?.query || null,
+      },
+      error_details: null,
+    });
+  });
+  next();
+});
+
 // Frontend routes are registered via web.js
 app.use("/", webRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
+
+  if (req) {
+    logSystemEvent(req, {
+      level: "critical",
+      module: "ui-server",
+      event_type: "express-error",
+      message: err?.message || "Unhandled UI server error.",
+      source: "sas-admin/irs_system.js:error-middleware",
+      context: {
+        pathname: req?.originalUrl || req?.url || null,
+        method: req?.method || null,
+        params: req?.params || null,
+        query: req?.query || null,
+      },
+      error_details: {
+        name: err?.name || null,
+        stack: typeof err?.stack === "string" ? err.stack.slice(0, 4000) : null,
+      },
+    });
+  }
+
   if (res.headersSent) {
     return next(err);
   }

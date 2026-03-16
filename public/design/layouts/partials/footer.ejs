@@ -69,16 +69,64 @@
     <script src="/design/assets/js/pagination.js"></script>
     <script src="/design/assets/js/alert/confirm.js"></script>
     <script src="/design/assets/js/spin/spin.min.js"></script>
+    <script src="/design/assets/libs/choices.js/choices.min.js"></script>
      <script src="/design/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js"></script>
     <script src="/design/assets/js/custom.js"></script>
     <script src="../js/checkboxes.js"></script>
     <script src="/design/assets/js/alert/notifications.js"></script>
+
+    <%
+      const flashSuccess = typeof req?.flash === 'function' ? req.flash('success') : [];
+      const flashWarning = typeof req?.flash === 'function' ? req.flash('warning') : [];
+      const flashError = typeof req?.flash === 'function' ? req.flash('error') : [];
+      const queryToastMessage = String(req?.query?.toast_message || '').trim();
+      const queryToastType = String(req?.query?.toast_type || 'warning').trim() || 'warning';
+
+      let globalToastMessage = '';
+      let globalToastType = 'warning';
+
+      if (queryToastMessage) {
+        globalToastMessage = queryToastMessage;
+        globalToastType = queryToastType;
+      } else if (Array.isArray(flashError) && flashError.length > 0) {
+        globalToastMessage = String(flashError[0] || '').trim();
+        globalToastType = 'danger';
+      } else if (Array.isArray(flashWarning) && flashWarning.length > 0) {
+        globalToastMessage = String(flashWarning[0] || '').trim();
+        globalToastType = 'warning';
+      } else if (Array.isArray(flashSuccess) && flashSuccess.length > 0) {
+        globalToastMessage = String(flashSuccess[0] || '').trim();
+        globalToastType = 'success';
+      }
+
+      const globalToastClassName = globalToastType === 'error' ? 'danger' : globalToastType || 'warning';
+    %>
+    <% if (globalToastMessage) { %>
+    <style>
+      .toastify.toastify-right.toastify-top {
+        margin-top: 70px;
+      }
+    </style>
+    <% } %>
 
     <script>
         showLoadingSpinner()
         window.onload = () => {
            hideLoadingSpinner()
         }
+        window.addEventListener("load", function () {
+            if (typeof Toastify === "function" && <%= JSON.stringify(Boolean(globalToastMessage)) %>) {
+                Toastify({
+                    text: <%- JSON.stringify(globalToastMessage) %>,
+                    gravity: "top",
+                    position: "right",
+                    className: "bg-<%= globalToastClassName %>",
+                    duration: 4000,
+                    close: true,
+                    stopOnFocus: true
+                }).showToast();
+            }
+        });
         function formatState(e){return e.id?$('<span><img src="assets/images/flags/select2/'+e.element.value.toLowerCase()+'.png" class="img-flag rounded" height="18" /> '+e.text+"</span>"):e.text}function formatState(e){var t;return e.id?((t=$('<span><img class="img-flag rounded" height="18" /> <span></span></span>')).find("span").text(e.text),t.find("img").attr("src","assets/images/flags/select2/"+e.element.value.toLowerCase()+".png"),t):e.text}$(document).ready(function(){$(".js-example-basic-single").select2(),$(".js-example-basic-multiple").select2();$(".js-example-data-array").select2({data:[{id:0,text:"enhancement"},{id:1,text:"bug"},{id:2,text:"duplicate"},{id:3,text:"invalid"},{id:4,text:"wontfix"}]})}),$(".js-example-templating").select2({templateResult:formatState}),$(".select-flag-templating").select2({templateSelection:formatState}),$(".js-example-disabled").select2(),$(".js-example-disabled-multi").select2(),$(".js-programmatic-enable").on("click",function(){$(".js-example-disabled").prop("disabled",!1),$(".js-example-disabled-multi").prop("disabled",!1)}),$(".js-programmatic-disable").on("click",function(){$(".js-example-disabled").prop("disabled",!0),$(".js-example-disabled-multi").prop("disabled",!0)});
         $(function(){
             const SESSION_CHECK_INTERVAL_MS = 30000;
@@ -199,6 +247,150 @@
             });
         })
     </script>
+    <script>
+      (() => {
+        const sentFingerprints = new Set();
+
+        const safeText = (value, fallback = "") => {
+          if (value === null || value === undefined) return fallback;
+          const text = String(value).trim();
+          return text.length ? text : fallback;
+        };
+
+        const findTrackingNumber = () => {
+          const source = `${window.location.pathname} ${window.location.search}`;
+          const match = source.match(/[A-Z]{2}-\d{8}-\d+/);
+          return match ? match[0] : "";
+        };
+
+        const shouldIgnore = (message = "", source = "") => {
+          const msg = safeText(message, "").toLowerCase();
+          const src = safeText(source, "").toLowerCase();
+          return msg.includes("systemlogsclienterror") || src.includes("systemlogsclienterror");
+        };
+
+        const submitClientLog = (payload = {}) => {
+          const message = safeText(payload.message, "");
+          const source = safeText(payload.source, "");
+          if (!message || shouldIgnore(message, source)) return;
+
+          const fingerprint = `${payload.event_type || ""}|${message}|${source}`;
+          if (sentFingerprints.has(fingerprint)) return;
+          sentFingerprints.add(fingerprint);
+
+          $.ajax({
+            url: "/SystemLogsClientError",
+            type: "POST",
+            contentType: "application/json",
+            dataType: "json",
+            data: JSON.stringify({
+              level: payload.level || "error",
+              event_type: payload.event_type || "client-runtime-error",
+              message,
+              source,
+              tracking_number: findTrackingNumber(),
+              context: payload.context || null,
+              error_details: payload.error_details || null,
+            }),
+          });
+        };
+
+        window.addEventListener("error", (event) => {
+          submitClientLog({
+            level: "error",
+            event_type: "window-error",
+            message: safeText(event?.message, "Unknown browser error"),
+            source: `${safeText(event?.filename, "unknown")}:${event?.lineno || 0}:${event?.colno || 0}`,
+            context: {
+              pathname: window.location.pathname,
+              search: window.location.search,
+            },
+            error_details: {
+              stack: safeText(event?.error?.stack, ""),
+            },
+          });
+        });
+
+        window.addEventListener("unhandledrejection", (event) => {
+          const reason = event?.reason;
+          const reasonMessage =
+            typeof reason === "string"
+              ? reason
+              : safeText(reason?.message, toPrettyString(reason));
+
+          submitClientLog({
+            level: "critical",
+            event_type: "unhandled-rejection",
+            message: safeText(reasonMessage, "Unhandled promise rejection"),
+            source: "window.unhandledrejection",
+            context: {
+              pathname: window.location.pathname,
+              search: window.location.search,
+            },
+            error_details: {
+              stack: safeText(reason?.stack, ""),
+            },
+          });
+        });
+
+        function toPrettyString(value) {
+          if (value === null || value === undefined) return "";
+          try {
+            return JSON.stringify(value);
+          } catch (error) {
+            return String(value);
+          }
+        }
+      })();
+    </script>
+    <script>
+        (() => {
+            const ELLIPSIS_SELECTOR = '.ellipsis-tooltip, .text-truncate';
+
+            const upsertEllipsisTooltip = (element) => {
+                if (!element) return;
+
+                const text = (element.getAttribute('data-tooltip-text') || element.textContent || '').trim();
+                const isTruncated = element.scrollWidth > element.clientWidth;
+                const tooltipInstance = window.bootstrap?.Tooltip?.getInstance(element);
+                const isOwned = element.dataset.ellipsisTooltipOwned === '1';
+
+                if (!text || !isTruncated) {
+                    if (isOwned && tooltipInstance) tooltipInstance.dispose();
+                    if (isOwned) {
+                        element.removeAttribute('title');
+                        element.removeAttribute('data-bs-toggle');
+                        delete element.dataset.ellipsisTooltipOwned;
+                    }
+                    return;
+                }
+
+                element.setAttribute('title', text);
+                element.setAttribute('data-bs-toggle', 'tooltip');
+                element.dataset.ellipsisTooltipOwned = '1';
+
+                if (tooltipInstance) {
+                    tooltipInstance.dispose();
+                }
+                if (window.bootstrap?.Tooltip) {
+                    new bootstrap.Tooltip(element);
+                }
+            };
+
+            const refreshEllipsisTooltips = () => {
+                document.querySelectorAll(ELLIPSIS_SELECTOR).forEach(upsertEllipsisTooltip);
+            };
+
+            let resizeTimer = null;
+            window.refreshEllipsisTooltips = refreshEllipsisTooltips;
+
+            document.addEventListener('DOMContentLoaded', refreshEllipsisTooltips);
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(refreshEllipsisTooltips, 150);
+            });
+        })();
+    </script>
     <% if(typeof scripts !== 'undefined' && scripts){ %>
 <% scripts.forEach(element => { %>
         <script type="text/javascript" src="<%=element.src%>"></script>
@@ -295,3 +487,59 @@ function w() {
 
 </script>    -->
 <script src="/design/assets/js/app.js"></script>
+<script>
+  (function () {
+    const THEME_KEY = "sas_layout_mode";
+
+    const syncDefaultAttribute = () => {
+      try {
+        const attrs = {};
+        Array.from(document.documentElement.attributes || []).forEach((attr) => {
+          if (!attr || !attr.name) return;
+          attrs[attr.name] = attr.value;
+        });
+        sessionStorage.setItem("defaultAttribute", JSON.stringify(attrs));
+      } catch (error) {}
+    };
+
+    const persistTheme = (theme) => {
+      if (theme !== "dark" && theme !== "light") return;
+      try {
+        document.documentElement.setAttribute("data-layout-mode", theme);
+        localStorage.setItem(THEME_KEY, theme);
+        sessionStorage.setItem("data-layout-mode", theme);
+        syncDefaultAttribute();
+      } catch (error) {}
+    };
+
+    const resolveCurrentTheme = () => {
+      const htmlTheme = String(document.documentElement.getAttribute("data-layout-mode") || "").toLowerCase();
+      if (htmlTheme === "dark" || htmlTheme === "light") return htmlTheme;
+      const sessionTheme = String(sessionStorage.getItem("data-layout-mode") || "").toLowerCase();
+      if (sessionTheme === "dark" || sessionTheme === "light") return sessionTheme;
+      return "light";
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const savedTheme = String(localStorage.getItem(THEME_KEY) || "").toLowerCase();
+      if (savedTheme === "dark" || savedTheme === "light") {
+        persistTheme(savedTheme);
+      } else {
+        persistTheme(resolveCurrentTheme());
+      }
+
+      document.querySelectorAll(".light-dark-mode").forEach((button) => {
+        button.addEventListener("click", () => {
+          setTimeout(() => persistTheme(resolveCurrentTheme()), 0);
+        });
+      });
+
+      document.querySelectorAll("[name='data-layout-mode']").forEach((input) => {
+        input.addEventListener("change", (event) => {
+          const selected = String(event?.target?.value || "").toLowerCase();
+          persistTheme(selected);
+        });
+      });
+    });
+  })();
+</script>

@@ -77,6 +77,10 @@
     ? currentWorkTab
     : "pending";
   const activeSearch = String(searchTerm || "").trim();
+  const activeEstablishingSchoolId =
+    (typeof selectedEstablishingSchoolId !== "undefined" && selectedEstablishingSchoolId !== null)
+      ? (Number(selectedEstablishingSchoolId) || null)
+      : null;
   const routeBase = routeBasePath || "/applications";
   const isMyApplications = routeBase === "/my-applications";
   const showAttendAction = true;
@@ -139,6 +143,7 @@
       query.push(`is_approved=${statusId}`);
     }
     if (activeSearch) query.push(`search=${encodeURIComponent(activeSearch)}`);
+    if (activeEstablishingSchoolId) query.push(`establishing_school_id=${activeEstablishingSchoolId}`);
     return query.join("&");
   };
   const isActiveStatus = (id) => {
@@ -548,7 +553,7 @@
     <div class="p-4 d-flex flex-column h-100">
       <div class="mx-n4 px-4 email-menu-sidebar-scroll" data-simplebar>
         <div class="mail-list mt-3">
-          <a href="<%= routeBase %>?page=1&per_page=<%= pagination.per_page %>" class="<%= !activeCategoryId ? 'active' : '' %>">
+          <a href="<%= routeBase %>?<%= buildQuery(1, null, activeStatusId, activeWorkTab) %>" class="<%= !activeCategoryId ? 'active' : '' %>">
             <i class="ri-inbox-archive-line text-primary me-3 align-middle fw-medium"></i>
             <span
               class="mail-list-link"
@@ -607,6 +612,9 @@
                   <% } %>
                   <% if (activeSearch) { %>
                   <input type="hidden" name="search" value="<%= activeSearch %>">
+                  <% } %>
+                  <% if (activeEstablishingSchoolId) { %>
+                  <input type="hidden" name="establishing_school_id" value="<%= activeEstablishingSchoolId %>">
                   <% } %>
                   <select id="applications-per-page" name="per_page" class="form-select form-select-sm" onchange="this.form.submit()">
                     <% perPageOptions.forEach((size) => { %>
@@ -789,6 +797,9 @@
         params.set("work_tab", "<%= activeWorkTab %>");
         <% } else if (activeStatusId === 0 || activeStatusId) { %>
         params.set("is_approved", "<%= activeStatusId %>");
+        <% } %>
+        <% if (activeEstablishingSchoolId) { %>
+        params.set("establishing_school_id", "<%= activeEstablishingSchoolId %>");
         <% } %>
 
         if (searchValue) params.set("search", searchValue);

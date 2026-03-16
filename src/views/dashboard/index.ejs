@@ -66,8 +66,264 @@
         box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28), 0 8px 18px rgba(0, 0, 0, 0.14);
     }
 
+    .dashboard-modern .summary-top-card {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #e2e8f3;
+        background: linear-gradient(145deg, #ffffff 0%, #f7faff 100%);
+        min-height: 188px;
+        height: 100%;
+    }
+
+    .dashboard-modern .summary-top-card::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #22c55e, #14b8a6);
+    }
+
+    .dashboard-modern .summary-top-card .card-body {
+        padding: 1.05rem 1.15rem 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 0.8rem;
+    }
+
+    .dashboard-modern .summary-top-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.65rem;
+    }
+
+    .dashboard-modern .summary-top-title {
+        margin: 0;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        font-weight: 800;
+        letter-spacing: 0.01em;
+        color: #6b7280;
+        line-height: 1.35;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .dashboard-modern .summary-top-value {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1.05;
+        color: #0f172a;
+    }
+
+    .dashboard-modern .summary-top-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        border: 1px solid #d9e2f2;
+        background: #eef3fb;
+        color: #334155;
+        border-radius: 9px;
+        font-size: 0.86rem;
+        font-weight: 700;
+        text-decoration: none;
+        padding: 0.34rem 0.62rem;
+        width: fit-content;
+    }
+
+    .dashboard-modern .summary-top-link:hover {
+        color: #1d4ed8;
+        border-color: #bfdbfe;
+        background: #eff6ff;
+    }
+
+    .dashboard-modern .summary-tone-success .summary-top-link {
+        border-color: rgba(16, 185, 129, 0.35);
+        background: rgba(16, 185, 129, 0.12);
+        color: #0f766e;
+    }
+    .dashboard-modern .summary-tone-success .summary-top-link:hover {
+        border-color: rgba(16, 185, 129, 0.5);
+        background: rgba(16, 185, 129, 0.18);
+        color: #0b5f58;
+    }
+
+    .dashboard-modern .summary-tone-info .summary-top-link {
+        border-color: rgba(59, 130, 246, 0.35);
+        background: rgba(59, 130, 246, 0.12);
+        color: #1d4ed8;
+    }
+    .dashboard-modern .summary-tone-info .summary-top-link:hover {
+        border-color: rgba(59, 130, 246, 0.5);
+        background: rgba(59, 130, 246, 0.18);
+        color: #1e40af;
+    }
+
+    .dashboard-modern .summary-tone-warning .summary-top-link {
+        border-color: rgba(245, 158, 11, 0.4);
+        background: rgba(245, 158, 11, 0.14);
+        color: #b45309;
+    }
+    .dashboard-modern .summary-tone-warning .summary-top-link:hover {
+        border-color: rgba(245, 158, 11, 0.55);
+        background: rgba(245, 158, 11, 0.2);
+        color: #92400e;
+    }
+
+    .dashboard-modern .summary-tone-danger .summary-top-link {
+        border-color: rgba(239, 68, 68, 0.35);
+        background: rgba(239, 68, 68, 0.12);
+        color: #b91c1c;
+    }
+    .dashboard-modern .summary-tone-danger .summary-top-link:hover {
+        border-color: rgba(239, 68, 68, 0.5);
+        background: rgba(239, 68, 68, 0.18);
+        color: #991b1b;
+    }
+
+    .dashboard-modern .summary-tone-primary .summary-top-link {
+        border-color: rgba(79, 70, 229, 0.35);
+        background: rgba(79, 70, 229, 0.12);
+        color: #3730a3;
+    }
+    .dashboard-modern .summary-tone-primary .summary-top-link:hover {
+        border-color: rgba(79, 70, 229, 0.5);
+        background: rgba(79, 70, 229, 0.18);
+        color: #312e81;
+    }
+
+    .dashboard-modern .summary-top-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+    }
+
+    .dashboard-modern .summary-top-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.65rem;
+        color: #fff;
+        box-shadow: 0 10px 22px rgba(15, 23, 42, 0.18);
+    }
+
+    .dashboard-modern .summary-tone-success::before { background: linear-gradient(90deg, #10b981, #14b8a6); }
+    .dashboard-modern .summary-tone-info::before { background: linear-gradient(90deg, #3b82f6, #0ea5e9); }
+    .dashboard-modern .summary-tone-warning::before { background: linear-gradient(90deg, #f59e0b, #f97316); }
+    .dashboard-modern .summary-tone-danger::before { background: linear-gradient(90deg, #ef4444, #dc2626); }
+    .dashboard-modern .summary-tone-primary::before { background: linear-gradient(90deg, #4f46e5, #2563eb); }
+    .dashboard-modern .summary-tone-success .summary-top-icon { background: linear-gradient(145deg, #14b8a6, #0f766e); }
+    .dashboard-modern .summary-tone-info .summary-top-icon { background: linear-gradient(145deg, #38bdf8, #1d4ed8); }
+    .dashboard-modern .summary-tone-warning .summary-top-icon { background: linear-gradient(145deg, #f59e0b, #c2410c); }
+    .dashboard-modern .summary-tone-danger .summary-top-icon { background: linear-gradient(145deg, #fb7185, #be123c); }
+    .dashboard-modern .summary-tone-primary .summary-top-icon { background: linear-gradient(145deg, #6366f1, #1d4ed8); }
+
+    .dashboard-modern .kpi-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        padding: 0.95rem 1rem;
+        height: 100%;
+    }
+
+    .dashboard-modern .kpi-card .kpi-label {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #64748b;
+        margin-bottom: 0.25rem;
+    }
+
+    .dashboard-modern .kpi-card .kpi-value {
+        font-size: 1.7rem;
+        font-weight: 800;
+        line-height: 1.15;
+        color: #0f172a;
+        margin-bottom: 0.2rem;
+    }
+
+    .dashboard-modern .kpi-card .kpi-hint {
+        font-size: 0.88rem;
+        color: #64748b;
+    }
+
+    .dashboard-modern .pie-insight-card .card-header {
+        background: linear-gradient(180deg, #ffffff 0%, #f6f9ff 100%);
+    }
+
+    .dashboard-modern .pie-insight-card .card-body {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 0.6rem;
+    }
+
+    .dashboard-modern .pie-header-note {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        border: 1px solid #dbe7ff;
+        color: #334155;
+        background: #eef4ff;
+        border-radius: 20px;
+        padding: 0.24rem 0.62rem;
+        font-size: 0.76rem;
+        font-weight: 700;
+    }
+
+    .dashboard-modern .pie-summary-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.55rem;
+    }
+
+    .dashboard-modern .pie-summary-item {
+        border: 1px solid #e2e8f0;
+        background: #f8fbff;
+        border-radius: 10px;
+        padding: 0.52rem 0.62rem;
+        min-height: 58px;
+    }
+
+    .dashboard-modern .pie-summary-label {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #334155;
+        line-height: 1.2;
+    }
+
+    .dashboard-modern .pie-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        flex: 0 0 10px;
+    }
+
+    .dashboard-modern .pie-summary-meta {
+        margin-top: 0.24rem;
+        font-size: 0.78rem;
+        color: #64748b;
+    }
+
     .dashboard-modern .apex-charts {
         min-height: 320px;
+    }
+
+    .dashboard-modern #aina-za-shule-kwa-asilimia.apex-charts {
+        min-height: 240px;
     }
 
 
@@ -79,6 +335,266 @@
         border-radius: 12px;
         border: 1px solid #ffe3a3;
         background: #fff8e7;
+    }
+
+    .dashboard-modern .ownership-card {
+        border-radius: 14px;
+    }
+
+    .dashboard-modern .ownership-card .card-header {
+        background: linear-gradient(180deg, #ffffff 0%, #f3f8ff 100%);
+    }
+
+    .dashboard-modern .ownership-total {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        border: 1px solid #dbe7ff;
+        color: #334155;
+        background: #eef4ff;
+        border-radius: 999px;
+        padding: 0.24rem 0.62rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .dashboard-modern .ownership-list {
+        display: grid;
+        gap: 0.72rem;
+    }
+
+    .dashboard-modern .ownership-item {
+        border: 1px solid #e5edf7;
+        background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+        border-radius: 12px;
+        padding: 0.72rem 0.8rem;
+    }
+
+    .dashboard-modern .ownership-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        margin-bottom: 0.42rem;
+    }
+
+    .dashboard-modern .ownership-name {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .dashboard-modern .ownership-count {
+        border: 1px solid #dbe6f5;
+        background: #f1f5fb;
+        color: #334155;
+        border-radius: 999px;
+        font-size: 0.76rem;
+        font-weight: 700;
+        padding: 0.16rem 0.56rem;
+        white-space: nowrap;
+    }
+
+    .dashboard-modern .ownership-track {
+        position: relative;
+        width: 100%;
+        height: 10px;
+        border-radius: 999px;
+        background: #e7edf6;
+        overflow: hidden;
+    }
+
+    .dashboard-modern .ownership-fill {
+        height: 100%;
+        border-radius: 999px;
+        transition: width 250ms ease;
+    }
+
+    .dashboard-modern .ownership-fill.ownership-success {
+        background: linear-gradient(90deg, #0ea5a4, #22c55e);
+    }
+
+    .dashboard-modern .ownership-fill.ownership-info {
+        background: linear-gradient(90deg, #1d4ed8, #38bdf8);
+    }
+
+    .dashboard-modern .ownership-fill.ownership-warning {
+        background: linear-gradient(90deg, #f97316, #f59e0b);
+    }
+
+    .dashboard-modern .ownership-fill.ownership-secondary {
+        background: linear-gradient(90deg, #94a3b8, #64748b);
+    }
+
+    .dashboard-modern .ownership-meta {
+        margin-top: 0.34rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        font-size: 0.78rem;
+        color: #64748b;
+    }
+
+    .dashboard-modern .ownership-percent {
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .dashboard-modern .trend-insight-card {
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid #dfe8f5;
+    }
+
+    .dashboard-modern .trend-insight-card .card-header {
+        padding: 0.9rem 1rem;
+        background: linear-gradient(180deg, #ffffff 0%, #f4f8ff 100%);
+        border-bottom: 1px solid #e4ecf8;
+    }
+
+    .dashboard-modern .trend-card-title {
+        font-size: 1.02rem;
+        font-weight: 800;
+        line-height: 1.35;
+        color: #172033;
+        max-width: 70%;
+    }
+
+    .dashboard-modern .trend-controls {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.42rem;
+        justify-content: flex-end;
+    }
+
+    .dashboard-modern .trend-window-pill {
+        border: 1px solid #dbe6f6;
+        background: #f3f7ff;
+        color: #5b647a;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        padding: 0.24rem 0.62rem;
+        line-height: 1.1;
+        white-space: nowrap;
+    }
+
+    .dashboard-modern .trend-nav-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        border: 1px solid #d7e2f4;
+        background: #eef4ff;
+        color: #3b82f6;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .dashboard-modern .trend-nav-btn:hover {
+        background: #dbeafe;
+        border-color: #bfdbfe;
+        color: #1d4ed8;
+    }
+
+    .dashboard-modern .trend-report-btn {
+        border-radius: 10px;
+        border: 1px solid #cfe0fb;
+        background: linear-gradient(180deg, #eff6ff 0%, #e5efff 100%);
+        color: #2563eb;
+        font-weight: 700;
+        font-size: 0.86rem;
+        padding: 0.38rem 0.68rem;
+        line-height: 1.1;
+    }
+
+    .dashboard-modern .trend-report-btn:hover {
+        border-color: #93c5fd;
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .dashboard-modern .trend-card-body {
+        background: linear-gradient(180deg, #ffffff 0%, #f7faff 100%);
+    }
+
+    .dashboard-modern .trend-chart-wrap {
+        padding: 0.75rem 0.75rem 0.6rem;
+    }
+
+    .dashboard-modern .trend-chart-surface {
+        border: 1px solid #e6eef9;
+        border-radius: 12px;
+        background: #ffffff;
+        padding: 0.3rem 0.45rem 0.15rem;
+    }
+
+    .dashboard-modern .trend-chart-surface .apexcharts-toolbar {
+        top: -8px !important;
+        right: 0 !important;
+    }
+
+    .dashboard-modern .trend-subpanel {
+        height: 100%;
+        padding: 0.7rem 0.7rem 0.55rem;
+    }
+
+    .dashboard-modern .trend-subheader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.45rem;
+        margin-bottom: 0.42rem;
+    }
+
+    .dashboard-modern .trend-subtitle {
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: #334155;
+        line-height: 1.35;
+    }
+
+    .dashboard-modern .trend-subpanel .trend-chart-wrap {
+        padding: 0;
+    }
+
+    .dashboard-modern .trend-subpanel .trend-chart-surface {
+        min-height: 410px;
+    }
+
+    .dashboard-modern #school_registration_years_combined_chart.apex-charts {
+        min-height: 430px;
+    }
+
+    .dashboard-modern .trend-split-col {
+        border-right: 1px solid #e7edf6;
+    }
+
+    @media (max-width: 991.98px) {
+        .dashboard-modern .trend-card-title {
+            max-width: 100%;
+        }
+        .dashboard-modern .trend-controls {
+            width: 100%;
+            justify-content: flex-start;
+            margin-top: 0.45rem;
+        }
+        .dashboard-modern .trend-subpanel {
+            padding: 0.6rem;
+        }
+        .dashboard-modern .trend-subpanel .trend-chart-surface {
+            min-height: 320px;
+        }
+        .dashboard-modern .trend-split-col {
+            border-right: 0;
+            border-bottom: 1px solid #e7edf6;
+        }
     }
 
     .dashboard-modern .row > [class*="col-"] {
@@ -158,175 +674,135 @@
                 </div>
             <% } %>
 
-            <div class="row">
-                <!-- SCHOOLS SUMMARY REGISTRATIONS -->
-                 <div class="col-xl-3 col-md-6">
-                    <!-- card -->
+            <div class="row g-3">
+                <div class="col-xl-3 col-md-6">
                     <% var label = "Shule Zilizosajiliwa" %>
-                    <div class="card card-animate" title="<%= label %>" data-bs-toggle="tooltip">
+                    <div class="card card-animate summary-top-card summary-tone-success" title="<%= label %>" data-bs-toggle="tooltip">
                         <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-grow-1 overflow-hidden">
-                                    <p
-                                        class="text-uppercase fw-medium text-muted text-truncate mb-0">
-                                        <%= label %>
-                                    </p>
-                                </div>
+                            <div class="summary-top-head">
+                                <p class="summary-top-title"><%= label %></p>
+                                <span class="summary-top-icon"><i class="bx bxs-school"></i></span>
                             </div>
-                            <div class="d-flex align-items-end justify-content-between mt-4">
-                                <div>
-                                    <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span
-                                            class="counter-value" data-target="<%= schoolSummaryByRegistrations.total %>">0</span>
-                                    </h4>
-                                    <a href="/RipotiZilizosajiliwa" class="text-decoration-underline">Angalia Zaidi</a>
-                                </div>
-                                <div class="avatar-sm flex-shrink-0">
-                                    <span class="avatar-title bg-success rounded fs-3">
-                                        <i class="bx bxs-school"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        </div><!-- end card body -->
-                    </div><!-- end card -->
-                </div><!-- end col -->
+                            <h4 class="summary-top-value"><span class="counter-value" data-target="<%= schoolSummaryByRegistrations.total %>">0</span></h4>
+                            <a href="/RipotiZilizosajiliwa" class="summary-top-link">Angalia Zaidi <i class="ri-arrow-right-up-line"></i></a>
+                        </div>
+                    </div>
+                </div>
 
-
-                <!-- SCHOOLS SUMMARY BY STRUCTURE -->
-                <% var colors = ['success' , 'warning']; %>
-                <%  var icons = ['bxs-school' , 'bxs-user-circle' , 'bxs-school' , 'bxs-school']; %>
-                <% var  colorIndex = 0 %>
+                <% var colors = ['info', 'warning']; %>
+                <% var icons = ['bxs-school', 'bxs-user-circle', 'bxs-school', 'bxs-school']; %>
+                <% var colorIndex = 0 %>
                 <% for (let index = 0; index < schoolSummaryByStructures.length; index++) { %>
-                <% const element = schoolSummaryByStructures[index] %>
-                <% var label = 'Kibali cha kuanzisha shule '+element.label.replace('Hakuna' , 'Bila').replace('Kuna' , 'kwa')  %>
+                    <% const element = schoolSummaryByStructures[index] %>
+                    <% var label = 'Kibali cha kuanzisha shule ' + element.label.replace('Hakuna' , 'Bila').replace('Kuna' , 'kwa') %>
                     <div class="col-xl-3 col-md-6">
-                        <!-- card -->
-                        <div class="card card-animate" title="<%= label %>" data-bs-toggle="tooltip">
+                        <div class="card card-animate summary-top-card summary-tone-<%= colors[colorIndex] %>" title="<%= label %>" data-bs-toggle="tooltip">
                             <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1 overflow-hidden">
-                                        <p
-                                            class="text-uppercase fw-medium text-muted text-truncate mb-0">
-                                            <%= label %>
-                                        </p>
-                                    </div>
+                                <div class="summary-top-head">
+                                    <p class="summary-top-title"><%= label %></p>
+                                    <span class="summary-top-icon"><i class="bx <%= icons[colorIndex] %>"></i></span>
                                 </div>
-                                <div class="d-flex align-items-end justify-content-between mt-4">
-                                    <div>
-                                        <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span
-                                                class="counter-value" data-target="<%= element.total %>">0</span>
-                                        </h4>
-                                        <a href="/RipotiKuanzisha?structure=<%=element.id%>" class="text-decoration-underline">Angalia Zaidi</a>
-                                    </div>
-                                    <div class="avatar-sm flex-shrink-0">
-                                        <span class="avatar-title bg-<%= colors[colorIndex] %> rounded fs-3">
-                                            <i class="bx <%= icons[colorIndex] %>"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div><!-- end card body -->
-                        </div><!-- end card -->
-                    </div><!-- end col -->
-                <% colorIndex++  %>
+                                <h4 class="summary-top-value"><span class="counter-value" data-target="<%= element.total %>">0</span></h4>
+                                <a href="/RipotiKuanzisha?structure=<%= element.id %>" class="summary-top-link">Angalia Zaidi <i class="ri-arrow-right-up-line"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <% colorIndex++ %>
                 <% } %>
-                <!-- APPLICATION BY STRUCTURE IF NO DATA -->
-                <% if(schoolSummaryByStructures.length == 0) {%>
-                        <div class="col-xl-3 col-md-6">
-                        <!-- card -->
-                        <div class="card card-animate" title="" data-bs-toggle="tooltip" data-bs-original-title="Kibali cha kuanzisha shule kwa majengo">
+
+                <% if (schoolSummaryByStructures.length == 0) { %>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card card-animate summary-top-card summary-tone-warning" title="Kibali cha kuanzisha shule kwa majengo" data-bs-toggle="tooltip">
                             <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1 overflow-hidden">
-                                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0">
-                                            Kibali cha kuanzisha shule kwa majengo
-                                        </p>
-                                    </div>
+                                <div class="summary-top-head">
+                                    <p class="summary-top-title">Kibali cha kuanzisha shule kwa majengo</p>
+                                    <span class="summary-top-icon"><i class="bx bxs-user-circle"></i></span>
                                 </div>
-                                <div class="d-flex align-items-end justify-content-between mt-4">
-                                    <div>
-                                        <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="0">0</span>
-                                        </h4>
-                                        <a href="" class="text-decoration-underline">Angalia Zaidi</a>
-                                    </div>
-                                    <div class="avatar-sm flex-shrink-0">
-                                        <span class="avatar-title bg-warning rounded fs-3">
-                                            <i class="bx bxs-user-circle"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div><!-- end card body -->
-                        </div><!-- end card -->
+                                <h4 class="summary-top-value"><span class="counter-value" data-target="0">0</span></h4>
+                                <a href="" class="summary-top-link">Angalia Zaidi <i class="ri-arrow-right-up-line"></i></a>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-xl-3 col-md-6">
-                            <!-- card -->
-                            <div class="card card-animate" title="" data-bs-toggle="tooltip" data-bs-original-title="Uthibitisho wa umiliki na meneja wa shule">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-grow-1 overflow-hidden">
-                                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">
-                                                Uthibitisho wa umiliki na meneja wa shule
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-end justify-content-between mt-4">
-                                        <div>
-                                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="0">0</span>
-                                            </h4>
-                                            <a href="/RipotiWamiliki" class="text-decoration-underline">Angalia Zaidi Wamiliki</a> <br>
-                                            <a href="/RipotiMeneja" class="text-decoration-underline">Angalia Zaidi Meneja</a>
-                                        </div>
-                                        <div class="avatar-sm flex-shrink-0">
-                                            <span class="avatar-title bg-success rounded fs-3">
-                                                <i class="bx bxs-school"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div><!-- end card body -->
-                            </div><!-- end card -->
+                        <div class="card card-animate summary-top-card summary-tone-danger" title="Uthibitisho wa umiliki na meneja wa shule" data-bs-toggle="tooltip">
+                            <div class="card-body">
+                                <div class="summary-top-head">
+                                    <p class="summary-top-title">Uthibitisho wa umiliki na meneja wa shule</p>
+                                    <span class="summary-top-icon"><i class="bx bxs-school"></i></span>
+                                </div>
+                                <h4 class="summary-top-value"><span class="counter-value" data-target="0">0</span></h4>
+                                <div class="summary-top-actions">
+                                    <a href="/RipotiWamiliki" class="summary-top-link">Wamiliki <i class="ri-arrow-right-up-line"></i></a>
+                                    <a href="/RipotiMeneja" class="summary-top-link">Meneja <i class="ri-arrow-right-up-line"></i></a>
+                                </div>
+                            </div>
                         </div>
+                    </div>
                 <% } %>
-                <!-- APPLICATION CATEGORIES EXCEPT KUANZISHA -->
-                <% var colors = ['success' , 'warning' , 'info' , 'danger']; %>
-                <% var icons = ['bxs-school' , 'bxs-user-circle' , 'bxs-school' , 'bxs-school']; %>
-                <% var  colorIndex = 0 %>
-                <%  for (let index = 0; index < 1 && schoolSummaryByApplications.length > 0; index++) { %>
-                <% const element = schoolSummaryByApplications[index] %>
-                        <div class="col-xl-3 col-md-6">
-                            <!-- card -->
-                            <div class="card card-animate" title="<%= element.label %>" data-bs-toggle="tooltip">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-grow-1 overflow-hidden">
-                                            <p
-                                                class="text-uppercase fw-medium text-muted text-truncate mb-0">
-                                                <%= element.label %>
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-end justify-content-between mt-4">
-                                        <div>
-                                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span
-                                                    class="counter-value" data-target="<%= element.total %>">0</span>
-                                            </h4>
-                                            <a href="" class="text-decoration-underline">Angalia Zaidi</a>
-                                             <!-- <a href="/RipotiWamiliki" class="text-decoration-underline">Angalia Zaidi Wamiliki]</a> <br>
-                                            <a href="/RipotiMeneja" class="text-decoration-underline">Angalia Zaidi Meneja </a> -->
-                                        </div>
-                                        <div class="avatar-sm flex-shrink-0">
-                                            <span class="avatar-title bg-<%= colors[colorIndex] %> rounded fs-3">
-                                                <i class="bx <%= icons[colorIndex] %>"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div><!-- end card body -->
-                            </div><!-- end card -->
-                        </div><!-- end col -->
-                <% colorIndex++  %>
+
+                <% var colors = ['danger', 'primary', 'info', 'success']; %>
+                <% var icons = ['bxs-school', 'bxs-user-circle', 'bxs-school', 'bxs-school']; %>
+                <% var colorIndex = 0 %>
+                <% for (let index = 0; index < 1 && schoolSummaryByApplications.length > 0; index++) { %>
+                    <% const element = schoolSummaryByApplications[index] %>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card card-animate summary-top-card summary-tone-<%= colors[colorIndex] %>" title="<%= element.label %>" data-bs-toggle="tooltip">
+                            <div class="card-body">
+                                <div class="summary-top-head">
+                                    <p class="summary-top-title"><%= element.label %></p>
+                                    <span class="summary-top-icon"><i class="bx <%= icons[colorIndex] %>"></i></span>
+                                </div>
+                                <h4 class="summary-top-value"><span class="counter-value" data-target="<%= element.total %>">0</span></h4>
+                                <a href="" class="summary-top-link">Angalia Zaidi <i class="ri-arrow-right-up-line"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <% colorIndex++ %>
                 <% } %>
             </div> <!-- end row-->
 
+            <%
+                const brief = decisionBrief || {};
+                const metrics = brief.metrics || {};
+                const todayVsWeekPct = Number(metrics.today_vs_week_pct || 0);
+                const momentumClass = todayVsWeekPct >= 0 ? "text-success" : "text-danger";
+                const momentumSign = todayVsWeekPct >= 0 ? "+" : "";
+                const generatedAt = brief.generatedAt ? (typeof dateFormat === 'function' ? dateFormat(brief.generatedAt, "DD/MM/YYYY HH:mm") : brief.generatedAt) : "-";
+            %>
+            <div class="row g-3 mt-1 mb-2">
+                <div class="col-xl-3 col-md-6">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Usajili wa Leo</div>
+                        <div class="kpi-value"><%= numberFormat(metrics.today_total || 0) %></div>
+                        <div class="kpi-hint <%= momentumClass %>">Mwelekeo vs wiki avg: <strong><%= momentumSign %><%= numberFormat(todayVsWeekPct, "0.00") %>%</strong></div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Usajili wa Wiki Hii</div>
+                        <div class="kpi-value"><%= numberFormat(metrics.week_total || 0) %></div>
+                        <div class="kpi-hint">Wastani kwa siku: <%= numberFormat(metrics.week_daily_average || 0, "0.00") %></div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Usajili wa Mwezi Huu</div>
+                        <div class="kpi-value"><%= numberFormat(metrics.month_total || 0) %></div>
+                        <div class="kpi-hint">Msimamo wa mwezi wa sasa</div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Usajili wa Mwaka Huu</div>
+                        <div class="kpi-value"><%= numberFormat(metrics.year_total || 0) %></div>
+                        <div class="kpi-hint">Imejengwa: <%= generatedAt %></div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
-                <div class="col-xl-8">
-                    <div class="card">
+                <div class="col-xl-8 order-xl-2">
+                    <div class="card h-100">
                         <div class="card-header border-0 align-items-center d-flex">
                             <% const office = req.session.office
                                const label1 = (office == 1 ? 'Mikoa' : (office == 2 ? 'Wilaya' : (office == 3 ? 'Kata' : ' ...')))
@@ -390,24 +866,14 @@
                     </div><!-- end card -->
                 </div><!-- end col -->
 
-                    <div class="col-xl-4">
-                    <div class="card card-height-100">
+                   <div class="col-xl-4 order-xl-1">
+                    <div class="card card-height-100 pie-insight-card">
                         <div class="card-header align-items-center d-flex">
                             <h4 class="card-title mb-0 flex-grow-1">Asilimia ya Shule kwa Aina</h4>
                             <div class="flex-shrink-0">
-                                <div class="dropdown card-header-dropdown">
-                                    <a class="text-reset dropdown-btn" href="#"
-                                        data-bs-toggle="dropdown" aria-haspopup="true"
-                                        aria-expanded="false">
-                                        <span class="text-muted">Report<i
-                                                class="mdi mdi-chevron-down ms-1"></i></span>
-                                    </a>
-                                    <!-- <div class="dropdown-menu dropdown-menu-end">
-                                        <a class="dropdown-item" href="#">Download Report</a>
-                                        <a class="dropdown-item" href="#">Export</a>
-                                        <a class="dropdown-item" href="#">Import</a>
-                                    </div> -->
-                                </div>
+                                <span class="pie-header-note">
+                                    <i class="ri-pie-chart-2-line"></i> Muhtasari
+                                </span>
                             </div>
                         </div><!-- end card header -->
 
@@ -416,148 +882,31 @@
                                 data-colors='["--vz-danger", "--vz-info", "--vz-success", "--vz-warning"]'
                                 class="apex-charts" dir="ltr">
                             </div>
+                            <div id="aina-za-shule-kwa-asilimia-summary" class="pie-summary-grid mt-2"></div>
                         </div>
                     </div> <!-- .card-->
                 </div> <!-- .col-->
             </div>
 
+            <%
+            const registrationPeriods = registeredSchoolsByPeriod || {};
+            const todayRecentData = registrationPeriods.todayRecent || { rows: [], total: 0, source: "recent" };
+            const isTodaySource = (todayRecentData.source || "recent") === "today";
+            const todayCount = Number(todayRecentData.todayTotal || 0);
+            const recentVisibleCount = Number(todayRecentData.recentVisible || (todayRecentData.rows || []).length || 0);
+            const firstTabLabel = isTodaySource ? "Leo" : "Karibuni";
+            const registrationTabs = [
+                { key: "today-recent", label: firstTabLabel, rows: todayRecentData.rows || [], total: Number(todayRecentData.total || 0) },
+                { key: "week", label: "Wiki Hii", rows: (registrationPeriods.week && registrationPeriods.week.rows) || [], total: Number((registrationPeriods.week && registrationPeriods.week.total) || 0) },
+                { key: "month", label: "Mwezi Huu", rows: (registrationPeriods.month && registrationPeriods.month.rows) || [], total: Number((registrationPeriods.month && registrationPeriods.month.total) || 0) },
+                { key: "year", label: "Mwaka Huu", rows: (registrationPeriods.year && registrationPeriods.year.rows) || [], total: Number((registrationPeriods.year && registrationPeriods.year.total) || 0) },
+            ];
+            %>
             <div class="row">
                 <div class="col-xl-8">
                     <div class="card">
                         <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">Idadi ya Shule zilizosajiliwa kwa Miaka iliyoanzishwa</h4>
-                            <div class="flex-shrink-0 d-flex align-items-center gap-2">
-                                <span id="years-window-range" class="text-muted small"></span>
-                                <button id="years-prev-window" type="button" class="btn btn-soft-secondary btn-sm shadow-none" title="Miaka 10 ya nyuma">
-                                    <i class="ri-arrow-left-s-line align-middle"></i>
-                                </button>
-                                <button id="years-next-window" type="button" class="btn btn-soft-secondary btn-sm shadow-none" title="Miaka 10 ya mbele">
-                                    <i class="ri-arrow-right-s-line align-middle"></i>
-                                </button>
-                            </div>
-                        </div><!-- end card header -->
-
-                         <div class="card-body p-0 pb-2">
-                            <div class="w-100 px-3">
-                                <div id="years-chart-loading" class="text-center py-4 text-muted" style="display:none;">
-                                    <div class="spinner-border spinner-border-sm text-primary me-2" role="status" aria-hidden="true"></div>
-                                    Inapakua taarifa za miaka...
-                                </div>
-                                <div id="school_registration_by_years"
-                                     data-colors='["--vz-danger"]'
-                                    class="apex-charts" dir="ltr">
-                                </div>
-                            </div>
-                        </div>
-                        <!-- end card body -->
-                    </div>
-                </div>
-                   <div class="col-xl-4">
-                    <div class="card card-height-100">
-                        <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">UMILIKI</h4>
-                            <!-- <div class="flex-shrink-0">
-                                <button type="button"
-                                    class="btn btn-soft-primary btn-sm shadow-none">
-                                    Export Report
-                                </button>
-                            </div> -->
-                        </div>
-                        <!-- end card header -->
-
-                        <!-- card body -->
-                        <div class="card-body">
-                            <div class="px-2 py-0 mt-1">
-                                <% var totalOwners = sumAssociativeArray(schoolsSummaryByOwners)  %>
-                                <% for (let index = 0; index < schoolsSummaryByOwners.length; index++) { const element = schoolsSummaryByOwners[index]; %>
-                                    <% var ratio = totalOwners > 0 ? numberFormat((element.total / totalOwners) * 100 , '0.00') : 0 %>
-                                    <% var color = ratio > 50 ? 'success' : (ratio > 25 ? 'primary' : 'danger'); %>
-                                    <p class="mb-3"><%= element.owner %>  (<%= numberFormat(element.total) %>)</p>
-                                    <div class="d-flex align-items-center pb-2 mb-lg-4 border-bottom border-gray-100" title="Idadi: <%= numberFormat(element.total) %>" data-bs-toggle="tooltip">
-                                            <div class="flex-shrink-0 me-3">
-                                                <div class="avatar-xs">
-                                                    <div class="avatar-title bg-light rounded-circle text-muted fs-18">
-                                                        <i class="mdi mdi-office-building-marker text-info"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="flex-grow-1">
-                                                <div class="progress animated-progress custom-progress progress-label">
-                                                    <div class="progress-bar bg-<%=color%>" role="progressbar" style="width: <%= ratio %>%" 
-                                                    aria-valuenow="<%= ratio %>" aria-valuemin="0" aria-valuemax="100">
-                                                    <div class="label bg-<%=color%>"><%= ratio %>%</div></div>
-                                                </div>
-                                            </div>
-                                    </div>
-                                <% } %>
-                                <% if (!schoolsSummaryByOwners || schoolsSummaryByOwners.length === 0) { %>
-                                    <div class="alert alert-light border mb-0">
-                                        <%= dashboardDataStale ? 'Taarifa za umiliki zinachelewa kupatikana, jaribu kupakia upya.' : 'Hakuna taarifa za umiliki kwa vigezo vya ofisi yako.' %>
-                                    </div>
-                                <% } %>
-                            </div>
-                        </div>
-                        <!-- end card body -->
-                    </div>
-                    <!-- end card -->
-                </div>
-                <!-- end col -->
-                <!-- .col-->
-            </div> <!-- end row-->
-
-            <div class="row">
-            
-                <div class="col-xl-6">
-                    <div class="card">
-                        <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">Trend ya Idadi ya Shule zilizosajiliwa kwa Miaka</h4>
-                            <div class="flex-shrink-0 d-flex align-items-center gap-2">
-                                <span id="trend-window-range" class="text-muted small"></span>
-                                <button id="trend-prev-window" type="button" class="btn btn-soft-secondary btn-sm shadow-none" title="Miaka 10 ya nyuma">
-                                    <i class="ri-arrow-left-s-line align-middle"></i>
-                                </button>
-                                <button id="trend-next-window" type="button" class="btn btn-soft-secondary btn-sm shadow-none" title="Miaka 10 ya mbele">
-                                    <i class="ri-arrow-right-s-line align-middle"></i>
-                                </button>
-                                <button type="button" class="btn btn-soft-info btn-sm shadow-none">
-                                    <i class="ri-file-list-3-line align-middle"></i> Generate Report
-                                </button>
-                            </div>
-                        </div><!-- end card header -->
-                         <div class="card-body p-0 pb-2">
-                            <div class="w-100 px-3">
-                                <div id="trend-chart-loading" class="text-center py-4 text-muted" style="display:none;">
-                                    <div class="spinner-border spinner-border-sm text-primary me-2" role="status" aria-hidden="true"></div>
-                                    Inapakua taarifa za trend...
-                                </div>
-                                <div id="school_registration_by_years_trend"
-                                     data-colors='["--vz-secondary"]'
-                                    class="apex-charts" dir="ltr">
-                                </div>
-                            </div>
-                        </div>
-                        <!-- end card body -->
-                    </div> <!-- .card-->
-                </div> <!-- .col-->
-
-                <%
-                const registrationPeriods = registeredSchoolsByPeriod || {};
-                const todayRecentData = registrationPeriods.todayRecent || { rows: [], total: 0, source: "recent" };
-                const isTodaySource = (todayRecentData.source || "recent") === "today";
-                const todayCount = Number(todayRecentData.todayTotal || 0);
-                const recentVisibleCount = Number(todayRecentData.recentVisible || (todayRecentData.rows || []).length || 0);
-                const firstTabLabel = isTodaySource ? "Leo" : "Karibuni";
-                const registrationTabs = [
-                    { key: "today-recent", label: firstTabLabel, rows: todayRecentData.rows || [], total: Number(todayRecentData.total || 0) },
-                    { key: "week", label: "Wiki Hii", rows: (registrationPeriods.week && registrationPeriods.week.rows) || [], total: Number((registrationPeriods.week && registrationPeriods.week.total) || 0) },
-                    { key: "month", label: "Mwezi Huu", rows: (registrationPeriods.month && registrationPeriods.month.rows) || [], total: Number((registrationPeriods.month && registrationPeriods.month.total) || 0) },
-                    { key: "year", label: "Mwaka Huu", rows: (registrationPeriods.year && registrationPeriods.year.rows) || [], total: Number((registrationPeriods.year && registrationPeriods.year.total) || 0) },
-                ];
-                %>
-                <div class="col-xl-6">
-                    <div class="card">
-                        <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">Shule Zilizosajiliwa kwa Kipindi</h4>
+                            <h4 class="card-title mb-0 flex-grow-1 text-uppercase">Shule Zilizosajiliwa kwa Kipindi</h4>
                         </div>
                         <div class="card-body">
                             <ul class="nav nav-tabs nav-tabs-custom nav-success mb-3" role="tablist">
@@ -591,7 +940,7 @@
                                             </div>
                                         <% } %>
                                         <div class="table-responsive">
-                                            <table class="table table-sm table-striped align-middle mb-0">
+                                            <table class="table table-sm table-striped align-middle mb-0 text-uppercase">
                                                 <thead class="table-light">
                                                     <tr>
                                                         <th style="width: 46px;">#</th>
@@ -633,6 +982,91 @@
                                         </div>
                                     </div>
                                 <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                   <div class="col-xl-4">
+                    <div class="card card-height-100 ownership-card">
+                        <div class="card-header align-items-center d-flex">
+                            <h4 class="card-title mb-0 flex-grow-1">UMILIKI</h4>
+                            <% var totalOwners = sumAssociativeArray(schoolsSummaryByOwners)  %>
+                            <span class="ownership-total">
+                                <i class="ri-pie-chart-2-line"></i>
+                                Jumla: <%= numberFormat(totalOwners || 0) %>
+                            </span>
+                        </div>
+                        <!-- end card header -->
+
+                        <!-- card body -->
+                        <div class="card-body">
+                            <div class="ownership-list">
+                                <% for (let index = 0; index < schoolsSummaryByOwners.length; index++) { const element = schoolsSummaryByOwners[index]; %>
+                                    <% 
+                                        const rawRatio = totalOwners > 0 ? (Number(element.total || 0) / totalOwners) * 100 : 0;
+                                        const ratioWidth = rawRatio > 0 ? Math.max(rawRatio, 2) : 0;
+                                        const ratioText = rawRatio > 0 && rawRatio < 0.1 ? '<0.1' : numberFormat(rawRatio, '0.00');
+                                        const tone = rawRatio >= 60 ? 'ownership-success' : (rawRatio >= 20 ? 'ownership-info' : (rawRatio > 0 ? 'ownership-warning' : 'ownership-secondary'));
+                                    %>
+                                    <div class="ownership-item" title="Idadi: <%= numberFormat(element.total) %>" data-bs-toggle="tooltip">
+                                        <div class="ownership-head">
+                                            <p class="ownership-name mb-0"><%= element.owner || 'Unknown' %></p>
+                                            <span class="ownership-count"><%= numberFormat(element.total || 0) %></span>
+                                        </div>
+                                        <div class="ownership-track" aria-label="Ownership percentage bar">
+                                            <div class="ownership-fill <%= tone %>" role="progressbar" style="width: <%= ratioWidth %>%;" aria-valuenow="<%= rawRatio %>" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <div class="ownership-meta">
+                                            <span>Asilimia ya jumla</span>
+                                            <span class="ownership-percent"><%= ratioText %>%</span>
+                                        </div>
+                                    </div>
+                                <% } %>
+                                <% if (!schoolsSummaryByOwners || schoolsSummaryByOwners.length === 0) { %>
+                                    <div class="alert alert-light border mb-0">
+                                        <%= dashboardDataStale ? 'Taarifa za umiliki zinachelewa kupatikana, jaribu kupakia upya.' : 'Hakuna taarifa za umiliki kwa vigezo vya ofisi yako.' %>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                        <!-- end card body -->
+                    </div>
+                    <!-- end card -->
+                </div>
+                <!-- end col -->
+                <!-- .col-->
+            </div> <!-- end row-->
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card trend-insight-card">
+                        <div class="card-header align-items-center d-flex">
+                            <h4 class="card-title mb-0 flex-grow-1 trend-card-title">Trend na Idadi ya Shule zilizosajiliwa kwa Miaka</h4>
+                            <div class="flex-shrink-0 trend-controls">
+                                <span id="trend-window-range" class="trend-window-pill"></span>
+                                <button id="trend-prev-window" type="button" class="btn trend-nav-btn shadow-none" title="Miaka 10 ya nyuma">
+                                    <i class="ri-arrow-left-s-line align-middle"></i>
+                                </button>
+                                <button id="trend-next-window" type="button" class="btn trend-nav-btn shadow-none" title="Miaka 10 ya mbele">
+                                    <i class="ri-arrow-right-s-line align-middle"></i>
+                                </button>
+                                <button type="button" class="btn trend-report-btn shadow-none">
+                                    <i class="ri-file-list-3-line align-middle"></i> Generate Report
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body trend-card-body p-0">
+                            <div class="trend-chart-wrap">
+                                <div class="trend-chart-surface">
+                                    <div id="years-combined-chart-loading" class="text-center py-4 text-muted" style="display:none;">
+                                        <div class="spinner-border spinner-border-sm text-primary me-2" role="status" aria-hidden="true"></div>
+                                        Inapakua taarifa za miaka...
+                                    </div>
+                                    <div id="school_registration_years_combined_chart"
+                                         data-colors='["--vz-danger", "--vz-primary"]'
+                                         class="apex-charts" dir="ltr">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

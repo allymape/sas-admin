@@ -1,5 +1,13 @@
 const axios = require("axios");
 
+const isAjaxRequest = (req) => {
+  const xrw = String(req?.headers?.["x-requested-with"] || "").toLowerCase();
+  if (xrw === "xmlhttprequest") return true;
+
+  const accepts = String(req?.headers?.accept || "").toLowerCase();
+  return accepts.includes("application/json");
+};
+
 const sendRequest = async (req, res, url, method, formData = {}, token) => {
   try {
     const authToken = token || req.session.Token || req.body.token;
@@ -29,14 +37,55 @@ const sendRequest = async (req, res, url, method, formData = {}, token) => {
 
     return response.data;
   } catch (error) {
-    if (error.response && error.response.status === 403) {
+    const status = Number(error?.response?.status || 0);
+    const apiMessage = String(error?.response?.data?.message || "").trim();
+    const fallbackMessage = "Kuna tatizo la server. Tafadhali jaribu tena baadaye.";
+    const message = apiMessage || fallbackMessage;
+    const ajaxRequest = isAjaxRequest(req);
+
+    if (status === 401) {
+      if (req?.session) {
+        req.session.Token = null;
+      }
+
+      if (ajaxRequest) {
+        return res.status(401).send({
+          success: false,
+          statusCode: 401,
+          message: message || "Session expired. Tafadhali ingia tena.",
+        });
+      }
+
+      if (typeof req?.flash === "function") {
+        req.flash("error", message || "Session expired. Tafadhali ingia tena.");
+      }
+      return res.redirect("/");
+    }
+
+    if (status === 403) {
       return res.status(403).redirect("/403");
     }
 
-    console.error("Request error:", error.message);
-    return res
-      .status(500)
-      .send({ success: false, message: "Internal server error" });
+    console.error("Request error:", {
+      url,
+      method,
+      status,
+      message: error?.message || "Unknown request error",
+      response: error?.response?.data || null,
+    });
+
+    if (!ajaxRequest && req?.method === "GET") {
+      if (typeof req?.flash === "function") {
+        req.flash("error", message);
+      }
+      return res.redirect("/");
+    }
+
+    return res.status(status >= 400 ? status : 500).send({
+      success: false,
+      statusCode: status >= 400 ? status : 500,
+      message,
+    });
   }
 };
 

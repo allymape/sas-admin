@@ -8,28 +8,26 @@ const yearWindowState = {
   hasNewer: false,
   isLoading: false,
 };
-const trendState = {
+const combinedYearsState = {
   labels: [],
-  values: [],
+  individualValues: [],
+  cumulativeValues: [],
 };
-const yearsState = {
-  labels: [],
-  values: [],
+const REGION_CATEGORY_CHART_CACHE_MS = 60000;
+let regionsCategoryChartCache = {
+  fetchedAt: 0,
+  response: null,
 };
 
 const setYearsChartsLoading = (isLoading) => {
   if (isLoading) {
-    $("#years-chart-loading").show();
-    $("#trend-chart-loading").show();
-    $("#school_registration_by_years").hide();
-    $("#school_registration_by_years_trend").hide();
+    $("#years-combined-chart-loading").show();
+    $("#school_registration_years_combined_chart").hide();
     return;
   }
 
-  $("#years-chart-loading").hide();
-  $("#trend-chart-loading").hide();
-  $("#school_registration_by_years").show();
-  $("#school_registration_by_years_trend").show();
+  $("#years-combined-chart-loading").hide();
+  $("#school_registration_years_combined_chart").show();
 };
 
 $('#angalia-zote').on('click' , function(){
@@ -59,9 +57,9 @@ $('#angalia-zote').on('click' , function(){
 
 
 const updateTrendWindowControls = () => {
-  const total = trendState.labels.length;
-  const startLabel = total ? trendState.labels[0] : null;
-  const endLabel = total ? trendState.labels[total - 1] : null;
+  const total = combinedYearsState.labels.length;
+  const startLabel = total ? combinedYearsState.labels[0] : null;
+  const endLabel = total ? combinedYearsState.labels[total - 1] : null;
 
   $("#trend-window-range").text(
     startLabel && endLabel ? `Miaka: ${startLabel} - ${endLabel}` : ""
@@ -70,86 +68,141 @@ const updateTrendWindowControls = () => {
   $("#trend-next-window").prop("disabled", !yearWindowState.hasNewer || yearWindowState.isLoading);
 };
 
-const renderTrendWindow = () => {
-  if (!trendState.labels.length) return;
-  const seriesCumulative = [
-    {
-      type: "area",
-      data: trendState.values,
-    },
-  ];
+const createCombinedYearsChart = (labels, individualValues, cumulativeValues) => {
+  const selector = "school_registration_years_combined_chart";
+  const chartColors = getChartColorsArray(selector) || ["#ef4444", "#2563eb"];
+  const chartElement = document.querySelector(`#${selector}`);
+  if (!chartElement) return;
 
-  createChart(
-    trendState.labels,
-    seriesCumulative,
-    "school_registration_by_years_trend",
-    false,
-    true
+  const options = {
+    series: [
+      {
+        name: "Idadi ya Shule kwa Mwaka Ulioanzishwa",
+        type: "bar",
+        data: individualValues,
+      },
+      {
+        name: "Trend ya Jumla ya Shule Zilizosajiliwa",
+        type: "line",
+        data: cumulativeValues,
+      },
+    ],
+    chart: {
+      height: 430,
+      type: "line",
+      toolbar: { show: true },
+    },
+    stroke: {
+      width: [0, 3],
+      curve: "smooth",
+    },
+    fill: {
+      opacity: [0.85, 0.16],
+      type: ["solid", "solid"],
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    markers: {
+      size: [0, 3],
+      strokeWidth: 2,
+      hover: { size: 5 },
+    },
+    colors: chartColors,
+    xaxis: {
+      categories: labels,
+      axisTicks: { show: false },
+      axisBorder: { show: false },
+      labels: {
+        rotate: labels.length > 10 ? -35 : 0,
+        rotateAlways: labels.length > 10,
+      },
+    },
+    yaxis: [
+      {
+        title: { text: "Idadi kwa Mwaka" },
+        labels: {
+          formatter: (value) => `${Math.round(Number(value) || 0)}`,
+        },
+      },
+      {
+        opposite: true,
+        title: { text: "Jumla Zilizosajiliwa" },
+        labels: {
+          formatter: (value) => `${Math.round(Number(value) || 0)}`,
+        },
+      },
+    ],
+    plotOptions: {
+      bar: {
+        columnWidth: "42%",
+        borderRadius: 4,
+      },
+    },
+    legend: {
+      show: true,
+      position: "top",
+      horizontalAlign: "left",
+      offsetY: 4,
+    },
+    grid: {
+      borderColor: "#e7edf6",
+      strokeDashArray: 3,
+      padding: { left: 10, right: 10, top: 8, bottom: 6 },
+    },
+    tooltip: {
+      shared: true,
+      intersect: false,
+      y: {
+        formatter: (value) => `${Math.round(Number(value) || 0)}`,
+      },
+    },
+  };
+
+  if (chartInstances[selector]) {
+    chartInstances[selector].destroy();
+  }
+
+  const chart = new ApexCharts(chartElement, options);
+  chart.render();
+  chartInstances[selector] = chart;
+};
+
+const initializeCombinedYearsWindow = (individualData = [], cumulativeData = []) => {
+  const byYear = new Map();
+
+  (individualData || []).forEach((item) => {
+    const year = String(item.label || "");
+    if (!year) return;
+    if (!byYear.has(year)) byYear.set(year, { label: year, individual: 0, cumulative: 0 });
+    byYear.get(year).individual = Number(item.total) || 0;
+  });
+
+  (cumulativeData || []).forEach((item) => {
+    const year = String(item.label || "");
+    if (!year) return;
+    if (!byYear.has(year)) byYear.set(year, { label: year, individual: 0, cumulative: 0 });
+    byYear.get(year).cumulative = Number(item.total) || 0;
+  });
+
+  const records = [...byYear.values()];
+  const allYearsNumeric = records.every((item) => !Number.isNaN(Number(item.label)));
+  if (allYearsNumeric) {
+    records.sort((a, b) => Number(a.label) - Number(b.label));
+  } else {
+    records.sort((a, b) => String(a.label).localeCompare(String(b.label)));
+  }
+
+  combinedYearsState.labels = records.map((item) => item.label);
+  combinedYearsState.individualValues = records.map((item) => item.individual);
+  combinedYearsState.cumulativeValues = records.map((item) => item.cumulative);
+
+  createCombinedYearsChart(
+    combinedYearsState.labels,
+    combinedYearsState.individualValues,
+    combinedYearsState.cumulativeValues
   );
   updateTrendWindowControls();
-};
-
-const initializeTrendWindow = (labels, values) => {
-  const records = (labels || []).map((label, index) => ({
-    label,
-    value: (values || [])[index] ?? 0,
-  }));
-  const allYearsNumeric = records.every((item) => !Number.isNaN(Number(item.label)));
-
-  if (allYearsNumeric) {
-    records.sort((a, b) => Number(a.label) - Number(b.label));
-  }
-
-  trendState.labels = records.map((item) => item.label);
-  trendState.values = records.map((item) => item.value);
-  renderTrendWindow();
-};
-
-const updateYearsWindowControls = () => {
-  const total = yearsState.labels.length;
-  const startLabel = total ? yearsState.labels[0] : null;
-  const endLabel = total ? yearsState.labels[total - 1] : null;
-
-  $("#years-window-range").text(
-    startLabel && endLabel ? `Miaka: ${startLabel} - ${endLabel}` : ""
-  );
-  $("#years-prev-window").prop("disabled", !yearWindowState.hasOlder || yearWindowState.isLoading);
-  $("#years-next-window").prop("disabled", !yearWindowState.hasNewer || yearWindowState.isLoading);
-};
-
-const renderYearsWindow = () => {
-  if (!yearsState.labels.length) return;
-  const seriesIndividual = [
-    {
-      type: "area",
-      data: yearsState.values,
-    },
-  ];
-
-  createChart(
-    yearsState.labels,
-    seriesIndividual,
-    "school_registration_by_years",
-    false,
-    true
-  );
-  updateYearsWindowControls();
-};
-
-const initializeYearsWindow = (labels, values) => {
-  const records = (labels || []).map((label, index) => ({
-    label,
-    value: (values || [])[index] ?? 0,
-  }));
-  const allYearsNumeric = records.every((item) => !Number.isNaN(Number(item.label)));
-
-  if (allYearsNumeric) {
-    records.sort((a, b) => Number(a.label) - Number(b.label));
-  }
-
-  yearsState.labels = records.map((item) => item.label);
-  yearsState.values = records.map((item) => item.value);
-  renderYearsWindow();
 };
 
 const loadYearsWindow = (offset = 0) => {
@@ -158,7 +211,6 @@ const loadYearsWindow = (offset = 0) => {
 
   yearWindowState.isLoading = true;
   setYearsChartsLoading(true);
-  updateYearsWindowControls();
   updateTrendWindowControls();
 
   $.ajax({
@@ -211,27 +263,18 @@ const loadYearsWindow = (offset = 0) => {
         // Rendering while hidden can produce zero-width charts until a browser resize event.
         setYearsChartsLoading(false);
 
-        initializeYearsWindow(
-          individualData.map((item) => item.label),
-          individualData.map((item) => item.total),
-        );
-        initializeTrendWindow(
-          cumulativeData.map((item) => item.label),
-          cumulativeData.map((item) => item.total),
-        );
+        initializeCombinedYearsWindow(individualData, cumulativeData);
 
         // Ensure final layout pass on slow devices/browsers.
         setTimeout(() => window.dispatchEvent(new Event("resize")), 0);
       } else {
         setYearsChartsLoading(false);
-        updateYearsWindowControls();
         updateTrendWindowControls();
       }
     },
     error: function () {
       yearWindowState.isLoading = false;
       setYearsChartsLoading(false);
-      updateYearsWindowControls();
       updateTrendWindowControls();
       alertMessage(
         "Kuna Tatizo",
@@ -253,116 +296,130 @@ $("#trend-next-window").on("click", function () {
   loadYearsWindow(Math.max(0, yearWindowState.offset - yearWindowState.limit));
 });
 
-$("#years-prev-window").on("click", function () {
-  if (!yearWindowState.hasOlder) return;
-  loadYearsWindow(yearWindowState.offset + yearWindowState.limit);
-});
+const renderSchoolByCategoriesChart = (selector, response) => {
+  if (response.statusCode != 300) return;
 
-$("#years-next-window").on("click", function () {
-  if (!yearWindowState.hasNewer) return;
-  loadYearsWindow(Math.max(0, yearWindowState.offset - yearWindowState.limit));
-});
+  const labels = [];
+  const allData = [];
+  const awaliData = [];
+  const msingiData = [];
+  const sekondariData = [];
+  const vyuoData = [];
+  const formattedResults = response.data || {};
+  const schoolTypes = ["Shule za Awali", "Shule za Awali na Msingi", "Shule za Sekondari", "Vyuo vya Ualimu"];
+  const pieChartData = [0, 0, 0, 0];
+  const isModalSelector = selector === "modal-school_registration_charts";
+  const listByLabel = $("#list-by-label");
 
-const displaySchoolByCategoriesChat = (selector , callback) => {
-  ajaxRequest("/SchoolsSummaryByRegionAndCategories", "GET", (response) => {
-    // console.log(response.data);
-    if (response.statusCode == 300) {
-      const labels = [];
-      const allData = [];
-      const awaliData = [];
-      const msingiData = [];
-      const sekondariData = [];
-      const vyuoData = [];
-      const formattedResults = response.data;
-      const schoolTypes = ['Shule za Awali', "Shule za Awali na Msingi" , "Shule za Sekondari", "Vyuo vya Ualimu"];
-      const pieChartData = [];
-      const listByLabel = $('#list-by-label')
-            listByLabel.empty();
-      var  i = 0;
-      pieChartData[0] = 0; //Awali pekee
-      pieChartData[1] = 0; //Awali na Msingi
-      pieChartData[2] = 0; // Sekondari
-      pieChartData[3] = 0; // Vyuo vya Ualimu
-      for (const region in formattedResults) {
-        const regionData = formattedResults[region];
-        i++;
-        if(i > 10) $("#angalia-zote").show();
-        labels.push(region);
-        allData.push(regionData.total);
-         listByLabel.append(`<li class="py-1 ${i > 20 ? 'hidden' : ''} " ${i > 20 ? 'style=display:none' : ''}>
-                              <a href="#" class="text-${
-                                regionData.total == response.maxValue ? 'success fw-bolder fst-italic' : 
-                                (regionData.total == response.minValue ? 'danger fw-bolder fst-italic' : 'muted')
-                              }">
-                                ${region} <span class="float-end">(${regionData.total})</span>
-                              </a>
-                            </li>`);
-        for (const category in regionData.categories) {
-          const categoryCount = regionData.categories[category];
-          switch (Number(category)) {
-            case 1:
-              awaliData.push(categoryCount);
-              pieChartData[0] += categoryCount;
-              break;
-            case 2:
-              msingiData.push(categoryCount);
-              pieChartData[1] += categoryCount;
-              break;
-            case 3:
-              sekondariData.push(categoryCount);
-              pieChartData[2] += categoryCount;
-              break;
-            case 4:
-              vyuoData.push(categoryCount);
-              pieChartData[3] += categoryCount;
-              break;
-            default:
-              break;
-          }
-        }
-      }
-      
-      const series = [
-        {
-          name: "Shule Zote",
-          type: "bar",
-          data: allData,
-        },
-        {
-          name: schoolTypes[0],
-          type: "line",
-          data: awaliData,
-        },
-        {
-          name: schoolTypes[1],
-          type: "line",
-          data: msingiData,
-        },
-        {
-          name: schoolTypes[2],
-          type: "line",
-          data: sekondariData,
-        },
-        {
-          name: schoolTypes[3],
-          type: "line",
-          data: vyuoData,
-        },
-      ];
-      createChart(labels, series, selector);
-      createPieChart(schoolTypes, pieChartData, "aina-za-shule-kwa-asilimia");
+  if (!isModalSelector) {
+    listByLabel.empty();
+    $("#angalia-zote").hide();
+  }
+
+  let i = 0;
+  for (const region in formattedResults) {
+    const regionData = formattedResults[region] || {};
+    i++;
+    labels.push(region);
+    allData.push(Number(regionData.total || 0));
+
+    if (!isModalSelector) {
+      if (i > 10) $("#angalia-zote").show();
+      listByLabel.append(`<li class="py-1 ${i > 20 ? "hidden" : ""}" ${i > 20 ? "style=display:none" : ""}>
+                            <a href="#" class="text-${
+                              regionData.total == response.maxValue ? "success fw-bolder fst-italic"
+                              : (regionData.total == response.minValue ? "danger fw-bolder fst-italic" : "muted")
+                            }">
+                              ${region} <span class="float-end">(${regionData.total})</span>
+                            </a>
+                          </li>`);
     }
-    callback(response.statusCode)
+
+    for (const category in (regionData.categories || {})) {
+      const categoryCount = Number(regionData.categories[category] || 0);
+      switch (Number(category)) {
+        case 1:
+          awaliData.push(categoryCount);
+          pieChartData[0] += categoryCount;
+          break;
+        case 2:
+          msingiData.push(categoryCount);
+          pieChartData[1] += categoryCount;
+          break;
+        case 3:
+          sekondariData.push(categoryCount);
+          pieChartData[2] += categoryCount;
+          break;
+        case 4:
+          vyuoData.push(categoryCount);
+          pieChartData[3] += categoryCount;
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  const numericTotals = allData.map((v) => Number(v) || 0);
+  const maxTotal = numericTotals.length ? Math.max(...numericTotals) : 0;
+  const minTotal = numericTotals.length ? Math.min(...numericTotals) : 0;
+  const sameMinMax = maxTotal === minTotal;
+
+  const barRanges = sameMinMax
+    ? [{ from: minTotal, to: maxTotal, color: "#60a5fa" }]
+    : [
+        { from: minTotal, to: minTotal, color: "#ef4444" },
+        { from: maxTotal, to: maxTotal, color: "#1d4ed8" },
+        { from: minTotal + 0.0001, to: ((maxTotal + minTotal) / 2), color: "#93c5fd" },
+        { from: ((maxTotal + minTotal) / 2) + 0.0001, to: maxTotal - 0.0001, color: "#60a5fa" },
+      ];
+
+  const series = [
+    { name: "Shule Zote", type: "bar", data: allData },
+    { name: schoolTypes[0], type: "line", data: awaliData },
+    { name: schoolTypes[1], type: "line", data: msingiData },
+    { name: schoolTypes[2], type: "line", data: sekondariData },
+    { name: schoolTypes[3], type: "line", data: vyuoData },
+  ];
+
+  createChart(labels, series, selector, true, false, barRanges);
+  if (!isModalSelector) {
+    createPieChart(schoolTypes, pieChartData, "aina-za-shule-kwa-asilimia");
+  }
+};
+
+const displaySchoolByCategoriesChat = (selector, callback) => {
+  const hasFreshCache = regionsCategoryChartCache.response
+    && (Date.now() - Number(regionsCategoryChartCache.fetchedAt || 0)) <= REGION_CATEGORY_CHART_CACHE_MS;
+
+  if (hasFreshCache) {
+    renderSchoolByCategoriesChart(selector, regionsCategoryChartCache.response);
+    callback(300);
+    return;
+  }
+
+  ajaxRequest("/SchoolsSummaryByRegionAndCategories", "GET", (response) => {
+    if (response && Number(response.statusCode) === 300) {
+      regionsCategoryChartCache = {
+        response,
+        fetchedAt: Date.now(),
+      };
+    }
+
+    renderSchoolByCategoriesChart(selector, response || { statusCode: 306, data: {} });
+    callback(response?.statusCode || 306);
   });
 };
 
-window.onload = displaySchoolByCategoriesChat("school_registration_charts" , () => {});
 // get total number of schools by year of registration
 function displayTotalSchoolsByYearOfRegistration(){
   loadYearsWindow(0);
 }
-// 
-window.onload = displayTotalSchoolsByYearOfRegistration();
+
+document.addEventListener("DOMContentLoaded", function () {
+  displaySchoolByCategoriesChat("school_registration_charts", () => {});
+  displayTotalSchoolsByYearOfRegistration();
+});
 // Extract Colors
 function getChartColorsArray(e) {
   if (null !== document.getElementById(e)) {
@@ -396,7 +453,8 @@ const createChart = (
   series,
   selector,
   dataLabelEnabled = true,
-  tooltipShared = false
+  tooltipShared = false,
+  barRanges = []
 ) => {
   var linechartSchoolsColors = getChartColorsArray(selector);
   linechartSchoolsColors &&
@@ -407,7 +465,7 @@ const createChart = (
         animations: {
           enabled: true,
           easing: "linear",
-          dynamicAnimation: {
+        dynamicAnimation: {
             speed: 1000,
           },
         },
@@ -459,7 +517,11 @@ const createChart = (
         itemMargin: { horizontal: 10, vertical: 0 },
       },
       plotOptions: {
-        bar: { columnWidth: "70%", barHeight: "70%" },
+        bar: {
+          columnWidth: "70%",
+          barHeight: "70%",
+          colors: Array.isArray(barRanges) && barRanges.length ? { ranges: barRanges } : undefined,
+        },
       },
       colors: linechartSchoolsColors,
       tooltip: {
@@ -574,61 +636,87 @@ const createPieChart = (label , series , selector) => {
   var options,
     chart,
     chartDonutBasicColors = getChartColorsArray(selector);
-  chartDonutBasicColors &&
-    ((options = {
-      series: series,
-      labels: label,
-      chart: { height: 500, type: "donut" },
-      legend: {
-        position: "bottom",
-        verticalAlign: "middle",
-        horizontalAlign: "center",
+  if (!chartDonutBasicColors) return;
+
+  const total = (series || []).reduce((acc, val) => acc + (Number(val) || 0), 0);
+  const summaryEl = document.querySelector(`#${selector}-summary`);
+  if (summaryEl) {
+    const summaryHtml = (label || []).map((name, idx) => {
+      const value = Number((series || [])[idx] || 0);
+      const pct = total > 0 ? ((value / total) * 100) : 0;
+      const color = chartDonutBasicColors[idx] || "#94a3b8";
+      return `
+        <div class="pie-summary-item">
+          <div class="pie-summary-label"><span class="pie-dot" style="background:${color};"></span>${name}</div>
+          <div class="pie-summary-meta">${pct.toFixed(1)}% • ${value.toLocaleString()}</div>
+        </div>
+      `;
+    }).join("");
+    summaryEl.innerHTML = summaryHtml;
+  }
+
+  options = {
+    series: series,
+    labels: label,
+    chart: { height: 285, type: "donut" },
+    legend: {
+      show: false,
+    },
+    fill: { type: "solid" },
+    stroke: { show: true, width: 2, colors: ["#fff"] },
+    dataLabels: {
+      enabled: true,
+      formatter: function (val) {
+        return val >= 2 ? `${val.toFixed(1)}%` : "";
       },
-      fill: { type: "gradient_" },
-      stroke: { show: !0 },
-      dataLabels: {
-        dropShadow: { enabled: !0 },
+      style: {
+        fontSize: "13px",
+        fontWeight: 700,
       },
-      colors: chartDonutBasicColors,
-      plotOptions: {
-        pie: {
-          donut: {
-            labels: {
-              show: true,
-              total: {
-                showAlways: true,
-                show: true,
+      dropShadow: { enabled: false },
+    },
+    colors: chartDonutBasicColors,
+    plotOptions: {
+      pie: {
+        donut: {
+          size: "64%",
+          labels: {
+            show: true,
+            value: {
+              formatter: function (v) {
+                const value = Number(v) || 0;
+                return value.toLocaleString();
               },
             },
-            dataLabels: {
-              formatter: function (val, { series }) {
-                var total = series.reduce(function (acc, data) {
-                  return acc + data;
-                }, 0);
+            total: {
+              showAlways: true,
+              show: true,
+              label: "Total",
+              formatter: function () {
                 return total.toLocaleString();
               },
             },
           },
         },
       },
-      responsive: [
-        {
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 200,
-            },
-            legend: {
-              position: "bottom",
-            },
-          },
+    },
+    responsive: [
+      {
+        breakpoint: 768,
+        options: {
+          chart: { height: 250 },
+          legend: { position: "bottom" },
         },
-      ],
-    }),
-    (chart = new ApexCharts(
-      document.querySelector(`#${selector}`),
-      options
-    )).render());
+      },
+    ],
+  };
+
+  if (chartInstances[selector]) {
+    chartInstances[selector].destroy();
+  }
+  chart = new ApexCharts(document.querySelector(`#${selector}`), options);
+  chart.render();
+  chartInstances[selector] = chart;
 }
 
 

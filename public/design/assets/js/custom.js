@@ -733,7 +733,7 @@ var updateUrl = (param, value) => {
 
 function logoutFx() {
   $(
-    `<form action='/Logout' method='POST'><input type='hidden' value='logout'></form>`
+    `<form action='/logout' method='POST'><input type='hidden' value='logout'></form>`
   )
     .appendTo("body")
     .submit()
@@ -948,7 +948,107 @@ function tumaMaoniYako(
   btn,
   urlRedirection = ""
 ) {
-  if (comments.length > 0) {
+  const commentsPlainText = String(comments || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const submitMaoni = () => {
+    ajaxRequest(
+      `${urlComment}`,
+      "POST",
+      (response) => {
+        const { statusCode } = response;
+        if (statusCode == 300) {
+          alertMessage(`Success`, `Hongera! Umefanikiwa`, "success", () => {
+            if (urlRedirection) {
+              window.location.href = urlRedirection;
+            }
+          });
+        } else {
+          alertMessage(
+            `Error`,
+            `Samahani! Haujafanikiwa kuna tatizo Wasiliana na Msimamizi wa Mfumo.`,
+            "warning",
+            () => {
+              window.location.href = urlRedirection;
+            }
+          );
+        }
+      },
+      JSON.stringify(data)
+    );
+  };
+
+  const confirmationText = `Je, una uhakika unataka ${
+    btn == "tuma"
+      ? "kutuma kwenda kwa " + $("#staffs option:selected").text()
+      : btn == "wasilisha"
+      ? "kuwasilisha ombi hili kwenda ngazi ya juu"
+      : btn == "rudisha"
+      ? "kurudisha ombi hili kwa Mwombaji"
+      : btn == "thibitisha"
+      ? "kuthibitisha ombi hili"
+      : btn == "kataa"
+      ? "kukataa ombi hili"
+      : ""
+  }?`;
+
+  const confirmWithSweetAlert = () => {
+    const confirmTone =
+      btn == "tuma"
+        ? "primary"
+        : btn == "wasilisha"
+        ? "success"
+        : btn == "rudisha"
+        ? "warning"
+        : btn == "thibitisha"
+        ? "success"
+        : btn == "kataa"
+        ? "danger"
+        : "primary";
+
+    if (window.Swal && typeof window.Swal.fire === "function") {
+      window.Swal.fire({
+        title: "Uthibitisho",
+        text: confirmationText,
+        icon: "warning",
+        showCancelButton: true,
+        allowOutsideClick: false,
+        confirmButtonText: "Ndio, Endelea",
+        cancelButtonText: "Ghairi",
+        customClass: {
+          confirmButton: `btn btn-${confirmTone} w-xs me-2 mt-2`,
+          cancelButton: "btn btn-danger w-xs mt-2",
+        },
+        buttonsStyling: false,
+        showCloseButton: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          submitMaoni();
+        }
+      });
+      return;
+    }
+
+    if (typeof confirmAction === "function") {
+      confirmAction(
+        submitMaoni,
+        "Ndio!, Endelea",
+        "warning",
+        confirmationText,
+        "Uthibitisho"
+      );
+      return;
+    }
+
+    if (window.confirm(confirmationText)) {
+      submitMaoni();
+    }
+  };
+
+  if (commentsPlainText.length > 0) {
     if (
       (staffsInput == "#" && btn == "wasilisha") ||
       (staffsInput != "#" && staffsInput != "" && btn == "tuma") ||
@@ -956,55 +1056,7 @@ function tumaMaoniYako(
       (staffsInput == "#" && staffsInput != "" && btn == "thibitisha") ||
       (staffsInput == "#" && staffsInput != "" && btn == "kataa")
     ) {
-      confirmAction(
-        () => {
-          ajaxRequest(
-            `${urlComment}`,
-            "POST",
-            (response) => {
-              const { statusCode } = response;
-              if (statusCode == 300) {
-                alertMessage(
-                  `Success`,
-                  `Hongera! Umefanikiwa`,
-                  "success",
-                  () => {
-                    if (urlRedirection) {
-                      window.location.href = urlRedirection;
-                    }
-                  }
-                );
-              } else {
-                alertMessage(
-                  `Error`,
-                  `Samahani! Haujafanikiwa kuna tatizo Wasiliana na Msimamizi wa Mfumo.`,
-                  "warning",
-                  () => {
-                    window.location.href = urlRedirection;
-                  }
-                );
-              }
-            },
-            JSON.stringify(data)
-          );
-        },
-        "Ndio!, Endelea",
-        "warning",
-        `Je, una uhakika unataka ${
-          btn == "tuma"
-            ? "kutuma kwenda kwa " + $("#staffs option:selected").text()
-            : btn == "wasilisha"
-            ? "kuwasilisha ombi hili kwenda ngazi ya juu"
-            : btn == "rudisha"
-            ? "kurudisha ombi hili kwa Mwombaji"
-            : btn == "thibitisha"
-            ? "kuthibitisha ombi hili"
-            : btn == "kataa"
-            ? "kukataa ombi hili"
-            : ""
-        }?`,
-        "Confirmation"
-      );
+      confirmWithSweetAlert();
     } else {
       if (btn == "tuma") {
         alertMessage(

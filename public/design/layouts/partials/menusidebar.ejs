@@ -543,6 +543,24 @@ const menuItems = [
         pattern : "AuditTrail",
         hasPermissionTo : permission(req , 'view-audit'),
    },
+   {
+        label : "System Logs",
+        url  : "SystemLogs",
+        menuTitle : '',
+        icon : "ri-file-warning-line",
+        menuId : "",
+        pattern : "SystemLogs",
+        hasPermissionTo : permission(req , 'view-audit'),
+   },
+   {
+        label : "System Configurations",
+        url  : "SystemConfigurations",
+        menuTitle : '',
+        icon : "ri-settings-3-line",
+        menuId : "",
+        pattern : "SystemConfigurations",
+        hasPermissionTo : permission(req , 'view-audit'),
+   },
     //    LOGIN ACTIVITY
     {
         label : "Login Activity",
@@ -556,7 +574,7 @@ const menuItems = [
    // LOGOUT
     {
         label : "Ondoka",
-        url  : "#",
+        url  : "logout",
         menuTitle : '',
         icon : "ri-logout-circle-r-line",
         menuId : "",
@@ -652,4 +670,3 @@ const menuItems = [
     </div>
 </div>
   <!-- Sidebar -->
-

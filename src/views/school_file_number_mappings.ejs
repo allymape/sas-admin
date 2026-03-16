@@ -1,0 +1,420 @@
+<% var card_title = '' %>
+<%- include('layouts/partials/header.ejs' , {
+    title : 'Namba za Majalada',
+    page_title : 'Orodha ya Namba za Majalada',
+    card_title : 'Namba za Majalada zilizopo',
+    breadcrumb_main : 'Mipangilio',
+    styles : [
+                { href: '/css/datatables/dataTables.dataTables.css' },
+                { href: '/css/datatables/buttons.dataTables.css' }
+            ]
+}) %>
+<div class="card-body">
+    <div id="customerList">
+        <div class="row g-4 mb-3">
+            <div class="col-sm-auto">
+                <button type="button" class="btn btn-success add-btn" id="create-btn">
+                    <i class="ri-add-line align-bottom me-1"></i> Sajili
+                </button>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="table-responsive table-card mt-3 mb-1">
+                <table class="table align-middle table-nowrap" id="datatable">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="5%">Na.</th>
+                            <th>Registry</th>
+                            <th>Aina ya Shule</th>
+                            <th>Namba ya Jalada</th>
+                            <th>Hali</th>
+                            <th>Imetengenezwa</th>
+                            <th>Imesasishwa</th>
+                            <th class="text-center" width="10%">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="list form-check-all"></tbody>
+                </table>
+                <div class="noresult" style="display: none">
+                    <div class="text-center">
+                        <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                            colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                        <h5 class="mt-2">Hakuna matokeo</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title">Sajili Namba ya Jalada</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="registry-field" class="form-label">Registry Type</label>
+                        <select id="registry-field" class="form-select"></select>
+                        <span class="text-danger" style="display: none;" id="jaza-registry">Tafadhali chagua Registry Type.</span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category-field" class="form-label">Aina ya Shule</label>
+                        <select id="category-field" class="form-select"></select>
+                        <span class="text-danger" style="display: none;" id="jaza-category">Tafadhali chagua Aina ya Shule.</span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="file-number-field" class="form-label">Namba ya Jalada</label>
+                        <input type="text" id="file-number-field" class="form-control" placeholder="Mfano: CD.28/315" />
+                        <span class="text-danger" style="display: none;" id="jaza-file-number">Tafadhali jaza Namba ya Jalada.</span>
+                    </div>
+                    <div class="mb-1">
+                        <label for="is-active-field" class="form-label">Hali</label>
+                        <select id="is-active-field" class="form-select">
+                            <option value="1">Active</option>
+                            <option value="0">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Funga</button>
+                        <button type="button" class="btn btn-success" onclick="sajiliFileNumberMapping()">Sajili</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showEditModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title">Badili Namba ya Jalada</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <input type="hidden" id="id-field" />
+                    <div class="mb-3">
+                        <label for="registry2-field" class="form-label">Registry Type</label>
+                        <select id="registry2-field" class="form-select"></select>
+                        <span class="text-danger" style="display: none;" id="jaza-registry2">Tafadhali chagua Registry Type.</span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category2-field" class="form-label">Aina ya Shule</label>
+                        <select id="category2-field" class="form-select"></select>
+                        <span class="text-danger" style="display: none;" id="jaza-category2">Tafadhali chagua Aina ya Shule.</span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="file-number2-field" class="form-label">Namba ya Jalada</label>
+                        <input type="text" id="file-number2-field" class="form-control" placeholder="Mfano: CD.28/315" />
+                        <span class="text-danger" style="display: none;" id="jaza-file-number2">Tafadhali jaza Namba ya Jalada.</span>
+                    </div>
+                    <div class="mb-1">
+                        <label for="is-active2-field" class="form-label">Hali</label>
+                        <select id="is-active2-field" class="form-select">
+                            <option value="1">Active</option>
+                            <option value="0">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Funga</button>
+                        <button type="button" class="btn btn-success" onclick="sasishaFileNumberMapping()">Hifadhi</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('layouts/partials/footer.ejs' , {
+    card_title :  card_title,
+    scripts : [
+            { src : '/js/datatables/dataTables.js'},
+            { src : '/js/datatables/dataTables.buttons.js'},
+            { src : '/js/datatables/buttons.dataTables.js'},
+            { src : '/js/datatables/buttons.html5.min.js'},
+            { src : '/js/datatables/jszip.min.js'},
+            { src : '/js/datatables/pdfmake.min.js'},
+            { src : '/js/datatables/vfs_fonts.js'},
+            { src : '/js/datatables/buttons.print.min.js'}
+          ]
+    }) %>
+
+<script>
+    let registries = [];
+    let categories = [];
+
+    const reloadMappingTable = () => {
+        $('#datatable').DataTable().ajax.reload(null, false);
+    };
+
+    function renderOptions(selectId, options, selectedValue = "") {
+        const select = $(selectId);
+        let html = `<option value="">-- Chagua --</option>`;
+        (options || []).forEach((item) => {
+            const id = Number(item?.id || 0);
+            const name = String(item?.registry || item?.category || "-");
+            const selected = Number(selectedValue || 0) === id ? "selected" : "";
+            html += `<option value="${id}" ${selected}>${name}</option>`;
+        });
+        select.html(html);
+    }
+
+    function loadLookupData(callback = null) {
+        ajaxRequest("/SchoolFileNumberMappingsLookup", "GET", (response) => {
+            const statusCode = Number(response?.statusCode || 306);
+            if (statusCode !== 300) {
+                alertMessage("Haujafanikiwa", response?.message || "Imeshindikana kupata chaguzi.", "warning");
+                return;
+            }
+
+            registries = Array.isArray(response?.data?.registries) ? response.data.registries : [];
+            categories = Array.isArray(response?.data?.categories) ? response.data.categories : [];
+            renderOptions("#registry-field", registries);
+            renderOptions("#registry2-field", registries);
+            renderOptions("#category-field", categories);
+            renderOptions("#category2-field", categories);
+
+            if (typeof callback === "function") callback();
+        });
+    }
+
+    $("#create-btn").on("click", function () {
+        $("#registry-field").val("");
+        $("#category-field").val("");
+        $("#file-number-field").val("");
+        $("#is-active-field").val("1");
+        $("#jaza-registry").hide();
+        $("#jaza-category").hide();
+        $("#jaza-file-number").hide();
+        modal("showModal", true);
+    });
+
+    function BadiliData(button) {
+        const rowData = JSON.parse(button.getAttribute("data-row"));
+        $("#id-field").val(rowData.id || "");
+        renderOptions("#registry2-field", registries, rowData.registry_type_id);
+        renderOptions("#category2-field", categories, rowData.school_category_id);
+        $("#file-number2-field").val(rowData.file_number || "");
+        $("#is-active2-field").val(Number(rowData.is_active) === 0 ? "0" : "1");
+        $("#jaza-registry2").hide();
+        $("#jaza-category2").hide();
+        $("#jaza-file-number2").hide();
+        modal("showEditModal", true);
+    }
+
+    function sajiliFileNumberMapping() {
+        const registry_type_id = Number($("#registry-field").val() || 0);
+        const school_category_id = Number($("#category-field").val() || 0);
+        const file_number = String($("#file-number-field").val() || "").trim();
+        const is_active = Number($("#is-active-field").val() || 1);
+
+        $("#jaza-registry").hide();
+        $("#jaza-category").hide();
+        $("#jaza-file-number").hide();
+
+        if (!registry_type_id) {
+            $("#jaza-registry").show();
+            return;
+        }
+        if (!school_category_id) {
+            $("#jaza-category").show();
+            return;
+        }
+        if (!file_number) {
+            $("#jaza-file-number").show();
+            return;
+        }
+
+        ajaxRequest(
+            "/tengenezaFileNumberMapping",
+            "POST",
+            (response) => {
+                const statusCode = Number(response?.statusCode || 306);
+                alertMessage(
+                    statusCode === 300 ? "Umefanikiwa" : "Haujafanikiwa",
+                    response?.message || "Kuna tatizo, jaribu tena.",
+                    statusCode === 300 ? "success" : "warning",
+                    () => {
+                        if (statusCode === 300) {
+                            modal("showModal", false);
+                            reloadMappingTable();
+                        }
+                    }
+                );
+            },
+            JSON.stringify({
+                registry_type_id,
+                school_category_id,
+                file_number,
+                is_active
+            })
+        );
+    }
+
+    function sasishaFileNumberMapping() {
+        const id = Number($("#id-field").val() || 0);
+        const registry_type_id = Number($("#registry2-field").val() || 0);
+        const school_category_id = Number($("#category2-field").val() || 0);
+        const file_number = String($("#file-number2-field").val() || "").trim();
+        const is_active = Number($("#is-active2-field").val() || 1);
+
+        $("#jaza-registry2").hide();
+        $("#jaza-category2").hide();
+        $("#jaza-file-number2").hide();
+
+        if (!id) {
+            alertMessage("Haujafanikiwa", "Taarifa haijapatikana.", "warning");
+            return;
+        }
+        if (!registry_type_id) {
+            $("#jaza-registry2").show();
+            return;
+        }
+        if (!school_category_id) {
+            $("#jaza-category2").show();
+            return;
+        }
+        if (!file_number) {
+            $("#jaza-file-number2").show();
+            return;
+        }
+
+        ajaxRequest(
+            `/badiliFileNumberMapping/${id}`,
+            "POST",
+            (response) => {
+                const statusCode = Number(response?.statusCode || 306);
+                alertMessage(
+                    statusCode === 300 ? "Umefanikiwa" : "Haujafanikiwa",
+                    response?.message || "Kuna tatizo, jaribu tena.",
+                    statusCode === 300 ? "success" : "warning",
+                    () => {
+                        if (statusCode === 300) {
+                            modal("showEditModal", false);
+                            reloadMappingTable();
+                        }
+                    }
+                );
+            },
+            JSON.stringify({
+                registry_type_id,
+                school_category_id,
+                file_number,
+                is_active
+            })
+        );
+    }
+
+    function FutaData(button) {
+        const rowData = JSON.parse(button.getAttribute("data-row"));
+        const id = Number(rowData.id || 0);
+        if (!id) {
+            alertMessage("Haujafanikiwa", "Taarifa haijapatikana.", "warning");
+            return;
+        }
+
+        confirmAction(
+            () => {
+                ajaxRequest(`/futaFileNumberMapping/${id}`, "POST", (response) => {
+                    const statusCode = Number(response?.statusCode || 306);
+                    alertMessage(
+                        statusCode === 300 ? "Umefanikiwa" : "Haujafanikiwa",
+                        response?.message || "Kuna tatizo, jaribu tena.",
+                        statusCode === 300 ? "success" : "warning",
+                        () => {
+                            if (statusCode === 300) {
+                                reloadMappingTable();
+                            }
+                        }
+                    );
+                });
+            },
+            "Futa",
+            "warning",
+            "Ukifuta taarifa hii, haitatumika tena kwenye setup.",
+            "Futa Namba ya Jalada?"
+        );
+    }
+
+    $(document).ready(function() {
+        loadLookupData();
+        tableData('datatable' ,'/FileNumberMappingsList' , 'POST',
+            [
+                {
+                    data: null,
+                    render: function (data, type, row , meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                },
+                {
+                    data: "registry_name",
+                    name: "registry_name",
+                    render: (data) => data || "-"
+                },
+                {
+                    data: "school_category_name",
+                    name: "school_category_name",
+                    render: (data) => data || "-"
+                },
+                {
+                    data: "file_number",
+                    name: "file_number",
+                    render: (data) => data || "-"
+                },
+                {
+                    data: "is_active",
+                    name: "is_active",
+                    render: (data) => Number(data) === 0
+                        ? '<span class="badge bg-danger-subtle text-danger">Inactive</span>'
+                        : '<span class="badge bg-success-subtle text-success">Active</span>'
+                },
+                {
+                    data: "created_at",
+                    name: "created_at",
+                    render: (data) => data ? changeDateFormat(data) : "-"
+                },
+                {
+                    data: "updated_at",
+                    name: "updated_at",
+                    render: (data) => data ? changeDateFormat(data) : "-"
+                },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        const elements = [
+                            {
+                                show : true,
+                                type : 'link',
+                                class : 'btn btn-sm btn-outline-primary me-1',
+                                icon : 'bx bx-pencil me-1',
+                                function : 'BadiliData',
+                                btnText : 'Edit'
+                            },
+                            {
+                                show : true,
+                                type : 'link',
+                                class : 'btn btn-sm btn-outline-danger',
+                                icon : 'bx bx-trash me-1',
+                                function : 'FutaData',
+                                btnText : 'Futa'
+                            }
+                        ];
+                        return actionButtons(row, elements);
+                    },
+                    orderable: false,
+                    searchable: false,
+                }
+            ]
+        );
+    });
+</script>
