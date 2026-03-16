@@ -19,12 +19,13 @@ roleController.get("/Roles", isAuthenticated ,can('view-roles'), function (req, 
   var per_page = Number(req.query.per_page || 10);
   var page = Number(req.query.page || 1);
   sendRequest(req , res , allRolesAPI+`?page=${page}&per_page=${per_page}`, 'GET' , {} , (jsonData) => {
-    const {data , numRows} = jsonData;    
+    const {data , numRows, activeRows} = jsonData;    
     res.render(path.join(__dirname + "/../views/roles"), {
               req: req,
               data: data,
               pagination : {
                     total : numRows , 
+                    active : Number(activeRows || 0),
                     current : page , 
                     per_page : per_page , 
                     url : modifiedUrl(req),
@@ -49,6 +50,7 @@ roleController.get("/allRoles",  isAuthenticated, can('view-roles'), function (r
     res.send({
       statusCode: jsonData.statusCode,
       data: jsonData.data,
+      activeRows: jsonData.activeRows,
       message: jsonData.message,
     });
   });

@@ -7,78 +7,199 @@ const permissionList = Array.isArray(permissions) ? permissions : [];
 const assignedPermissionIds = Array.isArray(assigned_permissions)
   ? assigned_permissions.map((item) => Number(item))
   : [];
+
+const preferredOrder = [
+    'dashboard-gis',
+    'applications',
+    'reports',
+    'staff-management',
+    'applicants-management',
+    'administrative-areas',
+    'setup',
+    'audit-trail',
+    'sys-logs-configurations',
+];
+
+const normalizeModuleKey = (value) => String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+const moduleLabelByKey = {
+    'dashboard-gis': 'Dashboard & GIS',
+    applications: 'Applications / Maombi',
+    reports: 'Reports and Analytics',
+    'staff-management': 'Staff Management',
+    'applicants-management': 'Applicants Management',
+    'administrative-areas': 'Administrative Areas',
+    setup: 'Setup',
+    'audit-trail': 'Audit Trail',
+    'sys-logs-configurations': 'Sys Logs and Configurations',
+};
+
+const humanizeModuleLabel = (rawName) => String(rawName || '')
+    .replace(/[-_]+/g, ' ')
+    .replace(/\b\w/g, (letter) => letter.toUpperCase())
+    .trim();
+
+const modulesMap = {};
+for (let i = 0; i < permissionList.length; i++) {
+    const permission = permissionList[i] || {};
+    const moduleKey = normalizeModuleKey(permission.module_name || permission.module_display_name || 'setup') || 'setup';
+    const moduleLabel =
+        permission.module_display_name ||
+        moduleLabelByKey[moduleKey] ||
+        humanizeModuleLabel(permission.module_name) ||
+        'Setup';
+
+    if (!modulesMap[moduleKey]) {
+        modulesMap[moduleKey] = {
+            label: moduleLabel,
+            items: [],
+        };
+    }
+    modulesMap[moduleKey].items.push(permission);
+}
+
+const moduleEntries = Object.entries(modulesMap).sort((a, b) => {
+    const keyA = a[0];
+    const keyB = b[0];
+    const idxA = preferredOrder.indexOf(keyA);
+    const idxB = preferredOrder.indexOf(keyB);
+    if (idxA === -1 && idxB === -1) return a[1].label.localeCompare(b[1].label);
+    if (idxA === -1) return 1;
+    if (idxB === -1) return -1;
+    return idxA - idxB;
+});
 %>
 <%- include('layouts/partials/header.ejs' , {
 title : 'Edit Role '+roleName,
 page_title : 'Edit Role',
 card_title : 'Edit Role na Permissons',
-breadcrumb_main : 'Mipangilio' 
+breadcrumb_main : 'Mipangilio'
 }) %>
+<style>
+    .permission-module-card .card-header {
+        border-bottom: 1px solid rgba(17, 24, 39, 0.08);
+    }
+
+    .permission-module-title {
+        font-size: 0.98rem;
+        font-weight: 700;
+        margin-bottom: 0.1rem;
+    }
+
+    .permission-module-meta {
+        font-size: 0.8rem;
+    }
+
+    .permission-option {
+        font-size: 0.95rem;
+    }
+
+    .permission-option i {
+        font-size: 0.78rem;
+    }
+</style>
 <div class="ribbon-three ribbon-three-info">
 <span class="badge">EDIT</span>
 </div>
 <div class="card-body">
     <div class="live-preview">
         <div class="row">
-            <div class="col-lg-12 col-md-12"> 
-                <div>   
+            <div class="col-lg-12 col-md-12">
+                <div>
                     <div class="alert alert-secondary mb-3 shadow">
-                        <span class="text-secondary">Weka <code>jina la Role</code> kisha chagua kutoka kwenye orodha ya menu <code>hapo chini</code> 
+                        <span class="text-secondary">Weka <code>jina la Role</code> kisha chagua kutoka kwenye orodha ya menu <code>hapo chini</code>
                             ili kuweza kuwapa watumiaji wa mfumo.
                         </span>
                     </div>
-                        <div class="form-group mb-2">
-                                <label class="form-check-label" for="roleName">
-                                    Jina la Role
-                                </label>
-                                <input type="hidden" value="<%= roleId %>" id="roleID"/>
-                                <input type="text" class="form-control" value="<%= roleName %>" id="roleName"
-                                placeholder="Mfano: Admin">
-                        </div> 
-                        <h4 class="mt-4">Permissions</h4>
-                        <div class="d-flex justify-content-between">
-                            <label><input type="checkbox" class="form-check-input" id="check-all"/> Chagua Zote</label>
-                            <input type="text" id="search-permission" placeholder="Search ..." />
+                    <div class="form-group mb-2">
+                        <label class="form-check-label" for="roleName">
+                            Jina la Role
+                        </label>
+                        <input type="hidden" value="<%= roleId %>" id="roleID"/>
+                        <input type="text" class="form-control" value="<%= roleName %>" id="roleName"
+                        placeholder="Mfano: Admin">
+                    </div>
+
+                    <h4 class="mt-4">Permissions</h4>
+                    <div class="d-flex justify-content-between gap-3 flex-wrap">
+                        <label class="mb-0"><input type="checkbox" class="form-check-input" id="check-all"/> Chagua Zote</label>
+                        <input type="text" class="form-control" style="max-width: 320px;" id="search-permission" placeholder="Search permission..." />
+                    </div>
+                    <hr/>
+                    <div id="message-box" class="alert alert-info d-none"></div>
+
+                    <% if (!moduleEntries.length) { %>
+                        <div class="alert alert-warning">
+                            Hakuna permissions zilizopatikana kwa sasa.
                         </div>
-                        <hr/>
-                        <div id="message-box" class="alert alert-info d-none"></div>
-                        <div class="row">
-                            <% for(var i = 0; i < permissionList.length; i++){ 
-                                var display_name = permissionList[i].display_name;    
-                                var permission_name = permissionList[i].permission_name;    
-                            %>
-                            <div class="col-md-4 mb-2">
-                                <label class="form-check-label" for="formCheck<%=i%>"> 
-                                <input class="form-check-input checkbox" value="<%= permissionList[i].id %>" 
-                                <%=permissionList[i].is_default ? 'disabled checked' : ''%>
-                                <%=assignedPermissionIds.includes(Number(permissionList[i].id)) ? 'checked' : '' %>
-                                type="checkbox" name="formCheck1" id="formCheck<%=i%>">
-                                    <span class="ml-4  <%= display_name.includes('Futa ') ? 'text-danger' : (
-                                        display_name.includes('Ona ') ? 'text-success' : (display_name.includes('Tengeneza') ? 'text-primary' : (display_name.includes('Badili') ? ' text-secondary' : '' ) )
-                                    ) %>">
-                                        <%= display_name %>  
-                                    </span>  
-                                    <% if( ["SUPER-ADMIN","SUPER ADMIN"].includes(req.session.jukumu) ){ %>
-                                          <i><%= permission_name %></i>
-                                     <% } %>
+                    <% } %>
+
+                    <% for (var moduleIndex = 0; moduleIndex < moduleEntries.length; moduleIndex++) { %>
+                        <% const moduleKey = moduleEntries[moduleIndex][0]; %>
+                        <% const moduleGroup = moduleEntries[moduleIndex][1]; %>
+                        <div class="card border shadow-sm mb-3 permission-module-card" data-module="<%= moduleKey %>">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div>
+                                    <h6 class="permission-module-title"><%= moduleGroup.label %></h6>
+                                    <div class="text-muted permission-module-meta"><%= moduleGroup.items.length %> permissions</div>
+                                </div>
+                                <label class="mb-0">
+                                    <input type="checkbox" class="form-check-input module-check-all" data-module="<%= moduleKey %>"/>
+                                    Chagua Module
                                 </label>
                             </div>
-                            <% } %>
-                        </div> 
-                    </div>
+                            <div class="card-body py-3">
+                                <div class="row">
+                                    <% for (var i = 0; i < moduleGroup.items.length; i++) { %>
+                                        <% const item = moduleGroup.items[i] || {}; %>
+                                        <% const display_name = item.display_name || '-'; %>
+                                        <% const permission_name = item.permission_name || '-'; %>
+                                        <% const permissionIndex = moduleIndex + '_' + i; %>
+                                        <% const searchText = (display_name + ' ' + permission_name + ' ' + moduleGroup.label).toLowerCase(); %>
+                                        <div
+                                            class="col-lg-4 col-md-6 mb-2 permission-option"
+                                            data-module="<%= moduleKey %>"
+                                            data-search-text="<%= searchText %>">
+                                            <label class="form-check-label" for="formCheck<%= permissionIndex %>">
+                                                <input class="form-check-input checkbox"
+                                                    data-module="<%= moduleKey %>"
+                                                    value="<%= item.id %>"
+                                                    <%= item.is_default ? 'disabled checked' : '' %>
+                                                    <%= assignedPermissionIds.includes(Number(item.id)) ? 'checked' : '' %>
+                                                    type="checkbox" name="formCheck1"
+                                                    id="formCheck<%= permissionIndex %>">
+                                                <span class="ml-4 <%= display_name.includes('Futa ') ? 'text-danger' : (
+                                                        display_name.includes('Ona ') ? 'text-success' : (display_name.includes('Tengeneza') ? 'text-primary' : (display_name.includes('Badili') ? ' text-secondary' : '' ) )
+                                                    ) %>"><%= display_name %>
+                                                </span>
+                                                <% if(["SUPER-ADMIN","SUPER ADMIN"].includes(req.session.jukumu)){ %>
+                                                    <i><%= permission_name %></i>
+                                                <% } %>
+                                            </label>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+
                     <div class="alert alert-success shadow" role="alert" id="alertsuccess1" style="display: none;">
                         <strong> Hongera! Role & ! </strong> Permissions <b>zimesajiliwa</b> kikamilifu!
                     </div>
                     <div class="alert alert-danger shadow mb-xl-0" role="alert" id="alertexist1" style="display: none;">
                         <strong> Imeshindwa Kusajili! </strong> Role <b>ilishasajiliwa.</b> tafadhali jaribu jina lingine!
-                        </div>
-                        <div class="alert alert-warning shadow shadow" role="alert" id="alertmtandao1" style="display: none;">
+                    </div>
+                    <div class="alert alert-warning shadow shadow" role="alert" id="alertmtandao1" style="display: none;">
                         <strong> Uh oh, kuna tatizo </strong> la <b>mtandao,</b> tafadhali jaribu tena badae!
-                    </div>  
+                    </div>
                     <hr/>
                     <div class="mb-2 mt-4" id="sajilbtn">
                         <button type="button" class="btn btn-success bg-gradient waves-effect waves-light" onclick="updateRole()">Sasisha</button>
-                    </div> 
+                    </div>
                     <div id="pakiabtn" style="display: none;">
                         <button type="button" class="btn btn-success btn-load">
                             <span class="d-flex align-items-center">
@@ -97,6 +218,6 @@ breadcrumb_main : 'Mipangilio'
 </div>
 <!-- end card -->
 <%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
-<script type="text/javascript" src="/design/layouts/scripts/roles_scripts.js?v=20260311b"></script>
+<script type="text/javascript" src="/design/layouts/scripts/roles_scripts.js?v=20260316b"></script>
 </body>
 </html>

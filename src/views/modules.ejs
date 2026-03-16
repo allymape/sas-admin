@@ -1,0 +1,245 @@
+<% var card_title = '' %>
+<%- include('layouts/partials/header.ejs' , {
+    title : 'Module Management',
+    page_title : 'Module Management',
+    card_title : 'Orodha ya Moduli',
+    breadcrumb_main : 'Setup'
+}) %>
+<style>
+    #customerTable.table-readable th,
+    #customerTable.table-readable td {
+        font-size: 0.95rem;
+    }
+
+    #customerTable.table-readable .muted-sub {
+        font-size: 0.82rem !important;
+    }
+
+    #customerTable.table-readable .action-btn {
+        width: 38px;
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+
+    .summary-filter-card {
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .summary-filter-card.active-filter {
+        border-color: #0ab39c !important;
+        box-shadow: 0 0 0 2px rgba(10, 179, 156, 0.15);
+    }
+</style>
+<%
+    const formatDateTime = (value) => {
+        if (!value) return '-';
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? value : date.toLocaleString('sw-TZ');
+    };
+
+    const resolveStaff = (row, key) => {
+        const nameKey = key + '_name';
+        if (row && row[nameKey] && String(row[nameKey]).trim() !== '') return row[nameKey];
+        return '-';
+    };
+
+    const toTitle = (value) => {
+        if (!value) return '-';
+        return String(value)
+            .toLowerCase()
+            .replace(/\b\w/g, (char) => char.toUpperCase());
+    };
+
+    const totalModules = Array.isArray(data) ? data.length : 0;
+    const activeModules = (Array.isArray(data) ? data : []).filter((row) => Number(row.is_active) === 1).length;
+    const inactiveModules = totalModules - activeModules;
+%>
+<div class="card-body">
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border mb-0 summary-filter-card module-filter-card active-filter" data-filter="all" title="Onyesha moduli zote">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Jumla ya Moduli</p>
+                    <h3 class="mb-0"><%= totalModules %></h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border mb-0 summary-filter-card module-filter-card" data-filter="active" title="Filter moduli active">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Active</p>
+                    <h3 class="mb-0 text-success"><%= activeModules %></h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border mb-0 summary-filter-card module-filter-card" data-filter="inactive" title="Filter moduli inactive">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Inactive</p>
+                    <h3 class="mb-0 text-danger"><%= inactiveModules %></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border mb-4">
+        <div class="card-body">
+            <h6 class="mb-3 text-uppercase text-muted"><%= edit ? 'Badili Moduli' : 'Sajili Moduli Mpya' %></h6>
+            <form action="<%= edit ? '/badiliModule/'+eModule[0].id : '/tengenezaModule'%>" method="POST">
+                <div class="row g-3 align-items-end">
+                    <div class="col-lg-4">
+                        <% var name = edit ? eModule[0].module_name : '' %>
+                        <label class="form-label">Module Name</label>
+                        <input required name="module_name" value="<%= name ? name.replace(/-/g , ' ') : '' %>" class="form-control" placeholder="Mfano: staff-management" />
+                    </div>
+                    <div class="col-lg-4">
+                        <label class="form-label">Display Name</label>
+                        <input name="display_name" value="<%=edit ? eModule[0].display_name : ''%>" class="form-control" placeholder="Mfano: Staff Management" />
+                    </div>
+                    <% if(edit){ %>
+                        <div class="col-lg-2">
+                            <div class="form-check form-switch mt-3">
+                                <input type="checkbox" name="status" <%=edit && Number(eModule[0].is_active) === 1 ? 'checked' : ''%> class="form-check-input" />
+                                <label class="form-check-label">Active</label>
+                            </div>
+                        </div>
+                    <% } %>
+                    <div class="col-lg-2 d-flex gap-2">
+                        <button type="submit" class="btn <%=edit ? 'btn-primary' : 'btn-success'%> w-100">
+                            <%=edit ? 'Badili' : 'Sajili'%>
+                        </button>
+                        <% if (edit) { %>
+                            <a href="/Modules" class="btn btn-light w-100">Ghairi</a>
+                        <% } %>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="mb-0 text-uppercase text-muted">Moduli Zilizopo</h6>
+        <div class="search-box" style="max-width: 280px;">
+            <input type="text" class="form-control search" placeholder="Tafuta moduli...">
+            <i class="ri-search-line search-icon"></i>
+        </div>
+    </div>
+
+    <% var success = req.flash('success') %>
+    <% var error  = req.flash('error') %>
+    <% if(success != ''){ %>
+        <div class="alert alert-success"><%= success %></div>
+    <% } %>
+    <% if(error != ''){ %>
+        <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+
+    <div class="table-responsive table-card">
+        <table class="table table-hover align-middle mb-0 table-readable" id="customerTable">
+            <thead class="table-light">
+                <tr>
+                    <th width="5%">Na.</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Created By</th>
+                    <th>Created At</th>
+                    <th>Updated By</th>
+                    <th>Updated At</th>
+                    <th class="text-center" width="8%">Action</th>
+                </tr>
+            </thead>
+            <tbody class="list form-check-all">
+                <% for(var i = 0; i < data.length; i++){ %>
+                    <tr data-active="<%= Number(data[i].is_active) === 1 ? '1' : '0' %>">
+                        <td class="id">
+                            <a href="/javascript:void(0);" class="fw-medium link-primary">
+                                <%- include('paginations/numbering.ejs' , { index : i }) %>
+                            </a>
+                        </td>
+                        <td>
+                            <div class="fw-semibold"><%= toTitle(data[i].display_name || data[i].module_name) %></div>
+                            <div class="text-muted fst-italic text-lowercase muted-sub"><%= data[i].module_name || '-' %></div>
+                        </td>
+                        <td>
+                            <% if (Number(data[i].is_active) === 1) { %>
+                                <span class="badge bg-success-subtle text-success">Active</span>
+                            <% } else { %>
+                                <span class="badge bg-danger-subtle text-danger">Inactive</span>
+                            <% } %>
+                        </td>
+                        <td><%= resolveStaff(data[i], 'created_by') %></td>
+                        <td><small class="text-muted"><%= formatDateTime(data[i].created_at) %></small></td>
+                        <td><%= resolveStaff(data[i], 'updated_by') %></td>
+                        <td><small class="text-muted"><%= formatDateTime(data[i].updated_at) %></small></td>
+                        <td class="text-center">
+                            <form action="/futaModule/<%=data[i].id%>" method="POST">
+                                <% if(!(edit && eModule[0].id == data[i].id)){ %>
+                                    <a href="/Modules/<%= data[i].id %>" class="btn btn-soft-primary action-btn" title="Badili">
+                                        <i class="ri-pencil-line"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-soft-danger btn-delete action-btn" title="Futa">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </button>
+                                <% } %>
+                            </form>
+                        </td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="noresult" style="display: none">
+        <div class="text-center py-5">
+            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+            <h5 class="mt-2">Hakuna Matokeo</h5>
+            <p class="text-muted mb-0">Hakuna moduli zilizopatikana kwa tafuta uliyoingiza.</p>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <%- include('paginations/html_pagination.ejs'); %>
+    </div>
+</div>
+<script>
+    (function () {
+        const cards = Array.from(document.querySelectorAll('.module-filter-card'));
+        const rows = Array.from(document.querySelectorAll('#customerTable tbody tr'));
+        const noResult = document.querySelector('.noresult');
+
+        if (!cards.length || !rows.length) return;
+
+        const applyFilter = (filter) => {
+            let visible = 0;
+            rows.forEach((row) => {
+                const isActive = row.dataset.active === '1';
+                let show = true;
+
+                if (filter === 'active') show = isActive;
+                if (filter === 'inactive') show = !isActive;
+
+                row.style.display = show ? '' : 'none';
+                if (show) visible += 1;
+            });
+
+            cards.forEach((card) => {
+                card.classList.toggle('active-filter', card.dataset.filter === filter);
+            });
+
+            if (noResult) {
+                noResult.style.display = visible === 0 ? 'block' : 'none';
+            }
+        };
+
+        cards.forEach((card) => {
+            card.addEventListener('click', () => applyFilter(card.dataset.filter || 'all'));
+        });
+    })();
+</script>
+<%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
+</body>
+</html>

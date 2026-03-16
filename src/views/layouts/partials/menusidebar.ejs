@@ -74,7 +74,7 @@ const menuItems = [
                 counterId : "", 
                 pattern : "Dashboard",
                 menuId : "",
-                hasPermissionTo : permission(req , 'view-initiate-schools'),
+                hasPermissionTo : permission(req , 'view-dashboard'),
             },
              {
                 label : "Schools Geolocation",
@@ -83,7 +83,7 @@ const menuItems = [
                 counterId : "",
                 pattern : "Map",
                 menuId : "",
-                hasPermissionTo : permission(req , 'view-initiate-schools'),
+                hasPermissionTo : permission(req , 'view-dashboard'),
             },
         ]
    },
@@ -314,7 +314,7 @@ const menuItems = [
    },
    //MPANGLIO
    {
-        label : "Mipangilio",
+        label : "Setup",
         url  : "#sidebarUI",
         menuTitle : '',
         icon : "ri-list-settings-line",
@@ -400,6 +400,14 @@ const menuItems = [
                         icon : "",
                         counterId : "",
                         pattern : "v2-Permissions|Permissions|Permissions/*",
+                        hasPermissionTo : permission(req , 'view-permissions'),
+                    },
+                    {
+                        label : "Moduli",
+                        url  : "v2-Modules",
+                        icon : "",
+                        counterId : "",
+                        pattern : "v2-Modules|Modules|Modules/*",
                         hasPermissionTo : permission(req , 'view-permissions'),
                     },
                     {

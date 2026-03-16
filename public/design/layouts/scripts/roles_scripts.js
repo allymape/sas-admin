@@ -31,6 +31,60 @@ function updateCheckAllState() {
 
   checkAll.checked = checkedCount === checkboxes.length;
   checkAll.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
+  updateModuleCheckAllStates();
+}
+
+function updateModuleCheckAllStates() {
+  var moduleToggles = document.querySelectorAll(".module-check-all");
+  if (!moduleToggles.length) return;
+
+  moduleToggles.forEach(function (toggle) {
+    var moduleKey = toggle.getAttribute("data-module");
+    if (!moduleKey) return;
+
+    var moduleCheckboxes = Array.from(
+      document.querySelectorAll('input[name="formCheck1"][data-module="' + moduleKey + '"]')
+    ).filter(function (checkbox) {
+      return !checkbox.disabled;
+    });
+
+    if (!moduleCheckboxes.length) {
+      toggle.checked = false;
+      toggle.indeterminate = false;
+      return;
+    }
+
+    var checkedCount = moduleCheckboxes.filter(function (checkbox) {
+      return checkbox.checked;
+    }).length;
+
+    toggle.checked = checkedCount === moduleCheckboxes.length;
+    toggle.indeterminate = checkedCount > 0 && checkedCount < moduleCheckboxes.length;
+  });
+}
+
+function initModuleCheckAllBehavior() {
+  var moduleToggles = document.querySelectorAll(".module-check-all");
+  if (!moduleToggles.length) return;
+
+  moduleToggles.forEach(function (toggle) {
+    toggle.addEventListener("change", function () {
+      var moduleKey = toggle.getAttribute("data-module");
+      var shouldCheck = toggle.checked;
+      if (!moduleKey) return;
+
+      var moduleCheckboxes = document.querySelectorAll(
+        'input[name="formCheck1"][data-module="' + moduleKey + '"]'
+      );
+      moduleCheckboxes.forEach(function (checkbox) {
+        if (checkbox.disabled) return;
+        checkbox.checked = shouldCheck;
+      });
+      updateCheckAllState();
+    });
+  });
+
+  updateModuleCheckAllStates();
 }
 
 function applyPermissionTemplate(permissionIds) {
@@ -265,12 +319,56 @@ $(".read-more").on('click' , function(){
 });
 hiddenPermissions.hide();
 
-$("#search-permission").on('keyup' , function(){
-    let targetedElements = $(".checkbox").closest("div").find("span");
-    let parent = "div"; 
-    let messageId = "message-box";
+$("#search-permission").on("keyup", function () {
+  var query = String($(this).val() || "").trim().toLowerCase();
+  var moduleCards = $(".permission-module-card");
+  var permissionOptions = $(".permission-option");
+
+  if (!moduleCards.length || !permissionOptions.length) {
+    var targetedElements = $(".checkbox").closest("div").find("span");
+    var parent = "div";
+    var messageId = "message-box";
     search(this, targetedElements, parent, messageId);
+    return;
+  }
+
+  var matchCount = 0;
+  if (query.length > 2) {
+    moduleCards.each(function () {
+      var moduleHasMatch = false;
+      $(this)
+        .find(".permission-option")
+        .each(function () {
+          var text = String($(this).data("search-text") || $(this).text() || "").toLowerCase();
+          var isMatch = text.includes(query);
+          $(this).toggle(isMatch);
+          if (isMatch) {
+            moduleHasMatch = true;
+            matchCount++;
+          }
+        });
+      $(this).toggle(moduleHasMatch);
+    });
+
+    if (matchCount === 0) {
+      $("#message-box")
+        .html(
+          "<span class='text-info'>Hatujapata kinacholingana na ulichokiandika ... <i>" +
+            query +
+            "</i></span>"
+        )
+        .removeClass("d-none");
+    } else {
+      $("#message-box").addClass("d-none");
+    }
+    return;
+  }
+
+  permissionOptions.show();
+  moduleCards.show();
+  $("#message-box").addClass("d-none");
 });
 
 initRoleInheritanceForCreatePage();
 initCheckAllBehavior();
+initModuleCheckAllBehavior();

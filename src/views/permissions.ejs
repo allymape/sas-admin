@@ -1,147 +1,228 @@
-<% var card_title = '' %> 
+<% var card_title = '' %>
 <%- include('layouts/partials/header.ejs' , {
-    title : 'Permissions',
-    page_title : 'Orodha ya Permissions',
-    card_title : 'Permissions zilizopo',
-    breadcrumb_main : 'Mipangilio' 
+    title : 'Permission Management',
+    page_title : 'Permission Management',
+    card_title : 'Orodha ya Permissions',
+    breadcrumb_main : 'Setup'
 }) %>
+<style>
+    #customerTable.table-readable th,
+    #customerTable.table-readable td {
+        font-size: 0.95rem;
+    }
+
+    #customerTable.table-readable .muted-sub {
+        font-size: 0.82rem !important;
+    }
+
+    #customerTable.table-readable .action-btn {
+        width: 38px;
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+
+    .summary-filter-card {
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    .summary-filter-card.active-filter {
+        border-color: #0ab39c !important;
+        box-shadow: 0 0 0 2px rgba(10, 179, 156, 0.15);
+    }
+</style>
+<%
+    const modulesList = Array.isArray(modules) ? modules : [];
+    const permissionList = Array.isArray(data) ? data : [];
+    const totalPermissions = Number(pagination && pagination.total ? pagination.total : permissionList.length);
+    const activePermissionsPage = permissionList.filter((row) => Number(row.status_id) === 1).length;
+    const defaultPermissionsPage = permissionList.filter((row) => Number(row.is_default) === 1).length;
+    const activePermissions = Number(typeof activeTotal !== 'undefined' ? activeTotal : activePermissionsPage);
+    const defaultPermissions = Number(typeof defaultTotal !== 'undefined' ? defaultTotal : defaultPermissionsPage);
+    const filter = String(typeof currentFilter !== 'undefined' ? currentFilter : (req.query.filter || 'all')).toLowerCase();
+
+    const toTitle = (value) => {
+        if (!value) return '-';
+        return String(value).toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+    };
+%>
 <div class="card-body">
-    <div class="ribbon-three ribbon-three-info">
-        <span class="badge"><%=`${pagination.total}`%></span>
-    </div>
-<div id="customerList">
-    <div class="row g-4 mb-3">
-        <div class="col-sm-10">
-            <form action="<%= edit ? '/badiliPermission/'+ePermission[0].id : '/tengenezaPermission'%>" method="POST" class="d-flex">
-                        <div class="col-xxl-3 px-2">
-                            <% var name = edit ? ePermission[0].permission_name : '' %>
-                            <input required name="permission_name" value="<%= name ? name.replace(/-/g , ' ') : '' %>" class="form-control" placeholder="Jina mfano futa-akaunti" />
-                        </div>
-                        <div class="col-xxl-3 px-2">
-                            
-                            <input required name="display_name" value="<%=edit ? ePermission[0].display_name : ''%>" class="form-control" placeholder="Jina la kusomeka mfano Futa Akaunti" />
-                        </div>
-                        <% if(edit){ %>
-                                <div class="col-xxl-2 px-4 mt-2  form-check form-check-success">
-                                        <label class="form-check-label">
-                                        <input  type="checkbox" name="status" <%=edit && ePermission[0].status_id == 1 ? 'checked' : ''%> class="form-check-input"  /> 
-                                        <span class="ml-2">Enabled</span></label>
-                                </div>
-                                <div class="col-xxl-2 px-4 mt-2  form-check form-check-success">
-                                        <label class="form-check-label">
-                                        <input  type="checkbox" name="is_default" <%=edit && ePermission[0].is_default == 1 ? 'checked' : ''%> class="form-check-input"  /> 
-                                        <span class="ml-2">Default</span></label>
-                                </div>
-                        <% }%>
-                        <div class="col-xxl-3 px-2">
-                            <button type="submit" class="btn px-4 <%=edit ? 'btn-primary' : 'btn-success'%>"> 
-                            <%=edit ? 'Badili' : 'Sajili'%>
-                            </button>
-                            <%if (edit) { %>
-                                <a href="/Permissions" class="btn btn-danger"><i class=""></i>Ghairi</a>
-                            <% } %>
-                        </div>
-            </form>
-        </div>
-        <div class="col-sm-2">
-            <div class="d-flex justify-content-sm-end">
-                <div class="search-box ms-2">
-                    <input type="text" class="form-control search" placeholder="Tafuta...">
-                    <i class="ri-search-line search-icon"></i>
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <a href="/Permissions" class="card border mb-0 summary-filter-card permission-filter-card <%= filter === 'all' ? 'active-filter' : '' %>" title="Onyesha permissions zote">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Jumla ya Permissions</p>
+                    <h3 class="mb-0"><%= totalPermissions %></h3>
                 </div>
-            </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="/Permissions?filter=active" class="card border mb-0 summary-filter-card permission-filter-card <%= filter === 'active' ? 'active-filter' : '' %>" title="Filter permissions active">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Permissions Active</p>
+                    <h3 class="mb-0 text-success"><%= activePermissions %></h3>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="/Permissions?filter=default" class="card border mb-0 summary-filter-card permission-filter-card <%= filter === 'default' ? 'active-filter' : '' %>" title="Filter permissions default">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Permissions Default</p>
+                    <h3 class="mb-0 text-primary"><%= defaultPermissions %></h3>
+                </div>
+            </a>
         </div>
     </div>
 
-    <div class="table-responsive table-card mt-3 mb-1">
-        <div class="alert alert-info">
-            <h6 class="text-primary text-uppercase">Jumla ya permissions <%= pagination.total %> zimepatikana</h6>
+    <div class="card border mb-4">
+        <div class="card-body">
+            <h6 class="mb-3 text-uppercase text-muted"><%= edit ? 'Badili Permission' : 'Sajili Permission Mpya' %></h6>
+            <form action="<%= edit ? '/badiliPermission/'+ePermission[0].id : '/tengenezaPermission'%>" method="POST">
+                <div class="row g-3 align-items-end">
+                    <div class="col-lg-3">
+                        <% var name = edit ? ePermission[0].permission_name : '' %>
+                        <label class="form-label">Permission Name</label>
+                        <input required name="permission_name" value="<%= name ? name.replace(/-/g , ' ') : '' %>" class="form-control" placeholder="Mfano: view-users" />
+                    </div>
+                    <div class="col-lg-3">
+                        <label class="form-label">Display Name</label>
+                        <input required name="display_name" value="<%=edit ? ePermission[0].display_name : ''%>" class="form-control" placeholder="Mfano: Ona Watumiaji" />
+                    </div>
+                    <div class="col-lg-3">
+                        <label class="form-label">Module</label>
+                        <% const selectedModuleId = edit ? Number(ePermission[0].module_id || 0) : 0; %>
+                        <select required name="module_id" class="form-select">
+                            <option value="">Chagua Moduli</option>
+                            <% for (var m = 0; m < modulesList.length; m++) { %>
+                                <option value="<%= modulesList[m].id %>" <%= selectedModuleId === Number(modulesList[m].id) ? 'selected' : '' %>>
+                                    <%= modulesList[m].display_name || modulesList[m].module_name %>
+                                </option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <% if(edit){ %>
+                        <div class="col-lg-1">
+                            <div class="form-check form-switch mt-3">
+                                <input type="checkbox" name="status" <%= Number(ePermission[0].status_id) === 1 ? 'checked' : ''%> class="form-check-input" />
+                                <label class="form-check-label">Active</label>
+                            </div>
+                        </div>
+                        <div class="col-lg-1">
+                            <div class="form-check form-switch mt-3">
+                                <input type="checkbox" name="is_default" <%= Number(ePermission[0].is_default) === 1 ? 'checked' : ''%> class="form-check-input" />
+                                <label class="form-check-label">Default</label>
+                            </div>
+                        </div>
+                    <% } %>
+                    <div class="col-lg-2 d-flex gap-2">
+                        <button type="submit" class="btn <%=edit ? 'btn-primary' : 'btn-success'%> w-100">
+                            <%=edit ? 'Badili' : 'Sajili'%>
+                        </button>
+                        <% if (edit) { %>
+                            <a href="/Permissions" class="btn btn-light w-100">Ghairi</a>
+                        <% } %>
+                    </div>
+                </div>
+            </form>
         </div>
-            <% var success = req.flash('success') %>
-            <% var error  = req.flash('error') %>
-            <% if(success != ''){%>
-                    <div class="alert alert-success">
-                        <%= success %>
-                    </div>
-            <% } %>
-            <% if(error != ''){%>
-                    <div class="alert alert-danger">
-                        <%= error %>
-                    </div>
-            <% } %>
-        <table class="table align-middle table-nowrap" id="customerTable">
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="mb-0 text-uppercase text-muted">Permissions Zilizopo</h6>
+        <div class="search-box" style="max-width: 280px;">
+            <input type="text" class="form-control search" placeholder="Tafuta permission...">
+            <i class="ri-search-line search-icon"></i>
+        </div>
+    </div>
+
+    <% var success = req.flash('success') %>
+    <% var error  = req.flash('error') %>
+    <% if(success != ''){ %>
+        <div class="alert alert-success"><%= success %></div>
+    <% } %>
+    <% if(error != ''){ %>
+        <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+
+    <div class="table-responsive table-card">
+        <table class="table table-hover align-middle mb-0 table-readable" id="customerTable">
             <thead class="table-light">
                 <tr>
-                    <!-- <th scope="col" style="width: 50px;">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="checkAll" value="option">
-                        </div>
-                    </th> -->
-                    <th width="5%" >Na.</th>
-                    <th >Jina</th>
-                    <th >Jina la kusomeka</th>
+                    <th width="5%">Na.</th>
+                    <th>Name</th>
+                    <th>Module</th>
+                    <th>Status</th>
                     <th class="text-center">Default</th>
-                    <th class="text-center" width="5%">Action</th>
+                    <th class="text-center" width="8%">Action</th>
                 </tr>
             </thead>
             <tbody class="list form-check-all">
-                <% for(var i = 0; i < data.length; i++){ %>
-                <tr class="<%= data[i].status_id == 0 ? 'text-danger' : ''%>">
-                    <td class="id">
-                        <a href="/javascript:void(0);" class="fw-medium link-primary">
-                            <%- include('paginations/numbering.ejs' , {
-                                index : i
-                             }) %>
-                        </a>
-                    </td>
-                    <td class=""><%= data[i].permission_name %></td>
-                    <td class=""><%= data[i].display_name %></td>
-                    <td class="text-center">
-                        <span class="<%=data[i].is_default == 1 ? 'ri ri-checkbox-circle-line text-success' : '' %>"></span>
-                    </td>
-                    <td class="text-left"> 
-                        <form action="/futaPermission/<%=data[i].id%>" method="POST">
-                        <% if(edit && ePermission[0].id == data[i].id){%>
-                        <%}else{%>
-                            <a href="/Permissions/<%= data[i].id %>" class="btn btn-link text-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" 
-                                width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
-                                class="feather feather-edit-3"><path d="M12 20h9"></path>
-                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                            </svg>
+                <% for(var i = 0; i < permissionList.length; i++){ %>
+                    <tr>
+                        <td class="id">
+                            <a href="/javascript:void(0);" class="fw-medium link-primary">
+                                <%- include('paginations/numbering.ejs' , { index : i }) %>
                             </a>
-                            <button type="button" class="btn btn-link text-danger btn-delete" >
-                            <svg xmlns="http://www.w3.org/2000/svg" 
-                                width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
-                                class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            <line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line>
-                            </svg>
-                            </button>
-                        <%}%>
-                        
-                        </form>
-                    </td>
-                </tr>
+                        </td>
+                        <td>
+                            <div class="fw-semibold"><%= toTitle(permissionList[i].display_name || permissionList[i].permission_name) %></div>
+                            <div class="text-muted fst-italic text-lowercase muted-sub"><%= permissionList[i].permission_name || '-' %></div>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary-subtle text-secondary">
+                                <%= permissionList[i].module_display_name || permissionList[i].module_name || '-' %>
+                            </span>
+                        </td>
+                        <td>
+                            <% if (Number(permissionList[i].status_id) === 1) { %>
+                                <span class="badge bg-success-subtle text-success">Active</span>
+                            <% } else { %>
+                                <span class="badge bg-danger-subtle text-danger">Inactive</span>
+                            <% } %>
+                        </td>
+                        <td class="text-center">
+                            <% if (Number(permissionList[i].is_default) === 1) { %>
+                                <span class="badge bg-primary-subtle text-primary">Default</span>
+                            <% } else { %>
+                                <span class="text-muted">-</span>
+                            <% } %>
+                        </td>
+                        <td class="text-center">
+                            <form action="/futaPermission/<%=permissionList[i].id%>" method="POST">
+                                <% if(!(edit && ePermission[0].id == permissionList[i].id)){ %>
+                                    <a href="/Permissions/<%= permissionList[i].id %>" class="btn btn-soft-primary action-btn" title="Badili">
+                                        <i class="ri-pencil-line"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-soft-danger btn-delete action-btn" title="Futa">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </button>
+                                <% } %>
+                            </form>
+                        </td>
+                    </tr>
                 <% } %>
             </tbody>
         </table>
-        <div class="noresult" style="display: none">
-            <div class="text-center">
-                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
-                <h5 class="mt-2">Sorry! No Result Found</h5>
-                <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
-            </div>
+    </div>
+
+    <div class="noresult" style="display: none">
+        <div class="text-center py-5">
+            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+            <h5 class="mt-2">Hakuna Matokeo</h5>
+            <p class="text-muted mb-0">Hakuna permissions zilizopatikana kwa tafuta uliyoingiza.</p>
         </div>
-    <!-- Pagination and page length -->
-            <%- include('paginations/html_pagination.ejs'); %>
-    <!-- End pagination and page length -->
+    </div>
+
+    <div class="mt-3">
+        <%- include('paginations/html_pagination.ejs'); %>
     </div>
 </div>
-</div><!-- end card -->
 <%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
-<!-- <script type="text/javascript" src="design/layouts/scripts/permissions_scripts.js"></script> -->
 </body>
 </html>

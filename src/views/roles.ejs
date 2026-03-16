@@ -1,118 +1,198 @@
-<% var card_title = '' %> 
+<% var card_title = '' %>
 <%- include('layouts/partials/header.ejs' , {
-    title : 'Roles',
-    page_title : 'Orodha ya Roles',
-    card_title : 'Roles zilizopo',
-    breadcrumb_main : 'Mipangilio' 
+    title : 'Role Management',
+    page_title : 'Role Management',
+    card_title : 'Orodha ya Roles',
+    breadcrumb_main : 'Setup'
 }) %>
+<style>
+    #customerTable.table-readable th,
+    #customerTable.table-readable td {
+        font-size: 0.95rem;
+    }
+
+    #customerTable.table-readable .action-btn {
+        width: 38px;
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+
+    #customerTable.table-readable .permission.badge {
+        font-size: 0.78rem;
+        margin-bottom: 0.2rem;
+    }
+
+    #customerTable.table-readable .muted-sub {
+        font-size: 0.82rem !important;
+    }
+</style>
+<%
+    const formatDateTime = (value) => {
+        if (!value) return '-';
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? value : date.toLocaleString('sw-TZ');
+    };
+
+    const resolveStaff = (row, key) => {
+        const nameKey = key + '_name';
+        if (row && row[nameKey] && String(row[nameKey]).trim() !== '') return row[nameKey];
+        return '-';
+    };
+
+    const roles = Array.isArray(data) ? data : [];
+    const totalRoles = Number(pagination && pagination.total ? pagination.total : roles.length);
+    const activeRoles = Number(pagination && typeof pagination.active !== 'undefined'
+        ? pagination.active
+        : roles.filter((row) => Number(row.is_active) === 1).length);
+    const totalPermissionsInPage = roles.reduce((sum, role) => {
+        const permissions = Array.isArray(role.permissions) ? role.permissions : [];
+        return sum + permissions.length;
+    }, 0);
+%>
 <div class="card-body">
-    <div class="ribbon-three ribbon-three-info">
-        <span class="badge"><%=`${pagination.total}`%></span>
-    </div>
-     <div id="customerList">
-    <div class="row g-4 mb-3">
-        <div class="col-sm-auto">
-            <div>
-                <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn" onclick="sajiliRole()"><i class="ri-add-line align-bottom me-1"></i> Sajili</button>
-                <!-- <button class="btn  btn-outline-danger" id="sync-all">
-                    Tengeneza Roles na Permission (System Defaults)
-                </button> -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border mb-0">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Jumla ya Roles</p>
+                    <h3 class="mb-0"><%= totalRoles %></h3>
+                </div>
             </div>
         </div>
-        <div class="col-sm">
-            <div class="d-flex justify-content-sm-end">
-                <div class="search-box ms-2">
-                    <input type="text" class="form-control search" placeholder="Tafuta...">
-                    <i class="ri-search-line search-icon"></i>
+        <div class="col-md-4">
+            <div class="card border mb-0">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Roles Active</p>
+                    <h3 class="mb-0 text-success"><%= activeRoles %></h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border mb-0">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Permissions (Ukurasa)</p>
+                    <h3 class="mb-0 text-primary"><%= totalPermissionsInPage %></h3>
                 </div>
             </div>
         </div>
     </div>
 
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-success" onclick="sajiliRole()">
+                <i class="ri-add-line align-bottom me-1"></i> Sajili Role
+            </button>
+        </div>
+        <div class="search-box" style="max-width: 280px;">
+            <input type="text" class="form-control search" placeholder="Tafuta role...">
+            <i class="ri-search-line search-icon"></i>
+        </div>
+    </div>
+
+    <% var success = req.flash('success') %>
+    <% var error  = req.flash('error') %>
+    <% if(success != ''){ %>
+        <div class="alert alert-success"><%= success %></div>
+    <% } %>
+    <% if(error != ''){ %>
+        <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+
     <div class="table-responsive table-card mt-3 mb-1">
-        <table class="table align-middle table-nowrap" id="customerTable" style="width:100%">
+        <table class="table table-hover align-middle mb-0 table-readable" id="customerTable" style="width:100%">
             <thead class="table-light">
                 <tr>
-                    <!-- <th scope="col" style="width: 50px;">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="checkAll" value="option">
-                        </div>
-                    </th> -->
                     <th width="5%">Na.</th>
-                    <th>Jina</th>
-                    <th width="80%">Permissions</th>
-                    <th class="text-center" width="15%">Action</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th width="45%">Permissions</th>
+                    <th class="text-center">Count</th>
+                    <th>Created By</th>
+                    <th>Created At</th>
+                    <th>Updated By</th>
+                    <th>Updated At</th>
+                    <th class="text-center">Action</th>
                 </tr>
             </thead>
             <tbody class="list form-check-all">
-                <% for(var i = 0; i < data.length; i++){ %>
-                <tr>
-                    <td class="id"><a href="javascript:void(0);" class="fw-medium link-primary">
-                        <%= (Number(pagination.current) - 1) * Number(pagination.per_page) + i + 1 %></a></td>
-                    <td class="date"><%= data[i].role_name %></td>
-                    <td class="text-wrap">
-                            <% 
-                            var permissions = data[i].permissions;
-                            var permission_names = data[i].permission_names;
-                            // ? data[i].permissions.split(",").filter( function(el) { return el !== ''}) : []; 
-                            %>
-                            <% var hideStart = 5 %>
-                            <% var totalHidden = 0 %>
-                            <% permissions.forEach( (permission , i ) => { 
-                            if( i >= hideStart) totalHidden++;
-                            %>
-                            <span title="<%=permission_names[i]%>" 
-                                  data-bs-toggle="tooltip" 
-                                  class=" cursor-pointer badge rounded-pill permission badge-outline-<%= permission.includes('Futa ') ? 'danger' : (
-                                    permission.includes('Ona ') ? 'success' : (
-                                        permission.includes('Tengeneza') ? 'primary' : (
-                                            permission.includes('Badili') ? 'secondary' : '' ) )
-                                ) %>
-                                <%= i >= hideStart  ? 'hidden-permission' : '' %>">
-                                    <%=permission%>
+                <% for(var i = 0; i < roles.length; i++){ %>
+                    <% 
+                        const permissions = Array.isArray(roles[i].permissions) ? roles[i].permissions : [];
+                        const permissionNames = Array.isArray(roles[i].permission_names) ? roles[i].permission_names : [];
+                        const hideStart = 5;
+                    %>
+                    <tr>
+                        <td class="id">
+                            <a href="/javascript:void(0);" class="fw-medium link-primary">
+                                <%= (Number(pagination.current) - 1) * Number(pagination.per_page) + i + 1 %>
+                            </a>
+                        </td>
+                        <td>
+                            <div class="fw-semibold"><%= roles[i].role_name %></div>
+                        </td>
+                        <td>
+                            <% if (Number(roles[i].is_active) === 1) { %>
+                                <span class="badge bg-success-subtle text-success">Active</span>
+                            <% } else { %>
+                                <span class="badge bg-danger-subtle text-danger">Inactive</span>
+                            <% } %>
+                        </td>
+                        <td class="text-wrap">
+                            <% permissions.forEach((permission, pIndex) => { %>
+                                <span
+                                    title="<%= permissionNames[pIndex] || permission %>"
+                                    data-bs-toggle="tooltip"
+                                    class="cursor-pointer badge rounded-pill permission badge-outline-<%= permission.includes('Futa ') ? 'danger' : (permission.includes('Ona ') ? 'success' : (permission.includes('Tengeneza') ? 'primary' : (permission.includes('Badili') ? 'secondary' : 'dark'))) %> <%= pIndex >= hideStart ? 'hidden-permission' : '' %>">
+                                    <%= permission %>
                                 </span>
                             <% }) %>
-                        <% if(permissions.length > hideStart){ %>
-                             <button type="button" class="btn btn-sm btn-rounded read-more" >
-                                <i class="ri ri-add-circle-line ri-lg text-primary" title="Ona zaidi ..." data-bs-toggle="tooltip"></i> 
-                                (<%= permissions.length - hideStart %>) More
+                            <% if (permissions.length > hideStart) { %>
+                                <button type="button" class="btn btn-sm btn-light read-more">
+                                    <i class="ri ri-add-circle-line ri-lg text-primary" title="Ona zaidi ..." data-bs-toggle="tooltip"></i>
+                                    (<%= permissions.length - hideStart %>) More
+                                </button>
+                            <% } %>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-info-subtle text-info"><%= permissions.length %></span>
+                        </td>
+                        <td><%= resolveStaff(roles[i], 'created_by') %></td>
+                        <td><small class="text-muted"><%= formatDateTime(roles[i].created_at) %></small></td>
+                        <td><%= resolveStaff(roles[i], 'updated_by') %></td>
+                        <td><small class="text-muted"><%= formatDateTime(roles[i].updated_at) %></small></td>
+                        <td class="text-center">
+                            <a class="btn btn-soft-primary action-btn" href="/EditRole/<%= roles[i].id %>" title="Badili">
+                                <i class="ri-pencil-line"></i>
+                            </a>
+                            <button
+                                type="button"
+                                class="btn btn-soft-danger action-btn"
+                                data-bs-toggle="modal"
+                                data-id="<%= roles[i].rolesId || roles[i].id %>"
+                                onclick="AddZone1(this); return false;"
+                                title="Futa">
+                                <i class="ri-delete-bin-line"></i>
                             </button>
-                        <% } %>
-                    </td>
-                    <td class="text-center"> 
-                        <a class="btn btn-link text-primary add-btn"
-                        href="/EditRole/<%= data[i].id %>"><svg xmlns="http://www.w3.org/2000/svg" 
-                        width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
-                        class="feather feather-edit-3"><path d="M12 20h9"></path>
-                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></a>
-                        <button type="button" class="btn btn-link text-danger add-btn" 
-                        data-bs-toggle="modal" data-id="<%= data[i].rolesId %>" 
-                        id="create-btn" 
-                        onclick="AddZone1(this); return false;"><svg xmlns="http://www.w3.org/2000/svg" 
-                        width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
-                        class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                        <line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
-                    </td>
-
-                </tr>
+                        </td>
+                    </tr>
                 <% } %>
             </tbody>
         </table>
+
         <div class="noresult" style="display: none">
-            <div class="text-center">
+            <div class="text-center py-5">
                 <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
-                <h5 class="mt-2">Sorry! No Result Found</h5>
-                <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
+                <h5 class="mt-2">Hakuna Matokeo</h5>
+                <p class="text-muted mb-0">Hakuna role zilizopatikana kwa tafuta uliyoingiza.</p>
             </div>
         </div>
     </div>
+
     <%- include('paginations/html_pagination.ejs') %>
 </div>
-
-</div><!-- end card -->
 <%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
 <script type="text/javascript" src="/design/layouts/scripts/roles_scripts.js?v=20260311b"></script>
 </body>

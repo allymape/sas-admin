@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const applicantController = express.Router();
 var path = require("path");
+const request = require("request");
 const { sendRequest, isAuthenticated, can, activeHandover } = require("../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 const allApplicantsAPI = API_BASE_URL + "all-applicants";
@@ -18,22 +19,63 @@ applicantController.get("/Waombaji",isAuthenticated,can("view-applicants"),activ
       });
   });
 // Post all Applicants
-applicantController.post("/ApplicantList",isAuthenticated,can("view-applicants"),activeHandover,function (req, res) {
+applicantController.post("/ApplicantList",isAuthenticated,can("view-applicants"),function (req, res) {
     let draw = req.body.draw;
     let start = req.body.start;
     let length = req.body.length;
     var per_page = Number(length || 10);
     var page = Number(start / length) + 1;
-    sendRequest(req,res, allApplicantsAPI + "?page=" + page + "&per_page=" + per_page,"GET",req.body,(jsonData) => {
-        let totalRecords = jsonData.numRows;
-        const dataToSend = jsonData.data
-        res.send({
+    const formData = {
+      search: req.body?.search?.value || req.body?.search_value || "",
+    };
+    const legacyBody = {
+      search: {
+        value: formData.search || "",
+      },
+      search_value: formData.search || "",
+    };
+    const token = req.session.Token || req.body.token;
+    request(
+      {
+        url: `${allApplicantsAPI}?page=${page}&per_page=${per_page}`,
+        method: "GET",
+        headers: {
+          Authorization: "Bearer" + " " + token,
+          "Content-Type": "application/json",
+        },
+        qs: formData,
+        body: JSON.stringify(legacyBody),
+      },
+      (error, response, body) => {
+        let parsedBody = body;
+        if (typeof parsedBody === "string") {
+          try {
+            parsedBody = JSON.parse(parsedBody);
+          } catch (e) {
+            parsedBody = null;
+          }
+        }
+        if (error || !response || response.statusCode !== 200) {
+          console.log("ApplicantList request failed:", {
+            error: error ? error.message : null,
+            status: response ? response.statusCode : null,
+          });
+          return res.send({
+            draw: draw,
+            recordsTotal: 0,
+            recordsFiltered: 0,
+            data: [],
+          });
+        }
+        let totalRecords = Number(parsedBody?.numRows || 0);
+        const dataToSend = Array.isArray(parsedBody?.data) ? parsedBody.data : [];
+        return res.send({
           draw: draw,
           recordsTotal: totalRecords,
           recordsFiltered: totalRecords,
           data: dataToSend,
         });
-      }
+      },
     );
   });
 
@@ -41,6 +83,7 @@ applicantController.post("/ApplicantList",isAuthenticated,can("view-applicants")
 applicantController.get(
   "/LookForApplicants",
   isAuthenticated,
+  can("view-applicants"),
   function (req, res) {
     var per_page = Number(req.query.per_page || 10);
     var page = Number(req.query.page || 1);

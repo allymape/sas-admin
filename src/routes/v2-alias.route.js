@@ -13,6 +13,7 @@ const aliasMap = {
   "v2-ViwangoMiundombinu": "ViwangoMiundombinu",
   "v2-Roles": "Roles",
   "v2-Permissions": "Permissions",
+  "v2-Modules": "Modules",
   "v2-Watumiaji": "Watumiaji",
   "v2-Zoni": "Zoni",
   "v2-Mikoa": "Mikoa",

@@ -31,6 +31,7 @@ router.use("/", require("../controllers/wardController"));
 router.use("/", require("../controllers/streetController"));
 router.use("/", require("../controllers/roleController"));
 router.use("/", require("../controllers/permissionController"));
+router.use("/", require("../controllers/moduleController"));
 router.use("/", require("../controllers/rankController"));
 router.use("/", require("../controllers/hierarchyController"));
 router.use("/", require("../controllers/designationController"));

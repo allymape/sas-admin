@@ -8,22 +8,101 @@
                 { href: '/css/datatables/buttons.dataTables.css' }
             ]
 }) %>
+<style>
+    #datatable.table-readable th,
+    #datatable.table-readable td {
+        font-size: 0.95rem;
+        vertical-align: middle;
+    }
+
+    #datatable .user-name {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        min-width: 220px;
+    }
+
+    #datatable .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #0ab39c;
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        flex: 0 0 32px;
+    }
+
+    #datatable .action-btn {
+        width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        padding: 0;
+    }
+
+    .users-filter-btn.active {
+        pointer-events: none;
+    }
+
+    .users-summary .card {
+        border: 1px solid rgba(17, 24, 39, 0.08);
+    }
+</style>
 <div class="card-body">
-    <!-- <i class=" ri-toggle-fill ri-2x"></i> xxx -->
+    <%
+        const inactiveMode = req.query.inactive == 'true';
+    %>
     <div id="customerList">
+        <div class="row g-3 mb-4 users-summary">
+            <div class="col-md-4">
+                <div class="card mb-0">
+                    <div class="card-body">
+                        <p class="text-muted mb-1">Jumla ya Watumiaji</p>
+                        <h3 class="mb-0" id="users-total-count">0</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-0">
+                    <div class="card-body">
+                        <p class="text-muted mb-1">Zinazoonekana</p>
+                        <h3 class="mb-0 text-primary" id="users-page-count">0</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-0">
+                    <div class="card-body">
+                        <p class="text-muted mb-1">Mode</p>
+                        <h5 class="mb-0 <%= inactiveMode ? 'text-danger' : 'text-success' %>">
+                            <span id="users-status-label"><%= inactiveMode ? 'Inactive Users' : 'Active Users' %></span>
+                        </h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row g-4 mb-3">
             <div class="col-sm-auto">
-                <div>
-                    <button type="button" class="btn btn-info add-btn" id="btn-create-user" ><i class="ri-add-line align-bottom me-1"></i> Sajili</button>
-                    <% if(req.query.inactive == 'true') {%>
-                            <a href="/Watumiaji" class="btn btn-outline-success" >
-                                <i class=" ri-team-fill"></i> Active Users
-                            </a>
-                        <% }else { %>
-                            <a href="/Watumiaji?inactive=true" class="btn btn-outline-danger">
-                                <i class="ri-team-fill"></i> Inactive Users
-                            </a>
-                        <% } %>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-info add-btn" id="btn-create-user" >
+                        <i class="ri-add-line align-bottom me-1"></i> Sajili Mtumiaji
+                    </button>
+                    <a href="/Watumiaji"
+                       class="btn users-filter-btn <%= !inactiveMode ? 'btn-success active' : 'btn-outline-success' %>">
+                        <i class="ri-team-fill me-1"></i> Active Users
+                    </a>
+                    <a href="/Watumiaji?inactive=true"
+                       class="btn users-filter-btn <%= inactiveMode ? 'btn-danger active' : 'btn-outline-danger' %>">
+                        <i class="ri-user-unfollow-line me-1"></i> Inactive Users
+                    </a>
                 </div>
             </div>
             <!-- <div class="col-sm">
@@ -38,7 +117,7 @@
 
         <div class="col-md-12">
             <div class="table-responsive mt-3 mb-1">
-            <table class="table align-middle table-nowrap table-striped" id="datatable" style="width: 100%">
+            <table class="table table-hover align-middle table-nowrap table-striped table-readable" id="datatable" style="width: 100%">
                 <thead class="table-light">
                     <tr>
                         <th>Na.</th>
@@ -52,7 +131,7 @@
                         <th>Sign</th>
                         <th>Amebadili Nywila?</th>
                         <th>Hai</th>
-                        <th class="sort text-center" width="10%" >Action</th>
+                        <th class="sort text-center" width="11%" >Action</th>
                     </tr>
                 </thead>
                 <tbody class="list form-check-all">
@@ -314,11 +393,24 @@
                     { data: null, render : (data , type , row , meta) => {
                         return meta.row + meta.settings._iDisplayStart + 1;
                     } },
-                    { data: "name", name: "name" },
-                    { data: "phone_no", name: "phone_no" },
-                    { data: "email", name: "email" },
-                    { data: "role_name", name: "role_name" },
-                    { data: "level_name", name: "level_name"},
+                    {
+                        data: "name",
+                        name: "name",
+                        render: (data) => {
+                            const name = String(data || '').trim();
+                            const initials = name
+                                .split(' ')
+                                .filter(Boolean)
+                                .slice(0, 2)
+                                .map((part) => part[0])
+                                .join('') || 'U';
+                            return `<div class="user-name"><span class="user-avatar">${initials}</span><span class="fw-semibold">${name || '-'}</span></div>`;
+                        }
+                    },
+                    { data: "phone_no", name: "phone_no", render: (data) => data ? `<span class="text-muted">${data}</span>` : '-' },
+                    { data: "email", name: "email", render: (data) => data ? `<span class="text-muted">${data}</span>` : '-' },
+                    { data: "role_name", name: "role_name", render: (data) => `<span class="badge bg-info-subtle text-info">${data || '-'}</span>` },
+                    { data: "level_name", name: "level_name", render: (data) => data || '-' },
                     { data: "section_name", name: "section_name" , render : (data , type , row) => {
                               return  row.lga_name
                                 ? `<span class='myTooltip' style='cursor:pointer' data-bs-toggle=tooltip title='Kanda ya ${
@@ -335,21 +427,21 @@
                                 : row.section_name + " HQ"
                     }},
                     {data: 'last_login' , name: 'last_login' , render: (data , type , row) => {
-                        return data ? changeDateFormat(data) : ''
+                        return data ? `<span class="text-muted">${changeDateFormat(data)}</span>` : `<span class="text-muted">-</span>`
                     }},
                     {data: 'has_signature' , name: 'has_signature' , render: (data , type , row) => {
-                        return data ? `<span title="Sahihi ya muhusika imeingizwa" data-bs-toggle=tooltip class="myTooltip las la-signature la-2x"></span>`
-                                    : ""
+                        return data ? `<span title="Sahihi ya muhusika imeingizwa" data-bs-toggle=tooltip class="myTooltip las la-signature la-2x text-success"></span>`
+                                    : `<span class="text-muted">-</span>`
                     }},
                     {
                         data : 'is_password_changed' , name : 'is_password_changed' , render : (data , type , row) => {
-                            return data ? `<span title="Ndiyo" data-bs-toggle=tooltip class="myTooltip las la-check la-x text-success"></span>`
-                                        : `<span title="Hapana" data-bs-toggle=tooltip class="myTooltip las la-times la-x text-danger"></span>`
+                            return data ? `<span class="badge bg-success-subtle text-success">Ndiyo</span>`
+                                        : `<span class="badge bg-danger-subtle text-danger">Hapana</span>`
                         },
                         class : 'text-center'
                     },
                     { data: "user_status", name: "user_status" ,  render: (data , type , row) => {
-                        return data ? `<span class="badge bg-success" title="Active" data-bs-toggle="tooltip">Active</span>` : `<span class="badge bg-danger" title="In-active" data-bs-toggle="tooltip">In Active</span>`;
+                        return data ? `<span class="badge bg-success-subtle text-success" title="Active" data-bs-toggle="tooltip">Active</span>` : `<span class="badge bg-danger-subtle text-danger" title="In-active" data-bs-toggle="tooltip">Inactive</span>`;
                         },
                         class : 'text-center'
                     },
@@ -360,24 +452,26 @@
                                             {
                                                 show : row.user_status,
                                                 type : 'link',
-                                                class : 'btn btn-sm btn-outline-primary me-1',
-                                                icon : 'bx bx-pencil me-1',
+                                                class : 'btn btn-soft-primary action-btn me-1',
+                                                icon : 'ri-pencil-line',
                                                 function : 'editUser',
-                                                btnText : 'Edit'
+                                                btnText : '',
+                                                moreAttributes : "title='Badili' data-bs-toggle='tooltip'"
                                             },
                                             {
                                                 show : true,
                                                 type : 'button',
-                                                class : `btn btn-sm btn-outline-${row.user_status ? 'danger' : 'success'} me-1`,
-                                                icon : `ri-toggle-${row.user_status ? 'fill' : 'line'} ri-x`,
+                                                class : `btn btn-soft-${row.user_status ? 'danger' : 'success'} action-btn me-1`,
+                                                icon : `${row.user_status ? 'ri-user-unfollow-line' : 'ri-user-follow-line'}`,
                                                 function : 'activateDeactivateUser',
-                                                btnText : row.user_status ? 'Deactivate' : 'Activate'
+                                                btnText : '',
+                                                moreAttributes : `title='${row.user_status ? 'Deactivate' : 'Activate'}' data-bs-toggle='tooltip'`
                                             },
                                             {
                                                 show : row.user_status,
                                                 type : 'button',
-                                                class : `btn btn-sm btn-outline-warning me-1`,
-                                                icon : `ri-lock-unlock-line text-danger`,
+                                                class : `btn btn-soft-warning action-btn me-1`,
+                                                icon : `ri-lock-unlock-line`,
                                                 function : 'ResetPassword',
                                                 btnText : '',
                                                 moreAttributes : "title = 'Reset Password' data-bs-toggle='tooltip'"
@@ -398,6 +492,15 @@
                 [{ name : 'inactive' , value : false }]
             <%}%>
         );
+
+        const usersTable = $('#datatable').DataTable();
+        usersTable.on('xhr.dt', function (e, settings, json) {
+            const total = Number((json && json.recordsTotal) || 0);
+            const rows = json && Array.isArray(json.data) ? json.data : [];
+            const shown = rows.length;
+            $('#users-total-count').text(total.toLocaleString());
+            $('#users-page-count').text(shown.toLocaleString());
+        });
     });
 </script>
 <!-- <script type="text/javascript" src="design/layouts/scripts/watumiaji_scripts.js"></script> -->

@@ -1,0 +1,678 @@
+<% var card_title = 'Waombaji waliopo' %> 
+<%- include('layouts/partials/header.ejs' , {
+    title : 'Waombaji',
+    page_title : 'Orodha ya Waombaji',
+    card_title : card_title,
+    breadcrumb_main : 'Mipangilio',
+     styles : [
+                { href: '/css/datatables/dataTables.dataTables.css' },
+                { href: '/css/datatables/buttons.dataTables.css' }
+            ]
+
+}) %>
+<style>
+    /* Enhanced Styling */
+    .applicant-filters {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .applicant-filters .form-label {
+        color: white;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .applicant-filters .form-control,
+    .applicant-filters .form-select {
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background-color: rgba(255, 255, 255, 0.95);
+    }
+
+    .applicants-summary {
+        margin-bottom: 2rem;
+    }
+
+    .applicants-summary .card {
+        border: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .applicants-summary .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .applicants-summary .card-body {
+        padding: 1.5rem;
+    }
+
+    .applicants-summary .stat-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .applicants-summary .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .applicants-summary .stat-label {
+        font-size: 0.85rem;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .datatable-controls {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .datatable-controls button,
+    .datatable-controls a {
+        border-radius: 0.375rem;
+        transition: all 0.2s ease;
+    }
+
+    .datatable-controls button:hover,
+    .datatable-controls a:hover {
+        transform: translateY(-1px);
+    }
+
+    #datatable.table-readable th,
+    #datatable.table-readable td {
+        font-size: 0.95rem;
+        vertical-align: middle;
+        padding: 1rem;
+    }
+
+    #datatable thead th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        color: #333;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    #datatable tbody tr {
+        border-bottom: 1px solid #dee2e6;
+        transition: background-color 0.2s ease;
+    }
+
+    #datatable tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .applicant-name {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        min-width: 220px;
+    }
+
+    .applicant-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        flex: 0 0 36px;
+    }
+
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        padding: 0;
+        margin: 0 0.25rem;
+        transition: all 0.2s ease;
+    }
+
+    .action-btn:hover {
+        transform: scale(1.15);
+    }
+
+    .badge-status {
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .search-box {
+        position: relative;
+    }
+
+    .search-box input {
+        padding-left: 2.5rem;
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+    }
+
+    .filter-badge {
+        display: inline-block;
+        background-color: #e7f3ff;
+        border: 1px solid #b3d9ff;
+        color: #0066cc;
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .filter-badge .remove {
+        margin-left: 0.5rem;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .noresult {
+        text-align: center;
+        padding: 3rem 1rem;
+    }
+
+    .load-more-container {
+        text-align: center;
+        margin-top: 1.5rem;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        border-radius: 0.375rem;
+        margin: 0 0.25rem;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+    }
+
+    .applicant-status-badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .status-active {
+        background-color: #d1f5c4;
+        color: #0a5a0a;
+    }
+
+    .status-pending {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .status-inactive {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    @media (max-width: 768px) {
+        .applicants-summary {
+            grid-template-columns: 1fr;
+        }
+
+        .applicant-filters {
+            padding: 1rem;
+        }
+
+        .datatable-controls {
+            flex-direction: column;
+        }
+
+        .datatable-controls button,
+        .datatable-controls a {
+            width: 100%;
+        }
+
+        #datatable.table-readable th,
+        #datatable.table-readable td {
+            font-size: 0.85rem;
+            padding: 0.75rem;
+        }
+
+        .applicant-name {
+            min-width: 150px;
+        }
+    }
+</style>
+
+<div class="card-body">
+    <!-- Enhanced Analytics Cards -->
+    <div class="row g-3 mb-4 applicants-summary">
+        <div class="col-md-3 col-sm-6">
+            <div class="card mb-0">
+                <div class="card-body">
+                    <div class="stat-icon text-primary">
+                        <i class="ri-user-3-line"></i>
+                    </div>
+                    <p class="stat-label">Jumla ya Waombaji</p>
+                    <h3 class="stat-value" id="applicants-total-count">0</h3>
+                    <small class="text-muted">Waombaji wote</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card mb-0">
+                <div class="card-body">
+                    <div class="stat-icon text-info">
+                        <i class="ri-eye-line"></i>
+                    </div>
+                    <p class="stat-label">Zinazoonekana</p>
+                    <h3 class="stat-value text-primary" id="applicants-page-count">0</h3>
+                    <small class="text-muted">Katika ukurasa huu</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card mb-0">
+                <div class="card-body">
+                    <div class="stat-icon text-success">
+                        <i class="ri-file-list-line"></i>
+                    </div>
+                    <p class="stat-label">Maombi</p>
+                    <h3 class="stat-value text-success" id="applicants-apps-count">0</h3>
+                    <small class="text-muted">Nakikiharusi</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card mb-0">
+                <div class="card-body">
+                    <div class="stat-icon text-warning">
+                        <i class="ri-time-line"></i>
+                    </div>
+                    <p class="stat-label">Wastani</p>
+                    <h3 class="stat-value text-warning" id="applicants-avg-count">0</h3>
+                    <small class="text-muted">Maombi/Mwombaji</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Filters Section -->
+    <div class="applicant-filters">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">
+                    <i class="ri-search-line"></i> Tafuta Mwombaji
+                </label>
+                <div class="search-box">
+                    <i class="ri-search-2-line"></i>
+                    <input type="text" class="form-control" id="applicants-search" placeholder="Jina, barua pepe...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">
+                    <i class="ri-sort-asc"></i> Panga kwa
+                </label>
+                <select class="form-select" id="applicants-sort-by">
+                    <option value="created_at">Tarehe ya Kusajili</option>
+                    <option value="name">Jina</option>
+                    <option value="total_applications">Maombi</option>
+                    <option value="updated_at">Imesasishwa</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">
+                    <i class="ri-arrow-up-down-line"></i> Mpangilio
+                </label>
+                <select class="form-select" id="applicants-sort-order">
+                    <option value="desc">Zaidi kwanza</option>
+                    <option value="asc">Kidogo kwanza</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">
+                    <i class="ri-filter-line"></i> Maombi
+                </label>
+                <select class="form-select" id="applicants-app-filter">
+                    <option value="">Vyote</option>
+                    <option value="0">Bila Maombi</option>
+                    <option value="1+">Na Maombi</option>
+                    <option value="5+">5+ Maombi</option>
+                    <option value="10+">10+ Maombi</option>
+                </select>
+            </div>
+        </div>
+        <div class="row g-3 mt-2">
+            <div class="col-md-6">
+                <button class="btn btn-light" onclick="applyApplicantFilters()" style="width: 100%;">
+                    <i class="ri-search-line"></i> Tafuta
+                </button>
+            </div>
+            <div class="col-md-6">
+                <button class="btn btn-outline-light" onclick="resetApplicantFilters()" style="width: 100%;">
+                    <i class="ri-close-circle-line"></i> Ondoa Kuchuja
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Filters Display -->
+    <div id="active-filters" class="mb-3"></div>
+
+    <!-- DataTable Controls -->
+    <div class="datatable-controls">
+        <button class="btn btn-primary" onclick="exportApplicants('csv')">
+            <i class="ri-download-2-line"></i> CSV
+        </button>
+        <button class="btn btn-primary" onclick="exportApplicants('excel')">
+            <i class="ri-file-excel-line"></i> Excel
+        </button>
+        <button class="btn btn-primary" onclick="exportApplicants('pdf')">
+            <i class="ri-file-pdf-line"></i> PDF
+        </button>
+        <button class="btn btn-secondary" id="toggle-columns" onclick="toggleColumnVisibility()">
+            <i class="ri-layout-column-line"></i> Safuweke
+        </button>
+    </div>
+
+    <!-- Table -->
+    <div id="applicantsList">
+        <div class="table-responsive mt-3 mb-1">
+            <table class="table table-hover align-middle table-nowrap table-striped table-readable" id="datatable" style="width: 100%">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 50px;"><input type="checkbox" class="form-check-input select-all-checkbox" onchange="selectAllRows(this)"></th>
+                        <th>Na.</th>
+                        <th>Mwombaji</th>
+                        <th>Barua Pepe</th>
+                        <th>Imetengenezwa</th>
+                        <th>Imesasishwa</th>
+                        <th>Jumla ya Maombi</th>
+                        <th style="width: 120px;" class="text-center">Kitendo</th>
+                    </tr>
+                </thead>
+                <tbody class="list form-check-all">
+                </tbody>
+            </table>
+            <div class="noresult" style="display: none">
+                <div class="text-center py-5">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">
+                        <i class="ri-search-eye-line text-muted"></i>
+                    </div>
+                    <h5 class="mt-2">Hakuna Matokeo Yaliyopatikana</h5>
+                    <p class="text-muted mb-0">Jaribu kubadilisha kriteria za utaftaji au uondoe kuchuja.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div><!-- end card -->
+
+<%- include('layouts/partials/footer.ejs' , {
+    card_title :  card_title,
+    scripts : [
+            {src : '/design/layouts/scripts/waombaji_scripts_enhanced.js'},
+            { src : '/js/datatables/dataTables.js'},
+            { src : '/js/datatables/dataTables.buttons.js'},
+            { src : '/js/datatables/buttons.dataTables.js'},
+            { src : '/js/datatables/buttons.html5.min.js'},
+            { src : '/js/datatables/jszip.min.js'},
+            { src : '/js/datatables/pdfmake.min.js'},
+            { src : '/js/datatables/vfs_fonts.js'},
+            { src : '/js/datatables/buttons.print.min.js'},
+          ]
+    }) %>
+
+<script>
+    // Global filter state
+    let applicantFilters = {
+        search: '',
+        sortBy: 'created_at',
+        sortOrder: 'desc',
+        minApps: 0,
+        maxApps: null
+    };
+
+    function updateActiveFilters() {
+        const container = document.getElementById('active-filters');
+        let html = '';
+
+        if (applicantFilters.search) {
+            html += `<span class="filter-badge">Tafuta: "${applicantFilters.search}" <span class="remove" onclick="clearFilter('search')">×</span></span>`;
+        }
+
+        if (applicantFilters.minApps > 0 || applicantFilters.maxApps) {
+            const label = applicantFilters.minApps > 0 ? `${applicantFilters.minApps}+ Maombi` : 'Na Maombi';
+            html += `<span class="filter-badge">${label} <span class="remove" onclick="clearFilter('appCount')">×</span></span>`;
+        }
+
+        container.innerHTML = html || '';
+    }
+
+    function clearFilter(filterType) {
+        if (filterType === 'search') {
+            applicantFilters.search = '';
+            document.getElementById('applicants-search').value = '';
+        } else if (filterType === 'appCount') {
+            applicantFilters.minApps = 0;
+            applicantFilters.maxApps = null;
+            document.getElementById('applicants-app-filter').value = '';
+        }
+        applyApplicantFilters();
+    }
+
+    function applyApplicantFilters() {
+        applicantFilters.search = document.getElementById('applicants-search').value;
+        applicantFilters.sortBy = document.getElementById('applicants-sort-by').value;
+        applicantFilters.sortOrder = document.getElementById('applicants-sort-order').value;
+
+        const appFilter = document.getElementById('applicants-app-filter').value;
+        if (appFilter === '0') {
+            applicantFilters.minApps = 0;
+            applicantFilters.maxApps = 0;
+        } else if (appFilter === '1+') {
+            applicantFilters.minApps = 1;
+            applicantFilters.maxApps = null;
+        } else if (appFilter === '5+') {
+            applicantFilters.minApps = 5;
+            applicantFilters.maxApps = null;
+        } else if (appFilter === '10+') {
+            applicantFilters.minApps = 10;
+            applicantFilters.maxApps = null;
+        } else {
+            applicantFilters.minApps = 0;
+            applicantFilters.maxApps = null;
+        }
+
+        updateActiveFilters();
+        $('#datatable').DataTable().draw();
+    }
+
+    function resetApplicantFilters() {
+        applicantFilters = {
+            search: '',
+            sortBy: 'created_at',
+            sortOrder: 'desc',
+            minApps: 0,
+            maxApps: null
+        };
+
+        document.getElementById('applicants-search').value = '';
+        document.getElementById('applicants-sort-by').value = 'created_at';
+        document.getElementById('applicants-sort-order').value = 'desc';
+        document.getElementById('applicants-app-filter').value = '';
+
+        updateActiveFilters();
+        $('#datatable').DataTable().draw();
+    }
+
+    function selectAllRows(checkbox) {
+        document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = checkbox.checked);
+    }
+
+    function exportApplicants(format) {
+        alert('Export functionality ('+format+') will be implemented soon!');
+        // This will integrate with the DataTable buttons export
+    }
+
+    function toggleColumnVisibility() {
+        alert('Column visibility toggle will be implemented soon!');
+    }
+
+    $(document).ready(function() {
+        const table = $('#datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: '/ApplicantList',
+                type: 'POST',
+                data: function(d) {
+                    d.search = applicantFilters.search;
+                    d.sort_by = applicantFilters.sortBy;
+                    d.sort_order = applicantFilters.sortOrder;
+                    d.min_applications = applicantFilters.minApps;
+                    d.max_applications = applicantFilters.maxApps;
+                }
+            },
+            columns: [
+                {
+                    data: null,
+                    render: function() {
+                        return '<input type="checkbox" class="form-check-input row-checkbox">';
+                    },
+                    sortable: false,
+                    searchable: false
+                },
+                {
+                    data: null,
+                    render: (data, type, row, meta) => {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                },
+                {
+                    data: "name",
+                    name: "name",
+                    render: (data) => {
+                        const name = String(data || '').trim();
+                        const initials = name
+                            .split(' ')
+                            .filter(Boolean)
+                            .slice(0, 2)
+                            .map((part) => part[0])
+                            .join('') || 'A';
+                        return `<div class="applicant-name"><span class="applicant-avatar">${initials}</span><span class="fw-semibold">${name || '-'}</span></div>`;
+                    }
+                },
+                {
+                    data: "email",
+                    name: "email",
+                    render: (data) => data ? `<span class="text-muted">${data}</span>` : '-'
+                },
+                {
+                    data: 'created_at',
+                    name: 'created_at',
+                    render: (data) => {
+                        return data ? `<span class="text-muted">${changeDateFormat(data)}</span>` : '-';
+                    }
+                },
+                {
+                    data: 'updated_at',
+                    name: 'updated_at',
+                    render: (data) => {
+                        return data ? `<span class="text-muted">${changeDateFormat(data)}</span>` : '-';
+                    }
+                },
+                {
+                    data: "total_applications",
+                    name: "total_applications",
+                    render: (data) => {
+                        const total = Number(data || 0);
+                        const badgeClass = total > 0 ? 'success' : 'warning';
+                        return `<span class="badge bg-${badgeClass}-subtle text-${badgeClass}">${total} Maombi</span>`;
+                    }
+                },
+                {
+                    data: null,
+                    render: function(data, type, row) {
+                        return `
+                            <div class="text-center">
+                                <a href="/Mwombaji/${row.id}" class="btn btn-soft-primary action-btn" title="Fungua" data-bs-toggle="tooltip">
+                                    <i class="ri-eye-line"></i>
+                                </a>
+                                <button class="btn btn-soft-warning action-btn" onclick="editApplicant(${row.id})" title="Hariri" data-bs-toggle="tooltip">
+                                    <i class="ri-edit-line"></i>
+                                </button>
+                                <button class="btn btn-soft-danger action-btn" onclick="deleteApplicant(${row.id})" title="Futa" data-bs-toggle="tooltip">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                            </div>
+                        `;
+                    },
+                    orderable: false,
+                    searchable: false
+                }
+            ],
+            pageLength: 10,
+            lengthChange: true,
+            searching: false,
+            ordering: false,
+            paging: true
+        });
+
+        table.on('xhr.dt', function(e, settings, json) {
+            const total = Number((json && json.recordsTotal) || 0);
+            const rows = json && Array.isArray(json.data) ? json.data : [];
+            const shown = rows.length;
+            const pageApplications = rows.reduce((sum, item) => {
+                return sum + Number(item && item.total_applications ? item.total_applications : 0);
+            }, 0);
+
+            const avgApps = shown > 0 ? (pageApplications / shown).toFixed(1) : 0;
+
+            $('#applicants-total-count').text(total.toLocaleString());
+            $('#applicants-page-count').text(shown.toLocaleString());
+            $('#applicants-apps-count').text(pageApplications.toLocaleString());
+            $('#applicants-avg-count').text(avgApps);
+        });
+
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+
+    function editApplicant(id) {
+        window.location.href = `/Mwombaji/${id}/edit`;
+    }
+
+    function deleteApplicant(id) {
+        if (confirm('Je, una uhakika wa kuwa unataka kufuta mwombaji huyu?')) {
+            // Implement delete functionality
+            console.log('Delete applicant:', id);
+        }
+    }
+</script>
+
+<!-- Additional helper scripts -->
+<script src="/js/helpers/date-helper.js"></script>
+</body>
+</html>
