@@ -65,6 +65,24 @@
     { id: "pending", label: "Maombi Yanayosubiri", icon: "ri-time-line" },
     { id: "handled", label: "Maombi Yaliyoshughulikiwa", icon: "ri-checkbox-circle-line" },
   ];
+  const currentUserPermissions = Array.isArray(req?.user?.userPermissions) ? req.user.userPermissions : [];
+  const canViewLetters = currentUserPermissions.some((permission) => {
+    const key = String(permission || "").trim().toLowerCase();
+    return key === "view-letters";
+  });
+  const buildAttendUrl = (trackingNumber) =>
+    `/my-applications/${encodeURIComponent(trackingNumber)}/attend#overview-info`;
+  const isApprovedWithLetter = (item) =>
+    Number(item?.is_approved) === 2 && Boolean(item?.folio);
+  const isOwnershipCategory = (item) =>
+    Number(item?.application_category?.id) === 2;
+  const isCertificateEligible = (item) => {
+    if (Number(item?.is_approved) !== 2) return false;
+    if (Number(item?.application_category?.id) !== 4) return false;
+    const schoolCategoryId = Number(item?.establishing_school?.school_category_id || item?.establishing_school?.school_category?.id);
+    if (Number.isFinite(schoolCategoryId) && schoolCategoryId === 3) return false;
+    return true;
+  };
   const allCount = categories.length
     ? categories.reduce((sum, category) => sum + (Number(category.total) || 0), 0)
     : pagination.total;
@@ -206,6 +224,83 @@
 
   .mail-list a.active i {
     color: inherit !important;
+  }
+
+  /* Disable inner sidebar scroll; allow full page to scroll instead */
+  .email-menu-sidebar-scroll {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+  }
+
+  /* Desktop collapse for left category sidebar (ongeza space kwenye list) */
+  @media (min-width: 992px) {
+    .applications-email-wrapper .email-menu-sidebar {
+      transition: width 180ms ease, flex-basis 180ms ease, max-width 180ms ease;
+      will-change: width;
+    }
+    .applications-email-wrapper .email-menu-sidebar .p-4 {
+      transition: opacity 140ms ease, transform 180ms ease;
+      will-change: opacity, transform;
+    }
+    .applications-email-wrapper.sidebar-collapsed .email-menu-sidebar,
+    .applications-email-wrapper .email-menu-sidebar.is-collapsed {
+      flex: 0 0 48px !important;
+      width: 48px !important;
+      min-width: 48px !important;
+      max-width: 48px !important;
+      overflow: hidden;
+    }
+    .applications-email-wrapper.sidebar-collapsed .email-menu-sidebar .p-4,
+    .applications-email-wrapper .email-menu-sidebar.is-collapsed .p-4 { padding: 10px !important; }
+
+    .applications-email-wrapper.sidebar-collapsed .email-menu-sidebar .applications-sidebar-title,
+    .applications-email-wrapper .email-menu-sidebar.is-collapsed .applications-sidebar-title { display: none; }
+
+    .applications-email-wrapper.sidebar-collapsed .email-menu-sidebar #applicationsSidebarToggle i,
+    .applications-email-wrapper .email-menu-sidebar.is-collapsed #applicationsSidebarToggle i { transform: rotate(180deg); }
+
+    /* Icons-only mode */
+    .applications-email-wrapper.sidebar-collapsed .email-menu-sidebar .email-menu-sidebar-scroll,
+    .applications-email-wrapper .email-menu-sidebar.is-collapsed .email-menu-sidebar-scroll {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    .applications-email-wrapper.sidebar-collapsed .email-menu-sidebar .mail-list,
+    .applications-email-wrapper .email-menu-sidebar.is-collapsed .mail-list { margin-top: 4px !important; }
+
+    .applications-email-wrapper.sidebar-collapsed .email-menu-sidebar .mail-list a,
+    .applications-email-wrapper .email-menu-sidebar.is-collapsed .mail-list a {
+      justify-content: center;
+      padding: 10px 6px;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+    }
+
+    .applications-email-wrapper.sidebar-collapsed .email-menu-sidebar .mail-list a i,
+    .applications-email-wrapper .email-menu-sidebar.is-collapsed .mail-list a i {
+      margin-right: 0 !important;
+      font-size: 18px;
+    }
+
+    .applications-email-wrapper.sidebar-collapsed .email-menu-sidebar .mail-list a .mail-list-link,
+    .applications-email-wrapper .email-menu-sidebar.is-collapsed .mail-list a .mail-list-link,
+    .applications-email-wrapper .email-menu-sidebar.is-collapsed .mail-list a .mail-list-link { display: none !important; }
+
+    .applications-email-wrapper.sidebar-collapsed .email-menu-sidebar .mail-list a,
+    .applications-email-wrapper .email-menu-sidebar.is-collapsed .mail-list a { position: relative; }
+
+    .applications-email-wrapper.sidebar-collapsed .email-menu-sidebar .mail-list a .badge,
+    .applications-email-wrapper .email-menu-sidebar.is-collapsed .mail-list a .badge {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      font-size: 10px;
+      line-height: 1;
+      padding: 3px 5px;
+      border-radius: 999px;
+      transform: translate(35%, -35%);
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.18);
+    }
   }
 
   .blink-number {
@@ -387,11 +482,11 @@
   }
 
   .applications-no-icons.with-attend-action .message-list li .col-mail-2 .subject {
-    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 1fr 72px 1.1fr 138px;
+    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 1fr 72px 1.1fr 72px;
   }
 
   .applications-no-icons.with-attend-action .list-header-grid {
-    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 1fr 72px 1.1fr 138px;
+    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 1fr 72px 1.1fr 72px;
   }
 
   .applications-no-icons.without-staff-column .message-list li .col-mail-2 .subject {
@@ -403,11 +498,11 @@
   }
 
   .applications-no-icons.without-staff-column.with-attend-action .message-list li .col-mail-2 .subject {
-    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 72px 1.1fr 138px;
+    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 72px 1.1fr 72px;
   }
 
   .applications-no-icons.without-staff-column.with-attend-action .list-header-grid {
-    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 72px 1.1fr 138px;
+    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 72px 1.1fr 72px;
   }
 
   .applications-no-icons .message-list li .col-mail-2 .action-col {
@@ -419,6 +514,30 @@
     text-overflow: clip;
     white-space: nowrap;
     text-transform: none;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .action-col .dropdown-toggle::after {
+    display: none;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .action-col .dropdown-menu {
+    min-width: 180px;
+    z-index: 9999;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .action-col .dropdown-item i {
+    font-size: 16px;
+  }
+
+  .applications-no-icons .message-list li,
+  .applications-no-icons .message-list li .col-mail-2,
+  .applications-no-icons .message-list li .col-mail-2 .subject {
+    overflow: visible;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .action-col {
+    position: relative;
+    z-index: 50;
   }
 
   .applications-no-icons .message-list li:nth-child(odd) {
@@ -539,19 +658,33 @@
     }
 
     .applications-no-icons.with-attend-action .message-list li .col-mail-2 .subject {
-      grid-template-columns: 1fr 1fr 1.2fr 1fr 0.95fr 138px;
+      grid-template-columns: 1fr 1fr 1.2fr 1fr 0.95fr 72px;
     }
 
     .applications-no-icons.with-attend-action .list-header-grid {
-      grid-template-columns: 1fr 1fr 1.2fr 1fr 0.95fr 138px;
+      grid-template-columns: 1fr 1fr 1.2fr 1fr 0.95fr 72px;
     }
   }
 </style>
 
-<div class="email-wrapper d-lg-flex gap-1 mx-n4 mt-n4 p-1 <%= isMyApplications ? 'my-applications-theme' : 'all-applications-theme' %>">
+<div class="email-wrapper applications-email-wrapper d-lg-flex gap-1 mx-n4 mt-n4 p-1 <%= isMyApplications ? 'my-applications-theme' : 'all-applications-theme' %>">
   <div class="email-menu-sidebar">
     <div class="p-4 d-flex flex-column h-100">
-      <div class="mx-n4 px-4 email-menu-sidebar-scroll" data-simplebar>
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <div class="applications-sidebar-title fw-semibold text-muted small">CATEGORIES</div>
+        <button
+          type="button"
+          class="btn btn-ghost-secondary btn-icon shadow-none btn-sm fs-16"
+          id="applicationsSidebarToggle"
+          data-bs-toggle="tooltip"
+          data-bs-custom-class="custom-black-tooltip"
+          data-bs-title="Ficha categories"
+          aria-label="Toggle categories sidebar"
+        >
+          <i class="ri-arrow-left-s-line align-bottom"></i>
+        </button>
+      </div>
+      <div class="mx-n4 px-4 email-menu-sidebar-scroll">
         <div class="mail-list mt-3">
           <a href="<%= routeBase %>?<%= buildQuery(1, null, activeStatusId, activeWorkTab) %>" class="<%= !activeCategoryId ? 'active' : '' %>">
             <i class="ri-inbox-archive-line text-primary me-3 align-middle fw-medium"></i>
@@ -749,13 +882,74 @@
                   <% if (showAttendAction) { %>
                     <span class="subject-col action-col">
                       <% if (item.tracking_number) { %>
-                        <a
-                          href="/my-applications/<%= encodeURIComponent(item.tracking_number) %>/attend#overview-info"
-                          class="btn btn-sm attend-btn <%= canTakeAction ? '' : 'attend-view-btn' %>"
-                        ><i class="<%= canTakeAction ? 'ri-arrow-right-up-line' : 'ri-eye-line' %> align-bottom"></i><%= canTakeAction ? 'Fungua' : 'Tazama' %></a>
-                      <% } else { %>
-                        -
-                      <% } %>
+                        <div class="dropdown">
+                          <button
+                            class="btn btn-sm btn-ghost-secondary btn-icon"
+                            type="button"
+                            id="app-actions-<%= index %>"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            aria-label="Actions"
+                            title="Actions"
+                          >
+                            <i class="ri-more-2-fill align-bottom"></i>
+                          </button>
+                          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="app-actions-<%= index %>">
+                            <li>
+                              <a class="dropdown-item" href="<%= buildAttendUrl(item.tracking_number) %>">
+                                <i class="<%= canTakeAction ? 'ri-arrow-right-up-line' : 'ri-eye-line' %> align-bottom me-2"></i>
+                                <%= canTakeAction ? 'Fungua' : 'Tazama' %>
+                              </a>
+                            </li>
+	                            <% if (canViewLetters && isApprovedWithLetter(item)) { %>
+	                              <!-- <li><hr class="dropdown-divider"></li> -->
+                              <% if (isOwnershipCategory(item)) { %>
+	                                <li>
+		                                  <a
+		                                    class="dropdown-item js-open-pdf-modal"
+		                                    href="/barua/<%= encodeURIComponent(item.tracking_number) %>?type=meneja"
+		                                  >
+	                                    <i class="ri-file-pdf-line align-bottom me-2 text-danger"></i>
+	                                    Barua Meneja
+                                  </a>
+                                </li>
+	                                <li>
+		                                  <a
+		                                    class="dropdown-item js-open-pdf-modal"
+		                                    href="/barua/<%= encodeURIComponent(item.tracking_number) %>?type=mmiliki"
+		                                  >
+	                                    <i class="ri-file-pdf-fill align-bottom me-2 text-danger"></i>
+	                                    Barua Mmiliki
+                                  </a>
+                                </li>
+                              <% } else { %>
+	                                <li>
+		                                  <a
+		                                    class="dropdown-item js-open-pdf-modal"
+		                                    href="/barua/<%= encodeURIComponent(item.tracking_number) %>"
+		                                  >
+	                                    <i class="ri-file-pdf-line align-bottom me-2 text-danger"></i>
+	                                    Pakua Barua
+                                  </a>
+                                </li>
+	                              <% } %>
+	                            <% } %>
+	                            <% if (canViewLetters && isCertificateEligible(item)) { %>
+	                              <li>
+	                                <a
+	                                  class="dropdown-item js-open-pdf-modal"
+	                                  href="/cheti/<%= encodeURIComponent(item.tracking_number) %>"
+	                                >
+	                                  <i class="ri-award-line align-bottom me-2 text-primary"></i>
+	                                  Cheti (PDF)
+	                                </a>
+	                              </li>
+	                            <% } %>
+	                          </ul>
+	                        </div>
+	                      <% } else { %>
+	                        -
+	                      <% } %>
                     </span>
                   <% } %>
                 </div>
@@ -768,13 +962,111 @@
   </div>
 </div>
 
+<div class="modal fade" id="pdfPreviewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Preview (PDF)</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-0">
+        <iframe id="pdfPreviewFrame" src="" style="width:100%; height:80vh; border:0;"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     if (window.bootstrap && bootstrap.Tooltip) {
       document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
-        bootstrap.Tooltip.getOrCreateInstance(el);
+        try {
+          if (bootstrap.Tooltip.getOrCreateInstance) {
+            bootstrap.Tooltip.getOrCreateInstance(el);
+          } else {
+            new bootstrap.Tooltip(el);
+          }
+        } catch (e) {}
       });
     }
+
+	    // Persist desktop collapse/expand for category sidebar on Applications page.
+	    (function () {
+	      const STORAGE_KEY = "sas_applications_categories_collapsed";
+	      const wrapper = document.querySelector(".applications-email-wrapper");
+	      const sidebar = wrapper ? wrapper.querySelector(".email-menu-sidebar") : null;
+	      const toggleBtn = document.getElementById("applicationsSidebarToggle");
+	      if (!wrapper || !sidebar || !toggleBtn) return;
+
+      const refreshTooltip = () => {
+        try {
+          if (!window.bootstrap || !bootstrap.Tooltip) return;
+          const existing = bootstrap.Tooltip.getInstance ? bootstrap.Tooltip.getInstance(toggleBtn) : null;
+          if (existing && existing.dispose) existing.dispose();
+          if (bootstrap.Tooltip.getOrCreateInstance) {
+            bootstrap.Tooltip.getOrCreateInstance(toggleBtn);
+          } else {
+            // fallback for older bootstrap versions
+            new bootstrap.Tooltip(toggleBtn);
+          }
+        } catch (e) {}
+      };
+
+	      const setState = (collapsed) => {
+	        wrapper.classList.toggle("sidebar-collapsed", Boolean(collapsed));
+	        sidebar.classList.toggle("is-collapsed", Boolean(collapsed));
+	        const title = collapsed ? "Onyesha categories" : "Ficha categories";
+	        toggleBtn.setAttribute("data-bs-title", title);
+	        toggleBtn.setAttribute("title", title);
+	        refreshTooltip();
+
+	        // When collapsed, enable tooltips on icons (anchors) so user still sees category names.
+	        try {
+	          if (window.bootstrap && bootstrap.Tooltip) {
+	            const anchors = Array.from(sidebar.querySelectorAll(".mail-list a"));
+	            anchors.forEach((a) => {
+	              const labelEl = a.querySelector(".mail-list-link");
+	              const label = labelEl ? (labelEl.getAttribute("data-bs-title") || labelEl.textContent || "").trim() : "";
+	              if (collapsed) {
+	                if (label) {
+	                  a.setAttribute("title", label);
+	                  a.setAttribute("data-bs-toggle", "tooltip");
+	                  a.setAttribute("data-bs-custom-class", "custom-black-tooltip");
+	                  a.setAttribute("data-bs-title", label);
+	                }
+	                if (bootstrap.Tooltip.getOrCreateInstance) {
+	                  bootstrap.Tooltip.getOrCreateInstance(a);
+	                } else {
+	                  new bootstrap.Tooltip(a);
+	                }
+	              } else {
+	                const inst = bootstrap.Tooltip.getInstance ? bootstrap.Tooltip.getInstance(a) : null;
+	                if (inst && inst.dispose) inst.dispose();
+	                a.removeAttribute("data-bs-toggle");
+	                a.removeAttribute("data-bs-title");
+	                a.removeAttribute("data-bs-custom-class");
+	                // Keep title empty to avoid duplicate default browser tooltips in expanded mode.
+	                a.removeAttribute("title");
+	              }
+	            });
+	          }
+	        } catch (e) {}
+
+	        try {
+	          localStorage.setItem(STORAGE_KEY, collapsed ? "1" : "0");
+	        } catch (e) {}
+	      };
+
+      let collapsed = false;
+      try {
+        collapsed = localStorage.getItem(STORAGE_KEY) === "1";
+      } catch (e) {}
+      setState(collapsed);
+
+      toggleBtn.addEventListener("click", function () {
+        setState(!wrapper.classList.contains("sidebar-collapsed"));
+      });
+    })();
 
     const topSearchForm = document.querySelector("#page-topbar .app-search");
     const topSearchInput = document.getElementById("search-options");
@@ -806,6 +1098,28 @@
         window.location.href = "<%= routeBase %>?" + params.toString();
       }, true);
     }
+
+    // Open PDFs inside a large modal (barua/cheti etc).
+    (function () {
+      const modalEl = document.getElementById("pdfPreviewModal");
+      const frame = document.getElementById("pdfPreviewFrame");
+      if (!modalEl || !frame || !window.bootstrap) return;
+      const modal = bootstrap.Modal.getOrCreateInstance(modalEl, { backdrop: "static", keyboard: false });
+
+      document.addEventListener("click", function (e) {
+        const link = e.target && e.target.closest ? e.target.closest("a.js-open-pdf-modal") : null;
+        if (!link) return;
+        const href = link.getAttribute("href");
+        if (!href) return;
+        e.preventDefault();
+        frame.src = href;
+        modal.show();
+      });
+
+      modalEl.addEventListener("hidden.bs.modal", function () {
+        frame.src = "";
+      });
+    })();
   });
 </script>
 

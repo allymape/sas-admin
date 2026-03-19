@@ -7,6 +7,10 @@ router.use("/", require("./user.route.js"));
 router.use("/", require("./dashboard.route.js"));
 router.use("/applications", require("./application.route.js"));
 router.use("/my-applications", require("./my-application.route.js"));
+router.use("/letter-templates", require("./letter-template.route.js"));
+router.use("/letter-addressee-templates", require("./letter-addressee-template.route.js"));
+router.use("/cheti", require("./certificate.route.js"));
+router.use("/vyeti", require("./certificate-issuance.route.js"));
 router.use("/", require("./v2-alias.route.js"));
 
 // Legacy frontend modules now registered centrally through web.js

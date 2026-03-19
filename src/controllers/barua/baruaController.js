@@ -83,8 +83,10 @@ const validateLetterPayload = (data, type) => {
 baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view-letters') ,function (req, res) {
         const tracking_number = req.params.tracking_number;
         const uthibitisho = req.query.type;
+        const templateKey = typeof req.query.template_key === "string" ? req.query.template_key.trim() : "";
         const formData = {
           type: uthibitisho,
+          ...(templateKey ? { template_key: templateKey } : {}),
         };
         // console.log(type)
         sendRequest(req , res , baruaDetailsAPI +"/"+ tracking_number , 'POST' , formData , (jsonData) => {
@@ -102,7 +104,7 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
             }
 
             if (warnings) {
-              console.error("[BARUA][ADMIN][ERROR]", {
+              console.warn("[BARUA][ADMIN][WARN]", {
                 tracking_number,
                 type: uthibitisho || "",
                 statusCode,
@@ -113,7 +115,7 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
 
             const validation = validateLetterPayload(data, uthibitisho);
             if (validation.missingFields.length > 0) {
-              console.error("[BARUA][ADMIN][ERROR]", {
+              console.warn("[BARUA][ADMIN][WARN]", {
                 tracking_number,
                 type: uthibitisho || "",
                 application_category_id: validation.categoryId || null,
@@ -176,8 +178,8 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
             } = data;
       
             // decodeSignature(base64signature, tracking_number);
-            const reference = `${file_number}/${folio}`;
-            const createdAt = approved_at != undefined ? formatDate(approved_at , 'DD/MM/YYYY'): null;
+            const referenceFallback = `${file_number}/${folio}`;
+            const createdAtFallback = approved_at != undefined ? formatDate(approved_at , 'DD/MM/YYYY'): null;
             const box = address_box;
             const region_address = address_region;
             const registry_type = registry_type_id;
@@ -190,7 +192,7 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
               old_school_name,
               school_category_id,
               category, // Aina ya Shule Sekendari, Msingi n.k
-              createdAt,
+              createdAtFallback,
               registration_number,
               registration_date
                 ? formatDate(registration_date, "DD/MM/YYYY")
@@ -223,8 +225,22 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
               t_old_street
             );
 
-            const paragraphs = letter.bodyContent;
-            const title = letter.title;
+            const rendered = jsonData?.rendered || null;
+            const reference = typeof rendered?.reference === "string" && rendered.reference.trim().length > 0
+              ? rendered.reference.trim()
+              : referenceFallback;
+            const createdAt = typeof rendered?.date === "string" && rendered.date.trim().length > 0
+              ? rendered.date.trim()
+              : createdAtFallback;
+            const paragraphs = Array.isArray(rendered?.paragraphs) && rendered.paragraphs.length > 0
+              ? rendered.paragraphs
+              : letter.bodyContent;
+            const title = typeof rendered?.title === "string" && rendered.title.trim().length > 0
+              ? rendered.title
+              : letter.title;
+            const headerOverrides = Array.isArray(rendered?.addressee) && rendered.addressee.length > 0
+              ? { addressee: rendered.addressee }
+              : null;
             const table = {
               headers: [
                 `Na.`,
@@ -269,7 +285,8 @@ baruaController.get("/barua/:tracking_number", cors(), isAuthenticated,can('view
               district_box,
               district_sqa_box,
               school_category_id,
-              ngazi_ya_wilaya
+              ngazi_ya_wilaya,
+              headerOverrides
             );
           }else{
             console.error("[BARUA][ADMIN][ERROR]", {

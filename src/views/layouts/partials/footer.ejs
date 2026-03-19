@@ -35,6 +35,28 @@
             <i class='mdi mdi-spin mdi-cog-outline fs-22'></i>
         </div>
     </div> -->
+
+    <!-- Global PDF preview modal (letters) -->
+    <div class="modal fade" id="globalPdfModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="globalPdfModalTitle">Barua</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0 position-relative">
+                    <div id="globalPdfLoading" class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-white">
+                        <div class="text-muted small">Inapakia barua...</div>
+                    </div>
+                    <iframe
+                        id="globalPdfFrame"
+                        title="Letter Preview"
+                        style="width:100%; height:85vh; border:0; display:block;"
+                    ></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
      <!-- Start  Theme Settings -->
      <% include('settings.ejs') %>
      <!-- End Theme Settings -->
@@ -127,6 +149,234 @@
                 }).showToast();
             }
         });
+
+	        // Global handler for opening letters in a modal instead of a new tab
+	        (function(){
+	            const modalEl = document.getElementById("globalPdfModal");
+	            const titleEl = document.getElementById("globalPdfModalTitle");
+	            const frameEl = document.getElementById("globalPdfFrame");
+	            const loadingEl = document.getElementById("globalPdfLoading");
+
+	            const getBootstrap = () => {
+	                try {
+	                    return window.bootstrap || (typeof bootstrap !== "undefined" ? bootstrap : null);
+	                } catch (e) {
+	                    return window.bootstrap || null;
+	                }
+	            };
+
+	            const getModalCtor = () => {
+	                const bs = getBootstrap();
+	                return bs && typeof bs.Modal === "function" ? bs.Modal : null;
+	            };
+
+	            let modalInstance = null;
+	            let fallbackBackdrop = null;
+
+	            const showFallback = () => {
+	                if (!modalEl) return;
+	                modalEl.classList.add("show");
+	                modalEl.style.display = "block";
+	                modalEl.removeAttribute("aria-hidden");
+	                document.body.classList.add("modal-open");
+
+	                if (!fallbackBackdrop) {
+	                    fallbackBackdrop = document.createElement("div");
+	                    fallbackBackdrop.className = "modal-backdrop fade show";
+	                    document.body.appendChild(fallbackBackdrop);
+	                }
+	            };
+
+	            const hideFallback = () => {
+	                if (!modalEl) return;
+	                modalEl.classList.remove("show");
+	                modalEl.style.display = "none";
+	                modalEl.setAttribute("aria-hidden", "true");
+	                document.body.classList.remove("modal-open");
+	                if (fallbackBackdrop && fallbackBackdrop.parentNode) {
+	                    fallbackBackdrop.parentNode.removeChild(fallbackBackdrop);
+	                }
+	                fallbackBackdrop = null;
+	            };
+
+	            const setLoading = (isLoading) => {
+	                if (!loadingEl) return;
+	                loadingEl.classList.toggle("d-none", !isLoading);
+	            };
+
+	            window.openPdfModal = (url, options = {}) => {
+	                const safeUrl = String(url || "").trim();
+	                if (!safeUrl) return;
+
+	                if (!modalEl || !frameEl) {
+	                    window.location.assign(safeUrl);
+	                    return;
+	                }
+
+	                const ModalCtor = getModalCtor();
+	                if (ModalCtor && !modalInstance) {
+	                    try {
+	                        modalInstance = new ModalCtor(modalEl, { backdrop: "static", keyboard: true });
+	                    } catch (e) {
+	                        modalInstance = null;
+	                    }
+	                }
+
+	                if (titleEl) {
+	                    const title = String(options.title || "Barua").trim() || "Barua";
+	                    titleEl.textContent = title;
+	                }
+
+	                setLoading(true);
+	                frameEl.src = safeUrl;
+	                if (modalInstance) {
+	                    modalInstance.show();
+	                } else {
+	                    showFallback();
+	                }
+	            };
+
+	            if (frameEl) {
+	                frameEl.addEventListener("load", function(){
+	                    setLoading(false);
+	                });
+	            }
+
+	            if (modalEl) {
+	                modalEl.addEventListener("hidden.bs.modal", function(){
+	                    if (frameEl) frameEl.src = "about:blank";
+	                    setLoading(true);
+	                });
+
+	                // Fallback close button support when Bootstrap isn't available.
+	                const closeBtn = modalEl.querySelector ? modalEl.querySelector('[data-bs-dismiss="modal"], .btn-close') : null;
+	                if (closeBtn) {
+	                    closeBtn.addEventListener("click", function(){
+	                        if (modalInstance) return;
+	                        hideFallback();
+	                        if (frameEl) frameEl.src = "about:blank";
+	                        setLoading(true);
+	                    });
+	                }
+	            }
+
+	            // Close fallback on ESC
+	            document.addEventListener("keydown", function(e){
+	                if (modalInstance) return;
+	                if (!modalEl) return;
+	                if (!modalEl.classList.contains("show")) return;
+	                const key = e && (e.key || e.code);
+	                if (key === "Escape" || key === "Esc") {
+	                    hideFallback();
+	                    if (frameEl) frameEl.src = "about:blank";
+	                    setLoading(true);
+	                }
+	            });
+
+            const isLetterHref = (href) => {
+                const value = String(href || "").trim().toLowerCase();
+                return value.startsWith("/barua/");
+            };
+
+            const handleLetterClick = (event, anchor) => {
+                if (!event || event.defaultPrevented) return;
+                if (!anchor) return;
+                if (anchor.getAttribute("data-no-pdf-modal") === "1") return;
+                if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+                const href = String(anchor.getAttribute("href") || "").trim();
+                if (!isLetterHref(href)) return;
+
+                // Ensure no "new tab" behaviour even if some markup has target=_blank.
+                if (anchor.getAttribute("target") === "_blank") {
+                    anchor.removeAttribute("target");
+                    anchor.removeAttribute("rel");
+                }
+
+                event.preventDefault();
+                event.stopPropagation();
+                if (typeof event.stopImmediatePropagation === "function") {
+                    event.stopImmediatePropagation();
+                }
+
+                const title = String(anchor.getAttribute("title") || anchor.textContent || "Barua").trim() || "Barua";
+                window.openPdfModal(href, { title });
+            };
+
+            const bindLetterAnchors = (root) => {
+                const scope = root && root.querySelectorAll ? root : document;
+                let anchors = [];
+                try {
+                    anchors = Array.from(scope.querySelectorAll('a[href^="/barua/"], a[href^="/Barua/"]'));
+                } catch (e) {
+                    anchors = [];
+                }
+
+                anchors.forEach((a) => {
+                    if (!a || a.getAttribute("data-no-pdf-modal") === "1") return;
+                    if (a.dataset && a.dataset.pdfModalBound === "1") return;
+
+                    // Prevent the browser from opening a new tab by default.
+                    if (a.getAttribute("target") === "_blank") {
+                        a.removeAttribute("target");
+                        a.removeAttribute("rel");
+                    }
+
+                    if (a.dataset) a.dataset.pdfModalBound = "1";
+                    a.addEventListener("click", function (event) {
+                        handleLetterClick(event, a);
+                    });
+                });
+
+                // Also handle legacy markup: <button>...<a href="/Barua/...">...</a></button>
+                let buttons = [];
+                try {
+                    buttons = Array.from(scope.querySelectorAll("button"));
+                } catch (e) {
+                    buttons = [];
+                }
+                buttons.forEach((btn) => {
+                    if (!btn) return;
+                    const a = btn.querySelector ? btn.querySelector('a[href^="/barua/"], a[href^="/Barua/"]') : null;
+                    if (!a) return;
+                    if (btn.dataset && btn.dataset.pdfModalBound === "1") return;
+                    if (btn.dataset) btn.dataset.pdfModalBound = "1";
+                    btn.addEventListener("click", function (event) {
+                        handleLetterClick(event, a);
+                    });
+                });
+            };
+
+            // Initial bind for all pages.
+            bindLetterAnchors(document);
+
+            // MutationObserver for dynamically injected content (tables, ajax, etc).
+            if (document.body && typeof MutationObserver === "function") {
+                const observer = new MutationObserver((mutations) => {
+                    mutations.forEach((m) => {
+                        (m.addedNodes || []).forEach((node) => {
+                            if (!node || node.nodeType !== 1) return;
+                            bindLetterAnchors(node);
+                        });
+                    });
+                });
+                observer.observe(document.body, { childList: true, subtree: true });
+            }
+
+            // Capture-phase handler: runs before other click handlers.
+            document.addEventListener("click", function(event){
+                const anchor = event.target && event.target.closest ? event.target.closest("a") : null;
+                if (!anchor) return;
+                handleLetterClick(event, anchor);
+            }, true);
+
+            // Fallback delegated handler (in case some anchor is missed).
+            document.addEventListener("click", function(event){
+                const anchor = event.target && event.target.closest ? event.target.closest("a") : null;
+                if (!anchor) return;
+                handleLetterClick(event, anchor);
+            }, false);
+        })();
         function formatState(e){return e.id?$('<span><img src="assets/images/flags/select2/'+e.element.value.toLowerCase()+'.png" class="img-flag rounded" height="18" /> '+e.text+"</span>"):e.text}function formatState(e){var t;return e.id?((t=$('<span><img class="img-flag rounded" height="18" /> <span></span></span>')).find("span").text(e.text),t.find("img").attr("src","assets/images/flags/select2/"+e.element.value.toLowerCase()+".png"),t):e.text}$(document).ready(function(){$(".js-example-basic-single").select2(),$(".js-example-basic-multiple").select2();$(".js-example-data-array").select2({data:[{id:0,text:"enhancement"},{id:1,text:"bug"},{id:2,text:"duplicate"},{id:3,text:"invalid"},{id:4,text:"wontfix"}]})}),$(".js-example-templating").select2({templateResult:formatState}),$(".select-flag-templating").select2({templateSelection:formatState}),$(".js-example-disabled").select2(),$(".js-example-disabled-multi").select2(),$(".js-programmatic-enable").on("click",function(){$(".js-example-disabled").prop("disabled",!1),$(".js-example-disabled-multi").prop("disabled",!1)}),$(".js-programmatic-disable").on("click",function(){$(".js-example-disabled").prop("disabled",!0),$(".js-example-disabled-multi").prop("disabled",!0)});
         $(function(){
             const SESSION_CHECK_INTERVAL_MS = 30000;
@@ -487,9 +737,9 @@ function w() {
 
 </script>    -->
 <script src="/design/assets/js/app.js"></script>
-<script>
-  (function () {
-    const THEME_KEY = "sas_layout_mode";
+	<script>
+	  (function () {
+	    const THEME_KEY = "sas_layout_mode";
 
     const syncDefaultAttribute = () => {
       try {
@@ -540,6 +790,59 @@ function w() {
           persistTheme(selected);
         });
       });
-    });
-  })();
-</script>
+	    });
+	  })();
+	</script>
+
+	<script>
+	  (function () {
+	    // Persist left menu (hamburger) state across refresh.
+	    const KEY_SIZE = "sas_sidebar_size";
+	    const KEY_HAMBURGER_OPEN = "sas_hamburger_open";
+
+	    const apply = () => {
+	      try {
+	        const savedSize = localStorage.getItem(KEY_SIZE);
+	        if (savedSize !== null) {
+	          document.documentElement.setAttribute("data-sidebar-size", savedSize);
+	          sessionStorage.setItem("data-sidebar-size", savedSize);
+	        }
+
+	        const open = localStorage.getItem(KEY_HAMBURGER_OPEN) === "1";
+	        const hamburger = document.querySelector("#topnav-hamburger-icon .hamburger-icon");
+	        if (hamburger) hamburger.classList.toggle("open", open);
+	      } catch (error) {}
+	    };
+
+	    const save = () => {
+	      try {
+	        const size = document.documentElement.getAttribute("data-sidebar-size") || "";
+	        localStorage.setItem(KEY_SIZE, size);
+	        sessionStorage.setItem("data-sidebar-size", size);
+
+	        const open = document.querySelector(".hamburger-icon")?.classList.contains("open");
+	        localStorage.setItem(KEY_HAMBURGER_OPEN, open ? "1" : "0");
+	      } catch (error) {}
+	    };
+
+	    const bind = () => {
+	      const btn = document.getElementById("topnav-hamburger-icon");
+	      if (!btn) return;
+	      // Run after the theme/app.js click handler so we store the *new* state (not the old one).
+	      btn.addEventListener("click", () => setTimeout(save, 0));
+	    };
+
+	    if (document.readyState === "loading") {
+	      document.addEventListener("DOMContentLoaded", () => {
+	        apply();
+	        bind();
+	      });
+	    } else {
+	      apply();
+	      bind();
+	    }
+
+	    // One more apply after load (in case app.js resets on load callbacks).
+	    window.addEventListener("load", () => setTimeout(apply, 0));
+	  })();
+	</script>

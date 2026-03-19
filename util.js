@@ -15,6 +15,7 @@ const cheerio = require("cheerio");
 const path = require("path");
 const PDFDocument = require("./src/controllers/barua/pdfkitTable");
 const url = require("url");
+const QRCode = require("qrcode");
 
 const { toSwahili } = require('digits-to-swahili');
 const { level } = require("winston");
@@ -775,7 +776,8 @@ module.exports = {
     district_box,
     district_sqa_box,
     school_type_id,
-    ngazi_ya_wilaya
+    ngazi_ya_wilaya,
+    headerOverrides = null
   ) => {
     const options = {
       margin: 72,
@@ -783,7 +785,9 @@ module.exports = {
     };
     let doc = new PDFDocument(options);
     const imagesPaths = path.join(__dirname + "/public/assets/images");
-    const trackingNumber = req.params.tracking_number;
+    const trackingNumber =
+      (req && req.params && (req.params.tracking_number || req.params.template_key)) ||
+      "preview";
     const filename =
       encodeURIComponent(
         module.exports.formatDate(new Date(), "DD_MM_YYYY-HH_mm_ss-") +
@@ -803,7 +807,8 @@ module.exports = {
       box,
       region_address,
       registry_type,
-      school_type_id
+      school_type_id,
+      headerOverrides
     ); // Invoke `generateHeader` function.
     generateTitle(doc, title);
     paragraphs.forEach((paragraph) => {
@@ -834,6 +839,586 @@ module.exports = {
     doc.pipe(res, { end: true });
     doc.end();
   },
+
+	  generateSchoolCertificate: (req, res, application, certificate) => {
+	    const verify = String(certificate?.verification_code || "").trim().toUpperCase();
+	    const frontendUiUrl = String(process.env.FRONTEND_UI_URL || process.env.FRONTEND_URL || "").trim();
+	    const verifyUrl =
+	      verify && frontendUiUrl ? `${frontendUiUrl.replace(/\/+$/, "")}/verify-certificate/${verify}` : "";
+
+	    const renderCertificate = (qrBuffer) => {
+	    const options = {
+	      margin: 54,
+	      size: "A4",
+	    };
+	    let doc = new PDFDocument(options);
+
+    const imagesPaths = path.join(__dirname + "/public/assets/images");
+    const trackingNumber = (req && req.params && req.params.tracking_number) || "certificate";
+    const filename =
+      encodeURIComponent(
+        module.exports.formatDate(new Date(), "DD_MM_YYYY-HH_mm_ss-") +
+          trackingNumber
+      ) + ".pdf";
+
+	    res.setHeader("Content-disposition", 'inline; filename="' + filename + '"');
+	    res.setHeader("Content-type", "application/pdf");
+
+    // Metadata (basic security / traceability).
+    try {
+      doc.info.Title = "Cheti cha Usajili wa Shule";
+      doc.info.Subject = "School Registration Certificate";
+      doc.info.Keywords = `SAS, MOE, certificate, ${certificate?.certificate_number || ""}, ${certificate?.verification_code || ""}`;
+    } catch (error) {}
+
+	    const pageWidth = doc.page.width;
+	    const pageHeight = doc.page.height;
+	    const left = options.margin;
+	    const right = pageWidth - options.margin;
+	    const MISSING = "-";
+
+	    const asText = (value, fallback = "") => {
+	      if (value === null || value === undefined) return fallback;
+	      const t = String(value).trim();
+	      return t ? t : fallback;
+	    };
+
+	    const extractBoxNumber = (value) => {
+	      const text = String(value || "");
+	      const match = text.match(/\d+/);
+	      return match ? match[0] : "";
+	    };
+
+	    const fitFontSizeToWidth = (text, maxWidth, { max = 12, min = 8 } = {}) => {
+	      const t = String(text || "");
+	      if (!t) return max;
+	      for (let size = max; size >= min; size -= 1) {
+	        doc.fontSize(size);
+	        if (doc.widthOfString(t) <= maxWidth) return size;
+	      }
+	      return min;
+	    };
+
+	    const fitTextStyleToWidth = (text, maxWidth, { max = 12, min = 7 } = {}) => {
+	      const t = String(text || "");
+	      if (!t) return { fontSize: max, characterSpacing: 0 };
+	      const fontSize = fitFontSizeToWidth(t, maxWidth, { max, min });
+	      doc.fontSize(fontSize);
+	      if (doc.widthOfString(t) <= maxWidth) return { fontSize, characterSpacing: 0 };
+
+	      // If still not fitting at min font size, tighten character spacing a bit (only if supported by PDF engine).
+	      if (typeof doc.characterSpacing === "function") {
+	        const spacings = [-0.15, -0.25, -0.35];
+	        for (const cs of spacings) {
+	          doc.characterSpacing(cs);
+	          if (doc.widthOfString(t) <= maxWidth) {
+	            doc.characterSpacing(0);
+	            return { fontSize, characterSpacing: cs };
+	          }
+	        }
+	        doc.characterSpacing(0);
+	      }
+	      return { fontSize, characterSpacing: 0 };
+	    };
+
+	    const formatDateShort = (value) => {
+	      try {
+	        const d = value ? new Date(value) : null;
+	        if (!d || Number.isNaN(d.getTime())) return "";
+	        const dd = String(d.getDate()).padStart(2, "0");
+	        const mm = String(d.getMonth() + 1).padStart(2, "0");
+	        const yy = String(d.getFullYear());
+	        return `${dd}/${mm}/${yy}`;
+	      } catch (e) {
+	        return "";
+	      }
+	    };
+
+	    const formatDateParts = (value) => {
+	      try {
+	        const d = value ? new Date(value) : null;
+	        if (!d || Number.isNaN(d.getTime())) return "{{DD}} Mwezi {{MM}} Mwaka {{YYYY}}";
+	        const dd = String(d.getDate()).padStart(2, "0");
+	        const mm = String(d.getMonth() + 1).padStart(2, "0");
+	        const yyyy = String(d.getFullYear());
+	        return `${dd} Mwezi ${mm} Mwaka ${yyyy}`;
+	      } catch (e) {
+	        return "{{DD}} Mwezi {{MM}} Mwaka {{YYYY}}";
+	      }
+	    };
+
+	    const formatDatePartsObject = (value) => {
+	      try {
+	        const d = value ? new Date(value) : null;
+	        if (!d || Number.isNaN(d.getTime())) return { DD: "{{DD}}", MM: "{{MM}}", YYYY: "{{YYYY}}" };
+	        return {
+	          DD: String(d.getDate()).padStart(2, "0"),
+	          MM: String(d.getMonth() + 1).padStart(2, "0"),
+	          YYYY: String(d.getFullYear()),
+	        };
+	      } catch (e) {
+	        return { DD: "{{DD}}", MM: "{{MM}}", YYYY: "{{YYYY}}" };
+	      }
+	    };
+
+    const mod10CheckDigit = (digits) => {
+      const text = String(digits || "").replace(/\D/g, "");
+      if (!text) return "0";
+      let sum = 0;
+      let weight = 3;
+      for (let i = text.length - 1; i >= 0; i -= 1) {
+        const d = Number(text[i]);
+        if (!Number.isFinite(d)) continue;
+        sum += d * weight;
+        weight = weight === 3 ? 1 : 3;
+      }
+      const mod = sum % 10;
+      return String((10 - mod) % 10);
+    };
+
+    const drawItfBarcode = (docRef, digits, x, y, opts = {}) => {
+      const raw = String(digits || "").replace(/\D/g, "");
+      if (!raw) return 0;
+      const input = raw.length % 2 === 0 ? raw : `0${raw}`;
+
+      const narrow = Number(opts.narrow || 1.2);
+      const wide = Number(opts.wide || (narrow * 3));
+      const height = Number(opts.height || 42);
+      const color = opts.color || "#111827";
+
+      const patterns = {
+        0: "nnwwn",
+        1: "wnnnw",
+        2: "nwnnw",
+        3: "wwnnn",
+        4: "nnwnw",
+        5: "wnwnn",
+        6: "nwwnn",
+        7: "nnnww",
+        8: "wnnwn",
+        9: "nwnwn",
+      };
+
+      const w = (kind) => (kind === "w" ? wide : narrow);
+
+      let cursorX = x;
+      docRef.save();
+      docRef.fillColor(color);
+
+      // Start: n n n n (bar/space/bar/space)
+      const start = ["n", "n", "n", "n"];
+      for (let i = 0; i < start.length; i += 1) {
+        const isBar = i % 2 === 0;
+        const width = w(start[i]);
+        if (isBar) docRef.rect(cursorX, y, width, height).fill();
+        cursorX += width;
+      }
+
+      for (let p = 0; p < input.length; p += 2) {
+        const a = patterns[input[p]];
+        const b = patterns[input[p + 1]];
+        if (!a || !b) continue;
+        for (let i = 0; i < 5; i += 1) {
+          const barW = w(a[i]);
+          const spaceW = w(b[i]);
+          docRef.rect(cursorX, y, barW, height).fill();
+          cursorX += barW + spaceW;
+        }
+      }
+
+      // Stop: w n n (bar/space/bar)
+      const stop = ["w", "n", "n"];
+      for (let i = 0; i < stop.length; i += 1) {
+        const isBar = i % 2 === 0;
+        const width = w(stop[i]);
+        if (isBar) docRef.rect(cursorX, y, width, height).fill();
+        cursorX += width;
+      }
+
+      docRef.restore();
+      return cursorX - x;
+    };
+
+	    const schoolName = asText(application?.school_name, MISSING).toUpperCase();
+	    const council = asText(application?.council, MISSING).toUpperCase();
+	    const councilNgazi = asText(application?.council_ngazi, "");
+	    const councilFull = [asText(councilNgazi, "").toUpperCase(), council].filter(Boolean).join(" ") || MISSING;
+	    const owner = asText(application?.address_name, MISSING).toUpperCase();
+	    const educationLevel = asText(application?.category, MISSING).toUpperCase();
+	    const toStreamWordsSw = (num) => {
+	      const n = Number(num);
+	      const map = {
+	        1: "MMOJA",
+	        2: "MIWILI",
+	        3: "MITATU",
+	        4: "MINNE",
+	        5: "MITANO",
+	        6: "SITA",
+	        7: "SABA",
+	        8: "NANE",
+	        9: "TISA",
+	        10: "KUMI",
+	      };
+	      if (map[n]) return map[n];
+	      try {
+	        const words = toSwahili(n);
+	        return words ? String(words).toUpperCase() : "";
+	      } catch (e) {
+	        return "";
+	      }
+	    };
+
+	    const formatNumberWithWordsSw = (value) => {
+	      const raw = String(value ?? "").trim();
+	      if (!raw) return MISSING;
+	      const num = Number.parseInt(raw, 10);
+	      if (!Number.isFinite(num)) return raw;
+	      try {
+	        const words = toStreamWordsSw(num);
+	        if (words) return `${num} - ${String(words).toUpperCase()}`;
+	      } catch (e) {}
+	      return String(num);
+	    };
+	    const streamCount = formatNumberWithWordsSw(application?.stream);
+	    const specialization = asText(application?.school_specialization, MISSING).toUpperCase();
+	    const ownerAddress = [
+	      extractBoxNumber(application?.address_box) ? `S.L.P ${extractBoxNumber(application?.address_box)}` : "",
+	      asText(application?.address_lga, ""),
+	      asText(application?.address_region, ""),
+	    ]
+	      .filter(Boolean)
+	      .join(", ")
+	      .toUpperCase();
+	    const regNo = asText(application?.registration_number, MISSING);
+	    const registrationDateParts = formatDatePartsObject(application?.registration_date || application?.approved_at);
+	    const referenceNumber = [asText(application?.file_number, ""), asText(application?.school_folio, ""), asText(application?.folio, "")]
+	      .filter(Boolean)
+	      .join("/");
+
+    const certificateNumber = asText(certificate?.certificate_number, "");
+    const certificateDigits = String(certificateNumber || "").replace(/\D/g, "");
+    const barcodeBase = certificateDigits || ""; // expect YYYY00001 without hyphen
+    const barcodePayload = barcodeBase ? `${barcodeBase}${mod10CheckDigit(barcodeBase)}` : "";
+
+    // Keep issued date for metadata only (not rendered on certificate)
+    const issuedAt = certificate?.issued_at || certificate?.issuedAt || null;
+    const issuedAtText = formatDateShort(issuedAt) || MISSING;
+
+    const decodeBase64Image = (base64Image) => {
+      if (!base64Image) return null;
+      try {
+        const text = String(base64Image || "");
+        if (text.startsWith("data:image/png;base64,")) {
+          return Buffer.from(text.split(",")[1], "base64");
+        }
+        return Buffer.from(text, "base64");
+      } catch (e) {
+        return null;
+      }
+    };
+
+    const signatureBuffer = decodeBase64Image(certificate?.base64signature);
+
+    // Background fine lines (simple guilloche-like)
+    try {
+      doc.save();
+      doc.opacity(0.05);
+      doc.lineWidth(0.6);
+      doc.strokeColor("#111827");
+      const step = 18;
+      for (let x = -pageHeight; x < pageWidth + pageHeight; x += step) {
+        doc
+          .moveTo(x, 0)
+          .lineTo(x + pageHeight, pageHeight)
+          .stroke();
+      }
+      doc.restore();
+    } catch (error) {}
+
+	    // Watermark
+	    try {
+	      doc.save();
+	      doc.opacity(0.06);
+	      const watermarkPath = path.join(imagesPaths, "national-logo.png");
+	      const wmSize = 320;
+	      const wmX = pageWidth / 2 - wmSize / 2;
+	      const wmY = pageHeight / 2 - wmSize / 2;
+	      doc.image(watermarkPath, wmX, wmY, { width: wmSize, height: wmSize });
+	      doc.restore();
+	    } catch (error) {}
+
+    // Top right
+    doc
+      .font("Helvetica")
+      .fontSize(10)
+      .fillColor("#111827")
+      .text("Fomu namba 10", left, 22, { width: right - left, align: "right" });
+	    doc
+	      .font("Helvetica-Bold")
+	      .fontSize(12)
+	      .text(asText(certificate?.certificate_number, MISSING), left, 56, { width: right - left, align: "right" });
+
+	    // Logo (same as letters header)
+	    const logoY = 28;
+	    const logoH = 80;
+	    try {
+	      const logoPath = path.join(imagesPaths, "national-logo.png");
+	      const logoW = 80;
+	      doc.image(logoPath, pageWidth / 2 - logoW / 2, logoY, { width: logoW, height: logoW });
+	    } catch (error) {}
+
+		    // Leave space between the logo and the title text (margin-top ~25px)
+		    let y = logoY + logoH + 25;
+		    doc.font("Helvetica-Bold").fontSize(14).text("JAMHURI YA MUUNGANO WA TANZANIA", left, y, { width: right - left, align: "center" });
+	    y += 22;
+	    doc.font("Helvetica-Bold").fontSize(16).text("WIZARA YA ELIMU, SAYANSI NA TEKNOLOJIA", left, y, { width: right - left, align: "center" });
+    y += 34;
+    doc.font("Helvetica-Bold").fontSize(18).text("CHETI CHA USAJILI WA SHULE ZISIZO ZA SERIKALI", left, y, { width: right - left, align: "center" });
+    y += 22;
+    doc.font("Helvetica-Oblique").fontSize(12).text("( Sheria ya Elimu Na. 25 ya 1978 )", left, y, { width: right - left, align: "center" });
+    y += 16;
+    doc.font("Helvetica-Oblique").fontSize(12).text("Kifungu 25 (3)", left, y, { width: right - left, align: "center" });
+
+    // Registration number box
+    y += 18;
+    const boxY = y - 12;
+    const boxW = 170;
+    const boxH = 30;
+    const boxX = right - boxW;
+    doc.font("Helvetica").fontSize(12).text("Na. ya Usajili", boxX - 95, boxY + 8, { width: 90, align: "right" });
+    doc.rect(boxX, boxY, boxW, boxH).strokeColor("#111827").lineWidth(1).stroke();
+    doc.font("Helvetica-Bold").fontSize(12).text(regNo, boxX + 8, boxY + 8, { width: boxW - 16, align: "center" });
+
+    y += 34;
+    y += 12; // space before first paragraph/field
+
+	    const dottedLine = (x1, x2, yy) => {
+	      // Smaller dash/gap => more dots (e.g. ~12 instead of ~10 over typical widths)
+	      const dashLen = 1.4;
+	      const gap = 1.2;
+	      for (let x = x1; x < x2; x += dashLen + gap) {
+	        doc.moveTo(x, yy).lineTo(Math.min(x + dashLen, x2), yy);
+	      }
+	      doc.stroke();
+	    };
+
+	    const dottedLineDense = (x1, x2, yy) => {
+	      const dashLen = 2.0;
+	      const gap = 1.6;
+	      for (let x = x1; x < x2; x += dashLen + gap) {
+	        doc.moveTo(x, yy).lineTo(Math.min(x + dashLen, x2), yy);
+	      }
+	      doc.stroke();
+	    };
+
+	    const drawField = (label, value, yy, { valueBold = true } = {}) => {
+	      const labelX = left;
+	      const labelW = 220;
+	      const valueX = left + labelW + 10;
+	      const valueW = right - valueX;
+	      const lineY = yy + 14;
+	      doc.font("Helvetica").fontSize(12).fillColor("#111827").text(label, labelX, yy, {
+	        width: labelW,
+	        lineBreak: false,
+	        ellipsis: true,
+	      });
+
+	      const safeValue = asText(value, MISSING);
+	      doc.font(valueBold ? "Helvetica-Bold" : "Helvetica").fillColor("#111827");
+	      const style = fitTextStyleToWidth(safeValue, valueW, { max: 12, min: 7 });
+	      if (typeof doc.characterSpacing === "function") doc.characterSpacing(style.characterSpacing || 0);
+	      doc.fontSize(style.fontSize).text(safeValue, valueX, yy, { width: valueW, lineBreak: false, ellipsis: true });
+	      if (typeof doc.characterSpacing === "function") doc.characterSpacing(0);
+
+	      doc.save();
+	      doc.strokeColor("#111827").opacity(0.65).lineWidth(0.9);
+	      dottedLine(valueX, right, lineY);
+	      doc.restore();
+	      return yy + 24;
+	    };
+
+	    const drawRegistrationDateField = (yy) => {
+	      const labelX = left;
+	      const labelW = 220;
+	      const valueX = left + labelW + 10;
+	      const lineY = yy + 14;
+
+	      doc.font("Helvetica").fontSize(12).fillColor("#111827").text("Imesajiliwa tarehe", labelX, yy, {
+	        width: labelW,
+	        lineBreak: false,
+	        ellipsis: true,
+	      });
+
+	      const dd = asText(registrationDateParts?.DD, "{{DD}}");
+	      const mm = asText(registrationDateParts?.MM, "{{MM}}");
+	      const yyyy = asText(registrationDateParts?.YYYY, "{{YYYY}}");
+
+		      const gap = 12;
+		      const labelGap = 10;
+		      const labelGapYear = 6;
+		      const mwezi = "Mwezi";
+		      const mwaka = "Mwaka";
+		      const wMwezi = doc.widthOfString(mwezi);
+		      const wMwaka = doc.widthOfString(mwaka);
+
+	      const safeRight = right - 4;
+	      const valueAreaW = Math.max(0, safeRight - valueX);
+		      const fixedW = gap + wMwezi + labelGap + gap + wMwaka + labelGapYear;
+		      const maxLinesW = Math.max(0, valueAreaW - fixedW);
+
+	      // Keep day/month areas compact so labels fit naturally.
+	      const dayMonthW = Math.min(80, Math.max(48, Math.floor(maxLinesW * 0.12)));
+	      let ddW = dayMonthW;
+	      let mmW = dayMonthW;
+	      let yearW = Math.max(90, maxLinesW - ddW - mmW);
+
+	      // If we overflow, shrink dd/mm first.
+	      const overflow = ddW + mmW + yearW - maxLinesW;
+	      if (overflow > 0) {
+	        const shrinkMm = Math.min(overflow, Math.max(0, mmW - 90));
+	        mmW -= shrinkMm;
+	        const remain = overflow - shrinkMm;
+	        const shrinkDd = Math.min(remain, Math.max(0, ddW - 70));
+	        ddW -= shrinkDd;
+	        yearW = Math.max(70, maxLinesW - ddW - mmW);
+	      }
+
+	      const labelFont = () => doc.font("Helvetica").fontSize(12).fillColor("#111827");
+	      const valueFont = () => doc.font("Helvetica").fontSize(12).fillColor("#111827");
+
+	      let x = valueX;
+	      valueFont().text(dd, x, yy, { width: ddW, lineBreak: false, align: "center" });
+	      const ddX1 = x;
+	      const ddX2 = x + ddW;
+
+	      x = ddX2 + gap;
+	      labelFont().text(mwezi, x, yy, { lineBreak: false });
+	      x += wMwezi + labelGap;
+
+	      valueFont().text(mm, x, yy, { width: mmW, lineBreak: false, align: "center" });
+	      const mmX1 = x;
+	      const mmX2 = x + mmW;
+
+		      x = mmX2 + gap;
+		      labelFont().text(mwaka, x, yy, { lineBreak: false });
+		      x += wMwaka + labelGapYear;
+
+		      // Make the year dotted area extend to the right margin.
+		      yearW = Math.max(70, safeRight - x);
+		      // Slightly left inside the dotted area (requested)
+		      valueFont().text(yyyy, x + 4, yy, { width: Math.max(10, yearW - 4), lineBreak: false, align: "left" });
+		      const yyX1 = x;
+		      const yyX2 = x + yearW;
+
+	      doc.save();
+	      doc.strokeColor("#111827").opacity(0.65).lineWidth(0.9);
+	      // Use the same dotted style used by other fields on this certificate.
+	      dottedLine(ddX1, ddX2, lineY);
+	      dottedLine(mmX1, mmX2, lineY);
+	      // Use same dotted style for year value too
+	      dottedLine(yyX1, safeRight, lineY);
+	      doc.restore();
+
+	      return yy + 24;
+	    };
+
+	    y = drawField("Jina la shule", schoolName, y);
+		    y = drawField("Halmashauri ya", councilFull, y);
+	    y = drawField("Mmiliki", owner, y);
+	    y = drawField("Anwani ya Mmiliki", ownerAddress || MISSING, y, { valueBold: false });
+	    y = drawRegistrationDateField(y);
+	    y = drawField("Ngazi ya Elimu itolewayo kuanzia", educationLevel, y, { valueBold: false });
+	    y = drawField("Idadi ya juu ya mkondo/Mikondo", streamCount, y, { valueBold: false });
+	    y = drawField("Michepuo/Fani za Mafunzo", specialization, y, { valueBold: false });
+	    y = drawField("Kumbukumbu namba", referenceNumber || MISSING, y, { valueBold: false });
+
+		    // Bottom signature area (show issued date + signature + cheo; no personal name)
+		    const sigY = pageHeight - 225;
+		    const lineY = sigY + 16; // line is top; content goes below
+		    const tareheLabel = "Tarehe";
+		    doc.font("Helvetica").fontSize(12).fillColor("#111827");
+		    const tareheLabelW = doc.widthOfString(tareheLabel);
+		    const leftLineX1 = left + tareheLabelW + 14;
+		    const midGap = 40;
+		    const leftLineX2 = Math.min(leftLineX1 + 220, pageWidth / 2 - midGap / 2);
+		    const rightLineX1 = Math.max(pageWidth / 2 + midGap / 2, pageWidth / 2 + 10);
+		    const rightLineX2 = right;
+
+		    doc.save();
+		    doc.strokeColor("#111827").opacity(0.85).lineWidth(1);
+		    doc.moveTo(leftLineX1, lineY).lineTo(leftLineX2, lineY).stroke();
+		    doc.moveTo(rightLineX1, lineY).lineTo(rightLineX2, lineY).stroke();
+		    doc.restore();
+
+		    // Date label sits left of the line; value sits on the line area (like the original form).
+		    const dateTextY = lineY - 14;
+		    doc.font("Helvetica").fontSize(12).fillColor("#111827").text(tareheLabel, left, dateTextY);
+		    doc
+		      .font("Helvetica-Bold")
+		      .fontSize(12)
+		      .fillColor("#111827")
+		      .text(issuedAtText, leftLineX1 + 4, dateTextY, { width: leftLineX2 - leftLineX1 - 8, align: "center" });
+
+		    // Signature image
+		    if (signatureBuffer) {
+		      try {
+		        // Keep signature above the line so the line stays clean.
+		        doc.image(signatureBuffer, rightLineX1 + (rightLineX2 - rightLineX1) / 2 - 60, lineY - 72, { width: 120, height: 64 });
+		      } catch (e) {}
+		    } else {
+		      doc.font("Helvetica").fontSize(12).fillColor("#111827").text(MISSING, rightLineX1, lineY - 28, { width: rightLineX2 - rightLineX1, align: "center" });
+		    }
+
+		    doc
+		      .font("Helvetica-Bold")
+		      .fontSize(13)
+		      .fillColor("#111827")
+		      .text("KAMISHNA WA ELIMU", rightLineX1, lineY + 10, { width: rightLineX2 - rightLineX1, align: "center" });
+
+		    // Verification barcode (QR): encodes the full verification URL.
+		    if (verifyUrl && qrBuffer) {
+		      // Place QR at the top-left corner (easy scanning + consistent position).
+		      const qrSize = 72;
+		      const qrX = left;
+		      const qrY = 22;
+		      try {
+		        doc.image(qrBuffer, qrX, qrY, { width: qrSize, height: qrSize });
+		        doc.link(qrX, qrY, qrSize, qrSize, verifyUrl);
+		      } catch (e) {}
+		    } else if (barcodePayload) {
+	      // Fallback: numeric barcode (still useful if QR is unavailable)
+	      const barcodeY = pageHeight - 138;
+	      const barcodeH = 36;
+	      const estimatedWidth = drawItfBarcode(doc, barcodePayload, left, barcodeY, { height: barcodeH, narrow: 1.2 });
+	      const bx = Math.max(left, (pageWidth - estimatedWidth) / 2);
+	      if (Math.abs(bx - left) > 2) {
+	        drawItfBarcode(doc, barcodePayload, bx, barcodeY, { height: barcodeH, narrow: 1.2 });
+	      }
+	      doc.font("Helvetica").fontSize(8).fillColor("#334155").text(barcodePayload, left, barcodeY + barcodeH + 4, { width: right - left, align: "center" });
+	    }
+
+	    // Security footer (verification + microtext)
+	    doc.font("Helvetica").fontSize(8).fillColor("#334155").text(`Verification code: ${verify}`, left, pageHeight - 90, { width: right - left, align: "center" });
+	    doc.font("Helvetica").fontSize(6).fillColor("#64748b");
+	    const micro = `SAS-MOE|CERT:${asText(certificate?.certificate_number, "")}|CODE:${verify}|TRACK:${asText(application?.tracking_number, "")}|`;
+	    doc.text(micro.repeat(8).slice(0, 280), left, pageHeight - 76, { width: right - left, align: "center" });
+
+	    doc.pipe(res, { end: true });
+	    doc.end();
+	    };
+
+	    if (!verifyUrl) return renderCertificate(null);
+
+	    try {
+	      return QRCode.toBuffer(
+	        verifyUrl,
+	        { type: "png", errorCorrectionLevel: "M", margin: 0, width: 256 },
+	        (err, buffer) => renderCertificate(err ? null : buffer),
+	      );
+	    } catch (e) {
+	      return renderCertificate(null);
+	    }
+	  },
 
   bodyContent: (
     application_category_id,
@@ -1361,6 +1946,9 @@ const numberToWord = (number) => {
 
 const containsBoldTag = (text) => /<b>(.*?)<\/b>/i.test(text);
 const containUnderlineTag = (text) => /<u>(.*?)<\/u>/i.test(text);
+const startsWithPunctuation = (text = "") =>
+  /^[,.;:!?)\]}\u2019\u201d]/.test(String(text || "").trim());
+const endsWithNoSpaceJoiner = (text = "") => /[(\[{\/]$/.test(String(text || "").trim());
 const formatText = (
   text,
   doc,
@@ -1368,54 +1956,83 @@ const formatText = (
   font_family = "Helvetica",
   uppercase = true,
   lineGap = 4,
-  continued = true,
-  is_bold = false
+  continued = false,
+  is_bold = false,
+  indent = 0
 ) => {
-  //  if <b> tag present render with bold font
-  if (containsBoldTag(text)) {
-    var $ = cheerio.load(`<body> ${text} </body>`);
-    $("body")
-      .contents()
-      .each((index, element) => {
-          doc
-            .font(element.nodeType === 1 ? "Helvetica-Bold" : "Helvetica")
-            .fillColor("black")
-            .fontSize(12)
-            .text( $(element).text(), {
-              lineGap: lineGap,
-              continued: continued,
-              align: align,
-            });
-        
-      });
-    }else if(containUnderlineTag(text)) {
-      var $ = cheerio.load(`<body> ${text} </body>`);
-    $("body")
-      .contents()
-      .each((index , element) => {
-          const myText = $(element).text();
-          // console.log(is_bold ? font_family : `${font_family}-Bold`);
-             doc
-               .font(
-                 is_bold && element.nodeType === 1
-                   ? `${font_family}-Bold`
-                   : font_family
-               )
-               .text(myText, {
-                 lineGap: lineGap,
-                 indent: element.nodeType === 1 ? 33 : 0,
-                 underline: element.nodeType === 1,
-                 //  continued: continued,
-                 align: align,
-               });
-      });
-    } else {
-      // If no tag render normal text
-      doc
-        .fillColor("black")
-        .font("Helvetica")
-        .text(text, { align: align });
+  const rawInput = String(text ?? "");
+  const normalized = rawInput
+    .replace(/\r\n/g, "\n")
+    .replace(/\n+/g, " ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+
+  if (!normalized) return;
+
+  const hasInlineHtml = containsBoldTag(normalized) || containUnderlineTag(normalized);
+
+  if (!hasInlineHtml) {
+    doc.fillColor("black").font(font_family).fontSize(12).text(normalized, {
+      lineGap,
+      align,
+      continued: Boolean(continued),
+      indent: Number(indent) || 0,
+    });
+    return;
+  }
+
+  const $ = cheerio.load(`<body>${normalized}</body>`);
+  const nodes = $("body").contents().toArray();
+
+  let prevText = "";
+  let wroteAny = false;
+
+  nodes.forEach((node, index) => {
+    const isLast = index === nodes.length - 1;
+    const nodeType = node?.type;
+    const tagName = String(node?.name || "").toLowerCase();
+    const isElement = nodeType === "tag";
+    const isBold = isElement && tagName === "b";
+    const isUnderline = isElement && tagName === "u";
+
+    const textValueRaw = isElement ? $(node).text() : String(node?.data || "");
+    const segmentNormalized = String(textValueRaw || "").replace(/\s+/g, " ");
+    const segment = segmentNormalized.trim();
+
+    if (!segment) return;
+
+    if (wroteAny) {
+      const shouldInsertSpace =
+        !endsWithNoSpaceJoiner(prevText)
+        && !startsWithPunctuation(segment);
+
+      if (shouldInsertSpace) {
+        doc.fillColor("black").font(font_family).fontSize(12).text(" ", { continued: true });
+      }
     }
+
+    const shouldContinue = isLast ? Boolean(continued) : true;
+    const options = {
+      lineGap,
+      continued: shouldContinue,
+      indent: Number(indent) || 0,
+    };
+    if (index === 0 || isLast) {
+      options.align = align;
+    }
+    if (isUnderline) {
+      options.underline = true;
+    }
+
+    doc
+      .fillColor("black")
+      .font(isBold ? `${font_family}-Bold` : font_family)
+      .fontSize(12)
+      .text(segment, options);
+
+    prevText = segmentNormalized;
+    wroteAny = true;
+  });
 }
 
 // Letter Head
@@ -1429,12 +2046,14 @@ const generateHeader = (
   box,
   region_address,
   registry_type,
-  school_type_id
+  school_type_id,
+  headerOverrides = null
 ) => {
+  const contentX = 30;
   doc
     .font("Helvetica-Bold")
     .fontSize(14)
-    .text("JAMUHURI YA MUUNGANO WA TANZANIA", 30, 30, {
+    .text("JAMUHURI YA MUUNGANO WA TANZANIA", contentX, 30, {
       align: "center",
       characterSpacing: 0.2,
     })
@@ -1476,7 +2095,7 @@ const generateHeader = (
   doc.moveDown();
 
   doc
-    .text("Unapojibu tafadhali taja:", 30, 150, { continue: true })
+    .text("Unapojibu tafadhali taja:", contentX, 150, { continue: true })
     // .fontSize(10)
     .moveDown()
     .moveDown();
@@ -1485,7 +2104,6 @@ const generateHeader = (
                           font: "Helvetica-Bold",
                           size: 12,
                         });
-  console.log("Reference Width: ", referenceWidth);
   doc
     .font("Helvetica-Bold")
     .text(`${referenceText}`, { continued: true })
@@ -1494,6 +2112,25 @@ const generateHeader = (
     .moveDown();
 
   // Addressee
+  // Reset cursor to the same left edge used by the rest of the letter.
+  doc.x = contentX;
+
+  const overrideLinesRaw = headerOverrides?.addressee;
+  const overrideLines = Array.isArray(overrideLinesRaw)
+    ? overrideLinesRaw
+    : typeof overrideLinesRaw === "string"
+      ? overrideLinesRaw.split(/\r?\n/).map((l) => l.trim()).filter(Boolean)
+      : [];
+
+  if (overrideLines.length > 0) {
+    doc.font("Helvetica-Bold");
+    overrideLines.forEach((line, index) => {
+      const isLast = index === overrideLines.length - 1;
+      doc.text(String(line || ""), { underline: isLast });
+    });
+    doc.moveDown().moveDown();
+    return;
+  }
 
   // Kama Chuo ni cha Serikali
   if(registry_type == 3 && school_type_id == 4){
@@ -1530,10 +2167,71 @@ const generateHeader = (
 };
 // Title
 const generateTitle = (doc, title) => {
-  doc
-    .font("Helvetica-Bold")
-    .text(`Yah. ${title.toUpperCase().trim()}`, { underline: true, align: "center" })
-    .moveDown();
+  const prefix = "Yah. ";
+  const mainTitle = String(title || "").toUpperCase().trim();
+  if (!mainTitle) return;
+
+  doc.font("Helvetica-Bold").fontSize(12);
+
+  const leftMargin = doc.page.margins.left || 0;
+  const rightMargin = doc.page.margins.right || 0;
+  const availableWidth = doc.page.width - leftMargin - rightMargin;
+  const prefixWidth = doc.widthOfString(prefix);
+  const firstLineWidth = Math.max(60, availableWidth - prefixWidth);
+
+  const wrapLine = (words, maxWidth) => {
+    const lines = [];
+    let current = "";
+    words.forEach((word) => {
+      const next = current ? `${current} ${word}` : word;
+      if (doc.widthOfString(next) <= maxWidth || !current) {
+        current = next;
+        return;
+      }
+      lines.push(current);
+      current = word;
+    });
+    if (current) lines.push(current);
+    return lines;
+  };
+
+  const words = mainTitle.split(/\s+/).filter(Boolean);
+  let lines = [];
+  if (words.length) {
+    const firstPass = wrapLine(words, firstLineWidth);
+    if (firstPass.length <= 1) {
+      lines = firstPass;
+    } else {
+      const firstLine = firstPass[0];
+      const remainingWords = words.slice(firstLine.split(/\s+/).length);
+      lines = [firstLine, ...wrapLine(remainingWords, availableWidth)];
+    }
+  }
+  const startY = doc.y;
+  const lineHeight = doc.currentLineHeight(true) + 3;
+
+  lines.forEach((line, index) => {
+    const textLine = String(line || "").trim();
+    if (!textLine) return;
+
+    const y = startY + (lineHeight * index);
+
+    if (index === 0) {
+      const fullLine = `${prefix}${textLine}`;
+      const x = leftMargin + Math.max(0, (availableWidth - doc.widthOfString(fullLine)) / 2);
+      doc.text(prefix, x, y, { continued: true, underline: false, lineBreak: false });
+      doc.text(textLine, { continued: false, underline: true });
+      return;
+    }
+
+    const x = leftMargin + Math.max(0, (availableWidth - doc.widthOfString(textLine)) / 2);
+    doc.text(textLine, x, y, { underline: true, align: "left" });
+  });
+
+  doc.y = startY + (lineHeight * lines.length);
+  doc.moveDown(0.6);
+  // Align body with the left edge used by the header/addressee.
+  doc.x = 30;
 //   const prefix = "Yah. ";
 //   const mainTitle =
 //     (title +
@@ -1573,10 +2271,14 @@ const generateTitle = (doc, title) => {
 // Body
 const generateBody = (doc, bodyContent) => {
   formatText(bodyContent, doc);
+  doc.moveDown(0.7);
 }
 
 // 
 const generateFooter = (res , doc, base64Image, signatory, cheo) => {
+  const leftMargin = doc.page.margins.left || 0;
+  const rightMargin = doc.page.margins.right || 0;
+  const availableWidth = doc.page.width - leftMargin - rightMargin;
   const lineSize = 174;
   const signatureHeight = doc.y + 60;
   if(base64Image && base64Image.startsWith("data:image/png;base64")){
@@ -1601,9 +2303,7 @@ const generateFooter = (res , doc, base64Image, signatory, cheo) => {
     });
   }else{
     doc
-      .text(`<Insert Signature>`, doc.page.width / 2 - 50, signatureHeight, {
-        align: "center",
-      })
+      .text(`................`, leftMargin, signatureHeight, { align: "center", width: availableWidth })
       .moveDown();
   }
 // LINE
@@ -1617,14 +2317,14 @@ const generateFooter = (res , doc, base64Image, signatory, cheo) => {
     .fontSize(12)
     .fill("#021c27")
     .text(
-      signatory ? signatory : `<Insert Name>`,
-      80,
+      signatory ? signatory : `..................`,
+      leftMargin,
       signatureHeight,
       {
         // columns: 1,
         columnGap: 1,
         height: 2,
-        // width: lineSize,
+        width: availableWidth,
         align: "center",
       }
     );
@@ -1635,13 +2335,13 @@ const generateFooter = (res , doc, base64Image, signatory, cheo) => {
     .fill("#021c27")
     .text(
       cheo ? cheo : `...........................`,
-      doc.page.width / 2 - 130,
+      leftMargin,
       signatureHeight + 20,
       {
         columns: 1,
         columnGap: 0,
         height: 40,
-        width: lineSize + 100,
+        width: availableWidth,
         align: "center",
         underline: true,
       }
@@ -1663,43 +2363,45 @@ const generateCopies = (
   application_category_id,
   ngazi_ya_wilaya
 ) => {
-  const has_copies = zone_box || region_box || district_box || district_sqa_box;
+  const hasDefaultCopies = [4, 11, 9, 14, 12, 5].includes(application_category_id);
+  const has_copies = hasDefaultCopies || zone_box || region_box || district_box || district_sqa_box;
   var ngazi = ngaziWilaya(ngazi_ya_wilaya);
   var copies = ''
-  has_copies
-    ? doc.font("Helvetica-Bold").text(`Nakala:`, 30, doc.page.height - 50)
-    : "";
+  if (!has_copies) return;
   // console.log(zone_box);
-  if ([4, 11, 9, 14, 12, 5].includes(application_category_id)) {
+  if (hasDefaultCopies) {
     copies += `
           Katibu Mkuu,
           OWM – TAMISEMI,
-          S.L.P.1923,<u>Dodoma.</u>
+          S.L.P.1923,
+          Dodoma.
+          
           Katibu Mtendaji,
           Baraza la Mitihani Tanzania,
-          S.L.P. 2624,<u>Dar es salaam.</u>`;
+          S.L.P. 2624,
+          Dar es salaam.`;
   }
   copies += zone_box
     ? `${
         zone_box
           ? `
+          
           Mthibiti Mkuu Ubora wa Shule,
           Kanda ya ${zone_name ? zone_name + "," : "<Insert Zone Name>"}
-          S.L.P. ${zone_box ? zone_box : "<Insert Zone Address>"}, ${
-              sqa_zone_region
-                ? "<u>" + sqa_zone_region + ".</u>"
-                : "<Insert Region>"
-            }`
+          S.L.P. ${zone_box ? zone_box : "<Insert Zone Address>"},
+          ${
+            sqa_zone_region ? "<u>" + sqa_zone_region + ".</u>" : "<Insert Region>"
+          }`
           : ``
       }`
     : "";
   copies += region_box
     ? `
+          
           Afisa Elimu Mkoa,
           Mkoa wa ${region ? region : "<Insert Region>"},
-          S.L.P ${region_box ? region_box : "<Insert Region Address"}, ${
-        region ? "<u>" + region + ".</u>" : "<Insert Region>"
-      }`
+          S.L.P ${region_box ? region_box : "<Insert Region Address"},
+          ${region ? "<u>" + region + ".</u>" : "<Insert Region>"}`
     : "";
   // copies += district_box
   //   ? `
@@ -1713,6 +2415,7 @@ const generateCopies = (
   //   : "";
   copies += district_sqa_box
     ? `
+          
           Mthibiti Mkuu Ubora wa Shule,
           Halmashauri ya ${ngazi} ${
         district ? district : "<Insert District>"
@@ -1721,14 +2424,91 @@ const generateCopies = (
             district_sqa_box
               ? district_sqa_box
               : "<Insert District SQA Address>"
-          }, ${region ? "<u>" + region + ".</u>" : "<Insert Region>"}
+          },
+          ${region ? "<u>" + region + ".</u>" : "<Insert Region>"}
           
           `
     : "";
-  //end has copies;
-  has_copies
-    ? formatText(copies, doc, "left", "Helvetica", true, 0, false, true)
-    : "";
+
+  const raw = String(copies || "").replace(/\r\n/g, "\n").trim();
+  if (!raw) return;
+
+  const blocks = raw
+    .split(/\n\s*\n+/g)
+    .map((chunk) => chunk.trim())
+    .filter(Boolean)
+    .map((chunk) =>
+      chunk
+        .split("\n")
+        .map((line) => String(line || "").trim())
+        .filter(Boolean)
+    )
+    .filter((lines) => lines.length > 0);
+
+  if (!blocks.length) return;
+
+  const baseX = 30;
+  const indent = 15;
+  const paragraphGap = () => doc.currentLineHeight(true) * 1;
+  const pageBottom = () => doc.page.height - (doc.page.margins.bottom || 0);
+  const pageTop = () => (doc.page.margins.top || 0) + 10;
+  const availableWidth = () => doc.page.width - (doc.page.margins.right || 0) - baseX;
+  const stripInlineTags = (value) =>
+    String(value || "")
+      .replace(/<\/?[^>]+>/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+  const measureBlockHeight = (lines = []) => {
+    doc.font("Helvetica").fontSize(12);
+    const width = Math.max(40, availableWidth() - indent);
+    return lines.reduce((sum, line) => {
+      const plain = stripInlineTags(line);
+      const h = doc.heightOfString(plain || " ", { width, lineGap: 1, align: "left" });
+      return sum + h;
+    }, 0);
+  };
+
+  const pageHeightCapacity = () => pageBottom() - pageTop();
+
+  // Start close to signature.
+  let startY = doc.y + 10;
+  if (startY > pageBottom() - 20) {
+    doc.addPage();
+    startY = pageTop();
+  }
+  doc.x = baseX;
+
+  // Ensure header + first block fit on current page (avoid leaving "Nakala:" alone).
+  const firstBlockHeight = measureBlockHeight(blocks[0] || []);
+  const headerHeight = doc.heightOfString("Nakala:", { width: availableWidth(), align: "left" }) + (doc.currentLineHeight(true) * 0.2);
+  if (headerHeight + firstBlockHeight > pageHeightCapacity() || startY + headerHeight + firstBlockHeight > pageBottom()) {
+    doc.addPage();
+    startY = pageTop();
+  }
+
+  doc.font("Helvetica-Bold").fontSize(12).text("Nakala:", baseX, startY);
+  doc.moveDown(0.2);
+
+  blocks.forEach((lines, idx) => {
+    const blockHeight = measureBlockHeight(lines);
+
+    // If a whole block can't fit, push it to the next page (do not split within the block).
+    const remaining = pageBottom() - doc.y;
+    const fitsOnFreshPage = blockHeight <= pageHeightCapacity();
+    if (fitsOnFreshPage && blockHeight > remaining) {
+      doc.addPage();
+      doc.x = baseX;
+    }
+
+    lines.forEach((line) => {
+      formatText(line, doc, "left", "Helvetica", true, 1, false, true, indent);
+    });
+
+    if (idx < blocks.length - 1) {
+      doc.moveDown(1);
+    }
+  });
 };
 
 const addTable = (doc, table) => {

@@ -27,6 +27,7 @@
                             <th width="5%">Na.</th>
                             <th>Aina ya Shule</th>
                             <th>Code</th>
+                            <th>Tracking Number Prefix</th>
                             <th>Imetengenezwa</th>
                             <th>Imesasishwa</th>
                             <th class="text-center" width="10%">Action</th>
@@ -64,6 +65,10 @@
                         <label for="code-field" class="form-label">Code</label>
                         <input type="text" id="code-field" class="form-control" placeholder="Mfano: SE" maxlength="2" />
                     </div>
+                    <div class="mb-1">
+                        <label for="tracking-number-prefix-field" class="form-label">Tracking Number Prefix</label>
+                        <input type="text" id="tracking-number-prefix-field" class="form-control" placeholder="Mfano: EC" maxlength="5" />
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <div class="hstack gap-2 justify-content-end">
@@ -93,7 +98,11 @@
                     </div>
                     <div class="mb-1">
                         <label for="code2-field" class="form-label">Code</label>
-                        <input type="text" id="code2-field" class="form-control" placeholder="Mfano: SE" maxlength="2" />
+                        <input type="text" id="code2-field" class="form-control" placeholder="Mfano: EM" maxlength="5" />
+                    </div>
+                    <div class="mb-1">
+                        <label for="tracking-number-prefix-field" class="form-label">Tracking Number Prefix</label>
+                        <input type="text" id="tracking-number-prefix2-field" class="form-control" placeholder="Mfano: EC" maxlength="5" />
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -138,6 +147,7 @@
         $("#id-field").val(rowData.id || "");
         $("#category2-field").val(rowData.category || rowData.name || "");
         $("#code2-field").val(rowData.code || "");
+        $("#tracking-number-prefix2-field").val(rowData.tracking_number_prefix || "");
         $("#jaza-category2").hide();
         modal("showEditModal", true);
     }
@@ -145,6 +155,7 @@
     function sajiliAinaYaShule() {
         const category = String($("#category-field").val() || "").trim();
         const code = String($("#code-field").val() || "").trim();
+        const tracking_number_prefix = String($("#tracking-number-prefix-field").val() || "").trim();
         $("#jaza-category").hide();
 
         if (!category) {
@@ -171,7 +182,8 @@
             },
             JSON.stringify({
                 category,
-                code
+                code,
+                tracking_number_prefix
             })
         );
     }
@@ -180,6 +192,7 @@
         const id = Number($("#id-field").val() || 0);
         const category = String($("#category2-field").val() || "").trim();
         const code = String($("#code2-field").val() || "").trim();
+        const tracking_number_prefix = String($("#tracking-number-prefix2-field").val() || "").trim();
         $("#jaza-category2").hide();
 
         if (!category) {
@@ -211,7 +224,8 @@
             },
             JSON.stringify({
                 category,
-                code
+                code,
+                tracking_number_prefix
             })
         );
     }
@@ -261,6 +275,11 @@
                 {
                     data: "code",
                     name: "code",
+                    render: (data) => data ? data : "-"
+                },
+                {
+                    data: "tracking_number_prefix",
+                    name: "tracking_number_prefix",
                     render: (data) => data ? data : "-"
                 },
                 {

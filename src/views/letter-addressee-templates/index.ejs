@@ -1,0 +1,74 @@
+<%- include('../layouts/partials/header.ejs' , {
+  title : 'Addressee Formats',
+  page_title : 'Addressee Formats',
+  card_title : ''
+}) %>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <h5 class="card-title mb-0">Addressee Formats</h5>
+        <div class="d-flex gap-2">
+          <a href="/letter-addressee-templates/new" class="btn btn-sm btn-primary">
+            <i class="ri-add-line align-bottom me-1"></i> Ongeza Format
+          </a>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="alert alert-info mb-3">
+          Hizi ni format za sehemu ya <b>Addressee</b> (anwani ya mpokeaji) ambazo unaweza ku-reuse kwenye templates.
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-striped table-hover align-middle">
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Jina</th>
+                <th>Kind</th>
+                <th>Status</th>
+                <th>Updated</th>
+                <th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (!addresseeTemplates || addresseeTemplates.length === 0) { %>
+                <tr>
+                  <td colspan="6" class="text-center text-muted py-3">Hakuna addressee format.</td>
+                </tr>
+              <% } %>
+
+              <% (addresseeTemplates || []).forEach((a) => { %>
+                <tr>
+                  <td><code><%= a.template_key %></code></td>
+                  <td><%= a.name || '-' %></td>
+                  <td><%= a.address_kind || '-' %></td>
+                  <td>
+                    <% if (Number(a.is_active) === 1) { %>
+                      <span class="badge bg-success-subtle text-success">Active</span>
+                    <% } else { %>
+                      <span class="badge bg-secondary-subtle text-secondary">Inactive</span>
+                    <% } %>
+                  </td>
+                  <td><%= a.updated_at ? dateFormat(a.updated_at, "DD MMM YYYY, HH:mm") : "-" %></td>
+                  <td class="text-end">
+                    <a class="btn btn-sm btn-soft-secondary" href="/letter-addressee-templates/<%= a.id %>/edit">
+                      <i class="ri-edit-line align-bottom"></i> Edit
+                    </a>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+        <div class="text-muted small">
+          Tip: kwenye `Letter Templates` unaweza kuchagua format kupitia field ya <code>Addressee Format</code>.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/partials/footer.ejs' , { card_title : '' , pagination_script : false, }) %>
+

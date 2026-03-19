@@ -1,0 +1,612 @@
+<%
+  const isCreate = mode === "create";
+  const t = template || {};
+  const templateKey = isCreate ? "" : (t.template_key || "");
+%>
+
+<%- include('../layouts/partials/header.ejs' , {
+  title : 'Letter Template',
+  page_title : isCreate ? 'Ongeza Barua Template' : `Edit Template - ${templateKey}`,
+  card_title : ''
+}) %>
+
+<%
+  const categories = Array.isArray(applicationCategories) ? applicationCategories : [];
+  const selectedCategoryId = String(t.application_category_id || "");
+  const addTemplates = Array.isArray(addresseeTemplates) ? addresseeTemplates : [];
+  const selectedAddresseeTemplateId = String(t.addressee_template_id || "");
+%>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <h5 class="card-title mb-0"><%= isCreate ? 'Template Mpya' : 'Hariri Template' %></h5>
+        <div class="d-flex gap-2">
+          <a href="/letter-templates/guide" class="btn btn-sm btn-soft-secondary">
+            <i class="ri-book-2-line align-bottom me-1"></i> Mwongozo
+          </a>
+          <a href="/letter-templates" class="btn btn-sm btn-soft-secondary">
+            <i class="ri-arrow-left-line align-bottom me-1"></i> Rudi
+          </a>
+        </div>
+      </div>
+      <div class="card-body">
+        <style>
+          .template-editor {
+            position: relative;
+            width: 100%;
+          }
+          .template-editor .template-highlight {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            border-radius: 0.25rem;
+            border: 1px solid transparent;
+            padding: 0.375rem 0.75rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: transparent;
+          }
+          .template-editor textarea.js-template-editor {
+            position: relative;
+            background: transparent;
+          }
+          .template-editor .template-highlight mark {
+            background: transparent;
+            color: #dc2626;
+            padding: 0;
+            border-radius: 0;
+            font-weight: 700;
+          }
+          .template-editor .template-highlight mark.triple {
+            background: transparent;
+            color: #b91c1c;
+          }
+          .template-suggest {
+            position: absolute;
+            z-index: 1055; /* above bootstrap modal/backdrop */
+            min-width: 260px;
+            max-width: 520px;
+            max-height: 260px;
+            overflow: auto;
+            background: #fff;
+            border: 1px solid rgba(15, 23, 42, 0.14);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
+            border-radius: 10px;
+            padding: 6px;
+            display: none;
+          }
+          .template-suggest .item {
+            display: flex;
+            gap: 8px;
+            align-items: baseline;
+            padding: 8px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+          }
+          .template-suggest .item:hover,
+          .template-suggest .item.active {
+            background: rgba(59, 130, 246, 0.10);
+          }
+          .template-suggest .item code {
+            background: rgba(15, 23, 42, 0.06);
+            padding: 2px 6px;
+            border-radius: 6px;
+          }
+          .template-suggest .item .label {
+            color: #475569;
+            font-size: 12px;
+            margin-left: auto;
+            white-space: nowrap;
+            max-width: 220px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          .template-editor-help {
+            color: #64748b;
+            font-size: 12px;
+          }
+        </style>
+
+        <% if (!isCreate && templateKey) { %>
+          <div class="alert alert-info">
+            Preview: tumia link ` /barua/<tracking_number>?type=<meneja|mmiliki>&template_key=<%= templateKey %> `.
+          </div>
+        <% } %>
+
+        <% const catalog = variablesCatalog || {}; %>
+        <% const notes = Array.isArray(catalog.notes) ? catalog.notes : []; %>
+        <% const vars = Array.isArray(catalog.variables) ? catalog.variables : []; %>
+
+        <% if (vars.length) { %>
+          <div class="accordion mb-3" id="templateVarsAccordion">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="varsHeading">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#varsCollapse" aria-expanded="false" aria-controls="varsCollapse">
+                  Variable Catalog
+                </button>
+              </h2>
+              <div id="varsCollapse" class="accordion-collapse collapse" aria-labelledby="varsHeading" data-bs-parent="#templateVarsAccordion">
+                <div class="accordion-body">
+                  <% if (notes.length) { %>
+                    <ul class="mb-3">
+                      <% notes.forEach((n) => { %>
+                        <li class="text-muted"><%= n %></li>
+                      <% }) %>
+                    </ul>
+                  <% } %>
+
+                  <div class="table-responsive">
+                    <table class="table table-sm table-striped align-middle">
+                      <thead>
+                        <tr>
+                          <th>Variable</th>
+                          <th>Maelezo</th>
+                          <th>Example</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% vars.forEach((v) => { %>
+                          <tr>
+                            <td><code>{{<%= v.key %>}}</code></td>
+                            <td><%= v.label || '-' %></td>
+                            <td class="text-muted"><%= v.example || '-' %></td>
+                          </tr>
+                        <% }) %>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% } %>
+
+        <form method="POST" action="<%= isCreate ? '/letter-templates' : `/letter-templates/${encodeURIComponent(templateKey)}` %>">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Template Key</label>
+              <input
+                type="text"
+                class="form-control"
+                name="template_key"
+                value="<%= templateKey %>"
+                <%= isCreate ? '' : 'readonly' %>
+                placeholder="mfano: barua_kuanzisha"
+                required
+              />
+              <div class="form-text">Key inatumika ku-link template na barua.</div>
+            </div>
+            <div class="col-md-8">
+              <label class="form-label">Jina</label>
+              <input type="text" class="form-control" name="name" value="<%= t.name || '' %>" required />
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Application Category</label>
+              <select class="form-control js-example-basic-single" name="application_category_id">
+                <option value="">(General)</option>
+                <% categories.forEach((c) => { %>
+                  <option value="<%= c.id %>" <%= String(c.id) === selectedCategoryId ? 'selected' : '' %>>
+                    <%= c.app_name || c.label || c.name || (`Category #${c.id}`) %>
+                  </option>
+                <% }) %>
+              </select>
+              <div class="form-text">Acha (General) kama template haitokani na category maalum.</div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Letter Type</label>
+              <%
+                const letterTypeValue = String(t.letter_type || "").trim().toLowerCase();
+                const knownLetterTypes = [
+                  { value: "", label: "(None)" },
+                  { value: "mmiliki", label: "Mmiliki" },
+                  { value: "meneja", label: "Meneja" },
+                  { value: "binafsi", label: "Binafsi" },
+                  { value: "serikali", label: "Serikali" },
+                ];
+                const isKnownLetterType = knownLetterTypes.some((x) => x.value === letterTypeValue);
+              %>
+              <select class="form-control js-example-basic-single" name="letter_type">
+                <% knownLetterTypes.forEach((x) => { %>
+                  <option value="<%= x.value %>" <%= x.value === letterTypeValue ? "selected" : "" %>><%= x.label %></option>
+                <% }) %>
+                <% if (letterTypeValue && !isKnownLetterType) { %>
+                  <option value="<%= letterTypeValue %>" selected><%= letterTypeValue %> (Custom)</option>
+                <% } %>
+              </select>
+              <div class="form-text">Kwa category 2: `meneja`/`mmiliki`. Kwa category 4: `binafsi`/`serikali`.</div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Current Version</label>
+              <input type="text" class="form-control" value="<%= t.version || '-' %>" readonly />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label d-block">Status</label>
+              <div class="form-check form-switch mt-2">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="isActiveSwitch"
+                  name="is_active"
+                  value="1"
+                  <%= (typeof t.is_active === 'undefined' || Number(t.is_active) === 1) ? 'checked' : '' %>
+                />
+                <label class="form-check-label" for="isActiveSwitch">Active</label>
+              </div>
+              <div class="form-text">Ukizima, template haitatumika kwenye barua (preview bado unaweza kuiona).</div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Title Template</label>
+              <div class="template-editor" data-editor="title_template">
+                <div class="template-highlight form-control"></div>
+                <textarea class="form-control js-template-editor" name="title_template" rows="2" required><%= t.title_template || '' %></textarea>
+                <div class="template-suggest"></div>
+              </div>
+              <div class="form-text">
+                Variables: `{{school_name}}`, `{{category}}`, `{{school.of}}` (ya/cha), `{{school.noun}}` (shule/chuo).
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Reference Template (optional)</label>
+              <div class="template-editor" data-editor="reference_template">
+                <div class="template-highlight form-control"></div>
+                <textarea class="form-control js-template-editor" name="reference_template" rows="2" placeholder="{{file_number}}/{{folio}}"><%= t.reference_template || '' %></textarea>
+                <div class="template-suggest"></div>
+              </div>
+              <div class="form-text">Ukiacha wazi, mfumo utatumia `file_number/folio`.</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Date Template (optional)</label>
+              <div class="template-editor" data-editor="date_template">
+                <div class="template-highlight form-control"></div>
+                <textarea class="form-control js-template-editor" name="date_template" rows="2" placeholder="{{fmt_date approved_at}}"><%= t.date_template || '' %></textarea>
+                <div class="template-suggest"></div>
+              </div>
+              <div class="form-text">Ukiacha wazi, mfumo utatumia tarehe ya kuidhinishwa (format ya kawaida).</div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Addressee Format (optional)</label>
+              <select class="form-control js-example-basic-single" id="addresseeTemplateIdSelect" name="addressee_template_id">
+                <option value="">(System default)</option>
+                <% addTemplates.forEach((a) => { if (Number(a.is_active) !== 1) return; %>
+                  <option value="<%= a.id %>" <%= String(a.id) === selectedAddresseeTemplateId ? 'selected' : '' %>>
+                    <%= a.name || a.template_key || (`Format #${a.id}`) %>
+                  </option>
+                <% }) %>
+              </select>
+              <div class="form-text">Chagua format ili ku-reuse (binafsi/taasisi). Ukiacha (System default), mfumo utatumia address ya mwombaji kama ilivyo.</div>
+
+              <label class="form-label mt-2">Custom Addressee Template (optional)</label>
+              <div class="template-editor" data-editor="addressee_template">
+                <div class="template-highlight form-control"></div>
+                <textarea class="form-control js-template-editor" id="addresseeTemplateTextarea" name="addressee_template" rows="5" placeholder="IGWANZOZU,\nS.L.P 10,\nDODOMA."><%= t.addressee_template || '' %></textarea>
+                <div class="template-suggest"></div>
+              </div>
+              <div class="form-text">Ikiwa umechagua format juu, unaweza kuacha hii wazi (haitatumika).</div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Body Template</label>
+              <div class="template-editor" data-editor="body_template">
+                <div class="template-highlight form-control"></div>
+                <textarea class="form-control js-template-editor" name="body_template" rows="14" required><%= t.body_template || '' %></textarea>
+                <div class="template-suggest"></div>
+              </div>
+              <div class="form-text">
+                Paragraphs zinatenganishwa kwa mstari tupu (blank line). Unaweza kutumia tags kama `<b>...</b>` na `<u>...</u>`.
+              </div>
+            </div>
+
+            <div class="col-12 d-flex justify-content-end gap-2">
+              <button type="submit" class="btn btn-primary">
+                <i class="ri-save-line align-bottom me-1"></i> Hifadhi
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const catalogVars = <%- JSON.stringify(vars || []).replace(/</g, "\\u003c") %>;
+    const variableItems = (Array.isArray(catalogVars) ? catalogVars : [])
+      .map((v) => ({
+        key: String(v?.key || "").trim(),
+        label: String(v?.label || "").trim(),
+        example: String(v?.example || "").trim(),
+      }))
+      .filter((v) => v.key);
+
+    const escapeHtml = (value) =>
+      String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+
+    const highlightTemplate = (text) => {
+      const raw = String(text ?? "");
+      const escaped = escapeHtml(raw);
+      // triple first, then double
+      const withTriple = escaped.replace(/\{\{\{[\s\S]*?\}\}\}/g, (m) => `<mark class="triple">${m}</mark>`);
+      return withTriple.replace(/\{\{(?!\{)[\s\S]*?\}\}/g, (m) => `<mark>${m}</mark>`);
+    };
+
+    // Minimal caret coordinates helper (adapted from textarea-caret-position approach).
+    const getCaretCoordinates = (element, position) => {
+      const style = window.getComputedStyle(element);
+      const div = document.createElement("div");
+      div.style.position = "absolute";
+      div.style.visibility = "hidden";
+      div.style.whiteSpace = "pre-wrap";
+      div.style.wordWrap = "break-word";
+
+      const props = [
+        "direction",
+        "boxSizing",
+        "width",
+        "height",
+        "overflowX",
+        "overflowY",
+        "borderTopWidth",
+        "borderRightWidth",
+        "borderBottomWidth",
+        "borderLeftWidth",
+        "paddingTop",
+        "paddingRight",
+        "paddingBottom",
+        "paddingLeft",
+        "fontStyle",
+        "fontVariant",
+        "fontWeight",
+        "fontStretch",
+        "fontSize",
+        "fontSizeAdjust",
+        "lineHeight",
+        "fontFamily",
+        "textAlign",
+        "textTransform",
+        "textIndent",
+        "textDecoration",
+        "letterSpacing",
+        "wordSpacing",
+        "tabSize",
+        "MozTabSize",
+      ];
+      props.forEach((prop) => {
+        div.style[prop] = style[prop];
+      });
+
+      div.textContent = element.value.substring(0, position);
+
+      const span = document.createElement("span");
+      span.textContent = element.value.substring(position) || ".";
+      div.appendChild(span);
+
+      document.body.appendChild(div);
+      const rect = span.getBoundingClientRect();
+      const divRect = div.getBoundingClientRect();
+      document.body.removeChild(div);
+      return {
+        top: rect.top - divRect.top,
+        left: rect.left - divRect.left,
+      };
+    };
+
+    const findOpenToken = (text, caretPos) => {
+      const before = String(text || "").slice(0, caretPos);
+      const lastTriple = before.lastIndexOf("{{{");
+      const lastDouble = before.lastIndexOf("{{");
+      const openIndex = Math.max(lastTriple, lastDouble);
+      if (openIndex < 0) return null;
+
+      const isTriple = lastTriple === openIndex;
+      const openLen = isTriple ? 3 : 2;
+      const closeToken = isTriple ? "}}}" : "}}";
+      const between = before.slice(openIndex + openLen);
+      if (between.includes(closeToken)) return null;
+      if (between.includes("\n")) return null;
+
+      // stop if it contains disallowed chars (keep spaces for helpers)
+      if (/[{}]/.test(between)) return null;
+
+      return { openIndex, openLen, closeToken, query: between };
+    };
+
+    const renderSuggestItems = (items, query) => {
+      const q = String(query || "").toLowerCase();
+      const filtered = items
+        .filter((v) => (q ? v.key.toLowerCase().includes(q) : true))
+        .slice(0, 40);
+      return filtered;
+    };
+
+    const attachEditor = (wrapper) => {
+      const textarea = wrapper.querySelector("textarea.js-template-editor");
+      const highlight = wrapper.querySelector(".template-highlight");
+      const suggest = wrapper.querySelector(".template-suggest");
+      if (!textarea || !highlight || !suggest) return;
+
+      let activeIndex = 0;
+      let currentList = [];
+      let currentToken = null;
+
+      const syncHighlight = () => {
+        highlight.innerHTML = highlightTemplate(textarea.value) + "\n";
+      };
+
+      const syncScroll = () => {
+        highlight.scrollTop = textarea.scrollTop;
+        highlight.scrollLeft = textarea.scrollLeft;
+      };
+
+      const hideSuggest = () => {
+        suggest.style.display = "none";
+        suggest.innerHTML = "";
+        currentList = [];
+        currentToken = null;
+        activeIndex = 0;
+      };
+
+      const showSuggest = (token) => {
+        currentToken = token;
+        currentList = renderSuggestItems(variableItems, token.query);
+        if (!currentList.length) return hideSuggest();
+
+        suggest.innerHTML = currentList
+          .map((v, idx) => {
+            const label = v.label || v.example || "";
+            return `
+              <div class="item ${idx === 0 ? "active" : ""}" data-idx="${idx}">
+                <code>{{${escapeHtml(v.key)}}}</code>
+                <span class="label">${escapeHtml(label)}</span>
+              </div>
+            `;
+          })
+          .join("");
+
+        activeIndex = 0;
+
+        // position near caret
+        const caretPos = textarea.selectionStart || 0;
+        const coords = getCaretCoordinates(textarea, caretPos);
+        const taRect = textarea.getBoundingClientRect();
+        const wrapRect = wrapper.getBoundingClientRect();
+        const top = (taRect.top - wrapRect.top) + coords.top + 26;
+        const left = (taRect.left - wrapRect.left) + coords.left;
+        suggest.style.top = `${Math.min(top, textarea.offsetHeight - 10)}px`;
+        suggest.style.left = `${Math.min(left, textarea.offsetWidth - 20)}px`;
+        suggest.style.display = "block";
+      };
+
+      const setActive = (idx) => {
+        activeIndex = Math.max(0, Math.min(idx, currentList.length - 1));
+        Array.from(suggest.querySelectorAll(".item")).forEach((el) => {
+          const i = Number.parseInt(el.getAttribute("data-idx") || "0", 10);
+          el.classList.toggle("active", i === activeIndex);
+        });
+        const activeEl = suggest.querySelector(`.item[data-idx="${activeIndex}"]`);
+        if (activeEl) {
+          const elTop = activeEl.offsetTop;
+          const elBottom = elTop + activeEl.offsetHeight;
+          if (elTop < suggest.scrollTop) suggest.scrollTop = elTop;
+          if (elBottom > suggest.scrollTop + suggest.clientHeight) suggest.scrollTop = elBottom - suggest.clientHeight;
+        }
+      };
+
+      const applySuggestion = (item) => {
+        if (!currentToken) return;
+        const caretPos = textarea.selectionStart || 0;
+        const before = textarea.value.slice(0, currentToken.openIndex + currentToken.openLen);
+        const after = textarea.value.slice(caretPos);
+        const inserted = item.key;
+
+        let next = before + inserted;
+        // auto-close braces if not present immediately after caret
+        if (!after.startsWith(currentToken.closeToken)) {
+          next += currentToken.closeToken;
+        }
+        const finalValue = next + after;
+        textarea.value = finalValue;
+
+        const newCaret = (before + inserted).length;
+        textarea.focus();
+        textarea.setSelectionRange(newCaret, newCaret);
+
+        syncHighlight();
+        hideSuggest();
+      };
+
+      const onInput = () => {
+        syncHighlight();
+        const token = findOpenToken(textarea.value, textarea.selectionStart || 0);
+        if (!token) return hideSuggest();
+        showSuggest(token);
+      };
+
+      textarea.addEventListener("input", onInput);
+      textarea.addEventListener("scroll", syncScroll);
+      textarea.addEventListener("click", onInput);
+      textarea.addEventListener("keyup", onInput);
+
+      textarea.addEventListener("keydown", (e) => {
+        if (suggest.style.display !== "block") return;
+        if (e.key === "Escape") {
+          e.preventDefault();
+          hideSuggest();
+          return;
+        }
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          setActive(activeIndex + 1);
+          return;
+        }
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          setActive(activeIndex - 1);
+          return;
+        }
+        if (e.key === "Enter" || e.key === "Tab") {
+          e.preventDefault();
+          const item = currentList[activeIndex];
+          if (item) applySuggestion(item);
+        }
+      });
+
+      suggest.addEventListener("mousedown", (e) => {
+        const itemEl = e.target?.closest?.(".item");
+        if (!itemEl) return;
+        e.preventDefault();
+        const idx = Number.parseInt(itemEl.getAttribute("data-idx") || "0", 10);
+        const item = currentList[idx];
+        if (item) applySuggestion(item);
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!wrapper.contains(e.target)) hideSuggest();
+      });
+
+      // initial
+      syncHighlight();
+      syncScroll();
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+      Array.from(document.querySelectorAll(".template-editor")).forEach(attachEditor);
+    });
+  })();
+</script>
+
+<%- include('../layouts/partials/footer.ejs' , { card_title : '' , pagination_script : false, }) %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const select = document.getElementById("addresseeTemplateIdSelect");
+    const textarea = document.getElementById("addresseeTemplateTextarea");
+    if (!select || !textarea) return;
+
+    const sync = () => {
+      const hasFormat = String(select.value || "").trim().length > 0;
+      textarea.readOnly = hasFormat;
+      textarea.classList.toggle("bg-light", hasFormat);
+      if (hasFormat) {
+        textarea.setAttribute("placeholder", "Custom addressee imezimwa kwa sababu umechagua format.");
+      }
+    };
+
+    select.addEventListener("change", sync);
+    sync();
+  });
+</script>

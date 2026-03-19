@@ -360,7 +360,7 @@ class PDFDocumentWithTables extends PDFDocument {
 
                         // object
                         // read cell and get label of object
-                        if (typeof cell === 'object') {
+                        if (cell && typeof cell === 'object') {
                             // define label
                             text = String(cell.label);
                             // apply font size on calc about height row 

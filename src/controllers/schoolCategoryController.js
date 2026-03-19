@@ -71,6 +71,7 @@ schoolCategoryController.post("/tengenezaAinaZaShule", isAuthenticated, can("vie
   const formData = {
     schoolCategoryName: req.body.category,
     schoolCategoryCode: req.body.code,
+    schoolCategoryTrackingNumberPrefix: req.body.tracking_number_prefix,
   };
 
   sendRequest(req, res, createSchoolCategoryAPI, "POST", formData, (body) => {
@@ -87,6 +88,7 @@ schoolCategoryController.post("/badiliAinaZaShule/:id", isAuthenticated, can("vi
   const formData = {
     schoolCategoryName: req.body.category,
     schoolCategoryCode: req.body.code,
+    schoolCategoryTrackingNumberPrefix: req.body.tracking_number_prefix,
   };
 
   sendRequest(req, res, `${updateSchoolCategoryAPI}/${id}`, "PUT", formData, (body) => {

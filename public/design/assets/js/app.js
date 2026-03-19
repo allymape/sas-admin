@@ -1186,6 +1186,8 @@
     (n = document.getElementById("search-close-options")),
     (o = document.getElementById("search-dropdown")),
     (s = document.getElementById("search-options")) &&
+      o &&
+      n &&
       (s.addEventListener("focus", function () {
         0 < s.value.length
           ? (o.classList.add("show"), n.classList.remove("d-none"))
@@ -1210,6 +1212,7 @@
         (s.value = ""), o.classList.remove("show"), n.classList.add("d-none");
       }),
       document.body.addEventListener("click", function (e) {
+        if (!o || !n) return;
         "search-options" !== e.target.getAttribute("id") &&
           (o.classList.remove("show"), n.classList.add("d-none"));
       })),
@@ -1233,6 +1236,7 @@
         (e.value = ""), d.classList.remove("show"), t.classList.add("d-none");
       }),
       document.body.addEventListener("click", function (e) {
+        if (!d || !t) return;
         "search-options" !== e.target.getAttribute("id") &&
           (d.classList.remove("show"), t.classList.add("d-none"));
       })),
@@ -1494,8 +1498,6 @@ function topFunction() {
 window.onscroll = function () {
   scrollFunction();
 };
-
-
 
 
 

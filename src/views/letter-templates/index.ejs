@@ -1,0 +1,242 @@
+<%- include('../layouts/partials/header.ejs' , {
+  title : 'Letter Templates',
+  page_title : 'Barua Templates',
+  card_title : ''
+}) %>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <h5 class="card-title mb-0">Templates</h5>
+        <div class="d-flex gap-2">
+          <a href="/letter-templates/guide" class="btn btn-sm btn-soft-secondary">
+            <i class="ri-book-2-line align-bottom me-1"></i> Mwongozo
+          </a>
+          <a href="/letter-templates/new" class="btn btn-sm btn-primary text-white">
+            <i class="ri-add-line align-bottom me-1"></i> Ongeza Template
+          </a>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover align-middle">
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Jina</th>
+                <th>Category</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Version</th>
+                <th>Updated</th>
+                <th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (!templates || templates.length === 0) { %>
+                <tr>
+                  <td colspan="8" class="text-center text-muted py-3">Hakuna template.</td>
+                </tr>
+              <% } %>
+
+              <% (templates || []).forEach((t) => { %>
+                <tr>
+                  <td><code><%= t.template_key %></code></td>
+                  <td><%= t.name || '-' %></td>
+                  <td><%= t.application_category_name || t.application_category_id || '-' %></td>
+                  <td><%= t.letter_type || '-' %></td>
+                  <td>
+                    <% if (Number(t.is_active) === 1) { %>
+                      <span class="badge bg-success-subtle text-success">Active</span>
+                    <% } else { %>
+                      <span class="badge bg-secondary-subtle text-secondary">Inactive</span>
+                    <% } %>
+                  </td>
+                  <td><%= t.version || '-' %></td>
+                  <td><%= t.updated_at ? dateFormat(t.updated_at, "DD MMM YYYY, HH:mm") : "-" %></td>
+                  <td class="text-end">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-soft-info js-template-preview"
+                      data-template-key="<%= t.template_key %>"
+                      data-letter-type="<%= t.letter_type || '' %>"
+                      data-application-category-id="<%= t.application_category_id || '' %>"
+                      <%= Number(t.is_active) === 1 ? '' : 'disabled' %>
+                      title="Preview PDF"
+                    >
+                      <i class="ri-eye-line align-bottom"></i> Preview
+                    </button>
+                    <a class="btn btn-sm btn-soft-secondary" href="/letter-templates/<%= encodeURIComponent(t.template_key) %>/edit">
+                      <i class="ri-edit-line align-bottom"></i> Edit
+                    </a>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+        <div class="text-muted small">
+          Kumbuka: templates zinaonekana kwenye barua endapo zipo (na zipo active).
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="templatePreviewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Preview Template</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-2">
+          <select id="previewTrackingSelect" class="form-control" style="width:100%"></select>
+          <div class="form-text">
+            Ukiacha wazi itaonyesha barua ikiwa na variables (placeholder) tu ili uone format.
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-soft-secondary" data-bs-dismiss="modal">Funga</button>
+        <button type="button" class="btn btn-primary text-white" id="previewOpenBtn">
+          <i class="ri-eye-line align-bottom me-1"></i> Fungua Preview
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/partials/footer.ejs' , { card_title : '' , pagination_script : false, }) %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const modalEl = document.getElementById("templatePreviewModal");
+    const trackingSelectEl = document.getElementById("previewTrackingSelect");
+    const openBtn = document.getElementById("previewOpenBtn");
+    const modal =
+      modalEl && window.bootstrap
+        ? new window.bootstrap.Modal(modalEl, { backdrop: "static", keyboard: false })
+        : null;
+
+    const state = {
+      templateKey: "",
+      letterType: "",
+      applicationCategoryId: "",
+    };
+
+    const ensureSelect2 = () => {
+      if (!trackingSelectEl) return;
+      if (typeof window.jQuery === "undefined") return;
+      if (typeof window.jQuery.fn.select2 !== "function") return;
+
+      const $select = window.jQuery(trackingSelectEl);
+      if ($select.data("select2")) {
+        $select.select2("destroy");
+      }
+
+      $select.empty();
+      $select.append(new Option("", "", false, false));
+      $select.select2({
+        width: "100%",
+        placeholder: "Tafuta tracking number...",
+        allowClear: true,
+        minimumInputLength: 0,
+        dropdownParent: modalEl ? window.jQuery(modalEl) : window.jQuery("body"),
+        ajax: {
+          url: "/applications/list",
+          dataType: "json",
+          delay: 250,
+          data: (params) => {
+            const query = {
+              page: params.page || 1,
+              per_page: 15,
+              is_approved: 2,
+            };
+            if (state.applicationCategoryId) query.application_category_id = state.applicationCategoryId;
+            const term = String(params.term || "").trim();
+            if (term) query.search = term;
+            return query;
+          },
+          processResults: (data, params) => {
+            const page = params.page || 1;
+            const rows = Array.isArray(data?.data) ? data.data : [];
+            const pagination = data?.pagination || {};
+            const lastPage = Number(pagination?.last_page || 1);
+
+            const results = rows
+              .map((row) => {
+                const tracking = String(row?.tracking_number || row?.trackingNumber || "").trim();
+                if (!tracking) return null;
+                const applicantName = String(row?.applicant_name || row?.applicant?.name || "").trim();
+                const schoolName = String(row?.school_name || row?.establishing_school?.school_name || "").trim();
+                const label = [tracking, applicantName || schoolName].filter(Boolean).join(" - ");
+                return { id: tracking, text: label || tracking };
+              })
+              .filter(Boolean);
+
+            return {
+              results,
+              pagination: { more: Number(page) < lastPage },
+            };
+          },
+          cache: true,
+        },
+      });
+    };
+
+    const openPreview = () => {
+      const templateKey = String(state.templateKey || "").trim();
+      if (!templateKey) return;
+
+      const trackingValue = trackingSelectEl ? String(trackingSelectEl.value || "").trim() : "";
+
+      const params = new URLSearchParams();
+      if (state.letterType) params.set("type", state.letterType);
+      params.set("template_key", templateKey);
+
+      const url = trackingValue
+        ? `/barua/${encodeURIComponent(trackingValue)}?${params.toString()}`
+        : `/letter-templates/${encodeURIComponent(templateKey)}/preview?${params.toString()}`;
+
+      if (modal) modal.hide();
+      if (typeof window.openPdfModal === "function") {
+        window.openPdfModal(url, { title: "Preview PDF" });
+        return;
+      }
+      window.location.assign(url);
+    };
+
+    if (openBtn) {
+      openBtn.addEventListener("click", openPreview);
+    }
+
+    document.querySelectorAll(".js-template-preview").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        state.templateKey = String(btn.getAttribute("data-template-key") || "").trim();
+        state.letterType = String(btn.getAttribute("data-letter-type") || "").trim();
+        state.applicationCategoryId = String(btn.getAttribute("data-application-category-id") || "").trim();
+
+        if (trackingSelectEl && typeof trackingSelectEl.value !== "undefined") {
+          trackingSelectEl.value = "";
+        }
+
+        ensureSelect2();
+        if (modal) modal.show();
+      });
+    });
+
+  });
+</script>
+
+<style>
+  /* Ensure Select2 dropdown appears above Bootstrap modal */
+  .select2-container--open {
+    z-index: 2060;
+  }
+  .select2-dropdown {
+    z-index: 2061;
+  }
+</style>

@@ -1,0 +1,193 @@
+<%- include('../layouts/partials/header.ejs' , {
+  title : 'Letter Templates Guide',
+  page_title : 'Mwongozo wa Letter Templates',
+  card_title : ''
+}) %>
+
+<style>
+  .letter-guide-layout {
+    --lg-border: rgba(15, 23, 42, 0.12);
+  }
+  .letter-guide-layout .guide-toc {
+    position: sticky;
+    top: 1rem;
+  }
+  .letter-guide-layout .guide-toc a {
+    display: block;
+    padding: 6px 10px;
+    border-radius: 8px;
+    color: #334155;
+    text-decoration: none;
+  }
+  .letter-guide-layout .guide-toc a:hover {
+    background: rgba(15, 23, 42, 0.04);
+  }
+  .letter-guide-layout .guide-toc a.active {
+    background: rgba(59, 130, 246, 0.10);
+    color: #1d4ed8;
+    font-weight: 600;
+  }
+  .letter-guide-layout .guide-toc .toc-h3 {
+    padding-left: 22px;
+    font-size: 13px;
+    color: #475569;
+  }
+
+  .letter-guide {
+    font-size: 15px;
+    line-height: 1.75;
+    color: #0f172a;
+  }
+  .letter-guide h1 {
+    font-size: 22px;
+    margin: 0 0 10px;
+  }
+  .letter-guide h2 {
+    font-size: 18px;
+    margin-top: 18px;
+    padding-top: 12px;
+    border-top: 1px solid var(--lg-border);
+  }
+  .letter-guide h3 {
+    font-size: 16px;
+    margin-top: 14px;
+  }
+  .letter-guide p {
+    margin-bottom: 10px;
+  }
+  .letter-guide ul,
+  .letter-guide ol {
+    padding-left: 1.25rem;
+    margin-bottom: 10px;
+  }
+  .letter-guide li {
+    margin-bottom: 6px;
+  }
+
+  .letter-guide pre {
+    background: #0b1220;
+    color: #e5e7eb;
+    padding: 12px 14px;
+    border-radius: 8px;
+    overflow: auto;
+  }
+  .letter-guide code {
+    background: rgba(15, 23, 42, 0.08);
+    padding: 2px 6px;
+    border-radius: 6px;
+  }
+  .letter-guide pre code {
+    background: transparent;
+    padding: 0;
+  }
+  .letter-guide .mb-2 {
+    margin-bottom: 14px !important;
+  }
+  .letter-guide .callout {
+    border: 1px solid var(--lg-border);
+    background: rgba(15, 23, 42, 0.02);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+  }
+</style>
+
+<div class="row letter-guide-layout">
+  <div class="col-lg-3">
+    <div class="card guide-toc">
+      <div class="card-header">
+        <div class="d-flex align-items-center justify-content-between">
+          <h6 class="mb-0">Sehemu</h6>
+          <a href="/letter-templates" class="btn btn-sm btn-soft-secondary">
+            <i class="ri-arrow-left-line align-bottom me-1"></i> Rudi
+          </a>
+        </div>
+      </div>
+      <div class="card-body">
+        <% if (guideUpdatedAt) { %>
+          <div class="text-muted small mb-2">Updated: <%= dateFormat(guideUpdatedAt, "DD MMM YYYY, HH:mm") %></div>
+        <% } %>
+        <div id="letterGuideToc" class="guide-toc-links"></div>
+        <div class="mt-3 d-grid gap-2">
+          <a href="/letter-templates" class="btn btn-sm btn-primary">
+            <i class="ri-file-text-line align-bottom me-1"></i> Templates
+          </a>
+          <a href="/letter-addressee-templates" class="btn btn-sm btn-soft-primary">
+            <i class="ri-map-pin-2-line align-bottom me-1"></i> Addressee Formats
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-9">
+    <div class="card">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <div>
+          <h5 class="card-title mb-0">Mwongozo</h5>
+          <div class="text-muted small">Jinsi ya kubadili templates za barua (PDF) kwa urahisi.</div>
+        </div>
+      </div>
+      <div class="card-body letter-guide" id="letterGuideContent">
+        <div class="callout">
+          Tip: Ukiona <code>{{variable}}</code> kwenye preview, chagua <b>Tracking Number</b> ili uone data halisi.
+        </div>
+        <%- guideHtml %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/partials/footer.ejs' , { card_title : '' , pagination_script : false, }) %>
+
+<script>
+  (function () {
+    const content = document.getElementById("letterGuideContent");
+    const toc = document.getElementById("letterGuideToc");
+    if (!content || !toc) return;
+
+    const slugify = (text) =>
+      String(text || "")
+        .toLowerCase()
+        .trim()
+        .replace(/&amp;/g, "and")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+
+    const headings = Array.from(content.querySelectorAll("h2, h3"));
+    const seen = new Map();
+
+    const ensureUniqueId = (base) => {
+      const count = (seen.get(base) || 0) + 1;
+      seen.set(base, count);
+      return count === 1 ? base : `${base}-${count}`;
+    };
+
+    const links = [];
+    headings.forEach((h) => {
+      const raw = h.textContent || "";
+      const base = slugify(raw) || "section";
+      const id = ensureUniqueId(base);
+      h.setAttribute("id", id);
+      const a = document.createElement("a");
+      a.href = `#${id}`;
+      a.textContent = raw;
+      a.className = h.tagName.toLowerCase() === "h3" ? "toc-h3" : "toc-h2";
+      toc.appendChild(a);
+      links.push({ id, el: a });
+    });
+
+    const setActive = () => {
+      const y = window.scrollY || document.documentElement.scrollTop || 0;
+      let currentId = null;
+      for (const h of headings) {
+        const top = h.getBoundingClientRect().top + y;
+        if (top - 120 <= y) currentId = h.getAttribute("id");
+      }
+      links.forEach((x) => x.el.classList.toggle("active", x.id === currentId));
+    };
+
+    window.addEventListener("scroll", setActive, { passive: true });
+    setActive();
+  })();
+</script>

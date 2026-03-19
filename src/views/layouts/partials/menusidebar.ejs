@@ -113,6 +113,15 @@ const menuItems = [
                 menuId : "",
                 hasPermissionTo : permission(req , 'view-track-application') || permission(req , 'view-applications'),
             },
+            {
+                label : "Vyeti (Usajili)",
+                url  : "vyeti",
+                icon : "",
+                counterId : "",
+                pattern : "vyeti|vyeti/*",
+                menuId : "",
+                hasPermissionTo : permission(req , 'view-letters'),
+            },
             // Legacy Maombi children are intentionally hidden.
             // {
             //   label : "Kuanzisha Shule",
@@ -624,6 +633,39 @@ const menuItems = [
         menuId : "",
         pattern : "v2-SystemConfigurations|SystemConfigurations",
         hasPermissionTo : permission(req , 'view-audit'),
+   },
+   {
+        label : "Barua",
+        url  : "#sidebarBarua",
+        menuTitle : '',
+        icon : "ri-file-text-line",
+        menuId : "sidebarBarua",
+        subMenus : [
+            {
+                label : "Templates",
+                url  : "letter-templates",
+                icon : "",
+                counterId : "",
+                pattern : "letter-templates|letter-templates/*|letter-templates/*/edit|letter-templates/*/preview",
+                hasPermissionTo : permission(req , 'view-letters'),
+            },
+            {
+                label : "Addressee Formats",
+                url  : "letter-addressee-templates",
+                icon : "",
+                counterId : "",
+                pattern : "letter-addressee-templates|letter-addressee-templates/*|letter-addressee-templates/*/edit",
+                hasPermissionTo : permission(req , 'view-letters'),
+            },
+            {
+                label : "Mwongozo",
+                url  : "letter-templates/guide",
+                icon : "",
+                counterId : "",
+                pattern : "letter-templates/*",
+                hasPermissionTo : permission(req , 'view-letters'),
+            },
+        ],
    },
     //    LOGIN ACTIVITY
     {
