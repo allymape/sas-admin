@@ -1041,8 +1041,9 @@ module.exports = {
 
 	    const schoolName = asText(application?.school_name, MISSING).toUpperCase();
 	    const council = asText(application?.council, MISSING).toUpperCase();
-	    const councilNgazi = asText(application?.council_ngazi, "");
-	    const councilFull = [asText(councilNgazi, "").toUpperCase(), council].filter(Boolean).join(" ") || MISSING;
+	    const councilNgaziLower = asText(application?.council_ngazi, "").toLowerCase();
+	    const councilNgaziPretty = councilNgaziLower ? sentenceCase(councilNgaziLower) : "";
+	    const councilLabel = councilNgaziPretty ? `Halmashauri ya ${councilNgaziPretty}` : "Halmashauri ya";
 	    const owner = asText(application?.address_name, MISSING).toUpperCase();
 	    const educationLevel = asText(application?.category, MISSING).toUpperCase();
 	    const toStreamWordsSw = (num) => {
@@ -1323,7 +1324,7 @@ module.exports = {
 	    };
 
 	    y = drawField("Jina la shule", schoolName, y);
-		    y = drawField("Halmashauri ya", councilFull, y);
+		    y = drawField(councilLabel, council, y);
 	    y = drawField("Mmiliki", owner, y);
 	    y = drawField("Anwani ya Mmiliki", ownerAddress || MISSING, y, { valueBold: false });
 	    y = drawRegistrationDateField(y);
