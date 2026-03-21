@@ -25,11 +25,15 @@
     </div>
     <div class="col-md-2">
       <label class="form-label">Module</label>
-      <input type="text" id="module-filter" class="form-control" placeholder="Mfano: barua" />
+      <select id="module-filter" class="form-select">
+        <option value="">All</option>
+      </select>
     </div>
     <div class="col-md-2">
       <label class="form-label">Type</label>
-      <input type="text" id="type-filter" class="form-control" placeholder="Mfano: required-fields-validation" />
+      <select id="type-filter" class="form-select">
+        <option value="">All</option>
+      </select>
     </div>
     <div class="col-md-2">
       <label class="form-label">From</label>
@@ -378,6 +382,39 @@
     $("#metric-debug").text(Number(totals.debug || 0));
   };
 
+  const setSelectOptions = (selector, rows = [], { key = "value", label = "label", emptyLabel = "All" } = {}) => {
+    const $select = $(selector);
+    if (!$select.length) return;
+
+    const current = String($select.val() || "");
+    const seen = new Set();
+    const options = [];
+
+    for (const row of Array.isArray(rows) ? rows : []) {
+      const value = safe(row?.[key], "");
+      const text = safe(row?.[label], value);
+      if (!value) continue;
+      if (seen.has(value)) continue;
+      seen.add(value);
+      options.push({ value, text });
+    }
+
+    $select.empty();
+    $select.append(`<option value="">${escapeHtml(emptyLabel)}</option>`);
+    for (const opt of options) {
+      $select.append(`<option value="${escapeHtml(opt.value)}">${escapeHtml(opt.text)}</option>`);
+    }
+    $select.val(current);
+  };
+
+  const setActiveMetricCard = () => {
+    const activeLevel = String($("#level-filter").val() || "").trim().toLowerCase();
+    $(".systemlogs-metric-card").removeClass("is-active");
+
+    const selector = activeLevel ? `.systemlogs-metric-card[data-level="${activeLevel}"]` : `.systemlogs-metric-card[data-level=""]`;
+    $(selector).addClass("is-active");
+  };
+
   const renderLevelChart = (totals = {}) => {
     const labels = ["critical", "error", "warning", "info", "debug"];
     const values = labels.map((key) => Number(totals?.[key] || 0));
@@ -566,6 +603,9 @@
         renderLevelChart(summary.level_totals || {});
         renderTrendChart(summary.trend || []);
         renderModuleChart(summary.top_modules || []);
+        setSelectOptions("#module-filter", summary.top_modules || [], { key: "module", label: "module", emptyLabel: "All" });
+        setSelectOptions("#type-filter", summary.top_event_types || [], { key: "event_type", label: "event_type", emptyLabel: "All" });
+        setActiveMetricCard();
       },
       JSON.stringify(filterPayload()),
       false
@@ -690,14 +730,6 @@
   const applyFiltersNow = () => {
     if (table) table.ajax.reload();
     loadSummary();
-  };
-
-  const setActiveMetricCard = () => {
-    const activeLevel = String($("#level-filter").val() || "").trim().toLowerCase();
-    $(".systemlogs-metric-card").removeClass("is-active");
-
-    const selector = activeLevel ? `.systemlogs-metric-card[data-level="${activeLevel}"]` : `.systemlogs-metric-card[data-level=""]`;
-    $(selector).addClass("is-active");
   };
 
   $("#apply-filters-btn").on("click", function () {
