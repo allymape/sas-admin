@@ -1,45 +1,43 @@
 $("#create-btn").on("click", function () {
   modal("showModal", true);
 });
+
 function BadiliData(button) {
-  const rowData = JSON.parse(button.getAttribute("data-row"));
-  var id = rowData.id;
-  var name = rowData.name;
-  var description = rowData.description;
-  var level = rowData.level;
-  var status = rowData.status ? true : false;
- 
-  if (document.getElementById("id-field")) {
-    document.getElementById("id-field").value = id;
-  }
-  if (document.getElementById("name2-field")) {
-    document.getElementById("name2-field").value = name;
-  }
-  if (document.getElementById("description2-field")) {
-    document.getElementById("description2-field").value = description;
-  }
-  if (document.getElementById("uongozi2-field")) {
-    document.getElementById("uongozi2-field").value = level;
-  }
+  const rowData = JSON.parse(button.getAttribute("data-row") || "{}");
+  const id = rowData.id;
+  const name = rowData.name;
+  const description = rowData.description;
+  const level = rowData.level;
+  const status = rowData.status ? true : false;
+
+  const idField = document.getElementById("id-field");
+  if (idField) idField.value = id ?? "";
+
+  const nameField = document.getElementById("name2-field");
+  if (nameField) nameField.value = name ?? "";
+
+  const descriptionField = document.getElementById("description2-field");
+  if (descriptionField) descriptionField.value = description ?? "";
+
+  const levelField = document.getElementById("uongozi2-field");
+  if (levelField) levelField.value = level ?? "";
+
   const statusField = document.getElementById("status-field");
-  if (statusField) {
-    statusField.checked = status;
-  }
-  modal("showEditModal" , true);
+  if (statusField) statusField.checked = status;
+
+  modal("showEditModal", true);
 }
 
-
 function sajiliHati() {
-  var name = document.getElementById("name-field").value;
-  var description = document.getElementById("description-field").value;
-  var level = document.getElementById("uongozi-field").value;
+  const name = String(document.getElementById("name-field")?.value || "").trim();
+  const description = String(
+    document.getElementById("description-field")?.value || ""
+  ).trim();
+  const level = String(document.getElementById("uongozi-field")?.value || "").trim();
 
-  if (name.length <= 0) {
-    $("#jazasimu").show();
-  }
-  if (level.length <=0 ) {
-    $("#jazacheo").show();
-  }
+  if (name.length <= 0) $("#jazasimu").show();
+  if (level.length <= 0) $("#jazacheo").show();
+
   if (name.length > 0 && level.length > 0) {
     ajaxRequest(
       `/tengenezaDesignation`,
@@ -51,47 +49,25 @@ function sajiliHati() {
           response.message,
           statusCode == 300 ? "success" : "error",
           () => {
-            if (statusCode == 300) {
-              $("#datatable").DataTable().ajax.reload();
-            }
+            if (statusCode == 300) $("#datatable").DataTable().ajax.reload();
           }
         );
       },
-      JSON.stringify({
-        name: name,
-        description : description,
-        level: level,
-      })
+      JSON.stringify({ name, description, level })
     );
   }
-//   if (name.length > 0 && location != "#") {
-    // $.ajax({
-    //   url: "/add_designation",
-    //   type: "POST",
-    //   data: JSON.stringify({ name: name, level: location }),
-    //   contentType: "application/json",
-    //   success: function (response) {
-    //     if (response.statusCode == 300) {
-    //       $("#alertsuccess").show();
-    //     }
-    //     if (response.statusCode == 306) {
-    //       $("#alertexist").show();
-    //     }
-    //     if (response.statusCode == 400 || response.statusCode == 500) {
-    //       $("#alertmtandao").show();
-    //     }
-    //     // if(typeof(response) === "string"){response = JSON.parse(response)}
-    //   },
-    // });
-//   }
 }
+
 function sasishaHati() {
-  var name = document.getElementById("name2-field").value;
-  var description = document.getElementById("description2-field").value;
-  var level = document.getElementById("uongozi2-field").value;
-  var id = document.getElementById("id-field").value;
-  var status = document.getElementById("status-field").checked;
-  if(name.length > 0 && level.length > 0){
+  const id = String(document.getElementById("id-field")?.value || "").trim();
+  const name = String(document.getElementById("name2-field")?.value || "").trim();
+  const description = String(
+    document.getElementById("description2-field")?.value || ""
+  ).trim();
+  const level = String(document.getElementById("uongozi2-field")?.value || "").trim();
+  const status = Boolean(document.getElementById("status-field")?.checked);
+
+  if (name.length > 0 && level.length > 0 && id) {
     ajaxRequest(
       `/badiliDesignation/${id}`,
       "POST",
@@ -102,20 +78,17 @@ function sasishaHati() {
           response.message,
           statusCode == 300 ? "success" : "error",
           () => {
-            if (statusCode == 300) {
-              $('#datatable').DataTable().ajax.reload();
-            }
+            if (statusCode == 300) $("#datatable").DataTable().ajax.reload();
           }
         );
       },
       JSON.stringify({
-        name: name,
-        level: level,
-        description: description,
+        name,
+        level,
+        description,
         status: status ? 1 : 0,
       })
     );
   }
-
 }
 

@@ -42,6 +42,7 @@ const aliasMap = {
   "v2-RipotiWamiliki": "RipotiWamiliki",
   "v2-RipotiMeneja": "RipotiMeneja",
   "v2-RipotiZilizosajiliwa": "RipotiZilizosajiliwa",
+  "v2-RipotiUsajiliAnalytics": "RipotiUsajiliAnalytics",
   "v2-RipotiKuongezaMikondo": "RipotiKuongezaMikondo",
   "v2-RipotiKuhamishaShule": "RipotiKuhamishaShule",
   "v2-RipotiKubadiliUsajili": "RipotiKubadiliUsajili",

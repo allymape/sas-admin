@@ -63,7 +63,7 @@ reportWamilikiRequestController.get(
           });
           exportJSONToExcel(res, data);
         } else {
-          res.render(path.join(__dirname + "//../views/reports/wamiliki"), {
+          res.render(path.join(__dirname, "../../views/reports/wamiliki"), {
             req: req,
             data: data,
             categories,

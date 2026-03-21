@@ -87,7 +87,7 @@ anzishaShuleBilaMajengoReportController.get(
         );
         res.render(
           path.join(
-            __dirname + "//../views/reports/ripotianzishabilamajengo"
+            path.join(__dirname, "../../views/reports/ripotianzishabilamajengo")
           ),
           {
             req: req,

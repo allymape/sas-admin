@@ -11,6 +11,27 @@
 
 }) %>
 <style>
+    #datatable {
+        table-layout: fixed;
+        width: 100% !important;
+    }
+
+    #datatable th,
+    #datatable td {
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    #datatable th:first-child,
+    #datatable td:first-child {
+        width: 56px;
+    }
+
+    #datatable th:last-child,
+    #datatable td:last-child {
+        width: 110px;
+    }
+
     #datatable.table-readable th,
     #datatable.table-readable td {
         font-size: 0.95rem;
@@ -21,7 +42,7 @@
         display: flex;
         align-items: center;
         gap: 0.6rem;
-        min-width: 220px;
+        min-width: 0;
     }
 
     #datatable .applicant-avatar {
@@ -55,28 +76,36 @@
 </style>
 <div class="card-body">
 <div id="applicantsList">
-    <div class="row g-3 mb-4 applicants-summary">
-        <div class="col-md-4">
-            <div class="card mb-0">
+    <div class="row g-3 mb-3" id="registry-type-summary-cards">
+        <div class="col-md-3">
+            <div class="card mb-0 border border-primary-subtle">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Jumla ya Waombaji</p>
-                    <h3 class="mb-0" id="applicants-total-count">0</h3>
+                    <p class="text-muted mb-1">Mtu Binafsi</p>
+                    <h4 class="mb-0 text-primary" id="registry-type-personal">0</h4>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card mb-0">
+        <div class="col-md-3">
+            <div class="card mb-0 border border-success-subtle">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Zinazoonekana</p>
-                    <h3 class="mb-0 text-primary" id="applicants-page-count">0</h3>
+                    <p class="text-muted mb-1">Serikali/Halmashauri</p>
+                    <h4 class="mb-0 text-success" id="registry-type-government">0</h4>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card mb-0">
+        <div class="col-md-3">
+            <div class="card mb-0 border border-info-subtle">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Maombi (Ukurasa)</p>
-                    <h3 class="mb-0 text-success" id="applicants-apps-count">0</h3>
+                    <p class="text-muted mb-1">Taasisi/Kampuni/NGO</p>
+                    <h4 class="mb-0 text-info" id="registry-type-institution">0</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card mb-0 border border-warning-subtle">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Haijajaza Taarifa</p>
+                    <h4 class="mb-0 text-warning" id="registry-type-unknown">0</h4>
                 </div>
             </div>
         </div>
@@ -84,7 +113,7 @@
 
     <div class="col-md-12">
         <div class="table-responsive mt-3 mb-1">
-        <table class="table table-hover align-middle table-nowrap table-striped table-readable" id="datatable" style="width: 100%">
+        <table class="table table-hover align-middle table-striped table-readable" id="datatable" style="width: 100%">
             <thead class="table-light">
                 <tr>
                     <th>Na.</th>
@@ -92,6 +121,7 @@
                     <th>Barua Pepe</th>
                     <th>Imetengenezwa</th>
                     <th>Imesasishwa</th>
+                    <th>Aina ya Usajili</th>
                     <th>Jumla ya Maombi</th>
                     <th class="text-center">Action</th>
                 </tr>
@@ -153,6 +183,39 @@
                     {data: 'updated_at' , name: 'updated_at' , render: (data , type , row) => {
                         return data ? `<span class="text-muted">${changeDateFormat(data)}</span>` : '-'
                     }},
+                    { data: "registry_type", name: "registry_type", render: (data, type, row) => {
+                        const raw = String(data || 'UNKNOWN').trim();
+                        const upper = raw.toUpperCase();
+                        const id = Number(row?.registry_type_id || 0);
+
+                        const toTitleCase = (txt) => {
+                            const rawTxt = String(txt || '').trim();
+                            if (!rawTxt) return '';
+
+                            const titleWord = (w) => (w ? w[0].toUpperCase() + w.slice(1).toLowerCase() : '');
+                            const titleWords = (s) => String(s || '').split(' ').filter(Boolean).map(titleWord).join(' ');
+                            return rawTxt
+                                .split('/')
+                                .map((part) => titleWords(part))
+                                .join('/');
+                        };
+
+                        const formatLabel = () => {
+                            if (upper === 'UNKNOWN') return 'Haijajaza';
+                            if (upper === 'MIXED') return 'Mixed';
+                            const titled = toTitleCase(raw);
+                            return titled.replace(/\bNgo\b/g, 'NGO');
+                        };
+
+                        const label = formatLabel();
+                        const variant = upper === 'UNKNOWN'
+                          ? 'secondary'
+                          : (upper === 'MIXED'
+                            ? 'warning'
+                            : (id === 1 ? 'primary' : (id === 2 ? 'success' : (id === 3 ? 'info' : 'secondary'))));
+
+                        return `<span class="badge bg-${variant}-subtle text-${variant}">${label}</span>`;
+                    }, class: 'text-center' },
                     { data: "total_applications", name: "total_applications" ,  render: (data , type , row) => {
                         const total = Number(data || 0);
                         return `<span class="badge bg-${ total > 0 ? 'success' : 'warning'}-subtle text-${ total > 0 ? 'success' : 'warning'}">${total}</span>`
@@ -184,16 +247,53 @@
 
         const applicantsTable = $('#datatable').DataTable();
         applicantsTable.on('xhr.dt', function (e, settings, json) {
-            const total = Number((json && json.recordsTotal) || 0);
             const rows = json && Array.isArray(json.data) ? json.data : [];
-            const shown = rows.length;
             const pageApplications = rows.reduce((sum, item) => {
                 return sum + Number(item && item.total_applications ? item.total_applications : 0);
             }, 0);
+        });
 
-            $('#applicants-total-count').text(total.toLocaleString());
-            $('#applicants-page-count').text(shown.toLocaleString());
-            $('#applicants-apps-count').text(pageApplications.toLocaleString());
+        const renderRegistrySummary = (summary = []) => {
+            const items = Array.isArray(summary) ? summary : [];
+            const getCount = (matchFn) => {
+                const found = items.find((it) => matchFn(String(it?.registry_type || '').trim().toUpperCase()));
+                return Number(found?.total || 0) || 0;
+            };
+
+            const personal = getCount((label) => label.includes('MTU BINAFSI') || label === 'PERSONAL');
+            const government = getCount((label) => label.includes('SERIKALI') || label.includes('HALMASHAURI') || label === 'GOVERNMENT');
+            const institution = getCount((label) => label.includes('TAASISI') || label.includes('KAMPUNI') || label.includes('NGO') || label === 'INSTITUTION');
+            const unknown = getCount((label) => label === 'UNKNOWN');
+
+            $('#registry-type-personal').text(personal.toLocaleString());
+            $('#registry-type-government').text(government.toLocaleString());
+            $('#registry-type-institution').text(institution.toLocaleString());
+            $('#registry-type-unknown').text(unknown.toLocaleString());
+        };
+
+        let summaryTimer = null;
+        const fetchRegistrySummary = () => {
+            const searchValue = String(applicantsTable.search() || '').trim();
+            $.ajax({
+                url: '/ApplicantRegistryTypeSummary',
+                type: 'GET',
+                data: { search_value: searchValue },
+                success: function (resp) {
+                    renderRegistrySummary(resp && resp.data ? resp.data : []);
+                },
+                error: function () {
+                    renderRegistrySummary([]);
+                }
+            });
+        };
+
+        // initial
+        fetchRegistrySummary();
+
+        // refresh on search changes (debounced)
+        applicantsTable.on('search.dt', function () {
+            clearTimeout(summaryTimer);
+            summaryTimer = setTimeout(fetchRegistrySummary, 450);
         });
     });
 </script>

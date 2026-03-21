@@ -17,15 +17,24 @@ const sendRequest = async (req, res, url, method, formData = {}, token) => {
       return res.redirect("/");
     }
 
-    const response = await axios({
+    const normalizedMethod = String(method || "GET").toUpperCase();
+    const requestConfig = {
       url: url,
-      method: method,
+      method: normalizedMethod,
       headers: {
         Authorization: "Bearer " + authToken,
         "Content-Type": "application/json",
       },
-      data: formData,
-    });
+    };
+
+    // For GET requests, send filters/pagination as query params (many APIs ignore GET bodies).
+    if (normalizedMethod === "GET") {
+      requestConfig.params = formData;
+    } else {
+      requestConfig.data = formData;
+    }
+
+    const response = await axios(requestConfig);
 
     if (response.data === "Too many requests, please try again later.") {
       req.flash(

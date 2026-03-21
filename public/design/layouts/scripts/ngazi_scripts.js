@@ -62,12 +62,12 @@ function listRanks() {
         id: {},
         name: {},
         status_id: { hidden : true},
-        status: {},
+        status_badge: {},
       };
       response.data = response.data.map((item) => ({
         id: item.id,
         name: item.name,
-        status: item.status_id
+        status_badge: item.status_id
           ? `<span class="badge bg-success">active</span>`
           : `<span class="badge bg-danger">In Active</span>`,
         status_id: item.status_id,
@@ -83,7 +83,7 @@ function listRanks() {
             callback: "badiliNgazi(this); return false",
           },
           deleteBtn: {
-            show: false,
+            show: true,
             callback: "futaNgazi(this); return false;",
           },
         },
@@ -139,5 +139,3 @@ function futaNgazi(e) {
         alertMessage('Haiwezekani' , 'Hauwezi kufuta Ngazi hii, ilishafutwa tayari.' , 'error')
      }
 }
-
-

@@ -43,13 +43,27 @@
       <label class="form-label">Search</label>
       <input type="text" id="search-filter" class="form-control" placeholder="message, tracking, endpoint..." />
     </div>
-    <div class="col-12 d-flex gap-2">
+    <div class="col-12 d-flex gap-2 align-items-center flex-wrap">
       <button type="button" class="btn btn-primary" id="apply-filters-btn">
         <i class="ri-filter-3-line me-1"></i>Tumia Filter
       </button>
       <button type="button" class="btn btn-light" id="reset-filters-btn">
         <i class="ri-refresh-line me-1"></i>Reset
       </button>
+      <span class="ms-auto text-muted small">
+        Auto refresh:
+        <span class="badge bg-secondary-subtle text-secondary" id="logs-refresh-ms">
+          sekunde <%= Math.round((typeof logsRefreshMs !== 'undefined' ? Number(logsRefreshMs) : 5000) / 1000) %>
+        </span>
+      </span>
+    </div>
+    <div class="col-12">
+      <div class="alert alert-info mb-0 py-2">
+        Ukurasa huu hujirefresh (table na summary) kila
+        <b>sekunde <%= Math.round((typeof logsRefreshMs !== 'undefined' ? Number(logsRefreshMs) : 5000) / 1000) %></b>.
+        Muda huu unasomwa kutoka <b>SYSTEM_LOGS_REFRESH_MS</b>.
+        Ikiwa tab iko background, refresh inasimama mpaka uirudishe mbele.
+      </div>
     </div>
   </div>
 
@@ -335,24 +349,53 @@
     const values = labels.map((key) => Number(totals?.[key] || 0));
     const colors = labels.map((key) => levelColors[key]);
 
-    if (levelChart) levelChart.destroy();
-    levelChart = new Chart(document.getElementById("levelChart"), {
-      type: "doughnut",
-      data: {
-        labels: labels.map((key) => key.toUpperCase()),
-        datasets: [{ data: values, backgroundColor: colors, borderWidth: 1 }]
-      },
-      options: { responsive: true, maintainAspectRatio: false }
-    });
+    const chartLabels = labels.map((key) => key.toUpperCase());
+    if (!levelChart) {
+      levelChart = new Chart(document.getElementById("levelChart"), {
+        type: "doughnut",
+        data: {
+          labels: chartLabels,
+          datasets: [{ data: values, backgroundColor: colors, borderWidth: 1 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+      return;
+    }
+
+    levelChart.data.labels = chartLabels;
+    levelChart.data.datasets[0].data = values;
+    levelChart.data.datasets[0].backgroundColor = colors;
+    levelChart.update();
   };
 
   const renderTrendChart = (trend = []) => {
     const rows = Array.isArray(trend) ? trend : [];
-    const dates = [...new Set(rows.map((row) => safe(row.log_date, "")))].filter(Boolean);
+    const formatTrendDate = (value) => {
+      const raw = safe(value, "");
+      if (!raw) return "";
+      // Accept ISO timestamps or YYYY-MM-DD; always show in DD/MM/YYYY
+      const datePart = raw.includes("T") ? raw.split("T")[0] : raw;
+      const parts = String(datePart).split("-");
+      if (parts.length === 3) {
+        const [yyyy, mm, dd] = parts;
+        if (yyyy && mm && dd) return `${dd}/${mm}/${yyyy}`;
+      }
+      const d = new Date(raw);
+      if (!Number.isNaN(d.getTime())) {
+        const dd = String(d.getDate()).padStart(2, "0");
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const yyyy = d.getFullYear();
+        return `${dd}/${mm}/${yyyy}`;
+      }
+      return raw;
+    };
+
+    const rawDates = [...new Set(rows.map((row) => safe(row.log_date, "")))].filter(Boolean);
+    const dateLabels = rawDates.map(formatTrendDate);
     const levels = ["critical", "error", "warning", "info", "debug"];
     const datasets = levels.map((level) => {
-      const data = dates.map((date) => {
-        const found = rows.find((row) => safe(row.log_date, "") === date && safe(row.level, "").toLowerCase() === level);
+      const data = rawDates.map((rawDate) => {
+        const found = rows.find((row) => safe(row.log_date, "") === rawDate && safe(row.level, "").toLowerCase() === level);
         return Number(found?.total || 0);
       });
       return {
@@ -365,38 +408,73 @@
       };
     });
 
-    if (trendChart) trendChart.destroy();
-    trendChart = new Chart(document.getElementById("trendChart"), {
-      type: "line",
-      data: { labels: dates, datasets },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: { y: { beginAtZero: true } }
-      }
-    });
+    if (!trendChart) {
+      trendChart = new Chart(document.getElementById("trendChart"), {
+        type: "line",
+        data: { labels: dateLabels, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+      return;
+    }
+
+    trendChart.data.labels = dateLabels;
+    trendChart.data.datasets = datasets;
+    trendChart.update();
   };
 
   const renderModuleChart = (modules = []) => {
     const labels = (modules || []).map((item) => safe(item.module, "unknown"));
     const values = (modules || []).map((item) => Number(item.total || 0));
-    if (moduleChart) moduleChart.destroy();
-    moduleChart = new Chart(document.getElementById("moduleChart"), {
-      type: "bar",
-      data: {
-        labels,
-        datasets: [{
-          label: "Idadi ya Logs",
-          data: values,
-          backgroundColor: "#405189"
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: { y: { beginAtZero: true } }
-      }
-    });
+    if (!moduleChart) {
+      moduleChart = new Chart(document.getElementById("moduleChart"), {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [{
+            label: "Idadi ya Logs",
+            data: values,
+            backgroundColor: "#405189"
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+      return;
+    }
+
+    moduleChart.data.labels = labels;
+    moduleChart.data.datasets[0].data = values;
+    moduleChart.update();
+  };
+
+  let lastSummarySignature = null;
+  const summarySignature = (summary = {}) => {
+    const levels = ["critical", "error", "warning", "info", "debug"];
+    const totals = summary.level_totals || {};
+    const levelArray = levels.map((l) => Number(totals[l] || 0));
+
+    const trendRows = Array.isArray(summary.trend) ? summary.trend : [];
+    const trendArray = trendRows
+      .map((r) => ({
+        d: safe(r.log_date, ""),
+        l: safe(r.level, "").toLowerCase(),
+        t: Number(r.total || 0),
+      }))
+      .sort((a, b) => (a.d === b.d ? (a.l < b.l ? -1 : 1) : (a.d < b.d ? -1 : 1)));
+
+    const modules = Array.isArray(summary.top_modules) ? summary.top_modules : [];
+    const moduleArray = modules
+      .map((m) => ({ m: safe(m.module, ""), t: Number(m.total || 0) }))
+      .sort((a, b) => (a.m < b.m ? -1 : 1));
+
+    return JSON.stringify({ levelArray, trendArray, moduleArray });
   };
 
   const loadSummary = () => {
@@ -414,6 +492,11 @@
         }
 
         const summary = response?.data || {};
+        const sig = summarySignature(summary);
+        if (sig && sig === lastSummarySignature) {
+          return;
+        }
+        lastSummarySignature = sig;
         updateMetrics(summary.level_totals || {});
         renderLevelChart(summary.level_totals || {});
         renderTrendChart(summary.trend || []);

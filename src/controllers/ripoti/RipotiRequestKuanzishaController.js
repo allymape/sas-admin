@@ -65,7 +65,7 @@ reportKuanzishaRequestController.get(
           });
           exportJSONToExcel(res, data);
         } else {
-          res.render(path.join(__dirname + "//../views/reports/kuanzisha"), {
+          res.render(path.join(__dirname, "../../views/reports/kuanzisha"), {
             req: req,
             data: data,
             categories,

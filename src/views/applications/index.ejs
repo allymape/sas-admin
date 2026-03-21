@@ -76,13 +76,6 @@
     Number(item?.is_approved) === 2 && Boolean(item?.folio);
   const isOwnershipCategory = (item) =>
     Number(item?.application_category?.id) === 2;
-  const isCertificateEligible = (item) => {
-    if (Number(item?.is_approved) !== 2) return false;
-    if (Number(item?.application_category?.id) !== 4) return false;
-    const schoolCategoryId = Number(item?.establishing_school?.school_category_id || item?.establishing_school?.school_category?.id);
-    if (Number.isFinite(schoolCategoryId) && schoolCategoryId === 3) return false;
-    return true;
-  };
   const allCount = categories.length
     ? categories.reduce((sum, category) => sum + (Number(category.total) || 0), 0)
     : pagination.total;
@@ -105,7 +98,7 @@
   const showStaffColumn = !(isMyApplications && activeWorkTab === "pending");
   const showApplicantColumn = !isMyApplications;
   const staffColumnHeader = isMyApplications ? "Afisa" : "Mwombaji";
-  const isSubmittedTab = !isMyApplications && Number(activeStatusId) === 0;
+  const isSubmittedTab = !isMyApplications && activeStatusId === 0;
   const loggedInStaffId = Number(req?.user?.staff_id || req?.user?.id);
   const allowUnreadHighlight = isMyApplications && activeWorkTab !== "handled";
   const canTakeActionForItem = (item) => {
@@ -341,7 +334,7 @@
 
   .applications-no-icons .message-list li .col-mail-2 .subject {
     display: grid;
-    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 1fr 72px 1.1fr;
+    grid-template-columns: 1fr 1.2fr 1.15fr 1fr 0.95fr 0.95fr 1fr 72px 1.25fr;
     position: relative;
     top: auto;
     left: auto;
@@ -414,6 +407,23 @@
     max-width: none;
   }
 
+  .applications-no-icons .message-list li .col-mail-2 .council-col {
+    min-width: 0;
+    max-width: none;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    line-height: 1.1;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .council-col .region-sub {
+    font-size: 10px;
+    font-style: italic;
+    font-weight: 600;
+    text-transform: none;
+    color: rgba(108, 117, 125, 0.9);
+  }
+
   .applications-no-icons .message-list li .col-mail-2 .status-col {
     min-width: 0;
     max-width: none;
@@ -482,27 +492,27 @@
   }
 
   .applications-no-icons.with-attend-action .message-list li .col-mail-2 .subject {
-    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 1fr 72px 1.1fr 72px;
+    grid-template-columns: 1fr 1.2fr 1.15fr 1fr 0.95fr 0.95fr 1fr 72px 1.25fr 56px;
   }
 
   .applications-no-icons.with-attend-action .list-header-grid {
-    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 1fr 72px 1.1fr 72px;
+    grid-template-columns: 1fr 1.2fr 1.15fr 1fr 0.95fr 0.95fr 1fr 72px 1.25fr 56px;
   }
 
   .applications-no-icons.without-staff-column .message-list li .col-mail-2 .subject {
-    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 72px 1.1fr;
+    grid-template-columns: 1fr 1.2fr 1.15fr 1fr 0.95fr 0.95fr 72px 1.1fr;
   }
 
   .applications-no-icons.without-staff-column .list-header-grid {
-    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 72px 1.1fr;
+    grid-template-columns: 1fr 1.2fr 1.15fr 1fr 0.95fr 0.95fr 72px 1.1fr;
   }
 
   .applications-no-icons.without-staff-column.with-attend-action .message-list li .col-mail-2 .subject {
-    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 72px 1.1fr 72px;
+    grid-template-columns: 1fr 1.2fr 1.15fr 1fr 0.95fr 0.95fr 72px 1.25fr 56px;
   }
 
   .applications-no-icons.without-staff-column.with-attend-action .list-header-grid {
-    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 72px 1.1fr 72px;
+    grid-template-columns: 1fr 1.2fr 1.15fr 1fr 0.95fr 0.95fr 72px 1.25fr 56px;
   }
 
   .applications-no-icons .message-list li .col-mail-2 .action-col {
@@ -522,7 +532,13 @@
 
   .applications-no-icons .message-list li .col-mail-2 .action-col .dropdown-menu {
     min-width: 180px;
-    z-index: 9999;
+    /* Above row content, but below Bootstrap modal (1055) */
+    z-index: 1045;
+    background: var(--vz-card-bg, #fff);
+    opacity: 1;
+    pointer-events: auto;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
   }
 
   .applications-no-icons .message-list li .col-mail-2 .action-col .dropdown-item i {
@@ -537,7 +553,12 @@
 
   .applications-no-icons .message-list li .col-mail-2 .action-col {
     position: relative;
-    z-index: 50;
+    z-index: 1040;
+  }
+
+  .applications-no-icons .message-list li .col-mail-2 .action-col .dropdown {
+    position: relative;
+    z-index: 1040;
   }
 
   .applications-no-icons .message-list li:nth-child(odd) {
@@ -563,7 +584,7 @@
 
   .applications-no-icons .list-header-grid {
     display: grid;
-    grid-template-columns: 1.05fr 1.05fr 1.15fr 1fr 0.95fr 1fr 72px 1.1fr;
+    grid-template-columns: 1fr 1.2fr 1.15fr 1fr 0.95fr 0.95fr 1fr 72px 1.25fr;
     gap: 10px;
     align-items: center;
     padding: 10px 0;
@@ -658,11 +679,11 @@
     }
 
     .applications-no-icons.with-attend-action .message-list li .col-mail-2 .subject {
-      grid-template-columns: 1fr 1fr 1.2fr 1fr 0.95fr 72px;
+      grid-template-columns: 1fr 1fr 1.2fr 1fr 0.95fr 56px;
     }
 
     .applications-no-icons.with-attend-action .list-header-grid {
-      grid-template-columns: 1fr 1fr 1.2fr 1fr 0.95fr 72px;
+      grid-template-columns: 1fr 1fr 1.2fr 1fr 0.95fr 56px;
     }
   }
 </style>
@@ -830,6 +851,7 @@
           <span class="school-name-col">Jina la Shule</span>
           <span class="school-type-col">Aina ya Shule</span>
           <span class="ownership-col">Umiliki</span>
+          <span class="council-col">Halmashauri</span>
           <% if (showStaffColumn) { %><span class="staff-col"><%= staffColumnHeader %></span><% } %>
           <span class="status-col">Hali</span>
           <span class="created-col">Muda</span>
@@ -844,9 +866,15 @@
 
           <% applications.forEach((item, index) => { %>
             <% const status = toStatusMeta(item.is_approved); %>
-            <% const canTakeAction = (isMyApplications && activeWorkTab === "pending")
-              ? true
-              : canTakeActionForItem(item); %>
+            <% const canTakeAction = canTakeActionForItem(item); %>
+            <% const isSubmittedRow = Number(item?.is_approved) === 0; %>
+            <% const needsStart = isSubmittedRow && Boolean(item?.needs_start); %>
+            <% const startedViaBackup = isSubmittedRow && !needsStart && item?.needs_start !== undefined; %>
+            <% const statusBadgeClass = isSubmittedRow
+              ? (needsStart
+                ? 'badge rounded-pill border border-warning text-warning bg-transparent'
+                : 'badge rounded-pill bg-primary text-white')
+              : status.badgeClass; %>
             <li class="<%= shouldHighlightUnread(item) ? 'unread' : '' %>">
               <div class="col-mail col-mail-1"></div>
               <div class="col-mail col-mail-2">
@@ -856,6 +884,12 @@
                   <span class="subject-col school-name-col" data-bs-toggle="tooltip" data-bs-custom-class="custom-black-tooltip" data-bs-title="<%= item.establishing_school?.school_name || '-' %>"><%= item.establishing_school?.school_name || "-" %></span>
                   <span class="subject-col school-type-col" data-bs-toggle="tooltip" data-bs-custom-class="custom-black-tooltip" data-bs-title="<%= item.establishing_school?.school_type || '-' %>"><%= item.establishing_school?.school_type || "-" %></span>
                   <span class="subject-col ownership-col" data-bs-toggle="tooltip" data-bs-custom-class="custom-black-tooltip" data-bs-title="<%= item.establishing_school?.registry_type?.registry || '-' %>"><%= item.establishing_school?.registry_type?.registry || "-" %></span>
+                  <span class="subject-col council-col" data-bs-toggle="tooltip" data-bs-custom-class="custom-black-tooltip" data-bs-title="<%= item.establishing_school?.halmashauri || '-' %>">
+                    <span><%= item.establishing_school?.halmashauri || "-" %></span>
+                    <% if (item.establishing_school?.mkoa) { %>
+                      <span class="region-sub"><%= item.establishing_school?.mkoa %></span>
+                    <% } %>
+                  </span>
                   <% if (showStaffColumn) { %>
                     <% if (showApplicantColumn) { %>
                       <span class="subject-col staff-col" data-bs-toggle="tooltip" data-bs-custom-class="custom-black-tooltip" data-bs-title="<%= item.applicant?.name || '' %>">
@@ -869,7 +903,7 @@
                   <% } %>
                   <span class="subject-col status-col">
                     <span
-                      class="<%= status.badgeClass %>"
+                      class="<%= statusBadgeClass %>"
                       data-bs-toggle="tooltip"
                       data-bs-custom-class="custom-black-tooltip"
                       data-bs-title="<%= status.text %>"
@@ -882,71 +916,89 @@
                   <% if (showAttendAction) { %>
                     <span class="subject-col action-col">
                       <% if (item.tracking_number) { %>
-                        <div class="dropdown">
-                          <button
-                            class="btn btn-sm btn-ghost-secondary btn-icon"
-                            type="button"
-                            id="app-actions-<%= index %>"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                            aria-label="Actions"
-                            title="Actions"
-                          >
-                            <i class="ri-more-2-fill align-bottom"></i>
-                          </button>
-                          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="app-actions-<%= index %>">
-                            <li>
-                              <a class="dropdown-item" href="<%= buildAttendUrl(item.tracking_number) %>">
-                                <i class="<%= canTakeAction ? 'ri-arrow-right-up-line' : 'ri-eye-line' %> align-bottom me-2"></i>
-                                <%= canTakeAction ? 'Fungua' : 'Tazama' %>
-                              </a>
-                            </li>
-	                            <% if (canViewLetters && isApprovedWithLetter(item)) { %>
-	                              <!-- <li><hr class="dropdown-divider"></li> -->
-                              <% if (isOwnershipCategory(item)) { %>
-	                                <li>
-		                                  <a
-		                                    class="dropdown-item js-open-pdf-modal"
-		                                    href="/barua/<%= encodeURIComponent(item.tracking_number) %>?type=meneja"
-		                                  >
-	                                    <i class="ri-file-pdf-line align-bottom me-2 text-danger"></i>
-	                                    Barua Meneja
-                                  </a>
+                        <div class="d-flex align-items-center justify-content-end gap-1">
+                          <div class="dropdown">
+                            <button
+                              class="btn btn-sm btn-icon btn-ghost-secondary"
+                              type="button"
+                              id="app-actions-<%= index %>"
+                              data-bs-toggle="dropdown"
+                              aria-expanded="false"
+                              aria-label="Actions"
+                              title="<%= needsStart ? 'Haijaanzishwa' : startedViaBackup ? 'Imeanzishwa' : 'Actions' %>"
+                            >
+                              <i class="ri-more-2-fill align-bottom"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="app-actions-<%= index %>">
+                              <li>
+                                <a class="dropdown-item" href="<%= buildAttendUrl(item.tracking_number) %>">
+                                  <i class="<%= canTakeAction ? 'ri-arrow-right-up-line' : 'ri-eye-line' %> align-bottom me-2"></i>
+                                  <%= canTakeAction ? 'Fungua' : 'Tazama' %>
+                                </a>
+                              </li>
+                              <% if (isSubmittedRow && Boolean(item?.needs_start)) { %>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                  <form method="POST" action="/applications/<%= encodeURIComponent(item.tracking_number) %>/start" style="display:inline">
+                                    <button
+                                      type="submit"
+                                      class="dropdown-item text-primary"
+                                      data-confirm-start="1"
+                                      data-tracking-number="<%= item.tracking_number %>"
+                                    >
+                                      <i class="ri-play-circle-line align-bottom me-2"></i>
+                                      Anzisha (Start)
+                                    </button>
+                                  </form>
                                 </li>
-	                                <li>
-		                                  <a
-		                                    class="dropdown-item js-open-pdf-modal"
-		                                    href="/barua/<%= encodeURIComponent(item.tracking_number) %>?type=mmiliki"
-		                                  >
-	                                    <i class="ri-file-pdf-fill align-bottom me-2 text-danger"></i>
-	                                    Barua Mmiliki
-                                  </a>
-                                </li>
-                              <% } else { %>
-	                                <li>
-		                                  <a
-		                                    class="dropdown-item js-open-pdf-modal"
-		                                    href="/barua/<%= encodeURIComponent(item.tracking_number) %>"
-		                                  >
-	                                    <i class="ri-file-pdf-line align-bottom me-2 text-danger"></i>
-	                                    Pakua Barua
-                                  </a>
-                                </li>
-	                              <% } %>
+                              <% } %>
+  	                            <% if (canViewLetters && isApprovedWithLetter(item)) { %>
+  	                              <!-- <li><hr class="dropdown-divider"></li> -->
+                                <% if (isOwnershipCategory(item)) { %>
+  	                                <li>
+  		                                  <a
+  		                                    class="dropdown-item js-open-pdf-modal"
+  		                                    href="/barua/<%= encodeURIComponent(item.tracking_number) %>?type=meneja"
+  		                                  >
+  	                                    <i class="ri-file-pdf-line align-bottom me-2 text-danger"></i>
+  	                                    Barua Meneja
+                                    </a>
+                                  </li>
+  	                                <li>
+  		                                  <a
+  		                                    class="dropdown-item js-open-pdf-modal"
+  		                                    href="/barua/<%= encodeURIComponent(item.tracking_number) %>?type=mmiliki"
+  		                                  >
+  	                                    <i class="ri-file-pdf-fill align-bottom me-2 text-danger"></i>
+  	                                    Barua Mmiliki
+                                    </a>
+                                  </li>
+                                <% } else { %>
+  	                                <li>
+  		                                  <a
+  		                                    class="dropdown-item js-open-pdf-modal"
+  		                                    href="/barua/<%= encodeURIComponent(item.tracking_number) %>"
+  		                                  >
+  	                                    <i class="ri-file-pdf-line align-bottom me-2 text-danger"></i>
+  	                                    Pakua Barua
+                                    </a>
+                                  </li>
+  	                              <% } %>
 	                            <% } %>
-	                            <% if (canViewLetters && isCertificateEligible(item)) { %>
+	                            <% if (canViewLetters && Boolean(item?.certificate_issued)) { %>
 	                              <li>
 	                                <a
 	                                  class="dropdown-item js-open-pdf-modal"
 	                                  href="/cheti/<%= encodeURIComponent(item.tracking_number) %>"
 	                                >
-	                                  <i class="ri-award-line align-bottom me-2 text-primary"></i>
+	                                  <i class="ri-award-line align-bottom me-2 text-danger"></i>
 	                                  Cheti (PDF)
 	                                </a>
 	                              </li>
 	                            <% } %>
-	                          </ul>
-	                        </div>
+  	                          </ul>
+  	                        </div>
+                        </div>
 	                      <% } else { %>
 	                        -
 	                      <% } %>
@@ -1118,6 +1170,48 @@
 
       modalEl.addEventListener("hidden.bs.modal", function () {
         frame.src = "";
+      });
+    })();
+
+    // SweetAlert confirm for starting workflow from Submitted tab.
+    (function () {
+      document.addEventListener("click", function (e) {
+        const btn = e.target && e.target.closest ? e.target.closest("button[data-confirm-start=\"1\"]") : null;
+        if (!btn) return;
+        const form = btn.closest ? btn.closest("form") : null;
+        if (!form) return;
+
+        e.preventDefault();
+
+        const trackingNumber = (btn.getAttribute("data-tracking-number") || "").trim();
+        const title = trackingNumber ? `Anzisha workflow (${trackingNumber})?` : "Anzisha workflow?";
+        const text = trackingNumber
+          ? `Una uhakika unataka kuanzisha workflow ya ombi lenye namba ${trackingNumber}?`
+          : "Una uhakika unataka kuanzisha workflow ya ombi hili?";
+
+        const fire = () =>
+          Swal.fire({
+            title,
+            text,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ndio, anzisha",
+            cancelButtonText: "Ghairi",
+            confirmButtonClass: "btn btn-primary w-xs me-2 mt-2",
+            cancelButtonClass: "btn btn-danger w-xs mt-2",
+            buttonsStyling: false,
+            showCloseButton: true,
+          }).then((result) => {
+            if (result && result.value) form.submit();
+          });
+
+        if (window.Swal && typeof Swal.fire === "function") {
+          fire();
+        } else {
+          if (confirm("Una uhakika unataka kuanzisha workflow ya ombi hili?")) {
+            form.submit();
+          }
+        }
       });
     })();
   });

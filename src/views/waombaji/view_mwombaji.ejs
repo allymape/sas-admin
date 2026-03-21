@@ -1,4 +1,4 @@
-F<% var card_title = '' %>
+<% var card_title = '' %>
 <%- include('../layouts/partials/header.ejs' , {
 title : 'Mwombaji',
 page_title : '',
@@ -35,9 +35,9 @@ styles : [
           </div>
         </div>
       </div>
-    </div>
-    <!--end col-->
-    <div class="col-12 col-lg-auto order-last order-lg-0">
+      </div>
+      <!--end col-->
+      <div class="col-12 col-lg-auto order-last order-lg-0">
       <div class="row text text-white-50 text-center">
         <!-- <div class="col-lg-6 col-4">
           <div class="p-2">
@@ -84,6 +84,12 @@ styles : [
         <div class="flex-shrink-0">
           <a href="/Mwombaji/<%=applicant[0].id%>/badili" class="btn btn-success">
             <i class="ri-edit-box-line align-bottom"></i> Edit Profile</a>
+          <% const canBulkTransfer = permission(req , 'update-schools') && applicant && applicant[0] && applicant[0].applicant_id && Number(applicant[0].applicant_registry_type_id) === 3; %>
+          <% if (canBulkTransfer) { %>
+            <button type="button" class="btn btn-danger ms-2" id="btn-open-bulk-transfer" data-user_id="<%= applicant[0].id %>">
+              <i class="ri-file-transfer-line align-bottom"></i> Transfer Shule (Serikali)
+            </button>
+          <% } %>
         </div>
       </div>
       <!-- Tab panes -->
@@ -287,6 +293,37 @@ styles : [
     </div>
   </div>
         <!-- End Modal -->
+
+        <% if (permission(req , 'update-schools') && applicant && applicant[0] && applicant[0].applicant_id && Number(applicant[0].applicant_registry_type_id) === 3) { %>
+        <!-- Bulk transfer registry_type_id=3 (Serikali) schools -->
+        <div class="modal fade" id="bulkTransferRegistry3Modal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Transfer Shule (Serikali)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="alert alert-info mb-3">
+                  Sehemu hii inakuruhusu kuhamisha shule zote za <b><i>Serikali</i></b> zilizo katika halmashauri utakayochagua kwenda kwa mwombaji <b><i><%= applicant[0].name %></i></b>, mwenye baruapepe <b><i><%= applicant[0].email %></i></b>.
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Mkoa</label>
+                  <select class="form-control" id="bulk-transfer-region" style="width: 100%"></select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Halmashauri</label>
+                  <select class="form-control" id="bulk-transfer-district" style="width: 100%"></select>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Ghairi</button>
+                <button type="button" class="btn btn-primary" id="btn-confirm-bulk-transfer">Hamisha</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <% } %>
  
         <!--end tab-pane-->
    
@@ -360,8 +397,157 @@ scripts : [
                     orderable: false, // Disable sorting for the action buttons column
                     class : 'text-center'
                     },
-            ],
+            ]
         );
+
+        const canBulkTransfer = <%= (permission(req , 'update-schools') && applicant && applicant[0] && applicant[0].applicant_id && Number(applicant[0].applicant_registry_type_id) === 3) ? 'true' : 'false' %>;
+        if (canBulkTransfer) {
+          const transferUserId = <%= Number(applicant_id) %>;
+          const transferApplicantId = <%= Number(applicant[0].applicant_id) %>;
+          const transferRegistryTypeId = 3;
+
+          $('#btn-open-bulk-transfer').on('click', function () {
+            modal('bulkTransferRegistry3Modal', true);
+          });
+
+          const $regionSelect = $('#bulk-transfer-region');
+          const $districtSelect = $('#bulk-transfer-district');
+
+          $regionSelect.select2({
+            ajax: {
+              url: '/LookupRegion',
+              dataType: 'json',
+              delay: 250,
+              data: function (params) {
+                return { q: params.term || '' };
+              },
+              processResults: function (response) {
+                const regions = response && Array.isArray(response.regions) ? response.regions : [];
+                return {
+                  results: regions.map((r) => ({
+                    id: r.regionCode,
+                    text: `${r.regionName}`,
+                  })),
+                };
+              }
+            },
+            placeholder: 'Chagua Mkoa ...',
+            dropdownParent: $('#bulkTransferRegistry3Modal'),
+            theme: 'classic'
+          });
+
+          const initDistrictSelect = () => {
+            const regionCode = String($regionSelect.val() || '').trim();
+            $districtSelect.select2({
+              ajax: {
+                url: '/LookupHalmashauri',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                  return { q: params.term || '', region_code: regionCode || undefined };
+                },
+                processResults: function (response) {
+                  const councils = response && Array.isArray(response.councils) ? response.councils : [];
+                  return {
+                    results: councils.map((c) => ({
+                      id: c.LgaCode,
+                      text: `${c.LgaName}`,
+                    })),
+                  };
+                }
+              },
+              placeholder: regionCode ? 'Chagua Halmashauri ...' : 'Chagua Mkoa kwanza ...',
+              dropdownParent: $('#bulkTransferRegistry3Modal'),
+              theme: 'classic'
+            });
+          };
+
+          initDistrictSelect();
+
+          $regionSelect.on('change', function () {
+            // Reset halmashauri list based on selected region
+            $districtSelect.val(null).trigger('change');
+            $districtSelect.select2('destroy');
+            initDistrictSelect();
+          });
+
+          // If modal is reopened, keep selects responsive
+          $('#bulkTransferRegistry3Modal').on('shown.bs.modal', function () {
+            $regionSelect.trigger('change.select2');
+          });
+
+          // Ensure region selected before district
+          $districtSelect.on('select2:opening', function () {
+            const regionCode = String($regionSelect.val() || '').trim();
+            if (!regionCode) {
+              alertMessage('Samahani', 'Tafadhali chagua Mkoa kwanza.', 'warning', () => {});
+              return false;
+            }
+          });
+
+          // Confirm
+          $('#btn-confirm-bulk-transfer').on('click', function () {
+            const regionCode = String($regionSelect.val() || '').trim();
+            if (!regionCode) {
+              return alertMessage('Samahani', 'Tafadhali chagua Mkoa.', 'warning', () => {});
+            }
+            const lgaCode = String($districtSelect.val() || '').trim();
+            if (!lgaCode) {
+              return alertMessage('Samahani', 'Tafadhali chagua Halmashauri.', 'warning', () => {});
+            }
+            confirmAction(() => {
+              ajaxRequest(
+                '/TransferGovernmentSchools/<%= applicant_id %>',
+                'POST',
+                (response) => {
+                  alertMessage(
+                    response.statusCode == 300 ? 'Hongera' : 'Samahani',
+                    response.message || 'Imekamilika.',
+                    response.statusCode == 300 ? 'success' : 'error',
+                    () => {
+                      if (response.statusCode == 300) {
+                        $('#datatable').DataTable().ajax.reload();
+                      }
+                      modal('bulkTransferRegistry3Modal', false);
+                    }
+                  );
+                },
+                JSON.stringify({
+                  user_id: transferUserId,
+                  applicant_id: transferApplicantId,
+                  lga_code: lgaCode,
+                  registry_type_id: transferRegistryTypeId
+                })
+              );
+            }, 'Ndio', 'warning', 'Unakaribia kuhamisha shule zote (Serikali) kwa Halmashauri hii.', 'Una uhakika?');
+          });
+
+          return;
+        }
+
+        // legacy fallback (shouldn't run)
+        $('#bulk-transfer-district').select2({
+            ajax: {
+              url: '/LookupHalmashauri',
+              dataType: 'json',
+              delay: 250,
+              data: function (params) {
+                return { q: params.term || '' };
+              },
+              processResults: function (response) {
+                const councils = response && Array.isArray(response.councils) ? response.councils : [];
+                return {
+                  results: councils.map((c) => ({
+                    id: c.LgaCode,
+                    text: `${c.LgaName}`,
+                  })),
+                };
+              }
+            },
+            placeholder: 'Chagua Halmashauri ...',
+            dropdownParent: $('#bulkTransferRegistry3Modal'),
+            theme: 'classic'
+          });
     });
 </script>
 <!-- <script type="text/javascript" src="../design/layouts/scripts/waombaji_scripts.js"></script> -->

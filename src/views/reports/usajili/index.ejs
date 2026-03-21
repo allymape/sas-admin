@@ -6,6 +6,20 @@
     breadcrumb_main : 'Ripoti',
     // top_header : '../../reports/top_headers/badili_dahalia_top_header.ejs',
 }) %>
+<%
+  const buildReportUrl = (override = {}) => {
+    const params = new URLSearchParams(req.query || {});
+    Object.keys(override || {}).forEach((key) => {
+      const value = override[key];
+      if (value === null || typeof value === "undefined" || value === "") {
+        params.delete(key);
+      } else {
+        params.set(key, String(value));
+      }
+    });
+    return `/RipotiZilizosajiliwa?${params.toString()}`;
+  };
+%>
   <div class="card-body border border-dashed border-end-0 border-start-0">
         <form>
             <div class="row g-3">
@@ -171,14 +185,47 @@
     </div>
     <!--end card-body-->
     <div class="card-body">
-         <div class="ribbon-three ribbon-three-danger">
-            <span class="badge"><%=`${pagination.total}`%></span>
-        </div>
-        <div class="table-responsive mb-4">
-             <div class="alert alert-danger">
-                    <h6 class="text-primary text-uppercase">Jumla <%= pagination.total %></h6>
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <span class="badge bg-info-subtle text-info">
+                  Jumla: <%= (typeof fast !== 'undefined' && fast) ? '—' : pagination.total %>
+                </span>
+                <% if (typeof timings !== 'undefined' && timings && (timings.total_ms || timings.rows_ms || timings.count_ms)) { %>
+                    <span class="badge bg-light text-muted" title="rows: <%= timings.rows_ms %>ms, count: <%= timings.count_ms %>ms">
+                        Query: <%= timings.total_ms %>ms
+                    </span>
+                <% } %>
+                <span class="text-muted small">
+                    Ukurasa <%= pagination.current %><%= (typeof fast !== 'undefined' && fast) ? '' : (' / ' + pagination.pages) %>
+                </span>
             </div>
-            <table class="table align-middle mb-0" id="tasksTable">
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <% if (req.query.date_range) { %>
+                    <span class="badge bg-secondary-subtle text-secondary">Tarehe: <%= req.query.date_range %></span>
+                <% } %>
+                <% if (req.query.status) { %>
+                    <span class="badge bg-secondary-subtle text-secondary">Hali: <%= req.query.status %></span>
+                <% } %>
+                <% if (req.query.verified) { %>
+                    <span class="badge bg-secondary-subtle text-secondary">Uthibitisho: <%= req.query.verified == '1' ? 'Ndiyo' : 'Hapana' %></span>
+                <% } %>
+                <% if (typeof fast !== 'undefined' && fast) { %>
+                    <a class="btn btn-sm btn-outline-secondary" href="<%= buildReportUrl({ fast: 0, page: 1 }) %>">
+                      Weka Count
+                    </a>
+                <% } else { %>
+                    <a class="btn btn-sm btn-outline-secondary" href="<%= buildReportUrl({ fast: 1, page: 1 }) %>">
+                      Fast Mode
+                    </a>
+                <% } %>
+                <a class="btn btn-sm btn-outline-primary" href="<%= buildReportUrl({}).replace('/RipotiZilizosajiliwa', '/RipotiUsajiliAnalytics') %>">
+                  Analytics
+                </a>
+            </div>
+        </div>
+
+        <div class="table-responsive table-card mb-4">
+            <table class="table align-middle mb-0 table-striped table-hover" id="tasksTable">
                 <thead class="table-light text-muted">
                     <tr>
                         <th>Namba ya Ombi</th>
@@ -272,9 +319,26 @@
                 </div>
             </div>
         </div>
-          <!-- Pagination and page length -->
+        <% if (typeof fast !== 'undefined' && fast) { %>
+            <div class="d-flex justify-content-between align-items-center gap-2">
+              <a
+                class="btn btn-outline-primary <%= (typeof has_prev !== 'undefined' && has_prev) ? '' : 'disabled' %>"
+                href="<%= buildReportUrl({ page: Math.max(1, Number(pagination.current || 1) - 1), fast: 1 }) %>"
+              >
+                Previous
+              </a>
+              <a
+                class="btn btn-outline-primary <%= (typeof has_next !== 'undefined' && has_next) ? '' : 'disabled' %>"
+                href="<%= buildReportUrl({ page: Number(pagination.current || 1) + 1, fast: 1 }) %>"
+              >
+                Next
+              </a>
+            </div>
+        <% } else { %>
+            <!-- Pagination and page length -->
             <%- include('../../paginations/html_pagination.ejs'); %>
-               <!-- End pagination and page length -->
+            <!-- End pagination and page length -->
+        <% } %>
             </div>
     <!--end card-body-->
 <%- include('../../layouts/partials/footer.ejs' , {

@@ -8,6 +8,8 @@ const { isAuthenticated, sendRequest, can, createLetter, formatDate, exportJSONT
 // const { sendRequest, isAuthenticated, can } = require("../../../util");
 var API_BASE_URL = process.env.API_BASE_URL;
 const requestRiportUsajiliAPI = API_BASE_URL + "ripoti-usajili-shule";
+const requestRiportUsajiliAnalyticsAPI = API_BASE_URL + "ripoti-usajili-shule/analytics";
+const requestRiportUsajiliLookupsAPI = API_BASE_URL + "ripoti-usajili-shule/lookups";
 const thibitishaUsajiliAPI = API_BASE_URL + "thibitisha-usajili-shule";
 const rekebishaUsajiliAPI = API_BASE_URL + "rekebisha-usajili-shule";
 
@@ -126,6 +128,13 @@ const streamUsajiliCsv = (req, res, baseParams = {}) => {
   fetchPage(1);
 };
 
+const normalizeRegions = (regions = []) =>
+  (Array.isArray(regions) ? regions : []).map((region) => ({
+    ...region,
+    regionCode: region?.regionCode ?? region?.RegionCode ?? region?.id ?? null,
+    regionName: region?.regionName ?? region?.RegionName ?? region?.name ?? null,
+  }));
+
 // Display
 reportUsajiliRequestController.get(
   "/RipotiZilizosajiliwa",
@@ -136,6 +145,7 @@ reportUsajiliRequestController.get(
     const isExport = req.query.export === "true";
     const exportFormat = String(req.query.export_format || "xlsx").toLowerCase();
     const useCsvStreaming = isExport && exportFormat === "csv";
+    const isFast = String(req.query.fast || "1") !== "0";
     const per_page =
       isExport && !useCsvStreaming && req.query.max
         ? Number(req.query.max)
@@ -158,6 +168,7 @@ reportUsajiliRequestController.get(
       page,
       per_page,
       export: req.query.export === "true" ? "true" : "false",
+      fast: isFast ? "true" : "false",
       tracking_number,
       status,
       date_range,
@@ -184,7 +195,7 @@ reportUsajiliRequestController.get(
       "GET",
       formData,
       (jsonData) => {
-        const { data, numRows, categories, structures , certificates, ownerships, regions } =
+        const { data, numRows, categories, structures , certificates, ownerships, regions, timings, has_next, has_prev } =
           jsonData;
         if (isExport) {
           data.forEach((item) => {
@@ -210,18 +221,71 @@ reportUsajiliRequestController.get(
             structures,
             ownerships,
             certificates,
-            regions,
+            regions: normalizeRegions(regions),
+            timings: timings || null,
+            fast: isFast,
+            has_next: Boolean(has_next),
+            has_prev: Boolean(has_prev),
             pagination: {
               total: numRows,
               current: page,
               per_page: per_page,
               url: "RipotiZilizosajiliwa",
-              pages: Math.ceil(numRows / per_page),
+              pages: typeof numRows === "number" ? Math.ceil(numRows / per_page) : null,
             },
           });
         }
       }
     );
+  }
+);
+
+// Analytics page for RipotiZilizosajiliwa (pivot + charts)
+reportUsajiliRequestController.get(
+  "/RipotiUsajiliAnalytics",
+  isAuthenticated,
+  can("view-registered-school-report"),
+  activeHandover,
+  function (req, res) {
+    sendRequest(req, res, requestRiportUsajiliLookupsAPI, "GET", {}, (jsonData) => {
+      const { categories, structures, certificates, ownerships, regions, languages, specializations } = jsonData || {};
+      return res.render(path.join(__dirname, "../../views/reports/usajili/analytics"), {
+        req,
+        categories: Array.isArray(categories) ? categories : [],
+        structures: Array.isArray(structures) ? structures : [],
+        certificates: Array.isArray(certificates) ? certificates : [],
+        ownerships: Array.isArray(ownerships) ? ownerships : [],
+        languages: Array.isArray(languages) ? languages : [],
+        specializations: Array.isArray(specializations) ? specializations : [],
+        regions: normalizeRegions(regions),
+      });
+    });
+  }
+);
+
+// Analytics (pivot) for RipotiZilizosajiliwa
+reportUsajiliRequestController.get(
+  "/RipotiZilizosajiliwaAnalytics",
+  isAuthenticated,
+  can("view-registered-school-report"),
+  activeHandover,
+  function (req, res) {
+    const row_dim = String(req.query.row_dim || "region").trim();
+    const col_dim = String(req.query.col_dim || "status").trim();
+
+    const formData = {
+      ...req.query,
+      row_dim,
+      col_dim,
+      export: "false",
+      fast: "true",
+      page: null,
+      per_page: null,
+    };
+
+    sendRequest(req, res, requestRiportUsajiliAnalyticsAPI, "GET", formData, (jsonData) => {
+      return res.send(jsonData);
+    });
   }
 );
 

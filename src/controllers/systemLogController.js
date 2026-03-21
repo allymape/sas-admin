@@ -25,6 +25,15 @@ const extractFilters = (body = {}) => ({
   to_date: sanitizeFilter(body.to_date),
 });
 
+const shouldIgnoreClientLog = (payload = {}) => {
+  const msg = String(payload?.message || "").trim();
+  if (!msg) return false;
+  // Common browser noise on resize/layout-heavy pages (DataTables/Chart.js)
+  if (/ResizeObserver loop/i.test(msg)) return true;
+  // Keep room for future noisy client-side warnings if needed
+  return false;
+};
+
 systemLogController.get("/SystemLogs", isAuthenticated, can("view-audit"), function (req, res) {
   return res.render(path.join(__dirname + "/../views/system_logs"), {
     req,
@@ -109,6 +118,12 @@ systemLogController.get("/SystemLogDetails/:id", isAuthenticated, can("view-audi
 // Collect frontend/browser runtime errors from any authenticated user.
 systemLogController.post("/SystemLogsClientError", isAuthenticated, function (req, res) {
   const payload = req.body || {};
+  if (shouldIgnoreClientLog(payload)) {
+    return res.send({
+      statusCode: 300,
+      message: "Ignored noisy browser warning.",
+    });
+  }
   const forwarded = {
     level: sanitizeFilter(payload.level || "error"),
     module: "ui-browser",

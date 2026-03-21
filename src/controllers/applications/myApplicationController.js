@@ -122,7 +122,16 @@ const buildPageTitle = (categories, selectedCategoryId, selectedStatusId, select
   return parts.join(" - ");
 };
 
-const buildApplicationsUrl = (page, perPage, selectedCategoryId, selectedStatusId, selectedWorkTab = "pending", search = "") => {
+const buildApplicationsUrl = (
+  page,
+  perPage,
+  selectedCategoryId,
+  selectedStatusId,
+  selectedWorkTab = "pending",
+  search = "",
+  debugLocation = false,
+  onlyAssigned = false,
+) => {
   const query = new URLSearchParams({
     page: String(page),
     work_tab: selectedWorkTab,
@@ -141,6 +150,14 @@ const buildApplicationsUrl = (page, perPage, selectedCategoryId, selectedStatusI
   }
   if (search) {
     query.set("search", search);
+  }
+
+  if (debugLocation) {
+    query.set("debug_location", "1");
+  }
+
+  if (onlyAssigned) {
+    query.set("only_assigned", "1");
   }
 
   return `${myApplicationsAPI}?${query.toString()}`;
@@ -289,7 +306,18 @@ const index = (req, res) => {
   const selectedStatusId = toNonNegativeInt(req.query.is_approved, null);
   const selectedWorkTab = toWorkTab(req.query.work_tab, "pending");
   const searchTerm = toSearch(req.query.search);
-  const url = buildApplicationsUrl(page, perPage, selectedCategoryId, selectedStatusId, selectedWorkTab, searchTerm);
+  const debugLocation = String(req.query.debug_location || "").trim() === "1";
+  const onlyAssigned = String(req.query.only_assigned || "").trim() === "1";
+  const url = buildApplicationsUrl(
+    page,
+    perPage,
+    selectedCategoryId,
+    selectedStatusId,
+    selectedWorkTab,
+    searchTerm,
+    debugLocation,
+    onlyAssigned,
+  );
 
   sendRequest(req, res, url, "GET", {}, (jsonData) => {
     const { applications, pagination, success } = parseApplicationsPayload(
@@ -324,7 +352,18 @@ const list = (req, res) => {
   const selectedStatusId = toNonNegativeInt(req.query.is_approved, null);
   const selectedWorkTab = toWorkTab(req.query.work_tab, "pending");
   const searchTerm = toSearch(req.query.search);
-  const url = buildApplicationsUrl(page, perPage, selectedCategoryId, selectedStatusId, selectedWorkTab, searchTerm);
+  const debugLocation = String(req.query.debug_location || "").trim() === "1";
+  const onlyAssigned = String(req.query.only_assigned || "").trim() === "1";
+  const url = buildApplicationsUrl(
+    page,
+    perPage,
+    selectedCategoryId,
+    selectedStatusId,
+    selectedWorkTab,
+    searchTerm,
+    debugLocation,
+    onlyAssigned,
+  );
 
   sendRequest(req, res, url, "GET", {}, (jsonData) => {
     const { applications, pagination, success } = parseApplicationsPayload(
@@ -333,10 +372,18 @@ const list = (req, res) => {
       perPage,
     );
 
+    const debugPayload = debugLocation
+      ? {
+          debug_location: jsonData?.debug_location || null,
+          debug_staff_district_code_raw: jsonData?.data?.debug_staff_district_code_raw || null,
+        }
+      : {};
+
     res.send({
       success,
       data: applications,
       pagination,
+      ...debugPayload,
     });
   });
 };

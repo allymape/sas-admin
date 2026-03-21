@@ -30,7 +30,7 @@
     </div>
 
     <div class="table-responsive table-card mt-3 mb-1">
-        <table class="table align-middle table-nowrap" id="customerTable">
+        <table class="table align-middle table-nowrap table-striped table-hover" id="customerTable">
             <thead class="table-light">
                 <tr>
                     <!-- <th scope="col" style="width: 50px;">
@@ -61,7 +61,7 @@
                         <span class="<%= status ? 'ri ri-checkbox-circle-line text-success' : 'ri ri-close-fill text-danger' %>"></span>
                     </td>
                     <td class="text-center">
-                    <button type="button" class="btn btn-link btn-sm" 
+                    <button type="button" class="btn btn-sm btn-outline-primary" 
                         data-bs-toggle="modal" data-id="<%= hierarchies[i].id %>" 
                         data-name="<%= hierarchies[i].name %>" 
                         data-unit-name="<%= hierarchies[i].unit_name || '' %>" 
@@ -69,7 +69,7 @@
                         data-rank-level="<%= hierarchies[i].rank_level %>" 
                         data-overdue="<%= hierarchies[i].overdue %>" 
                         onclick="BadiliData(this); return false;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                        <i class="ri-pencil-line"></i>
                     </button>
                     
                     <!-- <button type="button" class="btn btn-link btn-sm text-danger" 
@@ -200,6 +200,6 @@
      card_title :  card_title , 
      pagination_script : false,
     }) %>
-<script type="text/javascript" src="design/layouts/scripts/uongozi_scripts.js"></script>
+<script type="text/javascript" src="/design/layouts/scripts/uongozi_scripts.js"></script>
 </body>
 </html>

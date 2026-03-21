@@ -69,7 +69,7 @@ reportMabadilikoRequestController.get(
           exportJSONToExcel(res, data);
         } else {
           res.render(
-            path.join(__dirname + "//../views/reports/mabadiliko/mikondo"),
+            path.join(__dirname, "../../views/reports/mabadiliko/mikondo"),
             {
               req: req,
               data: data,
@@ -92,7 +92,7 @@ reportMabadilikoRequestController.get(
   }
 );
 // Uhamisho
-reportMabadilikoRequestController.get("/RipotiKuhamishaShule",isAuthenticated,can("view-change-school-location"),
+reportMabadilikoRequestController.get("/RipotiKuhamishaShule",isAuthenticated,can("view-change-school-location-report"),
   function (req, res) {
     const per_page = req.query.export == "true" && req.query.max ? Number(req.query.max) : Number(req.query.per_page || 10);
     const page = Number(req.query.page || 1);
@@ -127,7 +127,7 @@ reportMabadilikoRequestController.get("/RipotiKuhamishaShule",isAuthenticated,ca
            exportJSONToExcel(res, data);
         }else{
            res.render(
-             path.join(__dirname + "//../views/reports/mabadiliko/kuhamisha"),
+             path.join(__dirname, "../../views/reports/mabadiliko/kuhamisha"),
              {
                req: req,
                data: data,
@@ -187,7 +187,7 @@ reportMabadilikoRequestController.get("/RipotiKubadiliUsajili",isAuthenticated,c
            exportJSONToExcel(res, data);
         }else{
            res.render(
-             path.join(__dirname + "//../views/reports/mabadiliko/usajili"),
+             path.join(__dirname, "../../views/reports/mabadiliko/usajili"),
              {
                req: req,
                data: data,
@@ -247,7 +247,7 @@ reportMabadilikoRequestController.get("/RipotiKubadiliUmiliki",isAuthenticated,c
            exportJSONToExcel(res, data);
         }else{
            res.render(
-             path.join(__dirname + "//../views/reports/mabadiliko/mmiliki"),
+             path.join(__dirname, "../../views/reports/mabadiliko/mmiliki"),
              {
                req: req,
                data: data,
@@ -307,7 +307,7 @@ reportMabadilikoRequestController.get("/RipotiKubadiliMeneja",isAuthenticated,ca
            exportJSONToExcel(res, data);
         }else{
            res.render(
-             path.join(__dirname + "//../views/reports/mabadiliko/meneja"),
+             path.join(__dirname, "../../views/reports/mabadiliko/meneja"),
              {
                req: req,
                data: data,
@@ -366,7 +366,7 @@ reportMabadilikoRequestController.get("/RipotiKubadiliJina",isAuthenticated,can(
            exportJSONToExcel(res, data);
         }else{
            res.render(
-             path.join(__dirname + "//../views/reports/mabadiliko/jina"),
+             path.join(__dirname, "../../views/reports/mabadiliko/jina"),
              {
                req: req,
                data: data,
@@ -426,7 +426,7 @@ reportMabadilikoRequestController.get("/RipotiKufutaShule",isAuthenticated,can("
            exportJSONToExcel(res, data);
         }else{
            res.render(
-             path.join(__dirname + "//../views/reports/mabadiliko/kufuta"),
+             path.join(__dirname, "../../views/reports/mabadiliko/kufuta"),
              {
                req: req,
                data: data,
@@ -486,7 +486,7 @@ reportMabadilikoRequestController.get("/RipotiKuongezaTahasusi", isAuthenticated
            exportJSONToExcel(res, data);
         }else{
            res.render(
-             path.join(__dirname + "//../views/reports/mabadiliko/tahasusi"),
+             path.join(__dirname, "../../views/reports/mabadiliko/tahasusi"),
              {
                req: req,
                data: data,
@@ -546,7 +546,7 @@ reportMabadilikoRequestController.get("/RipotiKuongezaDahalia",isAuthenticated,c
            exportJSONToExcel(res, data);
         }else{
            res.render(
-             path.join(__dirname + "//../views/reports/mabadiliko/dahalia"),
+             path.join(__dirname, "../../views/reports/mabadiliko/dahalia"),
              {
                req: req,
                data: data,
@@ -606,7 +606,7 @@ reportMabadilikoRequestController.get("/RipotiKuongezaBweni",isAuthenticated,can
            exportJSONToExcel(res, data);
         }else{
            res.render(
-             path.join(__dirname + "//../views/reports/mabadiliko/bweni"),
+             path.join(__dirname, "../../views/reports/mabadiliko/bweni"),
              {
                req: req,
                data: data,

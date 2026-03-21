@@ -1318,6 +1318,13 @@
     [].slice
       .call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
       .map(function (e) {
+        var t =
+          e.getAttribute("data-bs-title") ||
+          e.getAttribute("title") ||
+          e.getAttribute("data-bs-original-title");
+        if (null === t) return null;
+        var r = String(t).trim().toLowerCase();
+        if (!r || "null" === r || "undefined" === r) return null;
         return new bootstrap.Tooltip(e);
       }),
     [].slice
@@ -1494,7 +1501,6 @@ function topFunction() {
 window.onscroll = function () {
   scrollFunction();
 };
-
 
 
 

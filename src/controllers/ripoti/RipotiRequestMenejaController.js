@@ -65,7 +65,7 @@ reportMenejaRequestController.get(
           });
           exportJSONToExcel(res, data);
         } else {
-          res.render(path.join(__dirname + "//../views/reports/meneja"), {
+          res.render(path.join(__dirname, "../../views/reports/meneja"), {
             req: req,
             data: data,
             categories,

@@ -1,0 +1,474 @@
+<% var card_title = '' %> 
+<%- include('../../layouts/partials/header.ejs' , {
+    title : 'Usajili Analytics',
+    page_title : 'Analytics ya Usajili wa Shule',
+    card_title : 'Analytics',
+    breadcrumb_main : 'Ripoti',
+}) %>
+
+<%
+  const buildUrl = (override = {}) => {
+    const params = new URLSearchParams(req.query || {});
+    Object.keys(override || {}).forEach((key) => {
+      const value = override[key];
+      if (value === null || typeof value === "undefined" || value === "") {
+        params.delete(key);
+      } else {
+        params.set(key, String(value));
+      }
+    });
+    return `/RipotiUsajiliAnalytics?${params.toString()}`;
+  };
+%>
+
+<script>
+  window.__usajiliLookups = {
+    categories: <%- JSON.stringify(categories || []) %>,
+    ownerships: <%- JSON.stringify(ownerships || []) %>,
+    structures: <%- JSON.stringify(structures || []) %>,
+    certificates: <%- JSON.stringify(certificates || []) %>,
+    languages: <%- JSON.stringify(languages || []) %>,
+    specializations: <%- JSON.stringify(specializations || []) %>,
+    regions: <%- JSON.stringify(regions || []) %>,
+  };
+</script>
+
+<div class="card-body border border-dashed border-end-0 border-start-0">
+  <form action="/RipotiUsajiliAnalytics" method="GET">
+    <div class="row g-3">
+      <div class="col-xxl-3 col-sm-12">
+        <div class="search-box">
+          <input
+            type="text"
+            name="tracking_number"
+            value="<%= req.query.tracking_number || '' %>"
+            class="form-control search bg-light border-light"
+            placeholder="Na.Usajili au Kumb au Jina ..."
+          >
+          <i class="ri-search-line search-icon"></i>
+        </div>
+      </div>
+
+      <div class="col-xxl-3 col-sm-4">
+        <input
+          type="date"
+          class="form-control bg-light border-light"
+          id="demo-datepicker"
+          data-provider="flatpickr"
+          data-date-format="d M, Y"
+          data-range-date="true"
+          name="date_range"
+          data-default-date="<%= req.query.date_range || '' %>"
+          placeholder="Chagua Tarehe ya Ombi"
+        >
+      </div>
+
+      <div class="col-xxl-3 col-sm-4">
+        <select class="form-control" name="category">
+          <option value="">Aina ...</option>
+          <% for (let index = 0; index < categories.length; index++) { %>
+            <% const item = categories[index]; %>
+            <option value="<%= item.id %>" <%= String(req.query.category || '') === String(item.id) ? 'selected' : '' %>><%= item.name %></option>
+          <% } %>
+        </select>
+      </div>
+
+      <div class="col-xxl-3 col-sm-4">
+        <select class="form-control" name="ownership">
+          <option value="">Umiliki ...</option>
+          <% for (let index = 0; index < ownerships.length; index++) { %>
+            <% const item = ownerships[index]; %>
+            <option value="<%= item.id %>" <%= String(req.query.ownership || '') === String(item.id) ? 'selected' : '' %>><%= item.name %></option>
+          <% } %>
+        </select>
+      </div>
+
+      <div class="col-xxl-3 col-sm-4">
+        <select class="form-control" name="structure">
+          <option value="">Majengo ...</option>
+          <% for (let index = 0; index < structures.length; index++) { %>
+            <% const item = structures[index]; %>
+            <option value="<%= item.id %>" <%= String(req.query.structure || '') === String(item.id) ? 'selected' : '' %>><%= item.name %></option>
+          <% } %>
+        </select>
+      </div>
+
+      <div class="col-xxl-3 col-sm-4">
+        <select class="form-control" name="certificate">
+          <option value="">Ngazi ...</option>
+          <% for (let index = 0; index < certificates.length; index++) { %>
+            <% const item = certificates[index]; %>
+            <option value="<%= item.id %>" <%= String(req.query.certificate || '') === String(item.id) ? 'selected' : '' %>><%= item.name %></option>
+          <% } %>
+        </select>
+      </div>
+
+      <div class="col-xxl-3 col-sm-4">
+        <select class="form-control" name="language">
+          <option value="">Lugha ...</option>
+          <% for (let index = 0; index < languages.length; index++) { %>
+            <% const item = languages[index]; %>
+            <option value="<%= item.id %>" <%= String(req.query.language || '') === String(item.id) ? 'selected' : '' %>><%= item.name %></option>
+          <% } %>
+        </select>
+      </div>
+
+      <div class="col-xxl-3 col-sm-4">
+        <select class="form-control" name="specialization">
+          <option value="">Tahasusi ...</option>
+          <% for (let index = 0; index < specializations.length; index++) { %>
+            <% const item = specializations[index]; %>
+            <option value="<%= item.id %>" <%= String(req.query.specialization || '') === String(item.id) ? 'selected' : '' %>><%= item.name %></option>
+          <% } %>
+        </select>
+      </div>
+
+      <div class="col-xxl-3 col-sm-4">
+        <select class="form-control" name="status">
+          <option value="">Hali ya Ombi ...</option>
+          <option value="approved" <%= req.query.status == 'approved' ? 'selected' : '' %> >Yaliyothibitishwa</option>
+          <option value="rejected" <%= req.query.status == 'rejected' ? 'selected' : '' %> >Yaliyokataliwa</option>
+        </select>
+      </div>
+
+      <div class="col-xxl-3 col-sm-4">
+        <select class="form-control" name="verified">
+          <option value="">Uthibitisho ...</option>
+          <option value="1" <%= req.query.verified == '1' ? 'selected' : '' %>>Zilizothibitishwa</option>
+          <option value="2" <%= req.query.verified == '2' ? 'selected' : '' %>>Hazijathibitishwa</option>
+        </select>
+      </div>
+
+      <div class="col-xxl-3 col-sm-4">
+        <select class="form-control" id="mkoa-field" name="region" onchange="getAllDistricts(this.value)">
+          <option value="">Chagua Mkoa ...</option>
+          <% for (let index = 0; index < regions.length; index++) { %>
+            <% const item = regions[index]; %>
+            <option value="<%= item.regionCode %>" <%= String(req.query.region || '') === String(item.regionCode) ? 'selected' : '' %>><%= item.regionName %></option>
+          <% } %>
+        </select>
+      </div>
+
+      <div class="col-xxl-3 col-sm-4">
+        <select class="form-control" id="lga-field" name="district" disabled onchange="getAllWards(this.value)">
+          <option value="">Chagua Halmashauri ...</option>
+        </select>
+      </div>
+
+      <div class="col-xxl-3 col-sm-4">
+        <select class="form-control" id="kata-field" name="ward" disabled onchange="getAllStreets(this.value)">
+          <option value="">Chagua Kata ...</option>
+        </select>
+      </div>
+
+      <div class="col-xxl-3 col-sm-4">
+        <select class="form-control" id="mtaa-field" name="street" disabled>
+          <option value="">Chagua Mtaa ...</option>
+        </select>
+      </div>
+
+      <div class="col-xxl-2 col-sm-4">
+        <button type="submit" class="btn btn-primary w-100">Tafuta</button>
+      </div>
+      <div class="col-xxl-2 col-sm-4">
+        <a href="/RipotiUsajiliAnalytics" class="btn btn-danger w-100">Futa</a>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="card-body">
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+    <div class="d-flex flex-wrap align-items-center gap-2">
+      <span class="badge bg-info-subtle text-info">Auto-load: ON</span>
+      <span id="analyticsTimingAll" class="badge bg-light text-muted d-none"></span>
+    </div>
+    <div class="d-flex flex-wrap align-items-center gap-2">
+      <a class="btn btn-sm btn-outline-secondary" href="<%= buildUrl({}) %>">
+        Refresh
+      </a>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-lg-6">
+      <div class="table-card p-3 h-100">
+        <div class="d-flex justify-content-between align-items-center">
+          <strong>Status Distribution</strong>
+          <span id="timingStatusPie" class="badge bg-light text-muted d-none"></span>
+        </div>
+        <div id="chartStatusPie" style="height: 320px;"></div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="table-card p-3 h-100">
+        <div class="d-flex justify-content-between align-items-center">
+          <strong>Uthibitisho Distribution</strong>
+          <span id="timingVerifiedPie" class="badge bg-light text-muted d-none"></span>
+        </div>
+        <div id="chartVerifiedPie" style="height: 320px;"></div>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="table-card p-3">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+          <div class="d-flex flex-wrap align-items-center gap-2">
+            <strong>Region vs Status (Top 15)</strong>
+            <span id="timingRegionBar" class="badge bg-light text-muted d-none"></span>
+          </div>
+        </div>
+        <div id="chartRegionBar" style="height: 360px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-card p-3 mt-3">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <strong>Pivot</strong>
+        <span id="analyticsTimingPivot" class="badge bg-light text-muted d-none"></span>
+      </div>
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <select class="form-select form-select-sm" id="pivotRowDim" style="max-width: 220px">
+          <option value="region">Mkoa</option>
+          <option value="district">Halmashauri</option>
+          <option value="ward">Kata</option>
+          <option value="category">Aina</option>
+          <option value="ownership">Umiliki</option>
+          <option value="structure">Majengo</option>
+          <option value="certificate">Ngazi</option>
+          <option value="language">Lugha</option>
+          <option value="specialization">Tahasusi</option>
+          <option value="stream">Michepuo</option>
+        </select>
+        <select class="form-select form-select-sm" id="pivotColDim" style="max-width: 220px">
+          <option value="status">Hali</option>
+          <option value="verified">Uthibitisho</option>
+        </select>
+        <button type="button" class="btn btn-sm btn-outline-primary" id="btnLoadPivot">Pakia Pivot</button>
+      </div>
+    </div>
+    <div class="mt-3 table-responsive">
+      <table class="table table-sm table-bordered align-middle mb-0" id="pivotTable">
+        <thead class="table-light">
+          <tr>
+            <th style="min-width: 220px">Kigezo</th>
+            <th class="text-end">Jumla</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="2" class="text-muted">Inapakia...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<%- include('../../layouts/partials/footer.ejs' , {
+     card_title :  '' , 
+     pagination_script : false,
+    }) %>
+
+<%- include('../../includes/locations' , {
+  'location' : null
+}) %>
+
+<script src="/design/assets/libs/apexcharts/apexcharts.min.js"></script>
+
+<script>
+  (function(){
+    const fetchAnalytics = (rowDim, colDim, limit = 250) => {
+      const params = new URLSearchParams(window.location.search || "");
+      params.delete("page");
+      params.delete("per_page");
+      params.set("row_dim", rowDim);
+      params.set("col_dim", colDim);
+      params.set("limit", String(limit));
+
+      return new Promise((resolve) => {
+        ajaxRequest(`/RipotiZilizosajiliwaAnalytics?${params.toString()}`, "GET", (resp) => {
+          resolve(resp || {});
+        });
+      });
+    };
+
+    const sumByKey = (rows, keyFn) => {
+      const map = new Map();
+      rows.forEach((r) => {
+        const key = keyFn(r);
+        const current = map.get(key) || 0;
+        map.set(key, current + Number(r.total || 0));
+      });
+      return map;
+    };
+
+    const showTiming = (selector, resp) => {
+      const t = resp?.timings?.total_ms;
+      if (typeof t !== "number") return;
+      $(selector).removeClass("d-none").text(`${t}ms`);
+    };
+
+    const renderPie = (selector, labels, series) => {
+      const el = document.querySelector(selector);
+      if (!el || typeof ApexCharts !== "function") return;
+      const options = {
+        chart: { type: "pie", height: 320 },
+        labels: labels,
+        series: series,
+        legend: { position: "bottom" },
+      };
+      const chart = new ApexCharts(el, options);
+      chart.render();
+      return chart;
+    };
+
+    const renderBar = (selector, categories, series) => {
+      const el = document.querySelector(selector);
+      if (!el || typeof ApexCharts !== "function") return;
+      const options = {
+        chart: { type: "bar", height: 360, stacked: true, toolbar: { show: false } },
+        plotOptions: { bar: { horizontal: false, columnWidth: "45%" } },
+        dataLabels: { enabled: false },
+        xaxis: { categories },
+        series,
+        legend: { position: "bottom" },
+      };
+      const chart = new ApexCharts(el, options);
+      chart.render();
+      return chart;
+    };
+
+    const renderPivot = (rows, rowDim, colDim) => {
+      const $tbody = $("#pivotTable tbody");
+      const $thead = $("#pivotTable thead");
+      $tbody.empty();
+
+      if (!Array.isArray(rows) || rows.length === 0) {
+        $thead.html(`<tr><th style="min-width:220px">Kigezo</th><th class="text-end">Jumla</th></tr>`);
+        $tbody.append(`<tr><td colspan="2" class="text-muted">Hakuna data.</td></tr>`);
+        return;
+      }
+
+      const rowKeys = [];
+      const colKeys = [];
+      const rowLabels = {};
+      const colLabels = {};
+      const matrix = {};
+
+      rows.forEach((r) => {
+        const rk = String(r.row_key ?? "");
+        const ck = String(r.col_key ?? "");
+        if (!rowKeys.includes(rk)) rowKeys.push(rk);
+        if (!colKeys.includes(ck)) colKeys.push(ck);
+        rowLabels[rk] = String(r.row_label ?? r.row_key ?? "-");
+        colLabels[ck] = String(r.col_label ?? r.col_key ?? "-");
+        matrix[`${rk}||${ck}`] = Number(r.total || 0);
+      });
+
+      const headerCells = [`<th style="min-width:220px">Kigezo</th>`]
+        .concat(colKeys.map(ck => `<th class="text-end">${colLabels[ck] || '-'}</th>`))
+        .concat([`<th class="text-end">Jumla</th>`])
+        .join("");
+      $thead.html(`<tr>${headerCells}</tr>`);
+
+      rowKeys.forEach((rk) => {
+        let rowTotal = 0;
+        const cells = colKeys.map((ck) => {
+          const v = Number(matrix[`${rk}||${ck}`] || 0);
+          rowTotal += v;
+          return `<td class="text-end">${v ? v.toLocaleString() : ""}</td>`;
+        });
+        $tbody.append(
+          `<tr><td>${rowLabels[rk] || '-'}</td>${cells.join("")}<td class="text-end fw-semibold">${rowTotal.toLocaleString()}</td></tr>`
+        );
+      });
+    };
+
+    let statusPieChart = null;
+    let verifiedPieChart = null;
+    let regionBarChart = null;
+
+    const destroyCharts = () => {
+      [statusPieChart, verifiedPieChart, regionBarChart].forEach((c) => {
+        try { if (c && typeof c.destroy === "function") c.destroy(); } catch (e) {}
+      });
+      statusPieChart = null;
+      verifiedPieChart = null;
+      regionBarChart = null;
+    };
+
+    const loadAll = async () => {
+      destroyCharts();
+
+      const pivotRowDim = $("#pivotRowDim").val() || "region";
+      const pivotColDim = $("#pivotColDim").val() || "status";
+
+      const [pivotResp, statusResp, verifiedResp, regionResp] = await Promise.all([
+        fetchAnalytics(pivotRowDim, pivotColDim, 250),
+        fetchAnalytics("status", "verified", 50),
+        fetchAnalytics("verified", "status", 50),
+        fetchAnalytics("region", "status", 300),
+      ]);
+
+      renderPivot(pivotResp.data || [], pivotRowDim, pivotColDim);
+      showTiming("#analyticsTimingPivot", pivotResp);
+
+      // Status pie: sum across verified
+      const statusMap = sumByKey(statusResp.data || [], (r) => String(r.row_label || r.row_key || "-"));
+      const statusLabels = Array.from(statusMap.keys());
+      const statusSeries = Array.from(statusMap.values());
+      statusPieChart = renderPie("#chartStatusPie", statusLabels, statusSeries);
+      showTiming("#timingStatusPie", statusResp);
+
+      // Verified pie: sum across status
+      const verifiedMap = sumByKey(verifiedResp.data || [], (r) => String(r.row_label || r.row_key || "-"));
+      const verifiedLabels = Array.from(verifiedMap.keys());
+      const verifiedSeries = Array.from(verifiedMap.values());
+      verifiedPieChart = renderPie("#chartVerifiedPie", verifiedLabels, verifiedSeries);
+      showTiming("#timingVerifiedPie", verifiedResp);
+
+      // Region bar (top 15)
+      const rows = Array.isArray(regionResp.data) ? regionResp.data : [];
+      // aggregate per region+status
+      const regionTotals = new Map();
+      rows.forEach((r) => {
+        const region = String(r.row_label || r.row_key || "-");
+        const current = regionTotals.get(region) || 0;
+        regionTotals.set(region, current + Number(r.total || 0));
+      });
+      const topRegions = Array.from(regionTotals.entries())
+        .sort((a,b) => b[1]-a[1])
+        .slice(0, 15)
+        .map(([name]) => name);
+
+      const statusKeys = Array.from(new Set(rows.map(r => String(r.col_label || r.col_key || "-"))));
+      const series = statusKeys.map((sk) => ({
+        name: sk,
+        data: topRegions.map((region) => {
+          const match = rows.find(r => String(r.row_label || r.row_key || "-") === region && String(r.col_label || r.col_key || "-") === sk);
+          return Number(match?.total || 0);
+        })
+      }));
+
+      regionBarChart = renderBar("#chartRegionBar", topRegions, series);
+      showTiming("#timingRegionBar", regionResp);
+
+      // Combined timing (best-effort)
+      const totalMs = [pivotResp, statusResp, verifiedResp, regionResp]
+        .map(r => r?.timings?.total_ms)
+        .filter(v => typeof v === "number")
+        .reduce((a,b) => a+b, 0);
+      if (totalMs > 0) {
+        $("#analyticsTimingAll").removeClass("d-none").text(`Total: ${totalMs}ms`);
+      }
+    };
+
+    $("#btnLoadPivot").on("click", loadAll);
+
+    // Auto-load on page load (requested)
+    $(function(){ loadAll(); });
+  })();
+</script>
+
+</body>
+</html>

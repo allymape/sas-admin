@@ -10,37 +10,22 @@
             ]
 }) %>
 <div class="card-body">
-<div class="ribbon-three ribbon-three-info">
-   
-</div>
 <div id="customerList">
-    <div class="row g-4 mb-3">
-        <div class="col-sm-auto">
-            <div>
-                <button type="button" class="btn btn-success add-btn" 
-                 id="create-btn"><i 
-                class="ri-add-line align-bottom me-1"></i> Sajili</button>
-                <!-- <button class="btn btn-soft-danger" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button> -->
-            </div>
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <span class="badge bg-info-subtle text-info" id="vyeoTotalBadge" title="Jumla ya vyeo">Jumla: --</span>
+            <span class="text-muted small">Tumia search ili kuchuja.</span>
         </div>
-        <!-- <div class="col-sm">
-            <div class="d-flex justify-content-sm-end">
-                <div class="search-role ms-2">
-                    <form action="/Vyeo" method="GET" class="d-flex gap-2">
-                    <input type="text" value="<%=req.query.tafuta%>" name="tafuta" class="form-control search" placeholder="Tafuta...">
-                    <i class="ri-search-line search-icon"></i>
-                    <% if(req.query.tafuta){ %>
-                    <a href="/Vyeo" class="btn btn-outline-danger">Clear </a>
-                    <% } %>
-                    </form>
-                </div>
-            </div>
-        </div> -->
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <button type="button" class="btn btn-success btn-sm" id="create-btn">
+                <i class="ri-add-line align-bottom me-1"></i> Sajili
+            </button>
+        </div>
     </div>
 
     <div class="col-md-12">
         <div class="table-responsive table-card mt-3 mb-1">
-        <table class="table align-middle table-nowrap" id="datatable">
+        <table class="table align-middle table-nowrap table-striped table-hover" id="datatable">
             <thead class="table-light">
                 <tr>
                     <th  width="5%">Na.</th>
@@ -50,7 +35,7 @@
                     <th class="">Imetengenezwa</th>
                     <th class="">Imesasishwa</th>
                     <th class="text-center">Status</th>
-                    <th class=" text-center" width="5%">Action</th>
+                    <th class=" text-center" width="10%">Action</th>
                 </tr>
             </thead>
             <tbody class="list form-check-all">
@@ -210,8 +195,14 @@
                         }
                     },
                     { data: "name", name: "name" },
-                    { data: "description", name: "description" },
-                    { data: "role", name: "role" },
+                    { data: "description", name: "description", render: (data) => {
+                        const safe = (data ?? '').toString();
+                        return safe.length > 0 ? `<span class="sas-ellipsis" title="${safe.replaceAll('"','&quot;')}">${safe}</span>` : '-';
+                    }},
+                    { data: "role", name: "role", render: (data) => {
+                        const safe = (data ?? '').toString();
+                        return safe.length > 0 ? `<span class="sas-ellipsis" title="${safe.replaceAll('"','&quot;')}">${safe}</span>` : '-';
+                    }},
                     {
                       data: "created_at", name: "created_at",
                             render: (data, type, row) => {
@@ -231,7 +222,9 @@
                             },
                     },
                       { data: "status", render : (data , type, row) => {
-                        return data == 1 ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Deleted</span>';
+                        return data == 1 
+                          ? '<span class="badge bg-success-subtle text-success">Active</span>' 
+                          : '<span class="badge bg-secondary-subtle text-secondary">Deleted</span>';
                     }},
                     {
                     data: null, // No data source for this column
@@ -240,10 +233,10 @@
                                             {
                                                 show : true,
                                                 type : 'link',
-                                                class : 'btn btn-sm btn-outline-primary me-1',
-                                                icon : 'bx bx-pencil me-1',
+                                                class : 'btn btn-sm btn-outline-primary',
+                                                icon : 'ri ri-pencil-line',
                                                 function : 'BadiliData',
-                                                btnText : 'Edit'
+                                                btnText : ''
                                             },
                                         ]
                         return actionButtons(row , elements);
@@ -253,6 +246,16 @@
                     },
             ]
         );
+
+        const dt = $("#datatable").DataTable();
+        const updateTotal = () => {
+          try {
+            const info = dt.page.info();
+            $("#vyeoTotalBadge").text(`Jumla: ${info.recordsTotal}`);
+          } catch (e) {}
+        };
+        dt.on("xhr.dt draw.dt", updateTotal);
+        updateTotal();
     });
 </script>
 <!-- <script type="text/javascript" src="design/layouts/scripts/vyeo_scripts.js"></script> -->

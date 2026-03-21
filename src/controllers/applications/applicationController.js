@@ -119,6 +119,7 @@ const buildApplicationsUrl = (
   selectedStatusId,
   search = "",
   selectedEstablishingSchoolId = null,
+  debugScope = false,
 ) => {
   const query = new URLSearchParams({
     page: String(page),
@@ -142,6 +143,10 @@ const buildApplicationsUrl = (
     query.set("establishing_school_id", String(selectedEstablishingSchoolId));
   }
 
+  if (debugScope) {
+    query.set("debug_scope", "1");
+  }
+
   return `${applicationsAPI}?${query.toString()}`;
 };
 
@@ -152,6 +157,7 @@ const index = (req, res) => {
   const selectedStatusId = toNonNegativeInt(req.query.is_approved, null);
   const selectedEstablishingSchoolId = toPositiveInt(req.query.establishing_school_id, null);
   const searchTerm = toSearch(req.query.search);
+  const debugScope = String(req.query.debug_scope || "").trim() === "1";
   const url = buildApplicationsUrl(
     page,
     perPage,
@@ -159,6 +165,7 @@ const index = (req, res) => {
     selectedStatusId,
     searchTerm,
     selectedEstablishingSchoolId,
+    debugScope,
   );
 
   sendRequest(req, res, url, "GET", {}, (jsonData) => {
@@ -194,6 +201,7 @@ const list = (req, res) => {
   const selectedStatusId = toNonNegativeInt(req.query.is_approved, null);
   const selectedEstablishingSchoolId = toPositiveInt(req.query.establishing_school_id, null);
   const searchTerm = toSearch(req.query.search);
+  const debugScope = String(req.query.debug_scope || "").trim() === "1";
   const url = buildApplicationsUrl(
     page,
     perPage,
@@ -201,6 +209,7 @@ const list = (req, res) => {
     selectedStatusId,
     searchTerm,
     selectedEstablishingSchoolId,
+    debugScope,
   );
 
   sendRequest(req, res, url, "GET", {}, (jsonData) => {
@@ -214,6 +223,7 @@ const list = (req, res) => {
       success,
       data: applications,
       pagination,
+      ...(debugScope ? { debug_scope: jsonData?.debug_scope || null } : {}),
     });
   });
 };
@@ -221,4 +231,20 @@ const list = (req, res) => {
 module.exports = {
   index,
   list,
+  startWorkflow: (req, res) => {
+    const trackingNumber = String(req.params.trackingNumber || "").trim();
+    if (!trackingNumber) return res.redirect("/applications");
+
+    const returnTo = String(req.headers.referer || "").trim() || "/applications";
+    const url = `${applicationsAPI}/${encodeURIComponent(trackingNumber)}/start`;
+
+    sendRequest(req, res, url, "POST", {}, (jsonData) => {
+      if (jsonData?.success === false) {
+        req.flash("warning", jsonData?.message || "Imeshindikana kuanzisha workflow ya ombi hili.");
+        return res.redirect(returnTo);
+      }
+      req.flash("success", "Workflow imeanzishwa kikamilifu.");
+      return res.redirect(returnTo);
+    });
+  },
 };

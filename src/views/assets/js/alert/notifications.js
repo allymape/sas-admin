@@ -96,8 +96,9 @@
     return html;
   };
 
-  const setCounter = (totalPending = 0) => {
+  const setCounter = (totalPending = 0, totalMyPending = null) => {
     const total = Number.parseInt(totalPending, 10) || 0;
+    const myTotal = totalMyPending === null ? total : (Number.parseInt(totalMyPending, 10) || 0);
     const $unreadCounter = $("#unread-notification-counter");
     const $allNotiTabCount = $("#all-noti-tab-count");
     const $allNewMessagesCount = $("#all-new-messages-count");
@@ -109,7 +110,7 @@
         .html(`${total}<span class="visually-hidden">unread messages</span>`);
       $allNotiTabCount.text(`(${total})`);
       $allNewMessagesCount.removeClass("d-none").text(`${total} mapya`);
-      $allMessagesTabCount.text(`(${total})`);
+      $allMessagesTabCount.text(`(${myTotal})`);
       return;
     }
 
@@ -120,7 +121,7 @@
   };
 
   const fetchPendingApplications = () => {
-    $.ajax({
+    const allPendingRequest = $.ajax({
       url: "/my-applications/list",
       type: "GET",
       dataType: "json",
@@ -129,27 +130,47 @@
         page: 1,
         per_page: 10,
       },
-      success: (response) => {
-        const rows = Array.isArray(response?.data) ? response.data : [];
-        const totalPending = Number.parseInt(response?.pagination?.total, 10) || rows.length;
+    });
 
-        setCounter(totalPending);
-        $("#all-noti-tab").html(renderPendingList(rows));
+    const myPendingRequest = $.ajax({
+      url: "/my-applications/list",
+      type: "GET",
+      dataType: "json",
+      data: {
+        work_tab: "pending",
+        only_assigned: 1,
+        page: 1,
+        per_page: 10,
+      },
+    });
+
+    $.when(allPendingRequest, myPendingRequest)
+      .done((allPendingResponse, myPendingResponse) => {
+        const allResponse = allPendingResponse?.[0] || {};
+        const myResponse = myPendingResponse?.[0] || {};
+
+        const allRows = Array.isArray(allResponse?.data) ? allResponse.data : [];
+        const myRows = Array.isArray(myResponse?.data) ? myResponse.data : [];
+
+        const totalPending = Number.parseInt(allResponse?.pagination?.total, 10) || allRows.length;
+        const totalMyPending = Number.parseInt(myResponse?.pagination?.total, 10) || myRows.length;
+
+        setCounter(totalPending, totalMyPending);
+        $("#all-noti-tab").html(renderPendingList(allRows));
         $("#messages-tab").html(
-          renderPendingList(rows, {
+          renderPendingList(myRows, {
             emptyMessage: "Hakuna maombi kwenye akaunti yako kwa sasa.",
             ctaLabel: "Fungua Maombi Yangu",
-            ctaHref: "/my-applications?work_tab=pending",
+            ctaHref: "/my-applications?work_tab=pending&only_assigned=1",
             ctaClass: "btn-soft-primary",
           }),
         );
-      },
-      error: () => {
+      })
+      .fail(() => {
         setCounter(0);
         $("#all-noti-tab").html(renderEmptyState("Imeshindikana kupata maombi yanayosubiri."));
         $("#messages-tab").html(renderEmptyState("Imeshindikana kupata maombi yako."));
-      },
-    });
+      });
   };
 
   fetchPendingApplications();

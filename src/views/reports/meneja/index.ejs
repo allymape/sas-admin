@@ -6,8 +6,41 @@
     breadcrumb_main : 'Ripoti',
     // top_header : '../../reports/top_headers/badili_dahalia_top_header.ejs',
 }) %>
+<%
+  const rows = Array.isArray(data) ? data : [];
+  const pageApproved = rows.filter((r) => Number(r?.status) === 2).length;
+  const pageRejected = rows.filter((r) => Number(r?.status) === 3).length;
+  const hasFilters = Boolean(
+    req.query.tracking_number ||
+    req.query.date_range ||
+    req.query.category ||
+    req.query.ownership ||
+    req.query.structure ||
+    req.query.status ||
+    req.query.region ||
+    req.query.district ||
+    req.query.ward ||
+    req.query.street
+  );
+%>
   <div class="card-body border border-dashed border-end-0 border-start-0">
         <form>
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                <h5 class="card-title mb-0">Vichujio</h5>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ri-filter-3-line me-1 align-bottom"></i>Angalia
+                    </button>
+                    <% if(hasFilters) { %>
+                    <a href="RipotiMeneja" class="btn btn-light">
+                        <i class="ri-refresh-line me-1 align-bottom"></i>Futa
+                    </a>
+                    <% } %>
+                    <% if(pagination.total > 0){ %>
+                      <%- include('../../includes/export_excel_link.ejs' , { btn_color : 'info' }) %>
+                    <% } %>
+                </div>
+            </div>
             <div class="row g-3">
                 <div class="col-xxl-3 col-sm-12">
                     <div class="search-box">
@@ -19,7 +52,7 @@
                 <!--end col-->
 
                 <div class="col-xxl-3 col-sm-4">
-                    <input type="date" class="form-control bg-light border-light" 
+                    <input type="text" class="form-control bg-light border-light" 
                     id="demo-datepicker" data-provider="flatpickr" 
                     data-date-format="d M, Y" data-range-date="true" 
                     name="date_range"
@@ -123,41 +156,49 @@
                     </div>
                 </div>
                 <!--end col-->
-                <div class="col-xxl-2 col-sm-4 d-flex gap-2">
-                    <button title="" type="submit" class="btn btn-primary w-100"> 
-                        <!-- <i class="ri-equalizer-fill me-1 align-bottom"></i> -->
-                        Angalia
-                    </button>
-                     <% if(req.query.tracking_number || req.query.date_range || req.query.status) { %>
-                     <a href="RipotiMeneja" class="btn btn-danger w-100">
-                        <!-- <i class="ri-equalizer-fill me-1 align-bottom"></i> -->
-                        Futa
-                     </a>
-                     <% } %>
-                </div>
-                <div class="col-xxl-8 col-sm-8"></div>
-                <% if(pagination.total > 0){ %>
-                    <div class="col-xxl-2 col-sm-2">
-                      <%- include('../../includes/export_excel_link.ejs' , {
-                            btn_color : 'info'
-                        }) %>
-                    </div>
-                <% } %>
-                <!--end col-->
             </div>
             <!--end row-->
         </form>
     </div>
     <!--end card-body-->
     <div class="card-body">
-         <div class="ribbon-three ribbon-three-info">
-            <span class="badge"><%=`${pagination.total}`%></span>
-        </div>
-        <div class="table-responsive mb-4">
-             <div class="alert alert-info">
-                    <h6 class="text-primary text-uppercase">Jumla <%= pagination.total %></h6>
+        <div class="row g-3 mb-3">
+            <div class="col-md-3 col-6">
+                <div class="card border shadow-none mb-0">
+                    <div class="card-body py-3">
+                        <p class="text-muted mb-1">Jumla ya Matokeo</p>
+                        <h4 class="mb-0"><%= numberFormat(pagination.total) %></h4>
+                    </div>
                 </div>
-            <table class="table align-middle table-nowrap mb-0" id="tasksTable">
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card border shadow-none mb-0">
+                    <div class="card-body py-3">
+                        <p class="text-muted mb-1">Zinazoonekana</p>
+                        <h4 class="mb-0"><%= numberFormat(rows.length) %></h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card border border-success shadow-none mb-0">
+                    <div class="card-body py-3">
+                        <p class="text-success mb-1">Limethibitishwa (ukurasa)</p>
+                        <h4 class="mb-0 text-success"><%= numberFormat(pageApproved) %></h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card border border-danger shadow-none mb-0">
+                    <div class="card-body py-3">
+                        <p class="text-danger mb-1">Limekataliwa (ukurasa)</p>
+                        <h4 class="mb-0 text-danger"><%= numberFormat(pageRejected) %></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive mb-4">
+            <table class="table table-hover align-middle table-striped table-nowrap mb-0" id="tasksTable">
                 <thead class="table-light text-muted">
                     <tr>
                         <th>Namba ya Ombi</th>
@@ -180,8 +221,8 @@
                    <% const item = data[i];%>
                     <tr>
                         <td> <%= item.tracking_number %> </td>
-                        <td> <%= item.manager_name %> </td>
-                        <td> <%= item.school_name %> </td>
+                        <td class="fw-semibold"> <%= item.manager_name %> </td>
+                        <td class="fw-semibold"> <%= item.school_name %> </td>
                         <td> <%= item.category %> </td>
                         <td> <%= item.structure %> </td>
                         <td> <%= item.registry %> </td>
@@ -189,10 +230,10 @@
                         <td> <%= item.district %> </td>
                         <td> <%= item.ward %> </td>
                         <td> <%= item.street %> </td>
-                        <td> <%= dateFormat(item.approved_at) %> </td>
+                        <td> <%= item.approved_at ? dateFormat(item.approved_at, "DD/MM/YYYY") : '' %> </td>
                         <td> 
-                           <span class="badge bg-<%= item.status == 2 ? 'success' : 'danger' %>" >
-                             <%= item.status == 2 ? 'Limethibitshwa' : '' %> 
+                           <span class="badge bg-<%= item.status == 2 ? 'success' : 'danger' %>-subtle text-<%= item.status == 2 ? 'success' : 'danger' %>" >
+                             <%= item.status == 2 ? 'Limethibitishwa' : '' %> 
                              <%= item.status == 3 ? 'Limekataliwa' : '' %> 
                            </span>
                         </td>
