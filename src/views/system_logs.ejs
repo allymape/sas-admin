@@ -69,7 +69,7 @@
 
   <div class="row g-3 mb-3">
     <div class="col-md-2 col-6">
-      <div class="card border shadow-none mb-0">
+      <div class="card border shadow-none mb-0 systemlogs-metric-card" role="button" tabindex="0" data-level="">
         <div class="card-body py-3">
           <p class="text-muted mb-1">Total</p>
           <h4 class="mb-0" id="metric-total">0</h4>
@@ -77,7 +77,7 @@
       </div>
     </div>
     <div class="col-md-2 col-6">
-      <div class="card border border-danger shadow-none mb-0">
+      <div class="card border border-danger shadow-none mb-0 systemlogs-metric-card" role="button" tabindex="0" data-level="critical">
         <div class="card-body py-3">
           <p class="text-danger mb-1">Critical</p>
           <h4 class="mb-0 text-danger" id="metric-critical">0</h4>
@@ -85,7 +85,7 @@
       </div>
     </div>
     <div class="col-md-2 col-6">
-      <div class="card border border-vz-orange shadow-none mb-0">
+      <div class="card border border-vz-orange shadow-none mb-0 systemlogs-metric-card" role="button" tabindex="0" data-level="error">
         <div class="card-body py-3">
           <p class="text-vz-orange mb-1">Error</p>
           <h4 class="mb-0 text-vz-orange" id="metric-error">0</h4>
@@ -93,7 +93,7 @@
       </div>
     </div>
     <div class="col-md-2 col-6">
-      <div class="card border border-warning shadow-none mb-0">
+      <div class="card border border-warning shadow-none mb-0 systemlogs-metric-card" role="button" tabindex="0" data-level="warning">
         <div class="card-body py-3">
           <p class="text-warning mb-1">Warning</p>
           <h4 class="mb-0 text-warning" id="metric-warning">0</h4>
@@ -101,7 +101,7 @@
       </div>
     </div>
     <div class="col-md-2 col-6">
-      <div class="card border border-info shadow-none mb-0">
+      <div class="card border border-info shadow-none mb-0 systemlogs-metric-card" role="button" tabindex="0" data-level="info">
         <div class="card-body py-3">
           <p class="text-info mb-1">Info</p>
           <h4 class="mb-0 text-info" id="metric-info">0</h4>
@@ -109,7 +109,7 @@
       </div>
     </div>
     <div class="col-md-2 col-6">
-      <div class="card border shadow-none mb-0">
+      <div class="card border shadow-none mb-0 systemlogs-metric-card" role="button" tabindex="0" data-level="debug">
         <div class="card-body py-3">
           <p class="text-muted mb-1">Debug</p>
           <h4 class="mb-0" id="metric-debug">0</h4>
@@ -233,6 +233,21 @@
   .badge-vz-orange {
     background-color: rgba(241, 150, 59, 0.18) !important;
     color: var(--vz-orange) !important;
+  }
+
+  .systemlogs-metric-card {
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .systemlogs-metric-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0.25rem 1rem rgba(52, 58, 64, 0.12) !important;
+  }
+
+  .systemlogs-metric-card.is-active {
+    outline: 2px solid rgba(var(--vz-primary-rgb), 0.35);
+    outline-offset: 2px;
   }
 
   #system-log-table th,
@@ -641,9 +656,22 @@
 
   window.showLogDetails = showLogDetails;
 
-  $("#apply-filters-btn").on("click", function () {
+  const applyFiltersNow = () => {
     if (table) table.ajax.reload();
     loadSummary();
+  };
+
+  const setActiveMetricCard = () => {
+    const activeLevel = String($("#level-filter").val() || "").trim().toLowerCase();
+    $(".systemlogs-metric-card").removeClass("is-active");
+
+    const selector = activeLevel ? `.systemlogs-metric-card[data-level="${activeLevel}"]` : `.systemlogs-metric-card[data-level=""]`;
+    $(selector).addClass("is-active");
+  };
+
+  $("#apply-filters-btn").on("click", function () {
+    applyFiltersNow();
+    setActiveMetricCard();
   });
 
   $("#reset-filters-btn").on("click", function () {
@@ -653,14 +681,31 @@
     $("#search-filter").val("");
     $("#from-filter").val("");
     $("#to-filter").val("");
-    if (table) table.ajax.reload();
-    loadSummary();
+    applyFiltersNow();
+    setActiveMetricCard();
   });
 
   $(document).ready(function () {
     initTable();
     loadSummary();
     startAutoRefresh();
+    setActiveMetricCard();
+
+    $(".systemlogs-metric-card").on("click", function () {
+      const selectedLevel = String($(this).data("level") || "").trim().toLowerCase();
+      const currentLevel = String($("#level-filter").val() || "").trim().toLowerCase();
+      const nextLevel = selectedLevel === currentLevel ? "" : selectedLevel;
+
+      $("#level-filter").val(nextLevel);
+      applyFiltersNow();
+      setActiveMetricCard();
+    });
+
+    $(".systemlogs-metric-card").on("keydown", function (event) {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      $(this).trigger("click");
+    });
   });
 
   $(window).on("beforeunload", function () {
