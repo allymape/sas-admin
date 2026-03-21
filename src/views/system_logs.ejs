@@ -461,8 +461,38 @@
   };
 
   const renderModuleChart = (modules = []) => {
-    const labels = (modules || []).map((item) => safe(item.module, "unknown"));
-    const values = (modules || []).map((item) => Number(item.total || 0));
+    const rows = Array.isArray(modules) ? modules : [];
+    const normalizeModule = (value) => String(value || "").trim().toLowerCase();
+    const isUiModule = (moduleName) => {
+      const name = normalizeModule(moduleName);
+      if (!name) return false;
+      if (name.startsWith("ui-")) return true;
+      if (name.startsWith("sas-ui")) return true;
+      if (name.includes("ui-browser")) return true;
+      if (name.includes("ui-server")) return true;
+      return false;
+    };
+
+    const totals = rows.reduce(
+      (acc, row) => {
+        const moduleName = safe(row.module, "");
+        const total = Number(row.total || 0);
+        if (Number.isNaN(total)) return acc;
+
+        if (isUiModule(moduleName)) {
+          acc.ui += total;
+        } else {
+          acc.api += total;
+        }
+
+        return acc;
+      },
+      { api: 0, ui: 0 }
+    );
+
+    const labels = ["SAS-API", "SAS-UI"];
+    const values = [totals.api, totals.ui];
+    const colors = [cssVar("--vz-primary", "#405189"), cssVar("--vz-info", "#299cdb")];
     if (!moduleChart) {
       moduleChart = new Chart(document.getElementById("moduleChart"), {
         type: "bar",
@@ -471,7 +501,7 @@
           datasets: [{
             label: "Idadi ya Logs",
             data: values,
-            backgroundColor: cssVar("--vz-primary", "#405189")
+            backgroundColor: colors
           }]
         },
         options: {
@@ -485,6 +515,7 @@
 
     moduleChart.data.labels = labels;
     moduleChart.data.datasets[0].data = values;
+    moduleChart.data.datasets[0].backgroundColor = colors;
     moduleChart.update();
   };
 
