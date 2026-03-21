@@ -85,26 +85,26 @@
       </div>
     </div>
     <div class="col-md-2 col-6">
+      <div class="card border border-vz-orange shadow-none mb-0">
+        <div class="card-body py-3">
+          <p class="text-vz-orange mb-1">Error</p>
+          <h4 class="mb-0 text-vz-orange" id="metric-error">0</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2 col-6">
       <div class="card border border-warning shadow-none mb-0">
         <div class="card-body py-3">
-          <p class="text-warning mb-1">Error</p>
-          <h4 class="mb-0 text-warning" id="metric-error">0</h4>
+          <p class="text-warning mb-1">Warning</p>
+          <h4 class="mb-0 text-warning" id="metric-warning">0</h4>
         </div>
       </div>
     </div>
     <div class="col-md-2 col-6">
       <div class="card border border-info shadow-none mb-0">
         <div class="card-body py-3">
-          <p class="text-info mb-1">Warning</p>
-          <h4 class="mb-0 text-info" id="metric-warning">0</h4>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-2 col-6">
-      <div class="card border border-success shadow-none mb-0">
-        <div class="card-body py-3">
-          <p class="text-success mb-1">Info</p>
-          <h4 class="mb-0 text-success" id="metric-info">0</h4>
+          <p class="text-info mb-1">Info</p>
+          <h4 class="mb-0 text-info" id="metric-info">0</h4>
         </div>
       </div>
     </div>
@@ -222,6 +222,19 @@
     table-layout: fixed;
   }
 
+  .text-vz-orange {
+    color: var(--vz-orange) !important;
+  }
+
+  .border-vz-orange {
+    border-color: var(--vz-orange) !important;
+  }
+
+  .badge-vz-orange {
+    background-color: rgba(241, 150, 59, 0.18) !important;
+    color: var(--vz-orange) !important;
+  }
+
   #system-log-table th,
   #system-log-table td {
     white-space: normal !important;
@@ -244,12 +257,18 @@
   let autoRefreshTimer = null;
   const AUTO_REFRESH_INTERVAL_MS = Number("<%= typeof logsRefreshMs !== 'undefined' ? logsRefreshMs : 5000 %>") || 5000;
 
+  const cssVar = (name, fallback) => {
+    const value = getComputedStyle(document.documentElement).getPropertyValue(name);
+    const trimmed = String(value || "").trim();
+    return trimmed.length ? trimmed : fallback;
+  };
+
   const levelColors = {
-    critical: "#dc3545",
-    error: "#fd7e14",
-    warning: "#0dcaf0",
-    info: "#198754",
-    debug: "#6c757d"
+    critical: cssVar("--vz-danger", "#f06548"),
+    error: cssVar("--vz-orange", "#f1963b"),
+    warning: cssVar("--vz-warning", "#f7b84b"),
+    info: cssVar("--vz-info", "#299cdb"),
+    debug: cssVar("--vz-gray", "#878a99")
   };
 
   const filterPayload = () => ({
@@ -325,11 +344,11 @@
   const levelBadge = (value = "") => {
     const level = String(value || "").toLowerCase();
     const badgeClass = {
-      critical: "badge bg-danger",
-      error: "badge bg-warning text-dark",
-      warning: "badge bg-info text-dark",
-      info: "badge bg-success",
-      debug: "badge bg-secondary"
+      critical: "badge bg-danger-subtle text-danger",
+      error: "badge badge-vz-orange",
+      warning: "badge bg-warning-subtle text-warning",
+      info: "badge bg-info-subtle text-info",
+      debug: "badge bg-secondary-subtle text-secondary"
     }[level] || "badge bg-secondary";
 
     return `<span class="${badgeClass}">${safe(level.toUpperCase(), "N/A")}</span>`;
@@ -437,7 +456,7 @@
           datasets: [{
             label: "Idadi ya Logs",
             data: values,
-            backgroundColor: "#405189"
+            backgroundColor: cssVar("--vz-primary", "#405189")
           }]
         },
         options: {
