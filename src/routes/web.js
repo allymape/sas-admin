@@ -73,6 +73,7 @@ router.use("/", require("../controllers/barua/baruaController"));
 router.use("/", require("../controllers/loginActivityController"));
 router.use("/", require("../controllers/auditTrailController"));
 router.use("/", require("../controllers/systemLogController"));
+router.use("/", require("../controllers/aiSupportController"));
 router.use("/", require("../controllers/systemConfigurationController"));
 router.use("/", require("../controllers/handoverController"));
 router.use("/", require("../controllers/handleSessionController"));

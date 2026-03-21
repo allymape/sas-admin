@@ -199,6 +199,17 @@
           <label class="form-label fw-semibold">Error Details</label>
           <pre class="bg-light p-2 rounded mb-0" id="detail-error">-</pre>
         </div>
+
+        <div class="mt-3">
+          <label class="form-label fw-semibold">How to fix (AI)</label>
+          <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+            <button type="button" class="btn btn-sm btn-primary" id="detail-ai-btn">
+              Pata ushauri
+            </button>
+            <span class="text-muted small" id="detail-ai-status">-</span>
+          </div>
+          <pre class="bg-light p-2 rounded mb-0" id="detail-ai-fix">-</pre>
+        </div>
       </div>
     </div>
   </div>
@@ -624,6 +635,7 @@
       }
 
       const row = response.data;
+      window.__systemLogDetailRow = row;
       $("#detail-id").text(safe(row.id));
       $("#detail-created").text(formatDateTime(row.created_at));
       $("#detail-level").html(levelBadge(row.level));
@@ -638,6 +650,8 @@
       $("#detail-context").text(toPrettyJson(row.context));
       $("#detail-causes").text(toPrettyJson(row.causes));
       $("#detail-error").text(toPrettyJson(row.error_details));
+      $("#detail-ai-fix").text("-");
+      $("#detail-ai-status").text("Bonyeza 'Pata ushauri' kupata mapendekezo.");
       modal("logDetailModal", true);
     });
   };
@@ -768,6 +782,61 @@
       if (event.key !== "Enter" && event.key !== " ") return;
       event.preventDefault();
       $(this).trigger("click");
+    });
+
+    $("#detail-ai-btn").on("click", async function () {
+      const row = window.__systemLogDetailRow || null;
+      if (!row) return;
+
+      const payloadRow = {
+        id: row.id,
+        created_at: row.created_at,
+        level: row.level,
+        module: row.module,
+        event_type: row.event_type,
+        status_code: row.status_code,
+        endpoint: row.endpoint,
+        http_method: row.http_method,
+        tracking_number: row.tracking_number,
+        message: row.message,
+        context: row.context,
+        causes: row.causes,
+        error_details: row.error_details,
+      };
+
+      $("#detail-ai-status").text("Inasubiri AI (Ollama)...");
+      $("#detail-ai-fix").text("Loading...");
+      $("#detail-ai-btn").prop("disabled", true);
+
+      try {
+        const userPrompt =
+          "Tafadhali nisaidie kutatua tatizo la mfumo. Hii ni system log detail (json). " +
+          "Toa: (1) sababu inayowezekana, (2) hatua za kurekebisha, (3) sehemu za kuangalia (file/route/config), (4) jinsi ya kuzuia kurudia.\n\n" +
+          "```json\n" +
+          JSON.stringify(payloadRow, null, 2) +
+          "\n```";
+
+        const res = await fetch("/AISupportChat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: [{ role: "user", content: userPrompt }] }),
+        });
+        const json = await res.json();
+        const statusCode = Number(json?.statusCode || 306);
+        if (statusCode !== 300 || !json?.data?.reply) {
+          $("#detail-ai-status").text("Imeshindikana kupata ushauri wa AI.");
+          $("#detail-ai-fix").text(json?.message || "Hakikisha Ollama ina-run kisha jaribu tena.");
+          return;
+        }
+
+        $("#detail-ai-status").text("Imefika.");
+        $("#detail-ai-fix").text(String(json.data.reply || "").trim() || "-");
+      } catch (error) {
+        $("#detail-ai-status").text("Imeshindikana kuwasiliana na AI.");
+        $("#detail-ai-fix").text("Hakikisha Ollama ina-run kwenye mashine yako, kisha jaribu tena.");
+      } finally {
+        $("#detail-ai-btn").prop("disabled", false);
+      }
     });
   });
 

@@ -1,0 +1,174 @@
+<%- include('layouts/partials/header.ejs' , {
+    title : 'AI Support',
+    page_title : 'Msaidizi wa Mfumo (AI)',
+    card_title : 'Msaidizi wa Mfumo (AI)',
+    breadcrumb_main : 'Support',
+    styles : []
+}) %>
+
+<div class="card-body">
+  <div class="alert alert-info mb-3">
+    Sehemu hii inatumia <i>Ollama (local AI)</i> ili kukusaidia kuelewa mfumo, workflows, na hatua sahihi za kuchukua.
+    Majibu hutegemea taarifa zilizopo kwenye mfumo na context ya mtumiaji.
+  </div>
+
+  <div class="row g-3">
+    <div class="col-lg-8">
+      <div class="card border shadow-none mb-0">
+        <div class="card-header d-flex align-items-center gap-2">
+          <div class="fw-semibold">Chat</div>
+          <div class="ms-auto d-flex align-items-center gap-2">
+            <select class="form-select form-select-sm" id="ai-model" style="max-width: 220px;">
+              <option value="">Default model</option>
+              <option value="llama3.1">llama3.1</option>
+              <option value="qwen2.5">qwen2.5</option>
+            </select>
+            <button type="button" class="btn btn-sm btn-light" id="ai-reset-btn">
+              Reset
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="ai-messages" class="p-2 rounded" style="height: 420px; overflow: auto; background: var(--vz-light);"></div>
+        </div>
+        <div class="card-footer">
+          <div class="input-group">
+            <input type="text" class="form-control" id="ai-input" placeholder="Andika swali lako hapa..." />
+            <button class="btn btn-primary" type="button" id="ai-send-btn">
+              Tuma
+            </button>
+          </div>
+          <div class="text-muted small mt-2">
+            Mfano: “Kwa nini naona 403 kwenye RipotiKuhamishaShule?” au “Nifanye nini nikiona error ya NaN kwenye pagination?”
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card border shadow-none mb-0">
+        <div class="card-header fw-semibold">Context</div>
+        <div class="card-body">
+          <div class="text-muted small mb-2">
+            AI hutumia context ya mtumiaji na taarifa za mfumo (kwa mfano tracking numbers zilizotajwa).
+          </div>
+          <ul class="mb-0">
+            <li><span class="text-muted">Mtumiaji:</span> <%= (req?.user?.name || 'Unknown') %></li>
+            <li><span class="text-muted">Email:</span> <%= (req?.user?.username || req?.user?.email || '-') %></li>
+            <li><span class="text-muted">Office:</span> <%= (req?.user?.office ?? req?.user?.cheo_office ?? '-') %></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('layouts/partials/footer.ejs' , { card_title : '' , scripts : [] }) %>
+
+<script>
+  const $messages = $("#ai-messages");
+  const $input = $("#ai-input");
+  const $send = $("#ai-send-btn");
+  const $reset = $("#ai-reset-btn");
+  const $model = $("#ai-model");
+
+  const escapeHtml = (value) =>
+    String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
+  let conversation = [
+    {
+      role: "assistant",
+      content:
+        "Nipo tayari kukusaidia. Niambie tatizo au swali lako (unaweza pia kutaja tracking number kama EM-YYYYMMDD-123).",
+    },
+  ];
+
+  const render = () => {
+    $messages.empty();
+    for (const m of conversation) {
+      const isUser = m.role === "user";
+      const badge = isUser
+        ? '<span class="badge bg-primary-subtle text-primary">User</span>'
+        : '<span class="badge bg-success-subtle text-success">AI</span>';
+      const wrapper = $(`
+        <div class="mb-2">
+          <div class="d-flex align-items-center gap-2 mb-1">${badge}<span class="text-muted small">${escapeHtml(m.role)}</span></div>
+          <pre class="mb-0 p-2 rounded" style="white-space: pre-wrap; background: var(--vz-card-bg); border: 1px solid var(--vz-border-color);">${escapeHtml(m.content)}</pre>
+        </div>
+      `);
+      $messages.append(wrapper);
+    }
+    $messages.scrollTop($messages.prop("scrollHeight"));
+  };
+
+  const sendMessage = async () => {
+    const text = String($input.val() || "").trim();
+    if (!text) return;
+
+    conversation.push({ role: "user", content: text });
+    render();
+    $input.val("");
+    $send.prop("disabled", true);
+
+    try {
+      const payload = { messages: conversation, model: String($model.val() || "").trim() };
+      const res = await fetch("/AISupportChat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+      const statusCode = Number(json?.statusCode || 306);
+      if (statusCode !== 300 || !json?.data?.reply) {
+        conversation.push({
+          role: "assistant",
+          content: json?.message || "Imeshindikana kupata majibu ya AI. Hakikisha Ollama ina-run.",
+        });
+        render();
+        return;
+      }
+
+      conversation.push({ role: "assistant", content: String(json.data.reply || "").trim() });
+      render();
+    } catch (error) {
+      conversation.push({
+        role: "assistant",
+        content: "Imeshindikana kuwasiliana na AI. Hakikisha Ollama ina-run kwenye mashine yako.",
+      });
+      render();
+    } finally {
+      $send.prop("disabled", false);
+    }
+  };
+
+  $send.on("click", sendMessage);
+  $input.on("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  $reset.on("click", () => {
+    conversation = [
+      {
+        role: "assistant",
+        content:
+          "Nipo tayari kukusaidia. Niambie tatizo au swali lako (unaweza pia kutaja tracking number kama EM-YYYYMMDD-123).",
+      },
+    ];
+    render();
+    $input.focus();
+  });
+
+  $(document).ready(() => {
+    render();
+    $input.focus();
+  });
+</script>
+

@@ -36,6 +36,7 @@ const aliasMap = {
   "v2-AinaZaHatua": "AinaZaHatua",
   "v2-SystemLogs": "SystemLogs",
   "v2-SystemConfigurations": "SystemConfigurations",
+  "v2-AISupport": "AISupport",
 
   // Reports / Ripoti
   "v2-RipotiKuanzisha": "RipotiKuanzisha",
