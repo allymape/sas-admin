@@ -1,12 +1,182 @@
-<% var card_title = '' %> 
+<%
+  var card_title = '';
+  const rows = Array.isArray(activities) ? activities : [];
+  const totalActivities = rows.length;
+  const desktopActivities = rows.filter((item) => String(item?.device || "").toLowerCase() === "desktop").length;
+  const mobileActivities = rows.filter((item) => String(item?.device || "").toLowerCase() !== "desktop").length;
+  const todayKey = dateFormat(new Date(), "YYYY-MM-DD");
+  const todayActivities = rows.filter((item) => dateFormat(item?.created_at, "YYYY-MM-DD") === todayKey).length;
+%> 
 <%- include('layouts/partials/header.ejs' , {
     title : 'Login Activities',
     page_title : 'Orodha ya Watumiaji waliongia kwenye Mfumo',
     card_title : 'Taarifa ya waliongia kwenye Mfumo.',
     breadcrumb_main : 'Dashboard' 
 }) %>
+<style>
+  .login-hero {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(15, 23, 42, .08);
+    background:
+      radial-gradient(circle at top right, rgba(41,156,219,.16), transparent 30%),
+      radial-gradient(circle at bottom left, rgba(64,81,137,.12), transparent 28%),
+      linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, .06);
+  }
+
+  .login-stat {
+    display: block;
+    border-radius: 1rem;
+    min-height: 104px;
+    padding: .85rem .95rem;
+    border: 1px solid rgba(15, 23, 42, .08);
+    box-shadow: 0 8px 22px rgba(15, 23, 42, .05);
+  }
+
+  .login-stat__eyebrow {
+    font-size: .72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    opacity: .8;
+    margin-bottom: .6rem;
+  }
+
+  .login-stat__value {
+    font-size: 1.6rem;
+    line-height: 1;
+    font-weight: 800;
+    margin-bottom: .35rem;
+    color: #0f172a;
+  }
+
+  .login-stat__label {
+    font-size: .9rem;
+    font-weight: 700;
+    color: #334155;
+  }
+
+  .login-stat--total { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); }
+  .login-stat--desktop { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); }
+  .login-stat--mobile { background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); }
+  .login-stat--today { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); }
+
+  #kandaTable {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  #kandaTable th,
+  #kandaTable td {
+    white-space: normal !important;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    vertical-align: top;
+    font-size: .92rem;
+  }
+
+  #kandaTable th:nth-child(1),
+  #kandaTable td:nth-child(1) {
+    width: 56px;
+    white-space: nowrap !important;
+  }
+
+  #kandaTable th:nth-child(2),
+  #kandaTable td:nth-child(2) {
+    width: 170px;
+  }
+
+  #kandaTable th:nth-child(3),
+  #kandaTable td:nth-child(3) {
+    width: 150px;
+  }
+
+  #kandaTable th:nth-child(4),
+  #kandaTable td:nth-child(4) {
+    width: 95px;
+  }
+
+  #kandaTable th:nth-child(5),
+  #kandaTable td:nth-child(5) {
+    width: 110px;
+  }
+
+  #kandaTable th:nth-child(6),
+  #kandaTable td:nth-child(6) {
+    width: 180px;
+  }
+
+  @media (max-width: 1199.98px) {
+    #kandaTable th:nth-child(6),
+    #kandaTable td:nth-child(6) {
+      display: none;
+    }
+  }
+
+  @media (max-width: 991.98px) {
+    #kandaTable th:nth-child(4),
+    #kandaTable td:nth-child(4) {
+      display: none;
+    }
+  }
+</style>
   <div class="card-body">
     <div id="customerList">
+        <div class="login-hero rounded-4 p-3 mb-3">
+            <div class="row g-4 align-items-center">
+                <div class="col-lg-6">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="avatar-md rounded-circle bg-info-subtle text-info d-inline-flex align-items-center justify-content-center">
+                            <i class="ri-login-circle-line fs-24"></i>
+                        </span>
+                        <div>
+                            <div class="fw-semibold fs-5">Login Activity</div>
+                            <div class="text-muted">Fuatilia watumiaji walioingia kwenye mfumo, vifaa walivyotumia, na muda wa kuingia.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="d-flex flex-wrap gap-2 justify-content-lg-end">
+                        <span class="badge bg-primary-subtle text-primary">User access trail</span>
+                        <span class="badge bg-info-subtle text-info">Desktop / Mobile</span>
+                        <span class="badge bg-success-subtle text-success">Recent activity snapshot</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-3 col-sm-6">
+                <div class="login-stat login-stat--total">
+                    <div class="login-stat__eyebrow">Overview</div>
+                    <div class="login-stat__value"><%= Number(totalActivities).toLocaleString() %></div>
+                    <div class="login-stat__label">Jumla ya entries</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="login-stat login-stat--desktop">
+                    <div class="login-stat__eyebrow">Devices</div>
+                    <div class="login-stat__value"><%= Number(desktopActivities).toLocaleString() %></div>
+                    <div class="login-stat__label">Desktop</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="login-stat login-stat--mobile">
+                    <div class="login-stat__eyebrow">Devices</div>
+                    <div class="login-stat__value"><%= Number(mobileActivities).toLocaleString() %></div>
+                    <div class="login-stat__label">Mobile</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="login-stat login-stat--today">
+                    <div class="login-stat__eyebrow">Today</div>
+                    <div class="login-stat__value"><%= Number(todayActivities).toLocaleString() %></div>
+                    <div class="login-stat__label">Leo</div>
+                </div>
+            </div>
+        </div>
+
         <div class="row g-4 mb-3">
             <div class="col-sm-auto">
                 <div>
@@ -25,17 +195,14 @@
         </div>
 
         <div class="table-responsive mt-3 mb-1">
-            <table class="table align-middle table-nowrap" id="kandaTable">
+            <table class="table align-middle" id="kandaTable">
                 <thead class="table-light">
                     <tr>
                         <th scope="col" width="5%">
                             Na.
                         </th>
-                        <th >Jina la Mtumiaji</th>
-                        <th >Cheo</th>
-                        <th >Kanda</th>
-                        <th >Mkoa</th>
-                        <th >Halmashauri</th>
+                        <th >Mtumiaji</th>
+                        <th >Eneo</th>
                         <th >Muda aliongia</th>
                         <th >Kifaa</th>
                         <th >IP Address</th>
@@ -44,14 +211,18 @@
                 </thead>
                 <tbody class="list form-check-all">
                     <% activities.forEach( (activity , index) => { %>
-                        <% const {name, title , zone, region, council , ip , browser , device , created_at} = activity %>
+                            <% const {name, title , zone, region, council , ip , browser , device , created_at} = activity %>
                         <tr>
                             <td><%- include('paginations/numbering.ejs' , {index}) %></td>
-                            <td><%= name %></td>
-                            <td><%= title %></td>
-                            <td><%= zone %></td>
-                            <td><%= region %></td>
-                            <td><%= council %></td>
+                            <td>
+                              <div><strong><%= name %></strong></div>
+                              <div class="text-muted small"><%= title || '-' %></div>
+                            </td>
+                            <td>
+                              <div><strong>Kanda:</strong> <%= zone || '-' %></div>
+                              <div><strong>Mkoa:</strong> <%= region || '-' %></div>
+                              <div><strong>Halmashauri:</strong> <%= council || '-' %></div>
+                            </td>
                             <td><%= dateFormat(created_at , 'ddd DD MMM, YYYY at HH:mm:ss') %></td>
                             <td><i  class="ri-<%= device == 'Desktop' ? 'computer' : 'smartphone'%>-line text-secondary"></i> <%= device %></td>
                             <td><%= ip %></td>

@@ -129,6 +129,14 @@ const menuItems = [
             // }
         ]
    },
+   {
+        label : "Fuatilia Ombi",
+        url  : "TrackOmbi",
+        menuTitle : '',
+        icon : "ri-route-line",
+        pattern : "TrackOmbi|TrackOmbi/*",
+        hasPermissionTo : permission(req , 'view-track-application'),
+   },
 //    RIPOTI
    {
         label : "Ripoti",
@@ -674,15 +682,6 @@ const menuItems = [
 	        pattern : "v2-SystemLogs|SystemLogs",
 	        hasPermissionTo : permission(req , 'view-audit'),
 	   },
-	   {
-	        label : "AI Support",
-	        url  : "v2-AISupport",
-	        menuTitle : '',
-	        icon : "ri-robot-2-line",
-	        menuId : "",
-	        pattern : "v2-AISupport|AISupport",
-	        hasPermissionTo : permission(req , 'view-dashboard'),
-	   },
 	   // LOGOUT
 	    {
 	        label : "Ondoka",
@@ -752,7 +751,7 @@ const menuItems = [
                             <%= typeof item.menuId !== 'undefined' && item.menuId ? `id=${item.menuId}` : ''%>
                             class="nav-link menu-link <%= routeIs(item.pattern , currentUrl) ? 'active' : '' %>"
                         >
-                            <i class="ri <%=item.icon%>"></i> 
+                            <i class="<%= item.icon %>"></i> 
                             <span data-key="t-widgets"><%=item.label%></span>
                         </a>
                     </li>

@@ -844,7 +844,7 @@ module.exports = {
 	    const verify = String(certificate?.verification_code || "").trim().toUpperCase();
 	    const frontendUiUrl = String(process.env.FRONTEND_UI_URL || process.env.FRONTEND_URL || "").trim();
 	    const verifyUrl =
-	      verify && frontendUiUrl ? `${frontendUiUrl.replace(/\/+$/, "")}/verify-certificate/${verify}` : "";
+	      verify && frontendUiUrl ? `${frontendUiUrl.replace(/\/+$/, "")}/certificate/${verify}` : "";
 
 	    const renderCertificate = (qrBuffer) => {
 	    const options = {

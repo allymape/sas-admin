@@ -5,14 +5,86 @@
 }) %>
 
 <style>
-  .cert-hero { background: linear-gradient(135deg, rgba(13,110,253,.08), rgba(25,135,84,.06)); border: 1px solid rgba(0,0,0,.06); }
+  .cert-hero {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at top right, rgba(13,110,253,.16), transparent 32%),
+      radial-gradient(circle at bottom left, rgba(25,135,84,.14), transparent 28%),
+      linear-gradient(135deg, #f8fbff 0%, #eefbf4 100%);
+    border: 1px solid rgba(15, 23, 42, .08);
+    box-shadow: 0 16px 40px rgba(15, 23, 42, .07);
+  }
+  .cert-hero::after {
+    content: "";
+    position: absolute;
+    inset: auto -40px -40px auto;
+    width: 180px;
+    height: 180px;
+    background: radial-gradient(circle, rgba(13,110,253,.10), transparent 70%);
+    pointer-events: none;
+  }
+  .cert-hero-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: .01em;
+  }
+  .cert-hero-desc {
+    font-size: .98rem;
+    line-height: 1.65;
+  }
   .cert-tabs .nav-link { font-weight: 700; }
   .cert-search { min-width: 280px; }
-  .cert-metric { border: 1px solid rgba(0,0,0,.06); background: #fff; }
+  .cert-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .8rem;
+  }
+  .cert-metric {
+    border: 1px solid rgba(15, 23, 42, .08);
+    background: rgba(255,255,255,.88);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, .06);
+    min-height: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .cert-metric__label {
+    color: #64748b;
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-weight: 700;
+    margin-bottom: .35rem;
+  }
+  .cert-metric__value {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.2;
+  }
+  .cert-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .55rem;
+    margin-top: .9rem;
+  }
+  .cert-badges .badge {
+    font-size: .88rem;
+    padding: .55rem .8rem;
+    font-weight: 700;
+  }
   .cert-table thead th { position: sticky; top: 0; z-index: 1; background: #f8fafc; }
   .cert-code { background: #0f172a; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: .85rem; }
   .cert-muted { color: #64748b; }
   .cert-empty { border: 1px dashed rgba(0,0,0,.15); background: rgba(248,250,252,.8); }
+  @media (max-width: 991.98px) {
+    .cert-metrics {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
 
 <div class="row">
@@ -48,27 +120,27 @@
         <div class="cert-hero rounded p-3 mt-3">
           <div class="row g-3 align-items-center">
             <div class="col-lg-6">
-              <div class="fw-semibold">Muhtasari</div>
-              <div class="cert-muted small">Chagua <b>Vinavyosubiri</b> ili kutoa cheti, au <b>Vilivyotolewa</b> ili ku-view cheti.</div>
-              <div class="mt-2">
+              <div class="cert-hero-title">Muhtasari</div>
+              <div class="cert-muted cert-hero-desc">Chagua <b>Vinavyosubiri</b> ili kutoa cheti, au <b>Vilivyotolewa</b> ili ku-view cheti.</div>
+              <div class="cert-badges">
                 <span class="badge bg-primary-subtle text-primary me-1">Security: QR + Verification Code</span>
                 <span class="badge bg-success-subtle text-success me-1">PDF Preview (Modal)</span>
                 <span class="badge bg-warning-subtle text-warning">Reg # ni lazima ili kutoa</span>
               </div>
             </div>
             <div class="col-lg-6">
-              <div class="d-flex flex-wrap gap-2 justify-content-lg-end">
+              <div class="cert-metrics">
                 <div class="cert-metric rounded px-3 py-2">
-                  <div class="cert-muted small">Tab</div>
-                  <div class="fw-bold"><%= tab === 'pending' ? 'Vinavyosubiri' : 'Vilivyotolewa' %></div>
+                  <div class="cert-metric__label">Tab</div>
+                  <div class="cert-metric__value"><%= tab === 'pending' ? 'Vinavyosubiri' : 'Vilivyotolewa' %></div>
                 </div>
                 <div class="cert-metric rounded px-3 py-2">
-                  <div class="cert-muted small">Jumla</div>
-                  <div class="fw-bold"><%= Number(pagination?.total || rows?.length || 0).toLocaleString() %></div>
+                  <div class="cert-metric__label">Jumla</div>
+                  <div class="cert-metric__value"><%= Number(pagination?.total || rows?.length || 0).toLocaleString() %></div>
                 </div>
                 <div class="cert-metric rounded px-3 py-2">
-                  <div class="cert-muted small">Ukurasa</div>
-                  <div class="fw-bold"><%= Number(pagination?.current_page || 1) %> / <%= Number(pagination?.last_page || 1) %></div>
+                  <div class="cert-metric__label">Ukurasa</div>
+                  <div class="cert-metric__value"><%= Number(pagination?.current_page || 1) %> / <%= Number(pagination?.last_page || 1) %></div>
                 </div>
               </div>
             </div>

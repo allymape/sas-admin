@@ -73,50 +73,56 @@
 
   <div class="row g-3 mb-3">
     <div class="col-md-2 col-6">
-      <div class="card border shadow-none mb-0 systemlogs-metric-card" role="button" tabindex="0" data-level="">
+      <div class="card border-0 shadow-none mb-0 systemlogs-metric-card systemlogs-metric-card--total" role="button" tabindex="0" data-level="">
         <div class="card-body py-3">
-          <p class="text-muted mb-1">Total</p>
-          <h4 class="mb-0" id="metric-total">0</h4>
+          <div class="systemlogs-metric-eyebrow">Overview</div>
+          <div class="systemlogs-metric-value" id="metric-total">0</div>
+          <div class="systemlogs-metric-label">Total</div>
         </div>
       </div>
     </div>
     <div class="col-md-2 col-6">
-      <div class="card border border-danger shadow-none mb-0 systemlogs-metric-card" role="button" tabindex="0" data-level="critical">
+      <div class="card border-0 shadow-none mb-0 systemlogs-metric-card systemlogs-metric-card--critical" role="button" tabindex="0" data-level="critical">
         <div class="card-body py-3">
-          <p class="text-danger mb-1">Critical</p>
-          <h4 class="mb-0 text-danger" id="metric-critical">0</h4>
+          <div class="systemlogs-metric-eyebrow">Highest</div>
+          <div class="systemlogs-metric-value text-danger" id="metric-critical">0</div>
+          <div class="systemlogs-metric-label text-danger">Critical</div>
         </div>
       </div>
     </div>
     <div class="col-md-2 col-6">
-      <div class="card border border-vz-orange shadow-none mb-0 systemlogs-metric-card" role="button" tabindex="0" data-level="error">
+      <div class="card border-0 shadow-none mb-0 systemlogs-metric-card systemlogs-metric-card--error" role="button" tabindex="0" data-level="error">
         <div class="card-body py-3">
-          <p class="text-vz-orange mb-1">Error</p>
-          <h4 class="mb-0 text-vz-orange" id="metric-error">0</h4>
+          <div class="systemlogs-metric-eyebrow">Failures</div>
+          <div class="systemlogs-metric-value text-vz-orange" id="metric-error">0</div>
+          <div class="systemlogs-metric-label text-vz-orange">Error</div>
         </div>
       </div>
     </div>
     <div class="col-md-2 col-6">
-      <div class="card border border-warning shadow-none mb-0 systemlogs-metric-card" role="button" tabindex="0" data-level="warning">
+      <div class="card border-0 shadow-none mb-0 systemlogs-metric-card systemlogs-metric-card--warning" role="button" tabindex="0" data-level="warning">
         <div class="card-body py-3">
-          <p class="text-warning mb-1">Warning</p>
-          <h4 class="mb-0 text-warning" id="metric-warning">0</h4>
+          <div class="systemlogs-metric-eyebrow">Attention</div>
+          <div class="systemlogs-metric-value text-warning" id="metric-warning">0</div>
+          <div class="systemlogs-metric-label text-warning">Warning</div>
         </div>
       </div>
     </div>
     <div class="col-md-2 col-6">
-      <div class="card border border-info shadow-none mb-0 systemlogs-metric-card" role="button" tabindex="0" data-level="info">
+      <div class="card border-0 shadow-none mb-0 systemlogs-metric-card systemlogs-metric-card--info" role="button" tabindex="0" data-level="info">
         <div class="card-body py-3">
-          <p class="text-info mb-1">Info</p>
-          <h4 class="mb-0 text-info" id="metric-info">0</h4>
+          <div class="systemlogs-metric-eyebrow">Signals</div>
+          <div class="systemlogs-metric-value text-info" id="metric-info">0</div>
+          <div class="systemlogs-metric-label text-info">Info</div>
         </div>
       </div>
     </div>
     <div class="col-md-2 col-6">
-      <div class="card border shadow-none mb-0 systemlogs-metric-card" role="button" tabindex="0" data-level="debug">
+      <div class="card border-0 shadow-none mb-0 systemlogs-metric-card systemlogs-metric-card--debug" role="button" tabindex="0" data-level="debug">
         <div class="card-body py-3">
-          <p class="text-muted mb-1">Debug</p>
-          <h4 class="mb-0" id="metric-debug">0</h4>
+          <div class="systemlogs-metric-eyebrow">Trace</div>
+          <div class="systemlogs-metric-value" id="metric-debug">0</div>
+          <div class="systemlogs-metric-label">Debug</div>
         </div>
       </div>
     </div>
@@ -252,17 +258,73 @@
 
   .systemlogs-metric-card {
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    border-radius: 1rem;
+    overflow: hidden;
+    min-height: 132px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06) !important;
   }
 
   .systemlogs-metric-card:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 0.25rem 1rem rgba(52, 58, 64, 0.12) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 16px 34px rgba(15, 23, 42, 0.1) !important;
   }
 
   .systemlogs-metric-card.is-active {
-    outline: 2px solid rgba(var(--vz-primary-rgb), 0.35);
-    outline-offset: 2px;
+    box-shadow: 0 0 0 0.22rem rgba(var(--vz-primary-rgb), 0.14) !important;
+    border-color: rgba(var(--vz-primary-rgb), 0.35);
+  }
+
+  .systemlogs-metric-card .card-body {
+    padding: 1rem 1rem 1.05rem !important;
+  }
+
+  .systemlogs-metric-eyebrow {
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    opacity: .78;
+    margin-bottom: .65rem;
+  }
+
+  .systemlogs-metric-value {
+    font-size: 2rem;
+    line-height: 1;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: .45rem;
+  }
+
+  .systemlogs-metric-label {
+    font-size: .98rem;
+    font-weight: 700;
+    color: #334155;
+  }
+
+  .systemlogs-metric-card--total {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  }
+
+  .systemlogs-metric-card--critical {
+    background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+  }
+
+  .systemlogs-metric-card--error {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  }
+
+  .systemlogs-metric-card--warning {
+    background: linear-gradient(135deg, #fffbea 0%, #fef3c7 100%);
+  }
+
+  .systemlogs-metric-card--info {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  }
+
+  .systemlogs-metric-card--debug {
+    background: linear-gradient(135deg, #f8fafc 0%, #e5e7eb 100%);
   }
 
   #system-log-table th,
@@ -299,6 +361,51 @@
     warning: cssVar("--vz-warning", "#f7b84b"),
     info: cssVar("--vz-info", "#299cdb"),
     debug: cssVar("--vz-gray", "#878a99")
+  };
+
+  const chartDepthPlugin = {
+    id: "chartDepthPlugin",
+    beforeDatasetsDraw(chart) {
+      const { ctx } = chart;
+      ctx.save();
+      ctx.shadowColor = "rgba(15, 23, 42, 0.16)";
+      ctx.shadowBlur = 16;
+      ctx.shadowOffsetY = 10;
+    },
+    afterDatasetsDraw(chart) {
+      chart.ctx.restore();
+    }
+  };
+
+  const withAlpha = (hex, alpha) => {
+    const value = String(hex || "").trim();
+    if (!value.startsWith("#")) return value;
+    const normalized = value.length === 4
+      ? "#" + value.slice(1).split("").map((c) => c + c).join("")
+      : value;
+    const bigint = Number.parseInt(normalized.slice(1), 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+
+  const verticalGradient = (canvas, color) => {
+    const ctx = canvas.getContext("2d");
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height || 220);
+    gradient.addColorStop(0, withAlpha(color, 0.98));
+    gradient.addColorStop(0.55, withAlpha(color, 0.72));
+    gradient.addColorStop(1, withAlpha(color, 0.42));
+    return gradient;
+  };
+
+  const horizontalBarGradient = (canvas, color) => {
+    const ctx = canvas.getContext("2d");
+    const gradient = ctx.createLinearGradient(0, 0, canvas.width || 320, 0);
+    gradient.addColorStop(0, withAlpha(color, 0.45));
+    gradient.addColorStop(0.25, withAlpha(color, 0.9));
+    gradient.addColorStop(1, withAlpha(color, 0.62));
+    return gradient;
   };
 
   const filterPayload = () => ({
@@ -427,19 +534,39 @@
   };
 
   const renderLevelChart = (totals = {}) => {
+    const levelCanvas = document.getElementById("levelChart");
     const labels = ["critical", "error", "warning", "info", "debug"];
     const values = labels.map((key) => Number(totals?.[key] || 0));
-    const colors = labels.map((key) => levelColors[key]);
+    const colors = labels.map((key) => verticalGradient(levelCanvas, levelColors[key]));
 
     const chartLabels = labels.map((key) => key.toUpperCase());
     if (!levelChart) {
-      levelChart = new Chart(document.getElementById("levelChart"), {
+      levelChart = new Chart(levelCanvas, {
         type: "doughnut",
         data: {
           labels: chartLabels,
-          datasets: [{ data: values, backgroundColor: colors, borderWidth: 1 }]
+          datasets: [{
+            data: values,
+            backgroundColor: colors,
+            borderColor: "#ffffff",
+            borderWidth: 2,
+            hoverOffset: 8
+          }]
         },
-        options: { responsive: true, maintainAspectRatio: false }
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: "54%",
+          plugins: {
+            legend: {
+              labels: {
+                usePointStyle: true,
+                pointStyle: "circle",
+              }
+            }
+          }
+        },
+        plugins: [chartDepthPlugin]
       });
       return;
     }
@@ -451,6 +578,7 @@
   };
 
   const renderTrendChart = (trend = []) => {
+    const trendCanvas = document.getElementById("trendChart");
     const rows = Array.isArray(trend) ? trend : [];
     const formatTrendDate = (value) => {
       const raw = safe(value, "");
@@ -484,21 +612,34 @@
         label: level.toUpperCase(),
         data,
         borderColor: levelColors[level],
-        backgroundColor: levelColors[level],
-        tension: 0.25,
-        fill: false
+        backgroundColor: withAlpha(levelColors[level], 0.12),
+        pointBackgroundColor: levelColors[level],
+        pointBorderColor: "#ffffff",
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 3,
+        tension: 0.35,
+        fill: true
       };
     });
 
     if (!trendChart) {
-      trendChart = new Chart(document.getElementById("trendChart"), {
+      trendChart = new Chart(trendCanvas, {
         type: "line",
         data: { labels: dateLabels, datasets },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          scales: { y: { beginAtZero: true } }
-        }
+          interaction: {
+            mode: "index",
+            intersect: false
+          },
+          scales: {
+            y: { beginAtZero: true }
+          }
+        },
+        plugins: [chartDepthPlugin]
       });
       return;
     }
@@ -509,6 +650,7 @@
   };
 
   const renderModuleChart = (modules = []) => {
+    const moduleCanvas = document.getElementById("moduleChart");
     const rows = Array.isArray(modules) ? modules : [];
     const normalizeModule = (value) => String(value || "").trim().toLowerCase();
     const isUiModule = (moduleName) => {
@@ -542,20 +684,30 @@
     const values = [totals.api, totals.ui];
     const colors = [cssVar("--vz-primary", "#405189"), cssVar("--vz-info", "#299cdb")];
     if (!moduleChart) {
-      moduleChart = new Chart(document.getElementById("moduleChart"), {
+      moduleChart = new Chart(moduleCanvas, {
         type: "bar",
         data: {
           labels,
           datasets: [{
             label: "Idadi ya Logs",
             data: values,
-            backgroundColor: colors
+            backgroundColor: colors,
+            borderRadius: 8,
+            borderSkipped: false,
+            maxBarThickness: 42
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          scales: { y: { beginAtZero: true } }
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: { beginAtZero: true }
+          }
         }
       });
       return;

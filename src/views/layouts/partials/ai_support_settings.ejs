@@ -1,0 +1,120 @@
+<!-- AI Support Panel -->
+<%
+    const aiRoleName = String(req?.user?.role_name || req?.user?.role || "").trim();
+    const showAiModelSelection = /^(system administrator|administrator)$/i.test(aiRoleName);
+%>
+<div class="offcanvas offcanvas-end border-0" tabindex="-1" id="theme-settings-offcanvas" style="width: min(720px, 92vw);">
+    <div class="d-flex align-items-center bg-primary bg-gradient p-3 offcanvas-header">
+        <div>
+            <h5 class="m-0 text-white">Msaidizi wa Mfumo</h5>
+            <div class="text-white-50 small">Uliza swali au weka tracking number.</div>
+        </div>
+        <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0 d-flex flex-column">
+        <div class="flex-grow-1 min-h-0 p-4 pb-0 d-flex flex-column">
+            <div id="ai-messages" class="p-2 rounded flex-grow-1" style="overflow: auto; background: var(--vz-light); min-height: 0;"></div>
+        </div>
+
+        <div class="border-top p-4 pt-3">
+            <div class="input-group">
+                <input type="text" class="form-control" id="ai-input" list="ai-suggestions" placeholder="Andika swali lako hapa..." />
+                <button class="btn btn-primary" type="button" id="ai-send-btn">
+                    Tuma
+                </button>
+                <button class="btn btn-danger" type="button" id="ai-reset-btn">
+                    Reset
+                </button>
+            </div>
+            <datalist id="ai-suggestions">
+                        <option value="Idadi ya maombi yanayosubiri?"></option>
+                        <option value="Idadi ya maombi yanayosubiri kwa aina ya maombi?"></option>
+                        <option value="Idadi ya maombi yaliyothibitishwa?"></option>
+                        <option value="Idadi ya maombi yaliyothibitishwa kwa aina ya maombi?"></option>
+                        <option value="Idadi ya maombi yaliyokataliwa?"></option>
+                        <option value="Idadi ya maombi yaliyokataliwa kwa aina ya maombi?"></option>
+                        <option value="Idadi ya maombi kwa aina ya maombi?"></option>
+                        <option value="Maombi ya leo wiki hii mwezi huu"></option>
+                        <option value="Maombi yote overdue"></option>
+                        <option value="Top mikoa yenye pending nyingi"></option>
+                        <option value="Top wilaya zenye pending nyingi"></option>
+                        <option value="Top mikoa yenye approvals nyingi"></option>
+                        <option value="Top wilaya zenye approvals nyingi"></option>
+                        <option value="Idadi ya shule zilizosajiliwa?"></option>
+                        <option value="Idadi ya shule zilizosajiliwa kwa umiliki?"></option>
+                        <option value="Shule zilizosajiliwa kwa mkoa"></option>
+                        <option value="Shule zilizosajiliwa kwa wilaya"></option>
+                        <option value="Shule zilizosajiliwa kwa aina ya shule?"></option>
+                        <option value="Shule zilizofutiwa usajili?"></option>
+                        <option value="Idadi ya shule kwa lugha ya kufundishia ni ipi?"></option>
+                        <option value="Mkoa gani una shule nyingi za English medium?"></option>
+                        <option value="Mkoa gani una shule nyingi za Kiswahili medium?"></option>
+                        <option value="Idadi ya shule kwa curriculum ni ipi?"></option>
+                        <option value="Idadi ya shule kwa certificate type ni ipi?"></option>
+                        <option value="Idadi ya shule kwa specialization ni ipi?"></option>
+                        <option value="Mkoa gani una specialization fulani zaidi?"></option>
+                        <option value="Wilaya gani ina specialization fulani zaidi?"></option>
+                        <option value="Curriculum gani inatumika zaidi?"></option>
+                        <option value="Certificate type gani inatumika zaidi?"></option>
+                        <option value="Ni shule ngapi zina coordinates kamili?"></option>
+                        <option value="Ni shule ngapi hazina coordinates?"></option>
+                        <option value="Mkoa gani una records nyingi zisizo na coordinates?"></option>
+                        <option value="Wilaya gani ina records nyingi zisizo na coordinates?"></option>
+                        <option value="Ni shule ngapi hazina ward?"></option>
+                        <option value="Ni shule ngapi hazina district mapping?"></option>
+                        <option value="Ni shule ngapi hazina region mapping?"></option>
+                        <option value="Idadi ya shule zinazohudumia wenye ulemavu ni ngapi?"></option>
+                        <option value="Idadi ya shule za wavulana ni ngapi?"></option>
+                        <option value="Idadi ya shule za wasichana ni ngapi?"></option>
+                        <option value="Idadi ya shule mchanganyiko ni ngapi?"></option>
+                        <option value="Idadi ya shule zenye hostel ni ngapi?"></option>
+                        <option value="Idadi ya shule zisizo na hostel ni ngapi?"></option>
+                        <option value="Idadi ya maombi yote kwenye mfumo ni ngapi?"></option>
+                        <option value="Idadi ya maombi mapya yaliyoingia leo ni ngapi?"></option>
+                        <option value="Idadi ya maombi yaliyoingia wiki hii ni ngapi?"></option>
+                        <option value="Idadi ya maombi yaliyoingia mwezi huu ni ngapi?"></option>
+                        <option value="Idadi ya maombi yaliyoingia mwaka huu ni ngapi?"></option>
+                        <option value="Ni aina gani ya maombi ina pending nyingi zaidi?"></option>
+                        <option value="Ni aina gani ya maombi imethibitishwa zaidi?"></option>
+                        <option value="Ni aina gani ya maombi inakataliwa zaidi?"></option>
+                        <option value="Mkoa gani una maombi yaliyokataliwa mengi zaidi?"></option>
+                        <option value="Wilaya gani ina maombi yaliyokataliwa mengi zaidi?"></option>
+                        <option value="Mkoa gani una shule nyingi zilizosajiliwa?"></option>
+                        <option value="Wilaya gani ina shule nyingi zilizosajiliwa?"></option>
+                        <option value="Government schools zilizosajiliwa ni ngapi?"></option>
+                        <option value="Non Government schools zilizosajiliwa ni ngapi?"></option>
+                        <option value="Awali zilizosajiliwa ni ngapi?"></option>
+                        <option value="Msingi zilizosajiliwa ni ngapi?"></option>
+                        <option value="Sekondari zilizosajiliwa ni ngapi?"></option>
+                        <option value="Vyuo vya ualimu vilivyosajiliwa ni ngapi?"></option>
+            </datalist>
+
+            <% if (showAiModelSelection) { %>
+            <div class="row g-3 mt-1">
+                <div class="col-md-6">
+                    <label for="ai-model" class="form-label fw-semibold">Model</label>
+                    <select class="form-select" id="ai-model">
+                        <option value="">Default model</option>
+                        <option value="llama3.2:1b">llama3.2:1b</option>
+                        <option value="llama3.2:3b">llama3.2:3b</option>
+                        <option value="llama3.1:latest">llama3.1:latest</option>
+                        <option value="qwen2.5:0.5b">qwen2.5:0.5b</option>
+                        <option value="qwen2.5:1.5b">qwen2.5:1.5b</option>
+                    </select>
+                    <div class="text-muted small mt-2">
+                        Tumia model ndogo kwa speed zaidi. Indicators nyingi za takwimu hazitumii model.
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="ai-num-predict" class="form-label fw-semibold">Response Length</label>
+                    <select class="form-select" id="ai-num-predict">
+                        <option value="128">Short</option>
+                        <option value="256" selected>Balanced</option>
+                        <option value="512">Long</option>
+                    </select>
+                </div>
+            </div>
+            <% } %>
+        </div>
+    </div>
+</div>

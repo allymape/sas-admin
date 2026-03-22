@@ -1,179 +1,330 @@
-<% var card_title = '' 
-%> 
-<%- include('layouts/partials/header.ejs' , {
-        title : 'Fuatilia Maombi',
-        page_title : 'Fuatilia Maombi',
-        card_title : `Maombi `,
-        breadcrumb_main : 'Track',
-        styles : [
-              { href: '/css/datatables/dataTables.dataTables.css' },
-              { href: '/css/datatables/buttons.dataTables.css' },
-          ]
+<%
+  const card_title = "Maombi Yanayochakatwa";
+%>
+<%- include("layouts/partials/header.ejs", {
+  title: "Track Ombi",
+  page_title: "Track Ombi",
+  card_title,
+  breadcrumb_main: "Track Ombi",
+  styles: [
+    { href: "/css/datatables/dataTables.dataTables.css" },
+    { href: "/css/datatables/buttons.dataTables.css" },
+  ],
 }) %>
-<div class="card-body">
-  <div id="customerList">
-    <div class="col-md-12">
-      <div class="table-responsive mt-3 mb-1">
-      <table class="table table-striped" id="datatable">
-        <thead class="table-light">
-          <tr>
-             <th width="5%">Na.</th>
-            <th width="5%">Action</A></th>
-            <th>Ombi</th>
-            <th>Namba ya Ombi</th>
-            <th>Jina</th>
-            <th>Aina</th>
-            <th>Umiliki</th>
-            <th>Mkoa</th>
-            <th>Halmashauri</th>
-            <th>Kata</th>
-            <th>Mtaa</th>
-            <th>Mwombaji</th>
-            <th>Limeombwa</th>
-            <th>Mahali lilipo</th>
-            <th>Limetumwa</th>
-            <th>Hali ya Ombi</th>
-            <th>Malipo</th>
-          </tr>
-        </thead>
-        <tbody class="list form-check-all">
-        </tbody>
-      </table>
-    </div>
-    </div>
-  </div>
-</div><!-- end card -->
-<div class="modal fade" id="comments-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-xl">
-    <div class="modal-content">
-      <div class="modal-header bg-light p-3">
-        <h5 class="modal-title" id="commentModalTitle"></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
-      </div>
-      <div class="modal-body">
+<style>
+  .track-summary-card {
+    display: block;
+    text-decoration: none;
+    border-radius: 1rem;
+    padding: 1rem 1.1rem;
+    min-height: 132px;
+    border: 1px solid rgba(17, 24, 39, 0.08);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .track-summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.1);
+  }
+
+  .track-summary-card.is-active {
+    border-color: rgba(13, 110, 253, 0.35);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.12);
+  }
+
+  .track-summary-card__eyebrow {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  .track-summary-card__value {
+    font-size: 2rem;
+    line-height: 1;
+    font-weight: 800;
+    margin: 0.7rem 0 0.5rem;
+    color: #111827;
+  }
+
+  .track-summary-card__label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  .track-summary-card__hint {
+    font-size: 0.85rem;
+    margin-top: 0.45rem;
+    color: rgba(15, 23, 42, 0.72);
+  }
+
+  .track-summary-card--all {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  }
+
+  .track-summary-card--submitted {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  }
+
+  .track-summary-card--progress {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  }
+
+  .track-summary-card--overdue {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  }
+</style>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <div class="row g-3 mb-3" id="track-summary">
+          <div class="col-md-3 col-sm-6">
+            <a href="/TrackOmbi" class="track-summary-card track-summary-card--all" data-filter-card="">
+              <div class="track-summary-card__eyebrow">Overview</div>
+              <div class="track-summary-card__value" data-summary="total">0</div>
+              <div class="track-summary-card__label">Jumla ya Maombi</div>
+              <div class="track-summary-card__hint">Angalia maombi yote yanayochakatwa.</div>
+            </a>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <a href="/TrackOmbi?filter=submitted" class="track-summary-card track-summary-card--submitted" data-filter-card="submitted">
+              <div class="track-summary-card__eyebrow">Incoming</div>
+              <div class="track-summary-card__value" data-summary="submitted_total">0</div>
+              <div class="track-summary-card__label">Mpya</div>
+              <div class="track-summary-card__hint">Maombi mapya yaliyowasilishwa.</div>
+            </a>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <a href="/TrackOmbi?filter=in_progress" class="track-summary-card track-summary-card--progress" data-filter-card="in_progress">
+              <div class="track-summary-card__eyebrow">Workflow</div>
+              <div class="track-summary-card__value" data-summary="in_progress_total">0</div>
+              <div class="track-summary-card__label">Inaendelea</div>
+              <div class="track-summary-card__hint">Maombi yaliyoko kwenye hatua za kazi.</div>
+            </a>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <a href="/TrackOmbi?filter=overdue" class="track-summary-card track-summary-card--overdue" data-filter-card="overdue">
+              <div class="track-summary-card__eyebrow">Attention</div>
+              <div class="track-summary-card__value" data-summary="overdue_total">0</div>
+              <div class="track-summary-card__label">Overdue</div>
+              <div class="track-summary-card__hint">Maombi yaliyozidi muda wa SLA.</div>
+            </a>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-striped align-middle nowrap w-100" id="track-ombi-table">
+            <thead class="table-light">
+              <tr>
+                <th>Na.</th>
+                <th>Namba ya Ombi</th>
+                <th>Ombi</th>
+                <th>Lipo kwa</th>
+                <th>Tarehe</th>
+                <th>Hali</th>
+                <th>Maoni</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<%- include('layouts/partials/footer.ejs' , {
-    card_title :  card_title,
-    scripts : [
-            {src : '/design/layouts/scripts/track_ombi_scripts.js'},
-            { src : '/js/datatables/dataTables.js'},
-            { src : '/js/datatables/dataTables.buttons.js'},
-            { src : '/js/datatables/buttons.dataTables.js'},
-            { src : '/js/datatables/buttons.html5.min.js'},
-            { src : '/js/datatables/jszip.min.js'},
-            { src : '/js/datatables/pdfmake.min.js'},
-            { src : '/js/datatables/vfs_fonts.js'},
-            { src : '/js/datatables/buttons.print.min.js'},
-            { src : '/js/datatables/buttons.colVis.min.js'},
-          ]
-    }) %>
-<script>
-    $(document).ready(function() {
-        tableData('datatable' ,'/TrackList' , 'POST',
-            [
-              { data: null, render : (data , type , row , meta) => {
-                        return meta.row + meta.settings._iDisplayStart + 1;
-              },
-              searchable : false,
-              orderable: false
-            },
-              {
-                    data: null, // No data source for this column
-                    render: function (data, type, row) {
-                            const elements = [{
-                                                show : row.office == 1 ? true : false,
-                                                type : 'button',
-                                                class : 'btn btn-sm btn-outline-secondary me-1',
-                                                icon : 'bx bx-comment me-1',
-                                                function : 'viewComments',
-                                                btnText : 'Maoni',
-                                                moreAttributes : `title='View Maoni' data-bs-toggle='tooltip'`
-                                            },
-                                        ]
-                        return actionButtons(row , elements);
-                    },
-                    orderable: false, // Disable sorting for the action buttons column
-                    searchable : false,
-                    class : 'text-center text-nowrap'
-                    },
-                    
-                    { data: "application_category", name: "application_category" , class : 'text-primary' , render : (data , type , row) => {
-                          return `<strong>${data.toUpperCase()}</strong>`
-                    } },
-                    { data: "tracking_number", name: "tracking_number" ,  class : 'text-nowrap', render : (data , type , row) => {
-                          return `<strong>${data.toUpperCase()}</strong>`
-                    } },
-                    { data: "school_name", name: "school_name" ,  class : 'text-dark' },
-                    { data: "category", name: "category" ,  class : 'text-nowrap' },
-                    { data: "registry", name: "registry" ,  class : '' },
-                    { data: "region_name", name: "region_name" },
-                    { data: "district_name", name: "district_name" },
-                    { data: "ward_name", name: "ward_name" },
-                    { data: "street_name", name: "street_name" },
-                    { data: "applicant_name", name: "applicant_name" },
-                    {
-                      data: "application_created_at", name: "application_created_at",
-                            render: (data, type, row) => {
-                                return changeDateFormat(data);
-                            },
-                    },
-                    { data: "title", name: "title"  , render : (data , type , row) => {
-                          var location = ''
-                          const rank = row.ngazi
-                          if(row.status == 1 || row.status == 0) {
-                              location += data ? (rank == 2 ? data +' - '+row.zone_name : (rank == 3 ? data + ' - '+row.district_name : data + (rank == 1 ? ' - HQ' : ''))) : 'W1 - '+ row.district_name
-                          }
-                          if(row.status == 4){
-                            location += `<span class='text-danger'>Mwombaji</span>`;
-                          }
-                          return `<strong>${location}</strong>`;
-                    } , class : 'text-nowrap'},
-                    {
-                      data: "submitted_created_at", name: "submitted_created_at",
-                            render: (data, type, row) => {
-                                const diff = findDiffDaysFromNow(data);
-                                var overdue =  diff > row.overdue && row.status != 4 ? 
-                                            ` <span class='badge bg-danger' title='Ombi hili limekaa zaidi ya siku ${row.overdue}' data-bs-toggle='tooltip'>Overdue</span>` :
-                                             ''; 
-                                return changeDateFormat(data) + overdue 
-                            },
-                    },
-                    { data: "status", name: "status"  , render : (data , type , row) => {
-                         if(row.payment_status_id == 2){ 
-                          return `<span class="badge bg-${ data == 1 || data == '' ? `info` : ( data == 2 ? 'success' : (data == 3 ? 'danger' : 'warning'))}">
-                                    ${data == 1 || data == 0 || data == '' ? 'Linashughulikiwa' : ( data == 2 ? 'Limethibitishwa' : (data == 3 ? 'Limekatiliwa' : 'Limerudishwa'))}
-                                </span>`
-                        } 
-                    }
-                    },
-                    { data: "payment_status", name: "payment_status"  , render : (data , type , row) => {
-                       
-                          if(!data){ 
-                            return `<button type="button" class="btn btn-sm btn-outline-primary btn-make-payment" 
-                            onclick="makePayment(this)" data-tracking_number="${row.tracking_number }" >Lipa</button>`
-                          }else{
-                            return `<span class="${row.payment_status_id == 1 ? 'badge bg-danger' : (row.payment_status_id == 2 ? 'badge bg-success' : '')}">
-                                        ${data}
-                                       </span>`
-                          }
-                      }
-                    },
-            ],
-            null,
-            [
-              {
-                targets: [7 , 8 , 9 , 10 , 11 , 16],
-                visible: false,
-              },
-            ]
-        );
-    });
-</script>
-<!-- <script type="text/javascript" src="/design/layouts/scripts/track_ombi_scripts.js"></script> -->
-</body>
+<div class="modal fade" id="comments-modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-light p-3">
+        <h5 class="modal-title" id="commentModalTitle"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body"></div>
+    </div>
+  </div>
+</div>
 
+<%- include("layouts/partials/footer.ejs", {
+  card_title,
+  scripts: [
+    { src: "/design/layouts/scripts/track_ombi_scripts.js" },
+    { src: "/js/datatables/dataTables.js" },
+    { src: "/js/datatables/dataTables.buttons.js" },
+    { src: "/js/datatables/buttons.dataTables.js" },
+    { src: "/js/datatables/buttons.html5.min.js" },
+    { src: "/js/datatables/jszip.min.js" },
+    { src: "/js/datatables/pdfmake.min.js" },
+    { src: "/js/datatables/vfs_fonts.js" },
+    { src: "/js/datatables/buttons.print.min.js" },
+    { src: "/js/datatables/buttons.colVis.min.js" },
+  ],
+}) %>
+
+<script>
+  $(document).ready(function () {
+    const params = new URLSearchParams(window.location.search);
+    const activeFilter = String(params.get("filter") || "").trim();
+    const filterLabels = {
+      overdue: "Overdue",
+      submitted: "Mpya",
+      in_progress: "Inaendelea",
+    };
+    const filterLabel = filterLabels[activeFilter] || activeFilter;
+
+    $("[data-filter-card]").each(function () {
+      const cardFilter = String($(this).attr("data-filter-card") || "").trim();
+      if (cardFilter === activeFilter) {
+        $(this).addClass("is-active");
+      }
+      if (!cardFilter && !activeFilter) {
+        $(this).addClass("is-active");
+      }
+    });
+
+    if (activeFilter) {
+      const filterMenuHtml = `
+        <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap mb-3">
+          <div class="d-flex align-items-center gap-2">
+            <span class="text-muted">Filter:</span>
+            <span class="badge bg-danger-subtle text-danger fs-12">${filterLabel}</span>
+          </div>
+          <a href="/TrackOmbi" class="btn btn-sm btn-outline-secondary">
+            Ondoa Filter
+          </a>
+        </div>
+      `;
+
+      $(".card-body").first().prepend(filterMenuHtml);
+    }
+
+    const updateSummary = (summary) => {
+      const values = summary || {};
+      const total = Number(values.total || 0);
+      const submitted = Number(values.submitted_total || 0);
+      const inProgress = Number(values.in_progress_total || 0);
+      const overdue = Number(values.overdue_total || 0);
+
+      $("[data-summary='total']").text(total);
+      $("[data-summary='submitted_total']").text(submitted);
+      $("[data-summary='in_progress_total']").text(inProgress);
+      $("[data-summary='overdue_total']").text(overdue);
+    };
+
+    tableData(
+      "track-ombi-table",
+      "/TrackList",
+      "POST",
+      [
+        {
+          data: null,
+          searchable: false,
+          orderable: false,
+          render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1,
+        },
+        {
+          data: "tracking_number",
+          class: "text-nowrap fw-semibold text-primary",
+          render: (data) => data ? String(data).toUpperCase() : "-",
+        },
+        {
+          data: null,
+          render: (data, type, row) => {
+            const applicationType = row.application_category || "-";
+            const schoolName = row.school_name || "-";
+            const applicantName = row.applicant_name || "-";
+            const regionName = row.region_name || "-";
+            const districtName = row.district_name || "-";
+
+            return `
+              <div class="d-flex flex-column gap-1">
+                <strong class="text-body">${applicationType}</strong>
+                <span class="text-body">${schoolName}</span>
+                <span class="text-muted small">Mwombaji: ${applicantName}</span>
+                <span class="text-muted small">${regionName} / ${districtName}</span>
+              </div>
+            `;
+          },
+        },
+        {
+          data: "current_holder",
+          class: "text-nowrap",
+          render: (data) => data ? `<span class="badge bg-info-subtle text-info">${data}</span>` : "-",
+        },
+        {
+          data: null,
+          class: "text-nowrap",
+          render: (data, type, row) => {
+            const applicantDate = row.application_created_at
+              ? changeDateFormat(row.application_created_at)
+              : "-";
+            const processingDate = row.processing_started_at
+              ? changeDateFormat(row.processing_started_at)
+              : "-";
+
+            return `
+              <div class="d-flex flex-column gap-1">
+                <span class="text-muted small">Mwombaji</span>
+                <span>${applicantDate}</span>
+                <span class="text-muted small mt-1">Kuchakatwa</span>
+                <span>${processingDate}</span>
+              </div>
+            `;
+          },
+        },
+        {
+          data: null,
+          class: "text-nowrap",
+          render: (data, type, row) => {
+            const statusLabel = Number(row.status) === 0 ? "Mpya" : "Inaendelea";
+            const overdueDays = Number(row.overdue_days || 0);
+            const overdueBadge = overdueDays > 0
+              ? `<span class="badge bg-danger-subtle text-danger">SLA ${overdueDays} days</span>`
+              : "";
+            return `
+              <div class="d-flex flex-column gap-1">
+                <span class="badge bg-warning-subtle text-warning">${statusLabel}</span>
+                ${overdueBadge}
+              </div>
+            `;
+          },
+        },
+        {
+          data: null,
+          searchable: false,
+          orderable: false,
+          class: "text-center text-nowrap",
+          render: (data, type, row) => {
+            const elements = [
+              {
+                show: true,
+                type: "button",
+                class: "btn btn-sm btn-outline-secondary",
+                icon: "bx bx-comment me-1",
+                function: "viewComments",
+                btnText: "Maoni",
+                moreAttributes: `title="Angalia maoni" data-bs-toggle="tooltip"`,
+              },
+            ];
+
+            return actionButtons(row, elements);
+          },
+        },
+      ],
+      activeFilter ? [{ name: "filter", value: activeFilter }] : null,
+    );
+
+    $("#track-ombi-table").on("xhr.dt", function (e, settings, json) {
+      updateSummary(json?.summary || null);
+    });
+  });
+</script>
+</body>
 </html>
