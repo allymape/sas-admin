@@ -30,10 +30,25 @@
         <i class="ri-arrow-up-line"></i>
     </button>
     <!--end back-to-top-->
-    <div class="customizer-setting d-none d-md-block">
-        <div class="btn-info btn-rounded shadow-lg btn btn-icon btn-lg p-2" data-bs-toggle="offcanvas" data-bs-target="#theme-settings-offcanvas" aria-controls="theme-settings-offcanvas">
+    <div class="customizer-setting d-none d-md-flex sas-floating-actions">
+        <button
+            type="button"
+            class="btn btn-primary btn-rounded shadow-lg btn-icon btn-lg p-2"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#theme-settings-offcanvas"
+            aria-controls="theme-settings-offcanvas"
+            title="Theme Settings">
+            <i class="ri-palette-line fs-22"></i>
+        </button>
+        <button
+            type="button"
+            class="btn btn-info btn-rounded shadow-lg btn-icon btn-lg p-2"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#ai-support-offcanvas"
+            aria-controls="ai-support-offcanvas"
+            title="AI Support">
             <i class="ri-robot-line fs-22 ai-launch-icon"></i>
-     </div>
+        </button>
     </div>
 
     <!-- Global PDF preview modal (letters) -->
@@ -57,9 +72,10 @@
             </div>
         </div>
     </div>
-     <!-- Start AI Support Panel -->
-     <%- include('ai_support_settings.ejs') %>
-     <!-- End AI Support Panel -->
+    <!-- Theme Settings Panel -->
+    <%- include('settings.ejs') %>
+    <!-- AI Support Panel -->
+    <%- include('ai_support_settings.ejs') %>
     <!-- JAVASCRIPT -->
      <script src="/design/assets/js/jquery-3.5.1.min.js"></script>
     <script src="/design/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -93,6 +109,7 @@
     <script src="/design/assets/js/spin/spin.min.js"></script>
     <script src="/design/assets/libs/choices.js/choices.min.js"></script>
      <script src="/design/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js"></script>
+    <script src="/design/assets/js/sas-template.js"></script>
     <script src="/design/assets/js/custom.js"></script>
     <script src="../js/checkboxes.js"></script>
     <script src="/design/assets/js/alert/notifications.js"></script>

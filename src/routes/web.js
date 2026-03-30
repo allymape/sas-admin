@@ -76,6 +76,8 @@ router.use("/", require("../controllers/systemLogController"));
 router.use("/", require("../controllers/aiSupportController"));
 router.use("/", require("../controllers/systemConfigurationController"));
 router.use("/", require("../controllers/handoverController"));
+router.use("/", require("../controllers/religionController"));
+router.use("/", require("../controllers/languageController"));
 router.use("/", require("../controllers/handleSessionController"));
 router.use("/", require("../controllers/errorController"));
 

@@ -30,14 +30,52 @@
         <i class="ri-arrow-up-line"></i>
     </button>
     <!--end back-to-top-->
-    <!-- <div class="customizer-setting d-none d-md-block">
-        <div class="btn-info btn-rounded shadow-lg btn btn-icon btn-lg p-2" data-bs-toggle="offcanvas" data-bs-target="#theme-settings-offcanvas" aria-controls="theme-settings-offcanvas">
-            <i class='mdi mdi-spin mdi-cog-outline fs-22'></i>
+    <div class="customizer-setting d-none d-md-flex sas-floating-actions">
+        <button
+            type="button"
+            class="btn btn-primary btn-rounded shadow-lg btn-icon btn-lg p-2"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#theme-settings-offcanvas"
+            aria-controls="theme-settings-offcanvas"
+            title="Theme Settings">
+            <i class="ri-palette-line fs-22"></i>
+        </button>
+        <button
+            type="button"
+            class="btn btn-info btn-rounded shadow-lg btn-icon btn-lg p-2"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#ai-support-offcanvas"
+            aria-controls="ai-support-offcanvas"
+            title="AI Support">
+            <i class="ri-robot-line fs-22 ai-launch-icon"></i>
+        </button>
+    </div>
+
+    <!-- Global PDF preview modal (letters) -->
+    <div class="modal fade" id="globalPdfModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="globalPdfModalTitle">Barua</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0 position-relative">
+                    <div id="globalPdfLoading" class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-white">
+                        <div class="text-muted small">Inapakia barua...</div>
+                    </div>
+                    <iframe
+                        id="globalPdfFrame"
+                        title="Letter Preview"
+                        style="width:100%; height:85vh; border:0; display:block;"
+                    ></iframe>
+                </div>
+            </div>
         </div>
-    </div> -->
-     <!-- Start  Theme Settings -->
-     <% include('settings.ejs') %>
-     <!-- End Theme Settings -->
+    </div>
+    <!-- Theme Settings Panel -->
+    <%- include('settings.ejs') %>
+    <!-- AI Support Panel -->
+    <%- include('ai_support_settings.ejs') %>
     <!-- JAVASCRIPT -->
      <script src="/design/assets/js/jquery-3.5.1.min.js"></script>
     <script src="/design/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -71,9 +109,417 @@
     <script src="/design/assets/js/spin/spin.min.js"></script>
     <script src="/design/assets/libs/choices.js/choices.min.js"></script>
      <script src="/design/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js"></script>
+    <script src="/design/assets/js/sas-template.js"></script>
     <script src="/design/assets/js/custom.js"></script>
     <script src="../js/checkboxes.js"></script>
     <script src="/design/assets/js/alert/notifications.js"></script>
+    <style>
+        .ai-launch-icon {
+            display: inline-block;
+            animation: ai-launch-spin 2.5s linear infinite;
+            transform-origin: center;
+        }
+
+        .ai-thinking {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .ai-thinking__dots {
+            display: inline-flex;
+            gap: 0.25rem;
+        }
+
+        .ai-thinking__dot {
+            width: 0.4rem;
+            height: 0.4rem;
+            border-radius: 999px;
+            background: currentColor;
+            opacity: 0.35;
+            animation: ai-thinking-bounce 1.2s infinite ease-in-out;
+        }
+
+        .ai-thinking__dot:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .ai-thinking__dot:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .ai-message-summary-list {
+            margin-top: 0.85rem;
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .ai-message-summary-item {
+            border: 1px solid var(--vz-border-color);
+            border-radius: 0.75rem;
+            background: #fff;
+            padding: 0.9rem 1rem;
+        }
+
+        .ai-message-summary-title {
+            font-size: 0.98rem;
+            font-weight: 700;
+            color: var(--vz-body-color);
+            margin-bottom: 0.45rem;
+        }
+
+        .ai-message-summary-body {
+            white-space: pre-wrap;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #495057;
+            margin-bottom: 0.75rem;
+        }
+
+        .ai-message-summary-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-weight: 600;
+        }
+
+        .ai-message-table-wrap {
+            margin-top: 0.85rem;
+            overflow-x: auto;
+            border: 1px solid var(--vz-border-color);
+            border-radius: 0.75rem;
+            background: #fff;
+        }
+
+        .ai-message-table {
+            width: 100%;
+            min-width: 720px;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .ai-message-table thead th {
+            position: sticky;
+            top: 0;
+            background: #f8f9fa;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .ai-message-table td,
+        .ai-message-table th {
+            vertical-align: top;
+            white-space: nowrap;
+        }
+
+        @keyframes ai-thinking-bounce {
+            0%, 80%, 100% {
+                transform: translateY(0);
+                opacity: 0.35;
+            }
+            40% {
+                transform: translateY(-0.2rem);
+                opacity: 1;
+            }
+        }
+
+        @keyframes ai-launch-spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    <script>
+        (function () {
+            const $messages = $("#ai-messages");
+            const $input = $("#ai-input");
+            const $send = $("#ai-send-btn");
+            const $reset = $("#ai-reset-btn");
+            const $model = $("#ai-model");
+            const $numPredict = $("#ai-num-predict");
+
+            if (!$messages.length || !$input.length || !$send.length || !$reset.length) {
+                return;
+            }
+
+            if (window.__sasAiSupportInitialized) {
+                return;
+            }
+            window.__sasAiSupportInitialized = true;
+
+            let isSending = false;
+            let conversation = [
+                {
+                    role: "assistant",
+                    content:
+                        "Nipo tayari kukusaidia. Niambie tatizo au swali lako (unaweza pia kutaja tracking number kama EM-YYYYMMDD-123).",
+                },
+            ];
+
+            const THINKING_MESSAGE = "AI Thinking...";
+            const RESPONSE_DELAY_MS = 2000;
+
+            const escapeHtml = (value) =>
+                String(value || "")
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#39;");
+
+            const removeThinkingMessage = () => {
+                conversation = conversation.filter(
+                    (message) => !(message.role === "assistant" && message.content === THINKING_MESSAGE),
+                );
+            };
+
+            const formatAiMessageContent = (content) => {
+                if (String(content || "").trim() === THINKING_MESSAGE) {
+                    return `
+                        <span class="ai-thinking">
+                            <span>AI Thinking</span>
+                            <span class="ai-thinking__dots" aria-hidden="true">
+                                <span class="ai-thinking__dot"></span>
+                                <span class="ai-thinking__dot"></span>
+                                <span class="ai-thinking__dot"></span>
+                            </span>
+                        </span>
+                    `;
+                }
+
+                return String(content || "")
+                    .split("\n")
+                    .map((line) => {
+                        const trimmed = String(line || "").trim();
+                        const escapedLine = escapeHtml(line);
+
+                        if (/^Overdue:\s*Ndiyo\b/i.test(trimmed)) {
+                            return `<span class="fw-semibold" style="color: #dc3545;">${escapedLine}</span>`;
+                        }
+
+                        if (/^Overdue:\s*Hapana\b/i.test(trimmed)) {
+                            return `<span class="fw-semibold" style="color: #198754;">${escapedLine}</span>`;
+                        }
+
+                        if (/^Ombi limekaa siku .* wakati muda wa hatua hii ni siku .*\.?$/i.test(trimmed)) {
+                            return `<span class="fw-semibold" style="color: #dc3545;">${escapedLine}</span>`;
+                        }
+
+                        if (/^Ombi limekaa siku .* kati ya siku .* zinazokubalika\.?$/i.test(trimmed)) {
+                            return `<span class="fw-semibold" style="color: #198754;">${escapedLine}</span>`;
+                        }
+
+                        return escapedLine;
+                    })
+                    .join("\n");
+            };
+
+            const renderAiTable = (table) => {
+                const columns = Array.isArray(table?.columns) ? table.columns : [];
+                const rows = Array.isArray(table?.rows) ? table.rows : [];
+                if (!columns.length) return "";
+
+                const headerHtml = columns
+                    .map((column) => `<th>${escapeHtml(column?.label || "")}</th>`)
+                    .join("");
+
+                const bodyHtml = rows.length
+                    ? rows
+                          .map((row) => {
+                              const cells = columns
+                                  .map((column) => `<td>${escapeHtml(row?.[column.key] ?? "")}</td>`)
+                                  .join("");
+                              return `<tr>${cells}</tr>`;
+                          })
+                          .join("")
+                    : `<tr><td colspan="${columns.length}" class="text-muted text-center">Hakuna data ya kuonyesha.</td></tr>`;
+
+                return `
+                    <div class="ai-message-table-wrap">
+                        <table class="table table-sm table-striped align-middle ai-message-table">
+                            <thead>
+                                <tr>${headerHtml}</tr>
+                            </thead>
+                            <tbody>
+                                ${bodyHtml}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            };
+
+            const renderAiSummaryList = (items) => {
+                const rows = Array.isArray(items) ? items : [];
+                if (!rows.length) return "";
+
+                const itemsHtml = rows
+                    .map((item) => {
+                        const title = escapeHtml(item?.title || "");
+                        const body = formatAiMessageContent(item?.body || "");
+                        const href = escapeHtml(item?.href || "/TrackOmbi");
+                        const actionLabel = escapeHtml(item?.action_label || "Fungua");
+                        const hasTitle = Boolean(String(item?.title || "").trim());
+                        const hasBody = Boolean(String(item?.body || "").trim());
+                        const isLinkOnly =
+                            hasTitle &&
+                            !hasBody &&
+                            String(item?.title || "").trim() === String(item?.action_label || "").trim();
+
+                        return `
+                            <div class="ai-message-summary-item">
+                                ${!isLinkOnly && hasTitle ? `<div class="ai-message-summary-title">${title}</div>` : ""}
+                                ${hasBody ? `<div class="ai-message-summary-body">${body}</div>` : ""}
+                                <a href="${href}" class="ai-message-summary-link link-primary">
+                                    <i class="ri-external-link-line"></i>
+                                    <span>${actionLabel}</span>
+                                </a>
+                            </div>
+                        `;
+                    })
+                    .join("");
+
+                return `<div class="ai-message-summary-list">${itemsHtml}</div>`;
+            };
+
+            const renderAiSupport = () => {
+                $messages.empty();
+                conversation.forEach((m, index) => {
+                    const isUser = m.role === "user";
+                    const roleLabel = "";
+                    const badge = isUser
+                        ? '<span class="badge bg-primary-subtle text-primary d-inline-flex align-items-center gap-1" style="font-size: 0.95rem; padding: 0.5rem 0.75rem;"><i class="ri-user-line" style="font-size: 1rem;"></i><span>Me</span></span>'
+                        : '<span class="badge bg-success-subtle text-success d-inline-flex align-items-center gap-1" style="font-size: 0.95rem; padding: 0.5rem 0.75rem;"><i class="ri-robot-line" style="font-size: 1rem;"></i><span>Msaidizi</span></span>';
+                    const wrapper = $(`
+                        <div class="mb-2">
+                          <div class="d-flex align-items-center gap-2 mb-1">
+                            ${badge}
+                            ${roleLabel ? `<span class="text-muted small">${escapeHtml(roleLabel)}</span>` : ""}
+                            <button type="button" class="btn btn-ghost-secondary btn-sm ms-auto ai-copy-btn" data-message-index="${index}">
+                              Copy
+                            </button>
+                          </div>
+                          <pre class="mb-0 p-3 rounded" style="white-space: pre-wrap; background: var(--vz-card-bg); border: 1px solid var(--vz-border-color); font-size: 1rem; line-height: 1.65;">${formatAiMessageContent(m.content)}</pre>
+                          ${m.summary_list ? renderAiSummaryList(m.summary_list) : ""}
+                          ${m.table ? renderAiTable(m.table) : ""}
+                        </div>
+                    `);
+                    $messages.append(wrapper);
+                });
+                $messages.scrollTop($messages.prop("scrollHeight"));
+            };
+
+            const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+            const sendAiSupportMessage = async () => {
+                const text = String($input.val() || "").trim();
+                if (!text || isSending) return;
+
+                isSending = true;
+                conversation.push({ role: "user", content: text });
+                removeThinkingMessage();
+                conversation.push({ role: "assistant", content: THINKING_MESSAGE });
+                renderAiSupport();
+                $input.val("");
+                $send.prop("disabled", true);
+                $reset.prop("disabled", true);
+                $input.prop("disabled", true);
+
+                try {
+                    const payloadMessages = conversation.filter(
+                        (message) => !(message.role === "assistant" && message.content === THINKING_MESSAGE),
+                    );
+                    const payload = {
+                        messages: payloadMessages,
+                        model: String($model.val() || "").trim(),
+                        num_predict: Number($numPredict.val() || 256),
+                    };
+                    const res = await fetch("/AISupportChat", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload),
+                    });
+                    const json = await res.json();
+                    const statusCode = Number(json?.statusCode || 306);
+                    await wait(RESPONSE_DELAY_MS);
+                    removeThinkingMessage();
+                    if (statusCode !== 300 || !json?.data?.reply) {
+                        conversation.push({
+                            role: "assistant",
+                            content: json?.message || "Imeshindikana kupata majibu ya AI. Hakikisha Ollama ina-run.",
+                        });
+                        renderAiSupport();
+                        return;
+                    }
+
+                    conversation.push({
+                        role: "assistant",
+                        content: String(json.data.reply || "").trim(),
+                        summary_list: json?.data?.summary_list || null,
+                        table: json?.data?.table || null,
+                    });
+                    renderAiSupport();
+                } catch (error) {
+                    removeThinkingMessage();
+                    conversation.push({
+                        role: "assistant",
+                        content: "Imeshindikana kuwasiliana na AI. Hakikisha Ollama ina-run kwenye mashine yako.",
+                    });
+                    renderAiSupport();
+                } finally {
+                    isSending = false;
+                    $send.prop("disabled", false);
+                    $reset.prop("disabled", false);
+                    $input.prop("disabled", false);
+                    $input.focus();
+                }
+            };
+
+            $send.on("click", sendAiSupportMessage);
+            $input.on("keydown", (e) => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    sendAiSupportMessage();
+                }
+            });
+
+            $reset.on("click", () => {
+                if (isSending) return;
+                conversation = [
+                    {
+                        role: "assistant",
+                        content:
+                            "Nipo tayari kukusaidia. Niambie tatizo lako la mfumo, error unayoiona, au taja tracking number husika.",
+                    },
+                ];
+                renderAiSupport();
+                $input.focus();
+            });
+
+            $messages.on("click", ".ai-copy-btn", async function () {
+                const index = Number($(this).data("message-index"));
+                const message = conversation[index];
+                const content = String(message?.content || "").trim();
+                if (!content) return;
+
+                try {
+                    await navigator.clipboard.writeText(content);
+                    const $button = $(this);
+                    const originalText = $button.text();
+                    $button.text("Copied");
+                    setTimeout(() => $button.text(originalText), 1200);
+                } catch (error) {
+                    window.prompt("Copy message:", content);
+                }
+            });
+
+            renderAiSupport();
+        })();
+    </script>
 
     <%
       const flashSuccess = typeof req?.flash === 'function' ? req.flash('success') : [];
@@ -127,6 +573,234 @@
                 }).showToast();
             }
         });
+
+	        // Global handler for opening letters in a modal instead of a new tab
+	        (function(){
+	            const modalEl = document.getElementById("globalPdfModal");
+	            const titleEl = document.getElementById("globalPdfModalTitle");
+	            const frameEl = document.getElementById("globalPdfFrame");
+	            const loadingEl = document.getElementById("globalPdfLoading");
+
+	            const getBootstrap = () => {
+	                try {
+	                    return window.bootstrap || (typeof bootstrap !== "undefined" ? bootstrap : null);
+	                } catch (e) {
+	                    return window.bootstrap || null;
+	                }
+	            };
+
+	            const getModalCtor = () => {
+	                const bs = getBootstrap();
+	                return bs && typeof bs.Modal === "function" ? bs.Modal : null;
+	            };
+
+	            let modalInstance = null;
+	            let fallbackBackdrop = null;
+
+	            const showFallback = () => {
+	                if (!modalEl) return;
+	                modalEl.classList.add("show");
+	                modalEl.style.display = "block";
+	                modalEl.removeAttribute("aria-hidden");
+	                document.body.classList.add("modal-open");
+
+	                if (!fallbackBackdrop) {
+	                    fallbackBackdrop = document.createElement("div");
+	                    fallbackBackdrop.className = "modal-backdrop fade show";
+	                    document.body.appendChild(fallbackBackdrop);
+	                }
+	            };
+
+	            const hideFallback = () => {
+	                if (!modalEl) return;
+	                modalEl.classList.remove("show");
+	                modalEl.style.display = "none";
+	                modalEl.setAttribute("aria-hidden", "true");
+	                document.body.classList.remove("modal-open");
+	                if (fallbackBackdrop && fallbackBackdrop.parentNode) {
+	                    fallbackBackdrop.parentNode.removeChild(fallbackBackdrop);
+	                }
+	                fallbackBackdrop = null;
+	            };
+
+	            const setLoading = (isLoading) => {
+	                if (!loadingEl) return;
+	                loadingEl.classList.toggle("d-none", !isLoading);
+	            };
+
+	            window.openPdfModal = (url, options = {}) => {
+	                const safeUrl = String(url || "").trim();
+	                if (!safeUrl) return;
+
+	                if (!modalEl || !frameEl) {
+	                    window.location.assign(safeUrl);
+	                    return;
+	                }
+
+	                const ModalCtor = getModalCtor();
+	                if (ModalCtor && !modalInstance) {
+	                    try {
+	                        modalInstance = new ModalCtor(modalEl, { backdrop: "static", keyboard: true });
+	                    } catch (e) {
+	                        modalInstance = null;
+	                    }
+	                }
+
+	                if (titleEl) {
+	                    const title = String(options.title || "Barua").trim() || "Barua";
+	                    titleEl.textContent = title;
+	                }
+
+	                setLoading(true);
+	                frameEl.src = safeUrl;
+	                if (modalInstance) {
+	                    modalInstance.show();
+	                } else {
+	                    showFallback();
+	                }
+	            };
+
+	            if (frameEl) {
+	                frameEl.addEventListener("load", function(){
+	                    setLoading(false);
+	                });
+	            }
+
+	            if (modalEl) {
+	                modalEl.addEventListener("hidden.bs.modal", function(){
+	                    if (frameEl) frameEl.src = "about:blank";
+	                    setLoading(true);
+	                });
+
+	                // Fallback close button support when Bootstrap isn't available.
+	                const closeBtn = modalEl.querySelector ? modalEl.querySelector('[data-bs-dismiss="modal"], .btn-close') : null;
+	                if (closeBtn) {
+	                    closeBtn.addEventListener("click", function(){
+	                        if (modalInstance) return;
+	                        hideFallback();
+	                        if (frameEl) frameEl.src = "about:blank";
+	                        setLoading(true);
+	                    });
+	                }
+	            }
+
+	            // Close fallback on ESC
+	            document.addEventListener("keydown", function(e){
+	                if (modalInstance) return;
+	                if (!modalEl) return;
+	                if (!modalEl.classList.contains("show")) return;
+	                const key = e && (e.key || e.code);
+	                if (key === "Escape" || key === "Esc") {
+	                    hideFallback();
+	                    if (frameEl) frameEl.src = "about:blank";
+	                    setLoading(true);
+	                }
+	            });
+
+            const isLetterHref = (href) => {
+                const value = String(href || "").trim().toLowerCase();
+                return value.startsWith("/barua/");
+            };
+
+            const handleLetterClick = (event, anchor) => {
+                if (!event || event.defaultPrevented) return;
+                if (!anchor) return;
+                if (anchor.getAttribute("data-no-pdf-modal") === "1") return;
+                if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+                const href = String(anchor.getAttribute("href") || "").trim();
+                if (!isLetterHref(href)) return;
+
+                // Ensure no "new tab" behaviour even if some markup has target=_blank.
+                if (anchor.getAttribute("target") === "_blank") {
+                    anchor.removeAttribute("target");
+                    anchor.removeAttribute("rel");
+                }
+
+                event.preventDefault();
+                event.stopPropagation();
+                if (typeof event.stopImmediatePropagation === "function") {
+                    event.stopImmediatePropagation();
+                }
+
+                const title = String(anchor.getAttribute("title") || anchor.textContent || "Barua").trim() || "Barua";
+                window.openPdfModal(href, { title });
+            };
+
+            const bindLetterAnchors = (root) => {
+                const scope = root && root.querySelectorAll ? root : document;
+                let anchors = [];
+                try {
+                    anchors = Array.from(scope.querySelectorAll('a[href^="/barua/"], a[href^="/Barua/"]'));
+                } catch (e) {
+                    anchors = [];
+                }
+
+                anchors.forEach((a) => {
+                    if (!a || a.getAttribute("data-no-pdf-modal") === "1") return;
+                    if (a.dataset && a.dataset.pdfModalBound === "1") return;
+
+                    // Prevent the browser from opening a new tab by default.
+                    if (a.getAttribute("target") === "_blank") {
+                        a.removeAttribute("target");
+                        a.removeAttribute("rel");
+                    }
+
+                    if (a.dataset) a.dataset.pdfModalBound = "1";
+                    a.addEventListener("click", function (event) {
+                        handleLetterClick(event, a);
+                    });
+                });
+
+                // Also handle legacy markup: <button>...<a href="/Barua/...">...</a></button>
+                let buttons = [];
+                try {
+                    buttons = Array.from(scope.querySelectorAll("button"));
+                } catch (e) {
+                    buttons = [];
+                }
+                buttons.forEach((btn) => {
+                    if (!btn) return;
+                    const a = btn.querySelector ? btn.querySelector('a[href^="/barua/"], a[href^="/Barua/"]') : null;
+                    if (!a) return;
+                    if (btn.dataset && btn.dataset.pdfModalBound === "1") return;
+                    if (btn.dataset) btn.dataset.pdfModalBound = "1";
+                    btn.addEventListener("click", function (event) {
+                        handleLetterClick(event, a);
+                    });
+                });
+            };
+
+            // Initial bind for all pages.
+            bindLetterAnchors(document);
+
+            // MutationObserver for dynamically injected content (tables, ajax, etc).
+            if (document.body && typeof MutationObserver === "function") {
+                const observer = new MutationObserver((mutations) => {
+                    mutations.forEach((m) => {
+                        (m.addedNodes || []).forEach((node) => {
+                            if (!node || node.nodeType !== 1) return;
+                            bindLetterAnchors(node);
+                        });
+                    });
+                });
+                observer.observe(document.body, { childList: true, subtree: true });
+            }
+
+            // Capture-phase handler: runs before other click handlers.
+            document.addEventListener("click", function(event){
+                const anchor = event.target && event.target.closest ? event.target.closest("a") : null;
+                if (!anchor) return;
+                handleLetterClick(event, anchor);
+            }, true);
+
+            // Fallback delegated handler (in case some anchor is missed).
+            document.addEventListener("click", function(event){
+                const anchor = event.target && event.target.closest ? event.target.closest("a") : null;
+                if (!anchor) return;
+                handleLetterClick(event, anchor);
+            }, false);
+        })();
         function formatState(e){return e.id?$('<span><img src="assets/images/flags/select2/'+e.element.value.toLowerCase()+'.png" class="img-flag rounded" height="18" /> '+e.text+"</span>"):e.text}function formatState(e){var t;return e.id?((t=$('<span><img class="img-flag rounded" height="18" /> <span></span></span>')).find("span").text(e.text),t.find("img").attr("src","assets/images/flags/select2/"+e.element.value.toLowerCase()+".png"),t):e.text}$(document).ready(function(){$(".js-example-basic-single").select2(),$(".js-example-basic-multiple").select2();$(".js-example-data-array").select2({data:[{id:0,text:"enhancement"},{id:1,text:"bug"},{id:2,text:"duplicate"},{id:3,text:"invalid"},{id:4,text:"wontfix"}]})}),$(".js-example-templating").select2({templateResult:formatState}),$(".select-flag-templating").select2({templateSelection:formatState}),$(".js-example-disabled").select2(),$(".js-example-disabled-multi").select2(),$(".js-programmatic-enable").on("click",function(){$(".js-example-disabled").prop("disabled",!1),$(".js-example-disabled-multi").prop("disabled",!1)}),$(".js-programmatic-disable").on("click",function(){$(".js-example-disabled").prop("disabled",!0),$(".js-example-disabled-multi").prop("disabled",!0)});
         $(function(){
             const SESSION_CHECK_INTERVAL_MS = 30000;
@@ -487,9 +1161,9 @@ function w() {
 
 </script>    -->
 <script src="/design/assets/js/app.js"></script>
-<script>
-  (function () {
-    const THEME_KEY = "sas_layout_mode";
+	<script>
+	  (function () {
+	    const THEME_KEY = "sas_layout_mode";
 
     const syncDefaultAttribute = () => {
       try {
@@ -540,6 +1214,59 @@ function w() {
           persistTheme(selected);
         });
       });
-    });
-  })();
-</script>
+	    });
+	  })();
+	</script>
+
+	<script>
+	  (function () {
+	    // Persist left menu (hamburger) state across refresh.
+	    const KEY_SIZE = "sas_sidebar_size";
+	    const KEY_HAMBURGER_OPEN = "sas_hamburger_open";
+
+	    const apply = () => {
+	      try {
+	        const savedSize = localStorage.getItem(KEY_SIZE);
+	        if (savedSize !== null) {
+	          document.documentElement.setAttribute("data-sidebar-size", savedSize);
+	          sessionStorage.setItem("data-sidebar-size", savedSize);
+	        }
+
+	        const open = localStorage.getItem(KEY_HAMBURGER_OPEN) === "1";
+	        const hamburger = document.querySelector("#topnav-hamburger-icon .hamburger-icon");
+	        if (hamburger) hamburger.classList.toggle("open", open);
+	      } catch (error) {}
+	    };
+
+	    const save = () => {
+	      try {
+	        const size = document.documentElement.getAttribute("data-sidebar-size") || "";
+	        localStorage.setItem(KEY_SIZE, size);
+	        sessionStorage.setItem("data-sidebar-size", size);
+
+	        const open = document.querySelector(".hamburger-icon")?.classList.contains("open");
+	        localStorage.setItem(KEY_HAMBURGER_OPEN, open ? "1" : "0");
+	      } catch (error) {}
+	    };
+
+	    const bind = () => {
+	      const btn = document.getElementById("topnav-hamburger-icon");
+	      if (!btn) return;
+	      // Run after the theme/app.js click handler so we store the *new* state (not the old one).
+	      btn.addEventListener("click", () => setTimeout(save, 0));
+	    };
+
+	    if (document.readyState === "loading") {
+	      document.addEventListener("DOMContentLoaded", () => {
+	        apply();
+	        bind();
+	      });
+	    } else {
+	      apply();
+	      bind();
+	    }
+
+	    // One more apply after load (in case app.js resets on load callbacks).
+	    window.addEventListener("load", () => setTimeout(apply, 0));
+	  })();
+	</script>

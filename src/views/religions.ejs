@@ -1,0 +1,361 @@
+<% var card_title = '' %>
+<%- include('layouts/partials/header.ejs' , {
+    title : 'Religions',
+    page_title : 'Religions',
+    card_title : 'List of Religions',
+    breadcrumb_main : 'Administration',
+    styles : [
+                { href: '/css/datatables/dataTables.dataTables.css' },
+                { href: '/css/datatables/buttons.dataTables.css' }
+            ]
+}) %>
+<div class="card-body">
+    <div id="religionList">
+        <div class="row g-3 mb-3">
+            <div class="col-sm-auto">
+                <button type="button" class="btn btn-success add-btn" id="create-btn">
+                    <i class="ri-add-line align-bottom me-1"></i> Add Religion
+                </button>
+            </div>
+            <div class="col-sm-3 ms-auto">
+                <label for="status-filter" class="form-label">Status</label>
+                <select id="status-filter" class="form-select">
+                    <option value="">All</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="table-responsive table-card mt-3 mb-1">
+                <table class="table align-middle table-nowrap" id="datatable">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="5%">No.</th>
+                            <th>Name</th>
+                            <th>Code</th>
+                            <th>Status</th>
+                            <th>Sect Count</th>
+                            <th>Created At</th>
+                            <th>Updated At</th>
+                            <th class="text-center" width="10%">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="list form-check-all"></tbody>
+                </table>
+                <div class="noresult" style="display: none">
+                    <div class="text-center">
+                        <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                            colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                        <h5 class="mt-2">No results found</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title">Add Religion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="name-field" class="form-label">Name</label>
+                        <input type="text" id="name-field" class="form-control" placeholder="Enter religion name" required />
+                        <span class="text-danger" style="display: none;" id="fill-name">Name is required.</span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="code-field" class="form-label">Code</label>
+                        <input type="text" id="code-field" class="form-control" placeholder="Optional code (e.g. CHR)" maxlength="20" />
+                    </div>
+                    <div class="mb-1">
+                        <label for="status-field" class="form-label">Status</label>
+                        <select id="status-field" class="form-select">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-success" onclick="createReligion()">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showEditModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title">Edit Religion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <input type="hidden" id="id-field" />
+                    <div class="mb-3">
+                        <label for="name2-field" class="form-label">Name</label>
+                        <input type="text" id="name2-field" class="form-control" placeholder="Enter religion name" required />
+                        <span class="text-danger" style="display: none;" id="fill-name2">Name is required.</span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="code2-field" class="form-label">Code</label>
+                        <input type="text" id="code2-field" class="form-control" placeholder="Optional code (e.g. CHR)" maxlength="20" />
+                    </div>
+                    <div class="mb-1">
+                        <label for="status2-field" class="form-label">Status</label>
+                        <select id="status2-field" class="form-select">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-success" onclick="updateReligion()">Update</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('layouts/partials/footer.ejs' , {
+    card_title :  card_title,
+    scripts : [
+            { src : '/js/datatables/dataTables.js'},
+            { src : '/js/datatables/dataTables.buttons.js'},
+            { src : '/js/datatables/buttons.dataTables.js'},
+            { src : '/js/datatables/buttons.html5.min.js'},
+            { src : '/js/datatables/jszip.min.js'},
+            { src : '/js/datatables/pdfmake.min.js'},
+            { src : '/js/datatables/vfs_fonts.js'},
+            { src : '/js/datatables/buttons.print.min.js'}
+          ]
+    }) %>
+
+<script>
+    const tableFilters = [{ name: "status", value: "" }];
+
+    const reloadReligionTable = () => {
+        $('#datatable').DataTable().ajax.reload(null, false);
+    };
+
+    const badgeForStatus = (status) => {
+        const value = String(status || "").toLowerCase();
+        if (value === "active") {
+            return '<span class="badge bg-success-subtle text-success">Active</span>';
+        }
+        if (value === "inactive") {
+            return '<span class="badge bg-danger-subtle text-danger">Inactive</span>';
+        }
+        return '<span class="badge bg-secondary-subtle text-secondary">Unknown</span>';
+    };
+
+    $("#create-btn").on("click", function () {
+        $("#name-field").val("");
+        $("#code-field").val("");
+        $("#status-field").val("active");
+        $("#fill-name").hide();
+        modal("showModal", true);
+    });
+
+    $("#status-filter").on("change", function () {
+        tableFilters[0].value = String($(this).val() || "");
+        reloadReligionTable();
+    });
+
+    function BadiliData(button) {
+        const rowData = JSON.parse(button.getAttribute("data-row"));
+        $("#id-field").val(rowData.id || "");
+        $("#name2-field").val(rowData.name || "");
+        $("#code2-field").val(rowData.code || "");
+        $("#status2-field").val(String(rowData.status || "active").toLowerCase());
+        $("#fill-name2").hide();
+        modal("showEditModal", true);
+    }
+
+    function createReligion() {
+        const name = String($("#name-field").val() || "").trim();
+        const code = String($("#code-field").val() || "").trim();
+        const status = String($("#status-field").val() || "active").trim().toLowerCase();
+        $("#fill-name").hide();
+
+        if (!name) {
+            $("#fill-name").show();
+            return;
+        }
+
+        ajaxRequest(
+            "/tengenezaReligion",
+            "POST",
+            (response) => {
+                const statusCode = Number(response?.statusCode || 306);
+                alertMessage(
+                    statusCode === 300 ? "Success" : "Failed",
+                    response?.message || "Failed to create religion.",
+                    statusCode === 300 ? "success" : "warning",
+                    () => {
+                        if (statusCode === 300) {
+                            modal("showModal", false);
+                            reloadReligionTable();
+                        }
+                    }
+                );
+            },
+            JSON.stringify({ name, code, status })
+        );
+    }
+
+    function updateReligion() {
+        const id = Number($("#id-field").val() || 0);
+        const name = String($("#name2-field").val() || "").trim();
+        const code = String($("#code2-field").val() || "").trim();
+        const status = String($("#status2-field").val() || "active").trim().toLowerCase();
+        $("#fill-name2").hide();
+
+        if (!id) {
+            alertMessage("Failed", "Religion not found.", "warning");
+            return;
+        }
+        if (!name) {
+            $("#fill-name2").show();
+            return;
+        }
+
+        ajaxRequest(
+            `/badiliReligion/${id}`,
+            "POST",
+            (response) => {
+                const statusCode = Number(response?.statusCode || 306);
+                alertMessage(
+                    statusCode === 300 ? "Success" : "Failed",
+                    response?.message || "Failed to update religion.",
+                    statusCode === 300 ? "success" : "warning",
+                    () => {
+                        if (statusCode === 300) {
+                            modal("showEditModal", false);
+                            reloadReligionTable();
+                        }
+                    }
+                );
+            },
+            JSON.stringify({ name, code, status })
+        );
+    }
+
+    function FutaData(button) {
+        const rowData = JSON.parse(button.getAttribute("data-row"));
+        const id = Number(rowData.id || 0);
+        if (!id) {
+            alertMessage("Failed", "Religion not found.", "warning");
+            return;
+        }
+
+        confirmAction(
+            () => {
+                ajaxRequest(`/futaReligion/${id}`, "POST", (response) => {
+                    const statusCode = Number(response?.statusCode || 306);
+                    alertMessage(
+                        statusCode === 300 ? "Success" : "Failed",
+                        response?.message || "Failed to delete religion.",
+                        statusCode === 300 ? "success" : "warning",
+                        () => {
+                            if (statusCode === 300) {
+                                reloadReligionTable();
+                            }
+                        }
+                    );
+                });
+            },
+            "Delete",
+            "warning",
+            "This religion will be removed if it has no linked sect names.",
+            "Delete Religion?"
+        );
+    }
+
+    $(document).ready(function() {
+        tableData('datatable' ,'/ReligionsList' , 'POST',
+            [
+                {
+                    data: null,
+                    render: function (data, type, row , meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                },
+                {
+                    data: "name",
+                    name: "name",
+                    render: (data) => data || "-"
+                },
+                {
+                    data: "code",
+                    name: "code",
+                    render: (data) => data || "-"
+                },
+                {
+                    data: "status",
+                    name: "status",
+                    render: (data) => badgeForStatus(data)
+                },
+                {
+                    data: "sect_count",
+                    name: "sect_count",
+                    render: (data) => Number(data || 0)
+                },
+                {
+                    data: "created_at",
+                    name: "created_at",
+                    render: (data) => data ? changeDateFormat(data) : "-"
+                },
+                {
+                    data: "updated_at",
+                    name: "updated_at",
+                    render: (data) => data ? changeDateFormat(data) : "-"
+                },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        const elements = [
+                            {
+                                show : true,
+                                type : 'link',
+                                class : 'btn btn-sm btn-outline-primary me-1',
+                                icon : 'bx bx-pencil me-1',
+                                function : 'BadiliData',
+                                btnText : 'Edit'
+                            },
+                            {
+                                show : true,
+                                type : 'link',
+                                class : 'btn btn-sm btn-outline-danger',
+                                icon : 'bx bx-trash me-1',
+                                function : 'FutaData',
+                                btnText : 'Delete'
+                            }
+                        ];
+                        return actionButtons(row, elements);
+                    },
+                    orderable: false,
+                    searchable: false,
+                    className: "text-center"
+                }
+            ],
+            tableFilters
+        );
+    });
+</script>
+</body>
+</html>

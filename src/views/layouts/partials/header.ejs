@@ -1,11 +1,12 @@
 <!doctype html>
-<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none">
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-sas-theme-mode="system" data-sas-accent="blue">
 <head>
     <meta charset="utf-8" />
-    <title><%= `${ typeof title != 'undefined' ? title : ''} | SaS Admin`  %></title>
+    <title><%= `${typeof title !== 'undefined' && title ? title : 'Dashboard'} | SAS - School Accreditation System` %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
-    <meta content="Themesbrand" name="author" />
+    <meta content="School Accreditation System (SAS) - Ministry of Education, Science and Technology" name="description" />
+    <meta content="MOEST Tanzania" name="author" />
+    <meta name="application-name" content="School Accreditation System (SAS)" />
     <!-- App favicon -->
     <link rel="shortcut icon" href="/design/assets/images/favicon.ico">
     <!-- Sweet Alert css-->
@@ -18,10 +19,42 @@
     <script>
       (function () {
         try {
-          var theme = localStorage.getItem("sas_layout_mode");
-          if (theme !== "dark" && theme !== "light") return;
-          document.documentElement.setAttribute("data-layout-mode", theme);
-          sessionStorage.setItem("data-layout-mode", theme);
+          var MODE_KEY = "sas_theme_mode";
+          var ACCENT_KEY = "sas_theme_accent";
+          var LEGACY_MODE_KEY = "sas_layout_mode";
+
+          var themeMode = localStorage.getItem(MODE_KEY);
+          if (!themeMode) {
+            var legacyMode = localStorage.getItem(LEGACY_MODE_KEY);
+            if (legacyMode === "light" || legacyMode === "dark") {
+              themeMode = legacyMode;
+            }
+          }
+          if (themeMode !== "light" && themeMode !== "dark" && themeMode !== "system") {
+            themeMode = "system";
+          }
+
+          var accent = localStorage.getItem(ACCENT_KEY);
+          if (accent !== "blue" && accent !== "indigo" && accent !== "green") {
+            accent = "blue";
+          }
+
+          var resolvedTheme = themeMode;
+          if (themeMode === "system") {
+            resolvedTheme = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          }
+
+          document.documentElement.setAttribute("data-sas-theme-mode", themeMode);
+          document.documentElement.setAttribute("data-sas-accent", accent);
+          document.documentElement.setAttribute("data-layout-mode", resolvedTheme);
+
+          localStorage.setItem(MODE_KEY, themeMode);
+          localStorage.setItem(ACCENT_KEY, accent);
+          if (themeMode === "light" || themeMode === "dark") {
+            localStorage.setItem(LEGACY_MODE_KEY, themeMode);
+          }
+
+          sessionStorage.setItem("data-layout-mode", resolvedTheme);
           var attrs = {};
           Array.from(document.documentElement.attributes || []).forEach(function (attr) {
             if (!attr || !attr.name) return;
@@ -58,6 +91,7 @@
 </head>
 
 <body>
+    <a class="sas-skip-link" href="#main-content">Skip To Main Content</a>
     <!-- Begin page -->
      
     <div id="layout-wrapper">
@@ -67,7 +101,7 @@
         <!-- ============================================================== -->
         <!-- Start right Content here -->
         <!-- ============================================================== -->
-        <div class="main-content">
+        <div class="main-content" id="main-content">
             <div class="page-content">
                 <div class="container-fluid">
                     <% if(typeof page_title !== 'undefined' && page_title) {%>

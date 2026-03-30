@@ -1,0 +1,284 @@
+<% var card_title = '' %>
+<%- include('layouts/partials/header.ejs' , {
+    title : 'Languages',
+    page_title : 'Languages',
+    card_title : 'List of Teaching Languages',
+    breadcrumb_main : 'Administration',
+    styles : [
+                { href: '/css/datatables/dataTables.dataTables.css' },
+                { href: '/css/datatables/buttons.dataTables.css' }
+            ]
+}) %>
+<div class="card-body">
+    <div id="languageList">
+        <div class="row g-3 mb-3">
+            <div class="col-sm-auto">
+                <button type="button" class="btn btn-success add-btn" id="create-btn">
+                    <i class="ri-add-line align-bottom me-1"></i> Add Language
+                </button>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="table-responsive table-card mt-3 mb-1">
+                <table class="table align-middle table-nowrap" id="datatable">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="5%">No.</th>
+                            <th>Language</th>
+                            <th>Created At</th>
+                            <th>Updated At</th>
+                            <th class="text-center" width="10%">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="list form-check-all"></tbody>
+                </table>
+                <div class="noresult" style="display: none">
+                    <div class="text-center">
+                        <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                            colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                        <h5 class="mt-2">No results found</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title">Add Language</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <div class="mb-1">
+                        <label for="language-field" class="form-label">Language</label>
+                        <input type="text" id="language-field" class="form-control" placeholder="Enter language name" required />
+                        <span class="text-danger" style="display: none;" id="fill-language">Language is required.</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-success" onclick="createLanguage()">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showEditModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title">Edit Language</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <input type="hidden" id="id-field" />
+                    <div class="mb-1">
+                        <label for="language2-field" class="form-label">Language</label>
+                        <input type="text" id="language2-field" class="form-control" placeholder="Enter language name" required />
+                        <span class="text-danger" style="display: none;" id="fill-language2">Language is required.</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-success" onclick="updateLanguage()">Update</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('layouts/partials/footer.ejs' , {
+    card_title :  card_title,
+    scripts : [
+            { src : '/js/datatables/dataTables.js'},
+            { src : '/js/datatables/dataTables.buttons.js'},
+            { src : '/js/datatables/buttons.dataTables.js'},
+            { src : '/js/datatables/buttons.html5.min.js'},
+            { src : '/js/datatables/jszip.min.js'},
+            { src : '/js/datatables/pdfmake.min.js'},
+            { src : '/js/datatables/vfs_fonts.js'},
+            { src : '/js/datatables/buttons.print.min.js'}
+          ]
+    }) %>
+
+<script>
+    const reloadLanguageTable = () => {
+        $('#datatable').DataTable().ajax.reload(null, false);
+    };
+
+    const formatDateTime = (value) => {
+        if (!value) return "-";
+        const dateObj = new Date(value);
+        if (Number.isNaN(dateObj.getTime())) return "-";
+        return dateObj.toLocaleString("en-GB", {
+            timeZone: "Africa/Dar_es_Salaam",
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false
+        });
+    };
+
+    $("#create-btn").on("click", function () {
+        $("#language-field").val("");
+        $("#fill-language").hide();
+        modal("showModal", true);
+    });
+
+    function BadiliData(button) {
+        const rowData = JSON.parse(button.getAttribute("data-row"));
+        $("#id-field").val(rowData.id || "");
+        $("#language2-field").val(rowData.language || "");
+        $("#fill-language2").hide();
+        modal("showEditModal", true);
+    }
+
+    function createLanguage() {
+        const language = String($("#language-field").val() || "").trim();
+        $("#fill-language").hide();
+
+        if (!language) {
+            $("#fill-language").show();
+            return;
+        }
+
+        ajaxRequest(
+            "/tengenezaLanguage",
+            "POST",
+            (response) => {
+                const statusCode = Number(response?.statusCode || 306);
+                alertMessage(
+                    statusCode === 300 ? "Success" : "Failed",
+                    response?.message || "Failed to create language.",
+                    statusCode === 300 ? "success" : "warning",
+                    () => {
+                        if (statusCode === 300) {
+                            modal("showModal", false);
+                            reloadLanguageTable();
+                        }
+                    }
+                );
+            },
+            JSON.stringify({ language })
+        );
+    }
+
+    function updateLanguage() {
+        const id = Number($("#id-field").val() || 0);
+        const language = String($("#language2-field").val() || "").trim();
+        $("#fill-language2").hide();
+
+        if (!id) {
+            alertMessage("Failed", "Language not found.", "warning");
+            return;
+        }
+        if (!language) {
+            $("#fill-language2").show();
+            return;
+        }
+
+        ajaxRequest(
+            `/badiliLanguage/${id}`,
+            "POST",
+            (response) => {
+                const statusCode = Number(response?.statusCode || 306);
+                alertMessage(
+                    statusCode === 300 ? "Success" : "Failed",
+                    response?.message || "Failed to update language.",
+                    statusCode === 300 ? "success" : "warning",
+                    () => {
+                        if (statusCode === 300) {
+                            modal("showEditModal", false);
+                            reloadLanguageTable();
+                        }
+                    }
+                );
+            },
+            JSON.stringify({ language })
+        );
+    }
+
+    function FutaData(button) {
+        const rowData = JSON.parse(button.getAttribute("data-row"));
+        const id = Number(rowData.id || 0);
+        if (!id) {
+            alertMessage("Failed", "Language not found.", "warning");
+            return;
+        }
+
+        confirmAction(
+            () => {
+                ajaxRequest(`/futaLanguage/${id}`, "POST", (response) => {
+                    const statusCode = Number(response?.statusCode || 306);
+                    alertMessage(
+                        statusCode === 300 ? "Success" : "Failed",
+                        response?.message || "Failed to delete language.",
+                        statusCode === 300 ? "success" : "warning",
+                        () => {
+                            if (statusCode === 300) {
+                                reloadLanguageTable();
+                            }
+                        }
+                    );
+                });
+            },
+            "Delete",
+            "warning",
+            "Ukifuta taarifa hii, haitatumika tena kwenye setup.",
+            "Delete Language?"
+        );
+    }
+
+    $(document).ready(function() {
+        tableData('datatable' , '/LanguagesList' , 'POST',
+            [
+                { data: null, render : (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1 },
+                { data: "language", name: "language", render: (data) => data || "-" },
+                { data: "created_at", name: "created_at", render: (data) => formatDateTime(data) },
+                { data: "updated_at", name: "updated_at", render: (data) => formatDateTime(data) },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        const elements = [
+                            {
+                                show : true,
+                                type : 'button',
+                                class : 'btn btn-soft-primary action-btn me-1',
+                                icon : 'ri-pencil-line',
+                                function : 'BadiliData',
+                                btnText : '',
+                                moreAttributes : "title='Edit' data-bs-toggle='tooltip'"
+                            },
+                            {
+                                show : true,
+                                type : 'button',
+                                class : 'btn btn-soft-danger action-btn',
+                                icon : 'ri-delete-bin-5-line',
+                                function : 'FutaData',
+                                btnText : '',
+                                moreAttributes : "title='Delete' data-bs-toggle='tooltip'"
+                            }
+                        ];
+                        return actionButtons(row , elements);
+                    },
+                    orderable: false,
+                    class : 'text-center'
+                },
+            ]
+        );
+    });
+</script>
+

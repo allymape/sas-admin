@@ -138,6 +138,7 @@ function listWorkflow() {
          response.data = response.data.map((item, index, items) => ({
            id : item.id,
            application_category_id : item.application_category_id,
+           is_group_end: Number(item.is_final) === 1 ? 1 : 0,
            timeline: buildWorkflowTimeline(item, items[index - 1], items[index + 1]),
            unit_name: item.unit_name || "-",
            app_name: item.app_name,
@@ -154,6 +155,7 @@ function listWorkflow() {
               false,
               captionText
             );
+            applyWorkflowGroupDividers(response.data);
             highlightEditingWorkflowRow();
        }
   });
@@ -175,6 +177,21 @@ function highlightEditingWorkflowRow(){
      if(editLink.length){
        editLink.closest("tr").addClass("workflow-row-active");
      }
+}
+
+function applyWorkflowGroupDividers(items){
+     const rows = $("#workflowTable tbody tr");
+     rows.removeClass("workflow-group-divider");
+     if(!Array.isArray(items) || !rows.length){
+       return;
+     }
+
+     rows.each((index, element) => {
+       const row = items[index] || {};
+       if(Number(row.is_group_end) === 1){
+         $(element).addClass("workflow-group-divider");
+       }
+     });
 }
 
 function getWorkflowCategoryColor(item){

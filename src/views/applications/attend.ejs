@@ -5,6 +5,22 @@
 }) %>
 
 <%
+  const delegatedFromName = String(req?.user?.delegated_from_user_name || "").trim();
+  const delegatedFromId = Number(req?.user?.handover_by || 0);
+  const delegatedUntilAt = req?.user?.delegated_until_at || null;
+  const hasIncomingHandover = Boolean(req?.user?.has_active_incoming_handover);
+  const delegatedOwnerLabel = delegatedFromName || (delegatedFromId > 0 ? `USER #${delegatedFromId}` : "another staff member");
+  const delegatedUntilLabel = delegatedUntilAt ? dateFormat(delegatedUntilAt, "DD/MM/YYYY HH:mm") : "";
+%>
+
+<% if (hasIncomingHandover) { %>
+<div class="alert alert-warning d-flex align-items-center gap-2">
+  <i class="ri-user-shared-line"></i>
+  <span>You are acting on behalf of <b><%= delegatedOwnerLabel %></b><%= delegatedUntilLabel ? ` until ${delegatedUntilLabel}` : "" %>.</span>
+</div>
+<% } %>
+
+<%
   const app = application || {};
   const school = app.establishing_school || {};
   const category = app.application_category || {};
@@ -86,18 +102,18 @@
   const workflowStepsForActions = Array.isArray(app.workflow_steps) ? app.workflow_steps : [];
   const currentProcessForActions = app.current_process || {};
   const currentWorkflowUnitForActions = currentProcessForActions?.current_workflow_unit || {};
-  const currentProcessWorkflowIdForActions = Number(currentProcessForActions?.work_flow_id || 0);
+  const currentProcessWorkflowIdForActions = Number(currentProcessForActions?.workflow_id || 0);
   const startFromCurrentWorkflowUnit = toBooleanFlag(currentWorkflowUnitForActions?.is_start);
   const finalFromCurrentWorkflowUnit = toBooleanFlag(currentWorkflowUnitForActions?.is_final);
   const canApproveInCurrentWorkflowUnit = toBooleanFlag(currentWorkflowUnitForActions?.can_approve);
   const isCurrentWorkflowStartStep = startFromCurrentWorkflowUnit || workflowStepsForActions.some(
     (step) =>
-      Number(step?.work_flow_id || 0) === currentProcessWorkflowIdForActions
+      Number(step?.workflow_id || 0) === currentProcessWorkflowIdForActions
       && toBooleanFlag(step?.is_start),
   );
   const isCurrentWorkflowFinalStep = finalFromCurrentWorkflowUnit || workflowStepsForActions.some(
     (step) =>
-      Number(step?.work_flow_id || 0) === currentProcessWorkflowIdForActions
+      Number(step?.workflow_id || 0) === currentProcessWorkflowIdForActions
       && toBooleanFlag(step?.is_final),
   );
   const hideReturnToPreviousStaffAction = hasAssignStaffPermission && isCurrentWorkflowStartStep;
@@ -430,16 +446,16 @@
     .slice()
     .sort((left, right) => Number(left?._order || 0) - Number(right?._order || 0));
   const currentProcess = app.current_process || {};
-  const currentProcessWorkflowId = Number(currentProcess?.work_flow_id || 0);
+  const currentProcessWorkflowId = Number(currentProcess?.workflow_id || 0);
 
   const normalizeProcessStatus = (value) => String(value || "").trim().toLowerCase();
   const currentStepFromWorkflow = workflowSteps.find(
-    (step) => Number(step?.work_flow_id || 0) === currentProcessWorkflowId,
+    (step) => Number(step?.workflow_id || 0) === currentProcessWorkflowId,
   );
   const currentWorkflowOrder = Number(currentStepFromWorkflow?._order || currentProcess?.step_order || 0);
 
   const workflowStepState = (step, index) => {
-    const stepWorkflowId = Number(step?.work_flow_id || 0);
+    const stepWorkflowId = Number(step?.workflow_id || 0);
     const stepOrder = Number(step?._order || index + 1);
     const processStatus = normalizeProcessStatus(step?.process_status);
 

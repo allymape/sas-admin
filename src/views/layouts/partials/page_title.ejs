@@ -1,12 +1,39 @@
+<%
+const normalizeLabel = (value = "") => {
+    const text = String(value || "").trim();
+    if (!text) return "";
+    const lower = text.toLowerCase();
+    if (lower === "dashibodi") return "Dashboard";
+    if (lower === "mwanzo") return "Home";
+    return text;
+};
+
+const resolvedTitle = normalizeLabel((typeof page_title !== "undefined" && page_title) ? page_title : title);
+const resolvedSection = normalizeLabel(typeof breadcrumb_main !== "undefined" ? breadcrumb_main : "");
+const breadcrumbParts = ["Home"];
+if (resolvedSection && resolvedSection.toLowerCase() !== "home" && resolvedSection.toLowerCase() !== resolvedTitle.toLowerCase()) {
+    breadcrumbParts.push(resolvedSection);
+}
+if (resolvedTitle && breadcrumbParts[breadcrumbParts.length - 1].toLowerCase() !== resolvedTitle.toLowerCase()) {
+    breadcrumbParts.push(resolvedTitle);
+}
+%>
 <% if(typeof title != 'undefined' && title) {%>
 <div class="row">
     <div class="col-12">
         <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-            <h4 class="mb-sm-0"><%=`${typeof page_title != 'undefined' ? page_title : ''}`%></h4>
+            <h4 class="mb-sm-0"><%= resolvedTitle %></h4>
             <div class="page-title-right">
-                <ol class="breadcrumb m-0">
-                    <li class="breadcrumb-item"><a href="javascript: void(0);"><%= typeof breadcrumb_main !== "undefined" ? breadcrumb_main : '' %></a></li>
-                    <li class="breadcrumb-item active"><%=`${typeof title != 'undefined' ? title : ''}`%></li>
+                <ol class="breadcrumb m-0 align-items-center">
+                    <% breadcrumbParts.forEach((part, index) => { %>
+                        <% if (index === breadcrumbParts.length - 1) { %>
+                            <li class="breadcrumb-item active"><%= part %></li>
+                        <% } else if (index === 0) { %>
+                            <li class="breadcrumb-item"><a href="/Dashboard"><%= part %></a></li>
+                        <% } else { %>
+                            <li class="breadcrumb-item"><%= part %></li>
+                        <% } %>
+                    <% }) %>
                 </ol>
             </div>
 

@@ -1,424 +1,557 @@
+<%
+const currentUrl = getCurrentUrl(req);
+const can = (permissionName) => permission(req, permissionName);
+const hasAnyPermission = (permissionNames = []) => {
+  return permissionNames.some((permissionName) => can(permissionName));
+};
+
+const roleName = String(req?.session?.jukumu || req?.user?.jukumu || "").toLowerCase();
+const isAdminRole = ["super admin", "super-admin", "admin", "system admin"].some((name) => roleName.includes(name));
+
+const hasVisibleChildren = (items = []) => {
+  return items.some((item) => {
+    if (Array.isArray(item.subMenus) && item.subMenus.length > 0) {
+      return hasVisibleChildren(item.subMenus);
+    }
+    return !!item.hasPermissionTo;
+  });
+};
+
+const collectPatterns = (items = []) => {
+  return items
+    .flatMap((item) => {
+      const own = item.pattern ? [item.pattern] : [];
+      const child = Array.isArray(item.subMenus) ? collectPatterns(item.subMenus) : [];
+      return own.concat(child);
+    })
+    .filter(Boolean);
+};
+
+const renderSubMenus = (items = [], level = 0) => {
+  let html = '<ul class="nav nav-sm flex-column">';
+  items.forEach((subItem) => {
+    const hasChildren = Array.isArray(subItem.subMenus) && subItem.subMenus.length > 0;
+    const visible = hasChildren ? hasVisibleChildren(subItem.subMenus) : !!subItem.hasPermissionTo;
+    if (!visible) return;
+
+    if (hasChildren) {
+      const collapseId =
+        subItem.menuId || `submenu-${level}-${String(subItem.label || "").toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+      const descendantPatterns = collectPatterns(subItem.subMenus).join("|");
+      const isOpen = routeIs(descendantPatterns, currentUrl);
+      const openClass = isOpen ? "show" : "";
+      const activeClass = isOpen ? "active" : "";
+      html += `
+        <li class="nav-item">
+          <a class="nav-link menu-link ${activeClass}" href="#${collapseId}" data-bs-toggle="collapse" role="button" aria-expanded="${isOpen ? "true" : "false"}" aria-controls="${collapseId}">
+            ${subItem.label}
+          </a>
+          <div class="collapse menu-dropdown ${openClass}" id="${collapseId}">
+            ${renderSubMenus(subItem.subMenus, level + 1)}
+          </div>
+        </li>
+      `;
+      return;
+    }
+
+    const activeClass = routeIs(subItem.pattern || "", currentUrl) ? "active" : "";
+    const counterHtml = subItem.counterId
+      ? `<span class="badge badge-pill bg-danger" id="${subItem.counterId}" data-key="t-new"></span>`
+      : "";
+
+    html += `
+      <li class="nav-item">
+        <a href="/${subItem.url}" class="nav-link ${activeClass}" data-key="t-analytics">
+          ${subItem.label}
+          ${counterHtml}
+        </a>
+      </li>
+    `;
+  });
+
+  html += "</ul>";
+  return html;
+};
+
+const menuItems = [
+  {
+    label: "Dashboard",
+    url: "#sidebarDashboards",
+    menuTitle: "Menu",
+    icon: "ri-dashboard-2-line",
+    menuId: "sidebarDashboards",
+    subMenus: [
+      {
+        label: "Overview",
+        url: "Dashboard",
+        pattern: "Dashboard",
+        hasPermissionTo: can("view-dashboard"),
+      },
+      {
+        label: "Schools Geolocation",
+        url: "Map",
+        pattern: "Map",
+        hasPermissionTo: can("view-dashboard"),
+      },
+    ],
+  },
+  {
+    label: "All Applications",
+    url: "#sidebarApplications",
+    menuTitle: "Applications",
+    icon: "ri-git-pull-request-line",
+    menuId: "sidebarApplications",
+    subMenus: [
+      {
+        label: "Applications Queue",
+        url: "applications",
+        pattern: "Applications|applications|Applications/*|applications/*|Applications/*/attend|applications/*/attend",
+        hasPermissionTo: can("view-track-application") || can("view-applications"),
+      },
+      {
+        label: "My Applications",
+        url: "my-applications",
+        pattern: "MyApplications|my-applications|MyApplications/*|my-applications/*|MyApplications/*/attend|my-applications/*/attend",
+        hasPermissionTo: can("view-track-application") || can("view-applications"),
+      },
+      {
+        label: "Certificates (Registration)",
+        url: "vyeti",
+        pattern: "vyeti|vyeti/*",
+        hasPermissionTo: can("view-letters"),
+      },
+      {
+        label: "Track Application",
+        url: "TrackOmbi",
+        pattern: "TrackOmbi|TrackOmbi/*",
+        hasPermissionTo: can("view-track-application") || can("view-applications"),
+      },
+      {
+        label: "Handover",
+        menuId: "submenu-applications-handover",
+        subMenus: [
+          {
+            label: "My Handovers",
+            url: "Handover/My",
+            pattern: "Handover/My|Handover/Details/*|v2-Handover",
+            hasPermissionTo: can("view-profile") || can("create-handover") || can("update-handover") || can("approve-handover"),
+          },
+          {
+            label: "Assigned To Me",
+            url: "Handover/Assigned",
+            pattern: "Handover/Assigned|v2-HandoverAssigned",
+            hasPermissionTo: can("view-profile") || can("create-handover") || can("update-handover") || can("approve-handover"),
+          },
+          {
+            label: "Approvals",
+            url: "Handover/Approvals",
+            pattern: "Handover/Approvals|v2-HandoverApprovals",
+            hasPermissionTo: can("approve-handover") || can("update-handover"),
+          },
+          {
+            label: "Audit Trail",
+            url: "Handover/Audit",
+            pattern: "Handover/Audit|Handover/Audits/*|v2-HandoverAudit",
+            hasPermissionTo: can("view-profile") || can("create-handover") || can("update-handover") || can("approve-handover"),
+          },
+          {
+            label: "All Handovers",
+            url: "Handover/All",
+            pattern: "Handover/All|v2-HandoverAll",
+            hasPermissionTo: isAdminRole,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Reports",
+    url: "#sidebarReports",
+    menuTitle: "Reports and Analysis",
+    icon: "ri-bubble-chart-line",
+    menuId: "sidebarReports",
+    subMenus: [
+      {
+        label: "School Establishment",
+        url: "v2-RipotiKuanzisha",
+        pattern: "v2-RipotiKuanzisha|RipotiKuanzisha",
+        hasPermissionTo: can("view-established-schools-report"),
+      },
+      {
+        label: "School Owners",
+        url: "v2-RipotiWamiliki",
+        pattern: "v2-RipotiWamiliki|RipotiWamiliki",
+        hasPermissionTo: can("view-school-owners-report"),
+      },
+      {
+        label: "School Managers",
+        url: "v2-RipotiMeneja",
+        pattern: "v2-RipotiMeneja|RipotiMeneja",
+        hasPermissionTo: can("view-school-managers-report"),
+      },
+      {
+        label: "Registered Schools",
+        url: "v2-RipotiZilizosajiliwa",
+        pattern: "v2-RipotiZilizosajiliwa|RipotiZilizosajiliwa|ShuleDetails/*",
+        hasPermissionTo: can("view-registered-school-report"),
+      },
+      {
+        label: "Registration Analytics",
+        url: "v2-RipotiUsajiliAnalytics",
+        pattern: "v2-RipotiUsajiliAnalytics|RipotiUsajiliAnalytics",
+        hasPermissionTo: can("view-registered-school-report"),
+      },
+      {
+        label: "Changes",
+        url: "v2-RipotiKuongezaMikondo",
+        pattern:
+          "v2-RipotiKuongezaMikondo|v2-RipotiKuhamishaShule|v2-RipotiKubadiliUsajili|v2-RipotiKubadiliUmiliki|v2-RipotiKubadiliMeneja|v2-RipotiKubadiliJina|v2-RipotiKufutaShule|v2-RipotiKuongezaTahasusi|v2-RipotiKuongezaDahalia|v2-RipotiKuongezaBweni|RipotiKuongezaMikondo|RipotiKuhamishaShule|RipotiKubadiliUsajili|RipotiKubadiliUmiliki|RipotiKubadiliMeneja|RipotiKubadiliJina|RipotiKufutaShule|RipotiKuongezaTahasusi|RipotiKuongezaDahalia|RipotiKuongezaBweni",
+        hasPermissionTo: can("view-addition-of-streams-report"),
+      },
+    ],
+  },
+  {
+    label: "System Administration",
+    url: "#sidebarUI",
+    menuTitle: "Administration",
+    icon: "ri-list-settings-line",
+    menuId: "sidebarUI",
+    subMenus: [
+      {
+        label: "Schools & Applicants",
+        menuId: "sidebarUISchools",
+        subMenus: [
+          {
+            label: "Applicants",
+            url: "v2-Waombaji",
+            pattern: "v2-Waombaji|Waombaji|Mwombaji/*|Mwombaji/*/badili",
+            hasPermissionTo: can("view-applicants"),
+          },
+          {
+            label: "Schools",
+            url: "v2-Shule",
+            pattern: "v2-Shule|Shule|ShuleDetails/*/Edit",
+            hasPermissionTo: can("view-schools"),
+          },
+          {
+            label: "School Files",
+            url: "v2-MajaladaYaShule",
+            pattern: "v2-MajaladaYaShule|MajaladaYaShule",
+            hasPermissionTo: can("view-schools"),
+          },
+          {
+            label: "School Types",
+            url: "v2-AinaZaShule",
+            pattern: "v2-AinaZaShule|AinaZaShule",
+            hasPermissionTo: can("view-schools"),
+          },
+          {
+            label: "Accommodation Types",
+            url: "v2-AinaYaMalazi",
+            pattern: "v2-AinaYaMalazi|AinaYaMalazi",
+            hasPermissionTo: can("view-schools"),
+          },
+          {
+            label: "Languages",
+            url: "v2-Languages",
+            pattern: "v2-Languages|Languages",
+            hasPermissionTo: can("view-schools"),
+          },
+          {
+            label: "Religions",
+            url: "v2-Religions",
+            pattern: "v2-Religions|Religions",
+            hasPermissionTo: can("view-schools"),
+          },
+          {
+            label: "Sect Names",
+            url: "v2-SectNames",
+            pattern: "v2-SectNames|SectNames",
+            hasPermissionTo: can("view-schools"),
+          },
+          {
+            label: "School Type Standards",
+            url: "v2-ViwangoAinaZaShule",
+            pattern: "v2-ViwangoAinaZaShule|ViwangoAinaZaShule",
+            hasPermissionTo: can("view-schools"),
+          },
+          {
+            label: "Infrastructure Standards",
+            url: "v2-ViwangoMiundombinu",
+            pattern: "v2-ViwangoMiundombinu|ViwangoMiundombinu",
+            hasPermissionTo: can("view-schools"),
+          },
+        ],
+      },
+      {
+        label: "Users & Permissions",
+        menuId: "sidebarUIUsers",
+        subMenus: [
+          {
+            label: "Roles",
+            url: "v2-Roles",
+            pattern: "v2-Roles|Roles|EditRole/*|CreateRole",
+            hasPermissionTo: can("view-roles"),
+          },
+          {
+            label: "Permissions",
+            url: "v2-Permissions",
+            pattern: "v2-Permissions|Permissions|Permissions/*",
+            hasPermissionTo: can("view-permissions"),
+          },
+          {
+            label: "Modules",
+            url: "v2-Modules",
+            pattern: "v2-Modules|Modules|Modules/*",
+            hasPermissionTo: can("view-permissions"),
+          },
+          {
+            label: "Users",
+            url: "v2-Watumiaji",
+            pattern: "v2-Watumiaji|Watumiaji",
+            hasPermissionTo: can("view-users"),
+          },
+        ],
+      },
+      {
+        label: "Locations & Leadership",
+        menuId: "sidebarUILocations",
+        subMenus: [
+          {
+            label: "Zones",
+            url: "v2-Zoni",
+            pattern: "v2-Zoni|Zoni",
+            hasPermissionTo: can("view-zones"),
+          },
+          {
+            label: "Regions",
+            url: "v2-Mikoa",
+            pattern: "v2-Mikoa|Mikoa",
+            hasPermissionTo: can("view-regions"),
+          },
+          {
+            label: "Councils",
+            url: "v2-Halmashauri",
+            pattern: "v2-Halmashauri|Halmashauri",
+            hasPermissionTo: can("view-districts"),
+          },
+          {
+            label: "Wards",
+            url: "v2-Kata",
+            pattern: "v2-Kata|Kata",
+            hasPermissionTo: can("view-wards"),
+          },
+          {
+            label: "Streets",
+            url: "v2-Mitaa",
+            pattern: "v2-Mitaa|Mitaa",
+            hasPermissionTo: can("view-streets"),
+          },
+          {
+            label: "Ranks",
+            url: "v2-Ngazi",
+            pattern: "v2-Ngazi|Ngazi",
+            hasPermissionTo: can("view-ranks"),
+          },
+          {
+            label: "Sections",
+            url: "v2-Uongozi",
+            pattern: "v2-Uongozi|Uongozi",
+            hasPermissionTo: can("view-hierarchies"),
+          },
+          {
+            label: "Designations",
+            url: "v2-Vyeo",
+            pattern: "v2-Vyeo|Vyeo",
+            hasPermissionTo: can("view-designations"),
+          },
+        ],
+      },
+      {
+        label: "Application Workflow",
+        menuId: "sidebarUIWorkflow",
+        subMenus: [
+          {
+            label: "Application Types",
+            url: "v2-AinaZaMaombi",
+            pattern: "v2-AinaZaMaombi|AinaZaMaombi",
+            hasPermissionTo: can("view-workflow") || can("view-attachments"),
+          },
+          {
+            label: "Attachment Types",
+            url: "v2-Viambatisho",
+            pattern: "v2-Viambatisho|Viambatisho",
+            hasPermissionTo: can("view-attachments"),
+          },
+          {
+            label: "Fees",
+            url: "v2-Malipo",
+            pattern: "v2-Malipo|Malipo",
+            hasPermissionTo: can("view-fees"),
+          },
+          {
+            label: "Combinations",
+            url: "v2-Tahasusi",
+            pattern: "v2-Tahasusi|Tahasusi",
+            hasPermissionTo: can("view-combinations"),
+          },
+          {
+            label: "Subjects",
+            url: "v2-Masomo",
+            pattern: "v2-Masomo|Masomo",
+            hasPermissionTo: can("view-combinations"),
+          },
+          {
+            label: "Stream Subjects",
+            url: "v2-MasomoYaMichepuo",
+            pattern: "v2-MasomoYaMichepuo|MasomoYaMichepuo",
+            hasPermissionTo: can("view-combinations"),
+          },
+          {
+            label: "Streams",
+            url: "v2-Michepuo",
+            pattern: "v2-Michepuo|Michepuo",
+            hasPermissionTo: can("view-biases"),
+          },
+          {
+            label: "Registration Numbers",
+            url: "v2-Algorithm",
+            pattern: "v2-Algorithm|Algorithm",
+            hasPermissionTo: can("view-algorithm"),
+          },
+          {
+            label: "File Numbers",
+            url: "v2-FileNumberMappings",
+            pattern: "v2-FileNumberMappings|FileNumberMappings",
+            hasPermissionTo: can("view-algorithm") || can("view-workflow") || can("view-track-application"),
+          },
+          {
+            label: "Workflow",
+            url: "v2-Workflow",
+            pattern: "v2-Workflow|Workflow|Workflow/*",
+            hasPermissionTo: can("view-workflow"),
+          },
+          {
+            label: "Step Types",
+            url: "v2-AinaZaHatua",
+            pattern: "v2-AinaZaHatua|AinaZaHatua",
+            hasPermissionTo: can("view-workflow"),
+          },
+        ],
+      },
+      {
+        label: "Letters",
+        menuId: "sidebarUIBarua",
+        subMenus: [
+          {
+            label: "Templates",
+            url: "letter-templates",
+            pattern: "letter-templates|letter-templates/*/edit|letter-templates/*/preview",
+            hasPermissionTo: can("view-letters"),
+          },
+          {
+            label: "Addressee Formats",
+            url: "letter-addressee-templates",
+            pattern: "letter-addressee-templates|letter-addressee-templates/*|letter-addressee-templates/*/edit",
+            hasPermissionTo: can("view-letters"),
+          },
+          {
+            label: "Guide",
+            url: "letter-templates/guide",
+            pattern: "letter-templates/guide",
+            hasPermissionTo: can("view-letters"),
+          },
+        ],
+      },
+      {
+        label: "Monitoring & Audit",
+        menuId: "sidebarUIAudit",
+        subMenus: [
+          {
+            label: "Audit Trail",
+            url: "AuditTrail",
+            pattern: "AuditTrail",
+            hasPermissionTo: can("view-audit"),
+          },
+          {
+            label: "System Configurations",
+            url: "v2-SystemConfigurations",
+            pattern: "v2-SystemConfigurations|SystemConfigurations",
+            hasPermissionTo: can("view-audit"),
+          },
+          {
+            label: "Login Activity",
+            url: "LoginActivity",
+            pattern: "LoginActivity",
+            hasPermissionTo: can("view-login-activity"),
+          },
+          {
+            label: "System Logs",
+            url: "v2-SystemLogs",
+            pattern: "v2-SystemLogs|SystemLogs",
+            hasPermissionTo: can("view-audit"),
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Logout",
+    url: "logout",
+    menuTitle: "Exit",
+    icon: "ri-logout-circle-r-line",
+    menuId: "logout",
+    pattern: "",
+    hasPermissionTo: true,
+  },
+];
+%>
 <div id="scrollbar">
-    <div class="container-fluid">
-
-        <div id="two-column-menu">
-        </div>
-
-        <ul class="navbar-nav" id="navbar-nav">
-            <li class="menu-title"><span data-key="t-menu">Menu</span></li>
-
+  <div class="container-fluid">
+    <div id="two-column-menu">&nbsp;</div>
+    <ul class="navbar-nav" id="navbar-nav">
+      <li class="menu-title text-muted"><span><%= req.session.kanda ? `ZONE ${req.session.kanda}` : '' %></span></li>
+      <% menuItems.forEach(function(item) {
+        if (typeof item.subMenus !== 'undefined' && item.subMenus.length > 0) {
+          if (hasVisibleChildren(item.subMenus)) {
+            if (item.menuTitle) { %>
+              <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-components"><%= item.menuTitle %></span></li>
+            <% }
+            const childPatterns = collectPatterns(item.subMenus).join("|");
+            const isOpen = routeIs(childPatterns, currentUrl);
+            %>
             <li class="nav-item">
-                <a class="nav-link menu-link <%= routeIs('Dashboard' , getCurrentUrl(req)) ? 'active' : '' %>" href="/Dashboard">
-                    <i class="ri-dashboard-2-line"></i> <span data-key="t-widgets">Dashibodi</span>
-                </a>
+              <a class="nav-link menu-link <%= isOpen ? 'active' : '' %>"
+                 href="<%= item.menuId ? item.url : '/' + item.url %>"
+                 data-bs-toggle="collapse"
+                 role="button"
+                 aria-expanded="<%= isOpen ? 'true' : 'false' %>"
+                 aria-controls="<%= item.menuId %>">
+                <i class="<%= item.icon %>"></i>
+                <span data-key="t-dashboards"><%= item.label %></span>
+              </a>
+              <div class="collapse menu-dropdown <%= isOpen ? 'show' : '' %>" id="<%= item.menuId %>">
+                <%- renderSubMenus(item.subMenus) %>
+              </div>
             </li>
-
+          <% }
+        } else {
+          if (item.hasPermissionTo) {
+            if (item.menuTitle) { %>
+              <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-components"><%= item.menuTitle %></span></li>
+            <% } %>
             <li class="nav-item">
-                <a class="nav-link menu-link" href="#sidebarDashboards" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboards">
-                    <i class="ri-honour-line"></i> <span data-key="t-dashboards">Maombi</span>
-                </a>
-                <div class="collapse menu-dropdown
-                <%= routeIs('MaombiKuanzishaShule|MaombiMmilikiShule|MaombiKusajiliShule|MaombiKusajiliShuleSerikali|KuongezaMikondo|BadiliJina|KuongezaTahasusi|KuongezaDahalia|KuongezaBweni|BadiliUsajili|Hamisha|BadiliMmiliki|BadiliMeneja|FutaShule|SajiliOmbi/*|TaarifaOmbi/*|SajiliOmbiSerikali/*|BadiliMkondo/*|BadiliTahasusi/*|BadiliBweni/*|BadiliDahalia/*|HamishaShuleDetails/*|ViewOmbiMmiliki/*|ViewOmbiMeneja/*|FutaShuleTaarifa/*' , getCurrentUrl(req)) ? 'show' : '' %>
-                " id="sidebarDashboards">
-                    <ul class="nav nav-sm flex-column">
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 2){ %>
-                        <li class="nav-item">
-                            <a href="/MaombiKuanzishaShule" class="nav-link <%= routeIs('MaombiKuanzishaShule' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-analytics"> Kuanzisha Shule
-                                <span class="badge badge-pill bg-danger" id="kuanzacounti" data-key="t-new"></span> </a>
-                        </li>
-                        <% break; } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 3){ %>
-                        <li class="nav-item">
-                            <a href="/MaombiMmilikiShule" class="nav-link <%= routeIs('MaombiMmilikiShule' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crm"> Mmiliki/Meneja wa Shule </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 4){ %>
-                        <li class="nav-item">
-                            <a href="/MaombiKusajiliShule" class="nav-link <%= routeIs('MaombiKusajiliShule' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-ecommerce"> Kusajili Shule(Zisizo za Serikali) </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 5){ %>
-                        <li class="nav-item">
-                            <a href="/MaombiKusajiliShuleSerikali" class="nav-link <%= routeIs('MaombiKusajiliShuleSerikali' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-ecommerce"> Kusajili Shule(Serikali) </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 6){ %>
-                        <li class="nav-item">
-                            <a href="/KuongezaMikondo" class="nav-link <%= routeIs('KuongezaMikondo|BadiliMkondo/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kuongeza Mikondo </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 7){ %>
-                        <li class="nav-item">
-                            <a href="/BadiliJina" class="nav-link <%= routeIs('BadiliJina' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kubadili Jina la Shule </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 8){ %>
-                        <li class="nav-item">
-                            <a href="/KuongezaTahasusi" class="nav-link <%= routeIs('KuongezaTahasusi|BadiliTahasusi/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kuongeza Tahasusi </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 9){ %>
-                        <li class="nav-item">
-                            <a href="/KuongezaBweni" class="nav-link <%= routeIs('KuongezaBweni|BadiliBweni/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kuongeza Bweni </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 10){ %>
-                        <li class="nav-item">
-                            <a href="/KuongezaDahalia" class="nav-link <%= routeIs('KuongezaDahalia|BadiliDahalia/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kuongeza Dahalia </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 11){ %>
-                        <li class="nav-item">
-                            <a href="/BadiliUsajili" class="nav-link <%= routeIs('BadiliUsajili' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kubadili Aina ya Usajili </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 12){ %>
-                        <li class="nav-item">
-                            <a href="/Hamisha" class="nav-link <%= routeIs('Hamisha|HamishaShuleDetails/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kuhamisha Shule </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 13){ %>
-                        <li class="nav-item">
-                            <a href="/BadiliMmiliki" class="nav-link <%= routeIs('BadiliMmiliki|ViewOmbiMmiliki/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kubadili Mmiliki wa Shule </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 13){ %>
-                        <li class="nav-item">
-                            <a href="/BadiliMeneja" class="nav-link <%= routeIs('BadiliMeneja|ViewOmbiMeneja/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kubadili Meneja wa Shule </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 14){ %>
-                        <li class="nav-item">
-                            <a href="/FutaShule" class="nav-link <%= routeIs('FutaShule|FutaShuleTaarifa/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-crypto"> Kufuta Usajili wa Shule(Hiari) </a>
-                        </li>
-                        <% } } %>
-
-                    </ul>
-                </div>
-            </li> 
-
-            <li class="nav-item">
-                <a class="nav-link menu-link" href="#sidebarRipoti" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarApps">
-                    <i class="ri-apps-2-line"></i> <span data-key="t-apps">Ripoti</span>
-                </a>
-                <div class="collapse menu-dropdown <%=routeIs('RipotiZilizosajiliwa|TaarifaSajili/*|TaarifaBilaMajengo/*|TaarifaMajengoKat/*|SajiliwaZilizokataliwa|RipotiAnzishaBilaMajengo|RipotiAnzishaBilaMajengoKataliwa|RipotiUthibitisho|RipotiKubadiliJina|RipotiKuongezaBweni|RipotiDahalia|RipotiBadiliMmiliki|ViewBadilimeneja|RipotiZilizofutiwa|RipotiKuongezaMikondo|RipotiTahasusi|ViewRipotiDahalia/*' , getCurrentUrl(req)) ? 'show' : '' %>" id="sidebarRipoti">
-                    <ul class="nav nav-sm flex-column">
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 15){ %>
-                        <li class="nav-item">
-                            <a href="/RipotiZilizosajiliwa" class="nav-link <%= routeIs('RipotiZilizosajiliwa|TaarifaSajili/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Shule Zilizosajiliwa </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 16){ %>
-                        <li class="nav-item">
-                            <a href="/SajiliwaZilizokataliwa" class="nav-link <%= routeIs('SajiliwaZilizokataliwa|TaarifaMajengoKat/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Sajiliwa Zilizokataliwa </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 17){ %>
-                        <li class="nav-item">
-                            <a href="/RipotiAnzishaBilaMajengo" class="nav-link <%= routeIs('RipotiAnzishaBilaMajengo|TaarifaBilaMajengo/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Kuanzisha Shule Bila Majengo </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 18){ %>
-                        <li class="nav-item">
-                            <a href="/RipotiAnzishaBilaMajengoKataliwa" class="nav-link <%= routeIs('RipotiAnzishaBilaMajengoKataliwa' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Kuanzisha Shule Bila Majengo - Kataliwa </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 19){ %>
-                        <li class="nav-item">
-                            <a href="RipotiAnzishaMajengo" class="nav-link <%= routeIs('RipotiAnzishaMajengo' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Kuanzisha Shule kwa Majengo </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 20){ %>
-                        <li class="nav-item">
-                            <a href="RipotiAnzishaMajengoKataliwa" class="nav-link <%= routeIs('RipotiAnzishaMajengoKataliwa' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Kuanzisha Shule kwa Majengo - Kataliwa </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 21){ %>
-                        <li class="nav-item">
-                            <a href="/RipotiUthibitisho" class="nav-link <%= routeIs('RipotiUthibitisho' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Uthibitisho wa Umiliki na Umeneja </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 22){ %>
-                        <li class="nav-item">
-                            <a href="/RipotiKubadiliJina" class="nav-link <%= routeIs('RipotiKubadiliJina' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kubadili Jina la Shule</a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 23){ %>
-                        <li class="nav-item">
-                            <a href="RipotiKuongezaBweni" class="nav-link <%= routeIs('RipotiKuongezaBweni' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Bweni </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 24){ %>
-                        <li class="nav-item">
-                            <a href="/RipotiDahalia" class="nav-link <%= routeIs('RipotiDahalia|ViewRipotiDahalia/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Dahalia </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 25){ %>
-                        <li class="nav-item">
-                            <a href="/RipotiBadiliMmiliki" class="nav-link <%= routeIs('RipotiBadiliMmiliki' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kubadili Umiliki </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 26){ %>
-                        <li class="nav-item">
-                            <a href="/ViewBadilimeneja" class="nav-link <%= routeIs('ViewBadilimeneja' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kubadili Umeneja </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 27){ %>
-                        <li class="nav-item">
-                            <a href="/RipotiZilizofutiwa" class="nav-link <%= routeIs('RipotiZilizofutiwa' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kufuta Usajili </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 28){ %>
-                        <li class="nav-item">
-                            <a href="/RipotiKuongezaMikondo" class="nav-link <%= routeIs('RipotiKuongezaMikondo' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Kuongeza Mikondo </a>
-                        </li>
-                        <% } } %>
-                        <% var hasMatch =false; %>
-                        <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                            <% var animal = RoleManage[index]; %>
-                        <% if(animal.permission_id == 29){ %>
-                        <li class="nav-item">
-                            <a href="/RipotiTahasusi" class="nav-link <%= routeIs('RipotiTahasusi' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-calendar"> Kibali cha Kuongeza Tahasusi </a>
-                        </li>
-                        <% } } %>
-                    </ul>
-                </div>
+              <a href="/<%= item.url %>"
+                 <%= typeof item.menuId !== 'undefined' && item.menuId ? `id=${item.menuId}` : '' %>
+                 class="nav-link menu-link <%= routeIs(item.pattern, currentUrl) ? 'active' : '' %>">
+                <i class="<%= item.icon %>"></i>
+                <span data-key="t-widgets"><%= item.label %></span>
+              </a>
             </li>
-                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-components">Uthibitisho</span></li>
- 
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarUI" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarUI">
-                        <i class="ri-pencil-ruler-2-line"></i> <span data-key="t-base-ui">
-                            Mipangilio
-                        </span>
-                    </a>
-                    <div class="collapse menu-dropdown mega-dropdown-menu 
-                    <%= routeIs('Vyeo|Watumiaji|Waombaji|Zoni|Mikoa|Mikoa?*|Halmashauri|Kata|Mitaa|Viambatisho|Malipo|Tahasusi|Michepuo|Roles|EditRole/*|CreateRole|Permissions|Permissions/*' , getCurrentUrl(req)) ? 'show' : '' %>" 
-                    id="sidebarUI">
-                        <div class="row">
-                            <div class="col-lg-4">
-                                <ul class="nav nav-sm flex-column">
-                                    <% var hasMatch =false; %>
-                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                                        <% var animal = RoleManage[index]; %>
-                                    <% if(animal.permission_id == 30){ %>
-                                    <li class="nav-item">
-                                        <a href="/Vyeo" class="nav-link <%= routeIs('Vyeo' , getCurrentUrl(req)) ? 'active' : '' %> " data-key="t-dropdowns">Vyeo</a>
-                                    </li>
-                                    <% } } %>
-                                    <% var hasMatch =false; %>
-                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                                        <% var animal = RoleManage[index]; %>
-                                    <% if(animal.permission_id == 34){ %>
-                                    <li class="nav-item">
-                                        <a href="/Watumiaji" class="nav-link <%= routeIs('Watumiaji' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-cards">Watumiaji</a>
-                                    </li>
-                                    <% } } %>
-                                    <% var hasMatch =false; %>
-                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                                        <% var animal = RoleManage[index]; %>
-                                    <% if(animal.permission_id == 38){ %>
-                                    <li class="nav-item">
-                                        <a href="/Waombaji" class="nav-link <%= routeIs('Waombaji' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-cards">Waombaji</a>
-                                    </li>
-                                    <% } } %>
-                                    <% var hasMatch =false; %>
-                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                                        <% var animal = RoleManage[index]; %>
-                                    <% if(animal.permission_id == 39){ %>
-                                    <li class="nav-item">
-                                        <a href="/Zoni" class="nav-link <%= routeIs('Zoni' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-alerts">Kanda/Zoni</a>
-                                    </li>
-                                    <% } } %>
-                                    <% var hasMatch =false; %>
-                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                                        <% var animal = RoleManage[index]; %>
-                                    <% if(animal.permission_id == 43){ %>
-                                    <li class="nav-item">
-                                        <a href="/Mikoa" class="nav-link <%= routeIs('Mikoa' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-badges">Mikoa</a>
-                                    </li>
-                                    <% } } %>
-                                    <% var hasMatch =false; %>
-                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                                        <% var animal = RoleManage[index]; %>
-                                    <% if(animal.permission_id == 45){ %>
-                                    <li class="nav-item">
-                                        <a href="/Halmashauri" class="nav-link <%= routeIs('Halmashauri' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-buttons">Halmashauri</a>
-                                    </li>
-                                    <% } } %>
-                                    <% var hasMatch =false; %>
-                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                                        <% var animal = RoleManage[index]; %>
-                                    <% if(animal.permission_id == 53){ %>
-                                    <li class="nav-item">
-                                        <a href="/Kata" class="nav-link <%= routeIs('Kata' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-colors">Kata</a>
-                                    </li>
-                                    <% } } %>
-
-                                    <% var hasMatch =false; %>
-                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                                        <% var animal = RoleManage[index]; %>
-                                    <% if(animal.permission_id == 53){ %>
-                                    <li class="nav-item">
-                                        <a href="/Mitaa" class="nav-link <%= routeIs('Mitaa' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-colors">Mitaa</a>
-                                    </li>
-                                    <% } } %>
-
-                                    <% var hasMatch =false; %>
-                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                                        <% var animal = RoleManage[index]; %>
-                                    <% if(animal.permission_id == 51){ %>
-                                    <li class="nav-item">
-                                        <a href="/Viambatisho" class="nav-link <%= routeIs('Viambatisho' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-dropdowns">Viambatisho</a>
-                                    </li>
-                                    <% } } %>
-                                    <% var hasMatch =false; %>
-                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                                        <% var animal = RoleManage[index]; %>
-                                    <% if(animal.permission_id == 47){ %>
-                                    <li class="nav-item">
-                                        <a href="/Malipo" class="nav-link <%= routeIs('Malipo' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-dropdowns">Ada za Malipo</a>
-                                    </li>
-                                    <% } } %>
-                                    <% var hasMatch =false; %>
-                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                                        <% var animal = RoleManage[index]; %>
-                                    <% if(animal.permission_id == 61){ %>
-                                    <li class="nav-item">
-                                        <a href="/Tahasusi" class="nav-link <%= routeIs('Tahasusi' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-carousel">Tahasusi</a>
-                                    </li>
-                                    <% } } %>
-                                    <% var hasMatch =false; %>
-                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                                        <% var animal = RoleManage[index]; %>
-                                    <% if(animal.permission_id == 57){ %>
-                                    <li class="nav-item">
-                                        <a href="/Michepuo" class="nav-link <%= routeIs('Michepuo' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-carousel">Michepuo</a>
-                                    </li>
-                                    <% } } %>
-                                    <% var hasMatch =false; %>
-                                    <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                                        <% var animal = RoleManage[index]; %>
-                                    <% if(animal.permission_id == 64){ %>
-                                    <li class="nav-item">
-                                        <a href="/Roles" class="nav-link <%= routeIs('Roles|CreateRole|EditRole/*' , getCurrentUrl(req)) ? 'active' : '' %>" data-key="t-carousel">Roles</a>
-                                    </li>
-                                    <% }  %>
-                                    <% var hasMatch =false; %>
-                                    <% if(animal.permission_id == 64){ %>
-                                    <li class="nav-item">
-                                        <a href="/Permissions" class="nav-link <%= routeIs('Permissions|Permissions/*' , getCurrentUrl(req))  ? 'active' : '' %>" data-key="t-carousel">Permissions</a>
-                                    </li>
-                                    <% } } %>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-
-                <% var hasMatch =false; %>
-                <% for (var index = 0; index < RoleManage.length; ++index) { %>
-                    <% var animal = RoleManage[index]; %>
-                <% if(animal.permission_id == 64){ %>
-                <li class="nav-item">
-                    <a class="nav-link menu-link <%= routeIs('AuditTrail' , getCurrentUrl(req)) ? 'active' : '' %>" href="/AuditTrail">
-                        <i class="ri-honour-line"></i> <span data-key="t-widgets">Audit Trail</span>
-                    </a>
-                </li>
-                <% } } %>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="/">
-                        <i class="ri-honour-line"></i> <span data-key="t-widgets">Ondoka</span>
-                    </a>
-                </li>
-
-
-        </ul>
-        
-    </div>
-    <!-- Sidebar -->
+          <% }
+        }
+      }); %>
+    </ul>
+  </div>
 </div>
+<!-- Sidebar -->

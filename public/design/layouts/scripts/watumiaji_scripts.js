@@ -48,7 +48,7 @@ function getUsers() {
           </span>`
           : user.section_name + " HQ",
         last_login: user.last_login,
-        has_signature: user.has_signature
+        has_signature: Number(user.has_signature || 0) > 0
           ? `<span title="Sahihi ya muhusika imeingizwa" data-bs-toggle=tooltip class="myTooltip las la-signature la-2x"></span>`
           : "",
         user_status: `<span data-bs-toggle=tooltip title="${

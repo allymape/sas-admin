@@ -9,6 +9,9 @@ const aliasMap = {
   "v2-MajaladaYaShule": "MajaladaYaShule",
   "v2-AinaZaShule": "AinaZaShule",
   "v2-AinaYaMalazi": "AinaYaMalazi",
+  "v2-Languages": "Languages",
+  "v2-Religions": "Religions",
+  "v2-SectNames": "SectNames",
   "v2-ViwangoAinaZaShule": "ViwangoAinaZaShule",
   "v2-ViwangoMiundombinu": "ViwangoMiundombinu",
   "v2-Roles": "Roles",
@@ -37,6 +40,11 @@ const aliasMap = {
   "v2-SystemLogs": "SystemLogs",
   "v2-SystemConfigurations": "SystemConfigurations",
   "v2-AISupport": "AISupport",
+  "v2-Handover": "Handover/My",
+  "v2-HandoverAssigned": "Handover/Assigned",
+  "v2-HandoverApprovals": "Handover/Approvals",
+  "v2-HandoverAudit": "Handover/Audit",
+  "v2-HandoverAll": "Handover/All",
 
   // Reports / Ripoti
   "v2-RipotiKuanzisha": "RipotiKuanzisha",

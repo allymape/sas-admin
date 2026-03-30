@@ -16,6 +16,7 @@ const {
 const API_BASE_URL = process.env.API_BASE_URL;
 const baruaAuthAPI = API_BASE_URL + "authenticate-barua";
 const watumiajiAPI = API_BASE_URL + "users";
+const allHierarchiesAPI = API_BASE_URL + "all_hierarchies";
 const createUserAPI = API_BASE_URL + "create-user";
 const updateUserAPI = API_BASE_URL + "update-user";
 const activateDeactivateUserAPI = API_BASE_URL + "activate-deactivate-user";
@@ -32,6 +33,15 @@ const getTablePagination = (body = {}) => {
   return { page, perPage, draw: body.draw };
 };
 
+const isAdminUser = (req) => {
+  const roleName = String(
+    req?.session?.jukumu || req?.user?.jukumu || req?.user?.role_name || "",
+  ).toLowerCase();
+  return ["super admin", "super-admin", "admin", "system admin", "administrator"].some((name) =>
+    roleName.includes(name),
+  );
+};
+
 // Login Page
 userController.get("/", redirectIfAuthenticated, (req, res) => {
   res.render(path.join(__dirname + "/../views/login"), {
@@ -43,11 +53,17 @@ userController.get("/", redirectIfAuthenticated, (req, res) => {
 userController.get("/Profile", isAuthenticated , can('view-profile') , (req, res) => {
     sendRequest(req , res , myProfileAPI , "POST" , {} , (jsonData) => {
       const { user, activities , staffs} = jsonData;
+      const permissions = Array.isArray(req.user?.userPermissions)
+        ? req.user.userPermissions
+        : [];
+
       res.render(path.join(__dirname + "/../views/profile"), {
         req,
         user,
         staffs,
         activities,
+        canEditUsername: permissions.includes("update-users"),
+        canEditEmail: permissions.includes("update-users"),
         message: "",
       });
     });
@@ -121,7 +137,10 @@ userController.get(
   can("view-users"),
   activeHandover,
   function (req, res) {
-    res.render(path.join(__dirname + "/../views/watumiaji"), { req });
+    res.render(path.join(__dirname + "/../views/watumiaji"), {
+      req,
+      isAdminFilterAllowed: isAdminUser(req),
+    });
   },
 );
 
@@ -132,10 +151,22 @@ userController.post(
   can("view-users"),
   function (req, res) {
     const { page, perPage, draw } = getTablePagination(req.body);
+    const isAdmin = isAdminUser(req);
+    const unitId = Number(req.body?.unit_id || 0);
+    const hasUnitFilter = isAdmin && Number.isInteger(unitId) && unitId > 0;
+
+    const queryParams = new URLSearchParams({
+      page: String(page),
+      per_page: String(perPage),
+    });
+    if (hasUnitFilter) {
+      queryParams.append("unit_id", String(unitId));
+    }
+
     sendRequest(
       req,
       res,
-      `${watumiajiAPI}?page=${page}&per_page=${perPage}`,
+      `${watumiajiAPI}?${queryParams.toString()}`,
       "GET",
       req.body,
       (jsonData) => {
@@ -149,6 +180,55 @@ userController.post(
           recordsTotal: totalRecords,
           recordsFiltered: totalRecords,
           data: dataToSend,
+        });
+      },
+    );
+  },
+);
+
+userController.get(
+  "/UserUnitsFilter",
+  isAuthenticated,
+  can("view-users"),
+  function (req, res) {
+    if (!isAdminUser(req)) {
+      return res.send({
+        statusCode: 403,
+        data: [],
+        message: "Huna ruhusa ya kuona filter hii.",
+      });
+    }
+
+    sendRequest(
+      req,
+      res,
+      `${allHierarchiesAPI}?page=1&per_page=1000`,
+      "GET",
+      { is_paginated: true },
+      (jsonData) => {
+        const rows = Array.isArray(jsonData?.hierarchies)
+          ? jsonData.hierarchies
+          : Array.isArray(jsonData?.data)
+            ? jsonData.data
+            : [];
+        const normalized = rows
+          .map((item) => ({
+            id: Number(item?.id || 0),
+            name: String(item?.unit_name || item?.name || "").trim(),
+          }))
+          .filter((item) => item.id > 0 && item.name.length > 0);
+
+        const seen = new Set();
+        const unique = normalized.filter((item) => {
+          if (seen.has(item.id)) return false;
+          seen.add(item.id);
+          return true;
+        });
+
+        return res.send({
+          statusCode: Number(jsonData?.statusCode || 300),
+          data: unique,
+          message: jsonData?.message || "List of units.",
         });
       },
     );
@@ -212,6 +292,37 @@ userController.get(
           statusCode: jsonData.statusCode,
           data: jsonData.data,
           message: jsonData.message,
+        });
+      }
+    );
+  }
+);
+
+userController.get(
+  "/UserSignature/:id",
+  isAuthenticated,
+  can("view-users"),
+  function (req, res) {
+    const userId = Number(req.params.id || 0);
+    if (!userId) {
+      return res.send({
+        statusCode: 306,
+        data: null,
+        message: "Kitambulisho cha mtumiaji si sahihi.",
+      });
+    }
+
+    sendRequest(
+      req,
+      res,
+      `${watumiajiAPI}/${userId}/signature`,
+      "GET",
+      {},
+      (jsonData) => {
+        res.send({
+          statusCode: Number(jsonData?.statusCode || 306),
+          data: jsonData?.data || null,
+          message: jsonData?.message || "Imeshindikana kupata sahihi ya mtumiaji.",
         });
       }
     );

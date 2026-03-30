@@ -169,6 +169,12 @@ const syncSessionFromDecodedToken = (req, decoded = {}) => {
   if (decoded.user_level !== undefined) req.session.UserLevel = decoded.user_level;
   if (decoded.jukumu !== undefined) req.session.jukumu = decoded.jukumu;
   if (decoded.cheo !== undefined) req.session.cheoName = String(decoded.cheo || "").toUpperCase();
+  if (decoded.delegated_from_user_name !== undefined) {
+    req.session.delegatedFromUserName = decoded.delegated_from_user_name;
+  }
+  if (decoded.delegated_until_at !== undefined) {
+    req.session.delegatedUntilAt = decoded.delegated_until_at;
+  }
 };
 
 module.exports = {
@@ -310,9 +316,22 @@ module.exports = {
   },
   activeHandover: (req, res, next) => {
     const current_url = req.originalUrl;
-    if (
-      !["/Profile", "/MyHandover", "/MyNotifications"].includes(current_url)
-    ) {
+    const currentPath = String(current_url || "").split("?")[0];
+    const handoverLockMessage =
+      "You currently have an active handover and cannot perform workflow actions until the handover ends or is reclaimed.";
+    const allowWhenLocked = [
+      "/Profile",
+      "/MyHandover",
+      "/MyNotifications",
+      "/Handover",
+      "/logout",
+      "/CheckSessionExpire",
+      "/ExtendSession",
+    ];
+
+    const isAllowedPath = allowWhenLocked.some((prefix) => currentPath === prefix || currentPath.startsWith(`${prefix}/`));
+
+    if (!isAllowedPath) {
       module.exports.sendRequest(
         req,
         res,
@@ -325,7 +344,21 @@ module.exports = {
           if (!is_password_changed) {
             res.redirect("/Profile?tab=change_password");
           } else if (active) {
-            res.redirect("/Profile?tab=kaimisha");
+            const isWriteMethod = ["POST", "PUT", "PATCH", "DELETE"].includes(String(req.method || "").toUpperCase());
+            const acceptsJson = String(req.headers?.accept || "").toLowerCase().includes("application/json");
+            const isAjax = req.xhr || acceptsJson || isWriteMethod;
+
+            if (isAjax) {
+              return res.status(200).send({
+                statusCode: 423,
+                message: handoverLockMessage,
+              });
+            }
+
+            if (typeof req.flash === "function") {
+              req.flash("warning", handoverLockMessage);
+            }
+            res.redirect("/Handover/My");
           } else {
             next();
           }
@@ -505,7 +538,7 @@ module.exports = {
               "Too many requests, please try again after 10 minutes."
             );
             res.redirect("/");
-          } else if (body !== undefined && response && response.statusCode == 200) {
+          } else if (body !== undefined && response && response.statusCode >= 200 && response.statusCode < 300) {
             callback(body);
           } else {
             if (
@@ -566,7 +599,7 @@ module.exports = {
             "Too many requests, please try again after 10 minutes."
           );
           res.redirect("/");
-        } else if (body !== undefined && response && response.statusCode == 200) {
+        } else if (body !== undefined && response && response.statusCode >= 200 && response.statusCode < 300) {
           callback(body);
         } else {
           if (

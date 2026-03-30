@@ -23,27 +23,52 @@ function modifyUrl(currentUrl) {
   return "";
 }
 
+function normalizePath(path = "") {
+  const cleaned = String(path || "").replace(/^\/+/, "");
+  return cleaned.includes("?") ? cleaned.split("?")[0] : cleaned;
+}
+
+function wildcardPatternToRegex(pattern = "") {
+  const escaped = String(pattern || "")
+    .replace(/[.+^${}()|[\]\\]/g, "\\$&")
+    .replace(/\*/g, ".*");
+  return new RegExp(`^${escaped}$`, "i");
+}
+
 function registerGlobals(app) {
   app.locals.getCurrentUrl = (req) => {
     const rawUrl = req.originalUrl || req.url || "";
-    const cleanedUrl = rawUrl.replace(/^\/+/, "");
-    return cleanedUrl.includes("?") ? cleanedUrl.split("?")[0] : cleanedUrl;
+    return normalizePath(rawUrl);
   };
 
   global.sumAssociativeArray = (array) => sumAssociativeArray(array);
   global.crypt = () => crypt();
 
   global.routeIs = (urlSegments, currentUrl) => {
-    if (urlSegments) {
-      const urls = urlSegments.split("|");
-      if (Array.isArray(urls) && urls.length > 0) {
-        for (let i = 0; i < urls.length; i += 1) {
-          if (modifyUrl(currentUrl).toLowerCase().trim() === urls[i].trim().toLowerCase()) {
-            return true;
-          }
-        }
+    if (!urlSegments) return false;
+
+    const urls = String(urlSegments)
+      .split("|")
+      .map((item) => String(item || "").trim())
+      .filter(Boolean);
+
+    if (!urls.length) return false;
+
+    const current = normalizePath(currentUrl).toLowerCase().trim();
+    const modified = modifyUrl(current).toLowerCase().trim();
+
+    for (let i = 0; i < urls.length; i += 1) {
+      const expected = urls[i].toLowerCase().trim();
+
+      if (expected === current || expected === modified) {
+        return true;
+      }
+
+      if (wildcardPatternToRegex(expected).test(current)) {
+        return true;
       }
     }
+
     return false;
   };
 

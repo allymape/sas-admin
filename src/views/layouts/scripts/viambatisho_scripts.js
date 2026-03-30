@@ -4,16 +4,15 @@ const renderDataTableAttachmentTypes = () => {
       // render table
       //  console.log(response.data)
       var fields = {
-        checkbox: {},
         id: {
           hidden: true,
         },
-        name: {},
-        registry: {},
-        app_name: {},
-        structure: {},
-        size: { tdClass: "text-center" },
-        backend: {},
+        name: { tdClass: "text-start" },
+        registry: { tdClass: "text-center" },
+        app_name: { tdClass: "text-start" },
+        structure: { tdClass: "text-center" },
+        size: { tdClass: "text-center text-nowrap" },
+        backend: { tdClass: "text-center" },
         status: { tdClass: "text-center" },
         reg_type: { hidden: true },
         structure_id: { hidden: true },
@@ -21,28 +20,33 @@ const renderDataTableAttachmentTypes = () => {
         status_id: { hidden: true },
         is_backend: { hidden: true },
       };
-      response.data = response.data.map((type) => ({
-        checkbox: `<input type='checkbox' class='form-check-input'/>`,
+      response.data = response.data.map((type) => {
+        const attachmentName = String(type.attachment_name || "-").replace(/"/g, "&quot;");
+        const appName = String(type.app_name || "-").replace(/"/g, "&quot;");
+
+        return ({
         id: type.id,
-        name: type.attachment_name,
+        name: `<span class="attachment-name" title="${attachmentName}">${attachmentName}</span>`,
         registry: type.registry
           ? type.registry
-          : `<span class="badge badge-label bg-info"><i class="mdi mdi-circle-medium"></i> Wote <i class="mdi mdi-circle-medium"></i></span>`,
-        app_name: type.app_name,
-        size: type.size,
-        backend: type.is_backend ? "Ndio" : "",
+          : `<span class="badge bg-info-subtle text-info">Wote</span>`,
+        app_name: `<span title="${appName}">${appName}</span>`,
+        size: Number(type.size || 0),
+        backend: type.is_backend
+          ? `<span class="badge bg-warning-subtle text-warning">Ndani</span>`
+          : `<span class="badge bg-light text-muted">Hapana</span>`,
         status: type.status
-          ? `<span class="ri-check-double-fill text-success"></span>`
-          : `<span class="ri-close-fill text-danger"></span>`,
+          ? `<span class="badge bg-success-subtle text-success">Hai</span>`
+          : `<span class="badge bg-danger-subtle text-danger">Si Hai</span>`,
         reg_type: type.registration_type_id,
         structure: type.structure
           ? type.structure
-          : `<span class="badge badge-label bg-success"><i class="mdi mdi-circle-medium"></i> Wote <i class="mdi mdi-circle-medium"></i></span>`,
+          : `<span class="badge bg-success-subtle text-success">Wote</span>`,
         structure_id: type.structure_id,
         status_id: type.status,
         is_backend: type.is_backend,
         app_cat: type.application_category_id,
-      }));
+      })});
       dataTable(
         "Viambatisho",
         "attachmentTypeTable",

@@ -5,6 +5,22 @@
 }) %>
 
 <%
+  const delegatedFromName = String(req?.user?.delegated_from_user_name || "").trim();
+  const delegatedFromId = Number(req?.user?.handover_by || 0);
+  const delegatedUntilAt = req?.user?.delegated_until_at || null;
+  const hasIncomingHandover = Boolean(req?.user?.has_active_incoming_handover);
+  const delegatedOwnerLabel = delegatedFromName || (delegatedFromId > 0 ? `USER #${delegatedFromId}` : "another staff member");
+  const delegatedUntilLabel = delegatedUntilAt ? dateFormat(delegatedUntilAt, "DD/MM/YYYY HH:mm") : "";
+%>
+
+<% if (hasIncomingHandover) { %>
+<div class="alert alert-warning d-flex align-items-center gap-2">
+  <i class="ri-user-shared-line"></i>
+  <span>You are acting on behalf of <b><%= delegatedOwnerLabel %></b><%= delegatedUntilLabel ? ` until ${delegatedUntilLabel}` : "" %>.</span>
+</div>
+<% } %>
+
+<%
   const toStatusMeta = (statusId) => {
     const id = Number(statusId);
     if (id === 2) return { icon: "ri-check-line", text: "Limekubaliwa", badgeClass: "badge bg-success" };

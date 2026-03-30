@@ -1,672 +1,557 @@
-<% 
-const pluck = (arr , key) => arr.map(i => i[key]);
+<%
+const currentUrl = getCurrentUrl(req);
+const can = (permissionName) => permission(req, permissionName);
+const hasAnyPermission = (permissionNames = []) => {
+  return permissionNames.some((permissionName) => can(permissionName));
+};
+
+const roleName = String(req?.session?.jukumu || req?.user?.jukumu || "").toLowerCase();
+const isAdminRole = ["super admin", "super-admin", "admin", "system admin"].some((name) => roleName.includes(name));
+
+const hasVisibleChildren = (items = []) => {
+  return items.some((item) => {
+    if (Array.isArray(item.subMenus) && item.subMenus.length > 0) {
+      return hasVisibleChildren(item.subMenus);
+    }
+    return !!item.hasPermissionTo;
+  });
+};
+
+const collectPatterns = (items = []) => {
+  return items
+    .flatMap((item) => {
+      const own = item.pattern ? [item.pattern] : [];
+      const child = Array.isArray(item.subMenus) ? collectPatterns(item.subMenus) : [];
+      return own.concat(child);
+    })
+    .filter(Boolean);
+};
+
+const renderSubMenus = (items = [], level = 0) => {
+  let html = '<ul class="nav nav-sm flex-column">';
+  items.forEach((subItem) => {
+    const hasChildren = Array.isArray(subItem.subMenus) && subItem.subMenus.length > 0;
+    const visible = hasChildren ? hasVisibleChildren(subItem.subMenus) : !!subItem.hasPermissionTo;
+    if (!visible) return;
+
+    if (hasChildren) {
+      const collapseId =
+        subItem.menuId || `submenu-${level}-${String(subItem.label || "").toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+      const descendantPatterns = collectPatterns(subItem.subMenus).join("|");
+      const isOpen = routeIs(descendantPatterns, currentUrl);
+      const openClass = isOpen ? "show" : "";
+      const activeClass = isOpen ? "active" : "";
+      html += `
+        <li class="nav-item">
+          <a class="nav-link menu-link ${activeClass}" href="#${collapseId}" data-bs-toggle="collapse" role="button" aria-expanded="${isOpen ? "true" : "false"}" aria-controls="${collapseId}">
+            ${subItem.label}
+          </a>
+          <div class="collapse menu-dropdown ${openClass}" id="${collapseId}">
+            ${renderSubMenus(subItem.subMenus, level + 1)}
+          </div>
+        </li>
+      `;
+      return;
+    }
+
+    const activeClass = routeIs(subItem.pattern || "", currentUrl) ? "active" : "";
+    const counterHtml = subItem.counterId
+      ? `<span class="badge badge-pill bg-danger" id="${subItem.counterId}" data-key="t-new"></span>`
+      : "";
+
+    html += `
+      <li class="nav-item">
+        <a href="/${subItem.url}" class="nav-link ${activeClass}" data-key="t-analytics">
+          ${subItem.label}
+          ${counterHtml}
+        </a>
+      </li>
+    `;
+  });
+
+  html += "</ul>";
+  return html;
+};
+
 const menuItems = [
-// dashibodi
-    {
-        label : "Dashibodi",
-        url  : "#sidebarDashboards",
-        menuTitle : 'Menu',
-        icon : "ri-dashboard-2-line",
-        // menuId : "",
-        // pattern : "Dashboard",
-        menuId  : "sidebarDashboards",
-        hasPermissionTo : permission(req , 'view-dashboard'),
-        subMenus : [
-             {
-                label : "Overview",
-                url  : "Dashboard",
-                icon : "",
-                counterId : "", 
-                pattern : "Dashboard",
-                menuId : "",
-                hasPermissionTo : permission(req , 'view-initiate-schools'),
-            },
-             {
-                label : "Schools Geolocation",
-                url  : "Map",
-                icon : "",
-                counterId : "",
-                pattern : "Map",
-                menuId : "",
-                hasPermissionTo : permission(req , 'view-initiate-schools'),
-            },
-        ]
-   },
-//    MAOMBI
-    {
-        label : "Maombi",
-        url  : "#sidebarMaombi",
-        menuTitle : '',
-        icon : "ri-git-pull-request-line",
-        menuId : "sidebarMaombi",
-        subMenus : [
-            {
-                label : "Kuanzisha Shule",
-                url  : "MaombiKuanzishaShule",
-                icon : "",
-                counterId : "", //kuanzacounti
-                pattern : "MaombiKuanzishaShule|TaarifaOmbi/*",
-                menuId : "",
-                hasPermissionTo : permission(req , 'view-initiate-schools'),
-            },
-            {
-                label : "Mmiliki na Meneja",
-                url  : "MaombiMmilikiShule",
-                icon : "",
-                counterId : "",
-                pattern : "MaombiMmilikiShule|ViewOmbiMmilliki/*",
-                menuId : "",
-                hasPermissionTo : permission(req , 'view-school-owners-and-managers'),
-            },
-            {
-                label : "Kusajili Shule (Zisizo za Serikali)",
-                url  : "MaombiKusajiliShule",
-                icon : "",
-                counterId : "",
-                pattern : "MaombiKusajiliShule|SajiliOmbi/*",
-                menuId : "",
-                hasPermissionTo : permission(req , 'view-school-registration-private'),
-            },
-            {
-                label : "Kusajili Shule (Serikali)",
-                url  : "MaombiKusajiliShuleSerikali",
-                icon : "",
-                counterId : "",
-                pattern : "MaombiKusajiliShuleSerikali|SajiliOmbiSerikali/*",
-                menuId : "",
-                hasPermissionTo : permission(req , 'view-school-registration-government'),
-            },
-            {
-                label : "Kubadili Mikondo",
-                url  : "KuongezaMikondo",
-                icon : "",
-                counterId : "",
-                pattern : "KuongezaMikondo|BadiliMkondo/*",
-                menuId : "",
-                hasPermissionTo : permission(req , 'view-change-of-streams'),
-            },
-            {
-                label : "Kubadili Jina la Shule",
-                url  : "BadiliJina",
-                icon : "",
-                counterId : "",
-                pattern : "BadiliJina|BadiliShule/*",
-                menuId : "",
-                hasPermissionTo : permission(req , 'view-change-school-name'),
-            },
-            {
-                label : "Kuongeza Tahasusi",
-                url  : "KuongezaTahasusi",
-                icon : "",
-                counterId : "",
-                pattern : "KuongezaTahasusi|BadiliTahasusi/*",
-                menuId : "",
-                hasPermissionTo : permission(req , 'view-change-of-bias'),
-            },
-            {
-                label : "Kuongeza Bweni",
-                url  : "KuongezaBweni",
-                icon : "",
-                counterId : "",
-                pattern : "KuongezaBweni|BadiliBweni/*",
-                menuId : "",
-                hasPermissionTo : permission(req , 'view-addition-of-domitory'),
-            },
-            {
-                label : "Kuongeza Dahalia",
-                url  : "KuongezaDahalia",
-                icon : "",
-                counterId : "",
-                pattern : "KuongezaDahalia|BadiliDahalia/*",
-                menuId : "",
-                hasPermissionTo : permission(req , 'view-change-of-hostel'),
-            },
-            {
-                label : "Kubadili Aina ya Usajili",
-                url  : "BadiliUsajili",
-                icon : "",
-                counterId : "",
-                pattern : "BadiliUsajili|BadiliAinaUsajili/*",
-                menuId : "",
-                hasPermissionTo : permission(req , 'view-change-registration-type'),
-            },
-            {
-                label : "Kuhamisha Shule",
-                url  : "Hamisha",
-                icon : "",
-                counterId : "",
-                pattern : "Hamisha|HamishaShuleDetails/*",
-                menuId : "",
-                hasPermissionTo : permission(req , 'view-change-school-location'),
-            },
-            {
-                label : "Kubadili Mmiliki wa Shule",
-                url  : "BadiliMmiliki",
-                icon : "",
-                counterId : "",
-                pattern : "BadiliMmiliki|ViewOmbiMmiliki/*",
-                menuId : "",
-                hasPermissionTo : permission(req , 'view-change-of-school-owner'),
-            },
-            {
-                label : "Kubadili Meneja wa Shule",
-                url  : "BadiliMeneja",
-                icon : "",
-                counterId : "",
-                pattern : "BadiliMeneja|ViewOmbiMeneja/*",
-                menuId : "",
-                hasPermissionTo : permission(req , 'view-change-of-school-manager'),
-            },
-            {
-                label : "Kufuta Usajili wa Shule(Hiari)",
-                url  : "FutaShule",
-                icon : "",
-                counterId : "",
-                pattern : "FutaShule|FutaShuleTaarifa/*",
-                menuId : "",
-                hasPermissionTo : permission(req , 'view-deregistration-of-schools'),
-            },
-        ]
-   },
-//    RIPOTI
-   {
-        label : "Ripoti",
-        url  : "#sidebarRipoti",
-        menuTitle : '',
-        icon : "ri-bubble-chart-line",
-        menuId : "sidebarRipoti",
-        // pattern : "",
-        // hasPermissionTo : 'RipotiKuanzisha',
-        subMenus : [
-             {
-                label : "Uanzishaji wa Shule",
-                url  : "RipotiKuanzisha",
-                icon : "",
-                counterId : "",
-                pattern : "RipotiKuanzisha",
-                menuId : "",
-                hasPermissionTo : permission(req , 'view-established-schools-report'),
-            },
-            {
-                label : "Wamiliki wa Shule",
-                url  : "RipotiWamiliki",
-                icon : "",
-                counterId : "",
-                pattern : "RipotiWamiliki",
-                menuId : "",
-                hasPermissionTo : permission(req , 'view-school-owners-report'),
-            },
-            {
-                label : "Meneja wa Shule",
-                url  : "RipotiMeneja",
-                icon : "",
-                counterId : "",
-                pattern : "RipotiMeneja",
-                menuId : "",
-                hasPermissionTo : permission(req , 'view-school-managers-report'),
-            },
-            {
-                label : "Shule Zilizosajiliwa",
-                url  : "RipotiZilizosajiliwa",
-                icon : "",
-                counterId : "",
-                pattern : "RipotiZilizosajiliwa|ShuleDetails/*",
-                menuId : "",
-                hasPermissionTo : permission(req , 'view-registered-school-report'),
-            },
-            {
-                label : "Mabadiliko",
-                url  : "RipotiKuongezaMikondo",
-                icon : "",
-                counterId : "",
-                pattern : "RipotiKuongezaMikondo|RipotiKuhamishaShule|RipotiKubadiliUsajili|RipotiKubadiliUmiliki|RipotiKubadiliMeneja|RipotiKubadiliJina|RipotiKufutaShule|RipotiKuongezaTahasusi|RipotiKuongezaDahalia|RipotiKuongezaBweni",
-                menuId : "",
-                hasPermissionTo : permission(req , 'view-addition-of-streams-report'),
-            },
-            // {
-            //     label : "Shule Zilizosajiliwa",
-            //     url  : "RipotiZilizosajiliwa",
-            //     icon : "",
-            //     counterId : "",
-            //     pattern : "RipotiZilizosajiliwa|TaarifaSajili/*",
-            //     menuId : "",
-            //     hasPermissionTo : permission(req , 'view-registered-school-reports'),
-            // },
-            // {
-            //     label : "Sajiliwa Zilizokataliwa",
-            //     url  : "SajiliwaZilizokataliwa",
-            //     icon : "",
-            //     counterId : "",
-            //     pattern : "SajiliwaZilizokataliwa",
-            //     menuId : "",
-            //     hasPermissionTo : permission(req , 'view-rejected-application-reports'),
-            // },
-            // {
-            //     label : "Kibali cha Kuanzisha Shule Bila Majengo",
-            //     url  : "RipotiAnzishaBilaMajengo",
-            //     icon : "",
-            //     counterId : "",
-            //     pattern : "RipotiAnzishaBilaMajengo",
-            //     menuId : "",
-            //     hasPermissionTo : permission(req , 'view-initiate-school-without-buildings-report'),
-            // },
-            // {
-            //     label : "Kibali cha Kuanzisha Shule Bila Majengo - Kataliwa",
-            //     url  : "RipotiAnzishaBilaMajengoKataliwa",
-            //     icon : "",
-            //     counterId : "",
-            //     pattern : "RipotiAnzishaBilaMajengoKataliwa",
-            //     menuId : "",
-            //     hasPermissionTo : permission(req , 'view-initiate-school-without-buildings-rejected-report'),
-            // },
-            // {
-            //     label : "Kibali cha Kuanzisha Shule kwa Majengo",
-            //     url  : "RipotiAnzishaMajengo",
-            //     icon : "",
-            //     counterId : "",
-            //     pattern : "RipotiAnzishaMajengo",
-            //     menuId : "",
-            //     hasPermissionTo : permission(req , 'view-initiate-school-with-building-report'),
-            // },
-            // {
-            //     label : "Kibali cha Kuanzisha Shule kwa Majengo - Kataliwa",
-            //     url  : "RipotiAnzishaMajengoKataliwa",
-            //     icon : "",
-            //     counterId : "",
-            //     pattern : "RipotiAnzishaMajengoKataliwa",
-            //     menuId : "",
-            //     hasPermissionTo : permission(req , 'view-initiate-school-with-building-rejected-report'),
-            // },
-            // {
-            //     label : "Uthibitisho wa Umiliki na Umeneja",
-            //     url  : "RipotiUthibitisho",
-            //     icon : "",
-            //     counterId : "",
-            //     pattern : "RipotiUthibitisho",
-            //     menuId : "",
-            //     hasPermissionTo : permission(req , 'view-owner-manager-approval-report'),
-            // },
-            // {
-            //     label : "Kubadili Jina la Shule",
-            //     url  : "RipotiKubadiliJina",
-            //     icon : "",
-            //     counterId : "",
-            //     pattern : "RipotiKubadiliJina",
-            //     menuId : "",
-            //     hasPermissionTo : permission(req , 'view-change-school-name-report'),
-            // },
-            //  {
-            //     label : "Kibali cha Bweni",
-            //     url  : "RipotiKuongezaBweni",
-            //     icon : "",
-            //     counterId : "",
-            //     pattern : "RipotiKuongezaBweni",
-            //     menuId : "",
-            //     hasPermissionTo : permission(req , 'view-addition-of-domitory-report'),
-            // },
-            //  {
-            //     label : "Kibali cha Dahalia",
-            //     url  : "RipotiDahalia",
-            //     icon : "",
-            //     counterId : "",
-            //     pattern : "RipotiDahalia",
-            //     menuId : "",
-            //     hasPermissionTo : permission(req , 'view-addition-of-combinations-report'),
-            // },
-            //  {
-            //     label : "Kubadili Umiliki",
-            //     url  : "RipotiBadiliMmiliki",
-            //     icon : "",
-            //     counterId : "",
-            //     pattern : "RipotiBadiliMmiliki",
-            //     menuId : "",
-            //     hasPermissionTo : permission(req , 'view-change-school-owners-report'),
-            // },
-            //  {
-            //     label : "Kubadili Umeneja",
-            //     url  : "ViewBadilimeneja",
-            //     icon : "",
-            //     counterId : "",
-            //     pattern : "ViewBadilimeneja",
-            //     menuId : "",
-            //     hasPermissionTo : permission(req , 'view-change-school-managers-report'),
-            // },
-            //  {
-            //     label : "Kufuta Usajili",
-            //     url  : "RipotiZilizofutiwa",
-            //     icon : "",
-            //     counterId : "",
-            //     pattern : "RipotiZilizofutiwa",
-            //     menuId : "",
-            //     hasPermissionTo : permission(req , 'view-deregistration-report'),
-            // },
-            //  {
-            //     label : "Kibali cha Kuongeza Mikondo",
-            //     url  : "RipotiKuongezaMikondo",
-            //     icon : "",
-            //     counterId : "",
-            //     pattern : "RipotiKuongezaMikondo",
-            //     menuId : "",
-            //     hasPermissionTo : permission(req , 'view-addition-of-streams-report'),
-            // },
-            //  {
-            //     label : "Kibali cha Kuongeza Tahasusi",
-            //     url  : "RipotiTahasusi",
-            //     icon : "",
-            //     counterId : "",
-            //     pattern : "RipotiTahasusi",
-            //     menuId : "",
-            //     hasPermissionTo : permission(req , 'view-addition-of-bias-report'),
-            // },
-        ]
-   },
-//    Track
-    {
-        label : "Track Ombi",
-        url  : `TrackOmbi`,
-        icon : "ri-search-2-line",
-        counterId : "",
-        pattern : "TrackOmbi",
-        hasPermissionTo : permission(req , 'view-track-application'),
-    },
-   //MPANGLIO
-   {
-        label : "Mipangilio",
-        url  : "#sidebarUI",
-        menuTitle : '',
-        icon : "ri-list-settings-line",
-        menuId : "sidebarUI",
-        subMenus : [
-              {
-                label : "Waombaji",
-                url  : "Waombaji",
-                icon : "",
-                counterId : "",
-                pattern : "Waombaji|Mwombaji/*|Mwombaji/*/badili",
-                hasPermissionTo : permission(req , 'view-applicants'),
-            },
-            {
-                label : "Shule",
-                url  : "Shule",
-                icon : "",
-                counterId : "",
-                pattern : "Shule|ShuleDetails/*/Edit",
-                hasPermissionTo : permission(req , 'view-schools'),
-            },
-              {
-                label : "Roles & Permissions",
-                url  : "Roles",
-                icon : "",
-                counterId : "",
-                pattern : "Roles|EditRole/*|CreateRole",
-                hasPermissionTo : permission(req , 'view-roles'),
-            },
-             {
-                label : "Permissions",
-                url  : "Permissions",
-                icon : "",
-                counterId : "",
-                pattern : "Permissions|Permissions/*",
-                hasPermissionTo : permission(req , 'view-permissions'),
-            },
-            {
-                label : "Watumiaji",
-                url  : "Watumiaji",
-                icon : "",
-                counterId : "",
-                pattern : "Watumiaji",
-                hasPermissionTo : permission(req , 'view-users'),
-            },
-            {
-                label : "Kanda (Zones)",
-                url  : "Zoni",
-                icon : "",
-                counterId : "",
-                pattern : "Zoni",
-                menuId : "",
-                hasPermissionTo : permission(req , 'view-zones'),
-            },
-            {
-                label : "Mikoa",
-                url  : "Mikoa",
-                icon : "",
-                counterId : "",
-                pattern : "Mikoa",
-                hasPermissionTo : permission(req , 'view-regions'),
-            },
-            {
-                label : "Halmashauri",
-                url  : "Halmashauri",
-                icon : "",
-                counterId : "",
-                pattern : "Halmashauri",
-                hasPermissionTo : permission(req , 'view-districts'),
-            },
-            {
-                label : "Kata",
-                url  : "Kata",
-                icon : "",
-                counterId : "",
-                pattern : "Kata",
-                hasPermissionTo : permission(req , 'view-wards'),
-            },
-             {
-                label : "Mitaa",
-                url  : "Mitaa",
-                icon : "",
-                counterId : "",
-                pattern : "Mitaa",
-                hasPermissionTo : permission(req , 'view-streets'),
-            },
-             {
-                label : "Ngazi",
-                url  : "Ngazi",
-                icon : "",
-                counterId : "",
-                pattern : "Ngazi",
-                hasPermissionTo : permission(req , 'view-ranks'),
-            },
-             {
-                label : "Sehemu (Section)",
-                url  : "Uongozi",
-                icon : "",
-                counterId : "",
-                pattern : "Uongozi",
-                hasPermissionTo : permission(req , 'view-hierarchies'),
-            },
-            {
-                label : "Vyeo",
-                url  : "Vyeo",
-                icon : "",
-                counterId : "",
-                pattern : "Vyeo",
-                hasPermissionTo : permission(req , 'view-designations'),
-            },
-             {
-                label : "Viambatisho",
-                url  : "Viambatisho",
-                icon : "",
-                counterId : "",
-                pattern : "Viambatisho",
-                hasPermissionTo : permission(req , 'view-attachments'),
-            },
-             {
-                label : "Ada za Malipo",
-                url  : "Malipo",
-                icon : "",
-                counterId : "",
-                pattern : "Malipo",
-                hasPermissionTo : permission(req , 'view-fees'),
-            },
-             {
-                label : "Tahasusi",
-                url  : "Tahasusi",  // PCM, PCB
-                icon : "",
-                counterId : "",
-                pattern : "Tahasusi",
-                hasPermissionTo : permission(req , 'view-combinations'),
-            },
-             {
-                label : "Michepuo",   //Sayansi , Sanaa na n.k
-                url  : "Michepuo",
-                icon : "",
-                counterId : "",
-                pattern : "Michepuo",
-                hasPermissionTo : permission(req , 'view-biases'),
-            },
-             {
-                label : "Namba za Usajili",
-                url  : "Algorithm",
-                icon : "",
-                counterId : "",
-                pattern : "Algorithm",
-                hasPermissionTo : permission(req , 'view-algorithm'),
-            },
-            {
-                label : "Workflow",
-                url  : "Workflow",
-                icon : "",
-                counterId : "",
-                pattern : "Workflow|Workflow/*",
-                hasPermissionTo : permission(req , 'view-workflow'),
-            },
-           
-        ]
-   },
-   // AUDIT TRAIL
-    {
-        label : "Audit Trail",
-        url  : "AuditTrail",
-        menuTitle : '',
-        icon : "ri-user-search-line",
-        menuId : "",
-        pattern : "AuditTrail",
-        hasPermissionTo : permission(req , 'view-audit'),
-   },
-   {
-        label : "System Logs",
-        url  : "SystemLogs",
-        menuTitle : '',
-        icon : "ri-file-warning-line",
-        menuId : "",
-        pattern : "SystemLogs",
-        hasPermissionTo : permission(req , 'view-audit'),
-   },
-   {
-        label : "System Configurations",
-        url  : "SystemConfigurations",
-        menuTitle : '',
-        icon : "ri-settings-3-line",
-        menuId : "",
-        pattern : "SystemConfigurations",
-        hasPermissionTo : permission(req , 'view-audit'),
-   },
-    //    LOGIN ACTIVITY
-    {
-        label : "Login Activity",
-        url  : "LoginActivity",
-        menuTitle : '',
-        icon : "ri-user-search-line",
-        menuId : "",
-        pattern : "LoginActivity",
-        hasPermissionTo : permission(req , 'view-login-activity'),
-   },
-   // LOGOUT
-    {
-        label : "Ondoka",
-        url  : "logout",
-        menuTitle : '',
-        icon : "ri-logout-circle-r-line",
-        menuId : "",
-        pattern : "",
-        menuId : "logout",
-        hasPermissionTo : true,
-   },
+  {
+    label: "Dashboard",
+    url: "#sidebarDashboards",
+    menuTitle: "Menu",
+    icon: "ri-dashboard-2-line",
+    menuId: "sidebarDashboards",
+    subMenus: [
+      {
+        label: "Overview",
+        url: "Dashboard",
+        pattern: "Dashboard",
+        hasPermissionTo: can("view-dashboard"),
+      },
+      {
+        label: "Schools Geolocation",
+        url: "Map",
+        pattern: "Map",
+        hasPermissionTo: can("view-dashboard"),
+      },
+    ],
+  },
+  {
+    label: "All Applications",
+    url: "#sidebarApplications",
+    menuTitle: "Applications",
+    icon: "ri-git-pull-request-line",
+    menuId: "sidebarApplications",
+    subMenus: [
+      {
+        label: "Applications Queue",
+        url: "applications",
+        pattern: "Applications|applications|Applications/*|applications/*|Applications/*/attend|applications/*/attend",
+        hasPermissionTo: can("view-track-application") || can("view-applications"),
+      },
+      {
+        label: "My Applications",
+        url: "my-applications",
+        pattern: "MyApplications|my-applications|MyApplications/*|my-applications/*|MyApplications/*/attend|my-applications/*/attend",
+        hasPermissionTo: can("view-track-application") || can("view-applications"),
+      },
+      {
+        label: "Certificates (Registration)",
+        url: "vyeti",
+        pattern: "vyeti|vyeti/*",
+        hasPermissionTo: can("view-letters"),
+      },
+      {
+        label: "Track Application",
+        url: "TrackOmbi",
+        pattern: "TrackOmbi|TrackOmbi/*",
+        hasPermissionTo: can("view-track-application") || can("view-applications"),
+      },
+      {
+        label: "Handover",
+        menuId: "submenu-applications-handover",
+        subMenus: [
+          {
+            label: "My Handovers",
+            url: "Handover/My",
+            pattern: "Handover/My|Handover/Details/*|v2-Handover",
+            hasPermissionTo: can("view-profile") || can("create-handover") || can("update-handover") || can("approve-handover"),
+          },
+          {
+            label: "Assigned To Me",
+            url: "Handover/Assigned",
+            pattern: "Handover/Assigned|v2-HandoverAssigned",
+            hasPermissionTo: can("view-profile") || can("create-handover") || can("update-handover") || can("approve-handover"),
+          },
+          {
+            label: "Approvals",
+            url: "Handover/Approvals",
+            pattern: "Handover/Approvals|v2-HandoverApprovals",
+            hasPermissionTo: can("approve-handover") || can("update-handover"),
+          },
+          {
+            label: "Audit Trail",
+            url: "Handover/Audit",
+            pattern: "Handover/Audit|Handover/Audits/*|v2-HandoverAudit",
+            hasPermissionTo: can("view-profile") || can("create-handover") || can("update-handover") || can("approve-handover"),
+          },
+          {
+            label: "All Handovers",
+            url: "Handover/All",
+            pattern: "Handover/All|v2-HandoverAll",
+            hasPermissionTo: isAdminRole,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Reports",
+    url: "#sidebarReports",
+    menuTitle: "Reports and Analysis",
+    icon: "ri-bubble-chart-line",
+    menuId: "sidebarReports",
+    subMenus: [
+      {
+        label: "School Establishment",
+        url: "v2-RipotiKuanzisha",
+        pattern: "v2-RipotiKuanzisha|RipotiKuanzisha",
+        hasPermissionTo: can("view-established-schools-report"),
+      },
+      {
+        label: "School Owners",
+        url: "v2-RipotiWamiliki",
+        pattern: "v2-RipotiWamiliki|RipotiWamiliki",
+        hasPermissionTo: can("view-school-owners-report"),
+      },
+      {
+        label: "School Managers",
+        url: "v2-RipotiMeneja",
+        pattern: "v2-RipotiMeneja|RipotiMeneja",
+        hasPermissionTo: can("view-school-managers-report"),
+      },
+      {
+        label: "Registered Schools",
+        url: "v2-RipotiZilizosajiliwa",
+        pattern: "v2-RipotiZilizosajiliwa|RipotiZilizosajiliwa|ShuleDetails/*",
+        hasPermissionTo: can("view-registered-school-report"),
+      },
+      {
+        label: "Registration Analytics",
+        url: "v2-RipotiUsajiliAnalytics",
+        pattern: "v2-RipotiUsajiliAnalytics|RipotiUsajiliAnalytics",
+        hasPermissionTo: can("view-registered-school-report"),
+      },
+      {
+        label: "Changes",
+        url: "v2-RipotiKuongezaMikondo",
+        pattern:
+          "v2-RipotiKuongezaMikondo|v2-RipotiKuhamishaShule|v2-RipotiKubadiliUsajili|v2-RipotiKubadiliUmiliki|v2-RipotiKubadiliMeneja|v2-RipotiKubadiliJina|v2-RipotiKufutaShule|v2-RipotiKuongezaTahasusi|v2-RipotiKuongezaDahalia|v2-RipotiKuongezaBweni|RipotiKuongezaMikondo|RipotiKuhamishaShule|RipotiKubadiliUsajili|RipotiKubadiliUmiliki|RipotiKubadiliMeneja|RipotiKubadiliJina|RipotiKufutaShule|RipotiKuongezaTahasusi|RipotiKuongezaDahalia|RipotiKuongezaBweni",
+        hasPermissionTo: can("view-addition-of-streams-report"),
+      },
+    ],
+  },
+  {
+    label: "System Administration",
+    url: "#sidebarUI",
+    menuTitle: "Administration",
+    icon: "ri-list-settings-line",
+    menuId: "sidebarUI",
+    subMenus: [
+      {
+        label: "Schools & Applicants",
+        menuId: "sidebarUISchools",
+        subMenus: [
+          {
+            label: "Applicants",
+            url: "v2-Waombaji",
+            pattern: "v2-Waombaji|Waombaji|Mwombaji/*|Mwombaji/*/badili",
+            hasPermissionTo: can("view-applicants"),
+          },
+          {
+            label: "Schools",
+            url: "v2-Shule",
+            pattern: "v2-Shule|Shule|ShuleDetails/*/Edit",
+            hasPermissionTo: can("view-schools"),
+          },
+          {
+            label: "School Files",
+            url: "v2-MajaladaYaShule",
+            pattern: "v2-MajaladaYaShule|MajaladaYaShule",
+            hasPermissionTo: can("view-schools"),
+          },
+          {
+            label: "School Types",
+            url: "v2-AinaZaShule",
+            pattern: "v2-AinaZaShule|AinaZaShule",
+            hasPermissionTo: can("view-schools"),
+          },
+          {
+            label: "Accommodation Types",
+            url: "v2-AinaYaMalazi",
+            pattern: "v2-AinaYaMalazi|AinaYaMalazi",
+            hasPermissionTo: can("view-schools"),
+          },
+          {
+            label: "Languages",
+            url: "v2-Languages",
+            pattern: "v2-Languages|Languages",
+            hasPermissionTo: can("view-schools"),
+          },
+          {
+            label: "Religions",
+            url: "v2-Religions",
+            pattern: "v2-Religions|Religions",
+            hasPermissionTo: can("view-schools"),
+          },
+          {
+            label: "Sect Names",
+            url: "v2-SectNames",
+            pattern: "v2-SectNames|SectNames",
+            hasPermissionTo: can("view-schools"),
+          },
+          {
+            label: "School Type Standards",
+            url: "v2-ViwangoAinaZaShule",
+            pattern: "v2-ViwangoAinaZaShule|ViwangoAinaZaShule",
+            hasPermissionTo: can("view-schools"),
+          },
+          {
+            label: "Infrastructure Standards",
+            url: "v2-ViwangoMiundombinu",
+            pattern: "v2-ViwangoMiundombinu|ViwangoMiundombinu",
+            hasPermissionTo: can("view-schools"),
+          },
+        ],
+      },
+      {
+        label: "Users & Permissions",
+        menuId: "sidebarUIUsers",
+        subMenus: [
+          {
+            label: "Roles",
+            url: "v2-Roles",
+            pattern: "v2-Roles|Roles|EditRole/*|CreateRole",
+            hasPermissionTo: can("view-roles"),
+          },
+          {
+            label: "Permissions",
+            url: "v2-Permissions",
+            pattern: "v2-Permissions|Permissions|Permissions/*",
+            hasPermissionTo: can("view-permissions"),
+          },
+          {
+            label: "Modules",
+            url: "v2-Modules",
+            pattern: "v2-Modules|Modules|Modules/*",
+            hasPermissionTo: can("view-permissions"),
+          },
+          {
+            label: "Users",
+            url: "v2-Watumiaji",
+            pattern: "v2-Watumiaji|Watumiaji",
+            hasPermissionTo: can("view-users"),
+          },
+        ],
+      },
+      {
+        label: "Locations & Leadership",
+        menuId: "sidebarUILocations",
+        subMenus: [
+          {
+            label: "Zones",
+            url: "v2-Zoni",
+            pattern: "v2-Zoni|Zoni",
+            hasPermissionTo: can("view-zones"),
+          },
+          {
+            label: "Regions",
+            url: "v2-Mikoa",
+            pattern: "v2-Mikoa|Mikoa",
+            hasPermissionTo: can("view-regions"),
+          },
+          {
+            label: "Councils",
+            url: "v2-Halmashauri",
+            pattern: "v2-Halmashauri|Halmashauri",
+            hasPermissionTo: can("view-districts"),
+          },
+          {
+            label: "Wards",
+            url: "v2-Kata",
+            pattern: "v2-Kata|Kata",
+            hasPermissionTo: can("view-wards"),
+          },
+          {
+            label: "Streets",
+            url: "v2-Mitaa",
+            pattern: "v2-Mitaa|Mitaa",
+            hasPermissionTo: can("view-streets"),
+          },
+          {
+            label: "Ranks",
+            url: "v2-Ngazi",
+            pattern: "v2-Ngazi|Ngazi",
+            hasPermissionTo: can("view-ranks"),
+          },
+          {
+            label: "Sections",
+            url: "v2-Uongozi",
+            pattern: "v2-Uongozi|Uongozi",
+            hasPermissionTo: can("view-hierarchies"),
+          },
+          {
+            label: "Designations",
+            url: "v2-Vyeo",
+            pattern: "v2-Vyeo|Vyeo",
+            hasPermissionTo: can("view-designations"),
+          },
+        ],
+      },
+      {
+        label: "Application Workflow",
+        menuId: "sidebarUIWorkflow",
+        subMenus: [
+          {
+            label: "Application Types",
+            url: "v2-AinaZaMaombi",
+            pattern: "v2-AinaZaMaombi|AinaZaMaombi",
+            hasPermissionTo: can("view-workflow") || can("view-attachments"),
+          },
+          {
+            label: "Attachment Types",
+            url: "v2-Viambatisho",
+            pattern: "v2-Viambatisho|Viambatisho",
+            hasPermissionTo: can("view-attachments"),
+          },
+          {
+            label: "Fees",
+            url: "v2-Malipo",
+            pattern: "v2-Malipo|Malipo",
+            hasPermissionTo: can("view-fees"),
+          },
+          {
+            label: "Combinations",
+            url: "v2-Tahasusi",
+            pattern: "v2-Tahasusi|Tahasusi",
+            hasPermissionTo: can("view-combinations"),
+          },
+          {
+            label: "Subjects",
+            url: "v2-Masomo",
+            pattern: "v2-Masomo|Masomo",
+            hasPermissionTo: can("view-combinations"),
+          },
+          {
+            label: "Stream Subjects",
+            url: "v2-MasomoYaMichepuo",
+            pattern: "v2-MasomoYaMichepuo|MasomoYaMichepuo",
+            hasPermissionTo: can("view-combinations"),
+          },
+          {
+            label: "Streams",
+            url: "v2-Michepuo",
+            pattern: "v2-Michepuo|Michepuo",
+            hasPermissionTo: can("view-biases"),
+          },
+          {
+            label: "Registration Numbers",
+            url: "v2-Algorithm",
+            pattern: "v2-Algorithm|Algorithm",
+            hasPermissionTo: can("view-algorithm"),
+          },
+          {
+            label: "File Numbers",
+            url: "v2-FileNumberMappings",
+            pattern: "v2-FileNumberMappings|FileNumberMappings",
+            hasPermissionTo: can("view-algorithm") || can("view-workflow") || can("view-track-application"),
+          },
+          {
+            label: "Workflow",
+            url: "v2-Workflow",
+            pattern: "v2-Workflow|Workflow|Workflow/*",
+            hasPermissionTo: can("view-workflow"),
+          },
+          {
+            label: "Step Types",
+            url: "v2-AinaZaHatua",
+            pattern: "v2-AinaZaHatua|AinaZaHatua",
+            hasPermissionTo: can("view-workflow"),
+          },
+        ],
+      },
+      {
+        label: "Letters",
+        menuId: "sidebarUIBarua",
+        subMenus: [
+          {
+            label: "Templates",
+            url: "letter-templates",
+            pattern: "letter-templates|letter-templates/*/edit|letter-templates/*/preview",
+            hasPermissionTo: can("view-letters"),
+          },
+          {
+            label: "Addressee Formats",
+            url: "letter-addressee-templates",
+            pattern: "letter-addressee-templates|letter-addressee-templates/*|letter-addressee-templates/*/edit",
+            hasPermissionTo: can("view-letters"),
+          },
+          {
+            label: "Guide",
+            url: "letter-templates/guide",
+            pattern: "letter-templates/guide",
+            hasPermissionTo: can("view-letters"),
+          },
+        ],
+      },
+      {
+        label: "Monitoring & Audit",
+        menuId: "sidebarUIAudit",
+        subMenus: [
+          {
+            label: "Audit Trail",
+            url: "AuditTrail",
+            pattern: "AuditTrail",
+            hasPermissionTo: can("view-audit"),
+          },
+          {
+            label: "System Configurations",
+            url: "v2-SystemConfigurations",
+            pattern: "v2-SystemConfigurations|SystemConfigurations",
+            hasPermissionTo: can("view-audit"),
+          },
+          {
+            label: "Login Activity",
+            url: "LoginActivity",
+            pattern: "LoginActivity",
+            hasPermissionTo: can("view-login-activity"),
+          },
+          {
+            label: "System Logs",
+            url: "v2-SystemLogs",
+            pattern: "v2-SystemLogs|SystemLogs",
+            hasPermissionTo: can("view-audit"),
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Logout",
+    url: "logout",
+    menuTitle: "Exit",
+    icon: "ri-logout-circle-r-line",
+    menuId: "logout",
+    pattern: "",
+    hasPermissionTo: true,
+  },
 ];
 %>
 <div id="scrollbar">
-    <div class="container-fluid">
-        <div id="two-column-menu">
-            &nbsp;
-        </div>
-        <ul class="navbar-nav" id="navbar-nav">
-            <!-- <li class="menu-title"><span data-key="t-menu">Menu</span></li> -->
-            <li class="menu-title text-muted"><span><%= req.session.kanda ? `KANDA YA ${req.session.kanda}` : '' %></span></li>
-            <% menuItems.forEach( function(item) { 
-               
-                if(typeof item.subMenus !== 'undefined' && item.subMenus.length > 0 )
-                {
-                    // Check Permissions for all submenus items
-                        if(pluck(item.subMenus , 'hasPermissionTo').includes(true)){
-                            if(item.menuTitle){
-                                %>
-                                
-                                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-components"><%= item.menuTitle %></span></li>
-                                <%
-                            }
-                            %>
-                            <li class="nav-item">
-                                <a class="nav-link menu-link" 
-                                    href="<%= item.menuId ? '/'+item.url : '/'+item.url %>" 
-                                    data-bs-toggle="collapse" 
-                                    role="button" aria-expanded="false" 
-                                    aria-controls="<%= item.menuId %>"
-                                >
-                                    <i class="<%= item.icon %>"></i> 
-                                    <span data-key="t-dashboards"><%= item.label %></span>
-                                </a>
-                                <div class="collapse menu-dropdown
-                                    <%= routeIs(pluck(item.subMenus , 'pattern').join("|") , getCurrentUrl(req)) ? 'show' : '' %>
-                                    " 
-                                    id="<%= item.menuId %>"
-                                >
-                                        <ul class="nav nav-sm flex-column">
-                                            <% item.subMenus.forEach( function(subItem) { 
-                                                // Check Permissions
-                                                if(subItem.hasPermissionTo){
-                                            %>
-                                                <li class="nav-item">
-                                                    <a href="/<%= subItem.url %>" 
-                                                         <%= typeof subItem.menuId !== 'undefined' && subItem.menuId ? `id=${item.menuId}` : ''%>
-                                                        class="nav-link <%= routeIs(subItem.pattern , getCurrentUrl(req)) ? 'active' : '' %>" 
-                                                        data-key="t-analytics">
-                                                        <%= subItem.label %>
-                                                        <% if(subItem.counterId ){%>
-                                                                <span class="badge badge-pill bg-danger" id="<%=subItem.counterId%>" data-key="t-new"></span> 
-                                                            <% } %>
-                                                        </a>
-                                                </li>
-                                            <% 
-                                            }
-                                        }) %>
-                                        </ul>
-                                </div>
-                            </li>
-                            <%
-                        }
-                }else{
-                    // Check Permissions
-                    if(item.hasPermissionTo){
-                        if(item.menuTitle){
-                        %>
-                        <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-components"><%= item.menuTitle %></span></li>
-                        <%
-                    }
-                    %>
-                    <li class="nav-item">
-                        <a href="/<%=item.url %>" 
-                            <%= typeof item.menuId !== 'undefined' && item.menuId ? `id=${item.menuId}` : ''%>
-                            class="nav-link menu-link <%= routeIs(item.pattern , getCurrentUrl(req)) ? 'active' : '' %>"
-                        >
-                            <i class="ri <%=item.icon%>"></i> 
-                            <span data-key="t-widgets"><%=item.label%></span>
-                        </a>
-                    </li>
-                <% }
-                }
-            })
-           %>   
-        </ul>        
-    </div>
+  <div class="container-fluid">
+    <div id="two-column-menu">&nbsp;</div>
+    <ul class="navbar-nav" id="navbar-nav">
+      <li class="menu-title text-muted"><span><%= req.session.kanda ? `ZONE ${req.session.kanda}` : '' %></span></li>
+      <% menuItems.forEach(function(item) {
+        if (typeof item.subMenus !== 'undefined' && item.subMenus.length > 0) {
+          if (hasVisibleChildren(item.subMenus)) {
+            if (item.menuTitle) { %>
+              <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-components"><%= item.menuTitle %></span></li>
+            <% }
+            const childPatterns = collectPatterns(item.subMenus).join("|");
+            const isOpen = routeIs(childPatterns, currentUrl);
+            %>
+            <li class="nav-item">
+              <a class="nav-link menu-link <%= isOpen ? 'active' : '' %>"
+                 href="<%= item.menuId ? item.url : '/' + item.url %>"
+                 data-bs-toggle="collapse"
+                 role="button"
+                 aria-expanded="<%= isOpen ? 'true' : 'false' %>"
+                 aria-controls="<%= item.menuId %>">
+                <i class="<%= item.icon %>"></i>
+                <span data-key="t-dashboards"><%= item.label %></span>
+              </a>
+              <div class="collapse menu-dropdown <%= isOpen ? 'show' : '' %>" id="<%= item.menuId %>">
+                <%- renderSubMenus(item.subMenus) %>
+              </div>
+            </li>
+          <% }
+        } else {
+          if (item.hasPermissionTo) {
+            if (item.menuTitle) { %>
+              <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-components"><%= item.menuTitle %></span></li>
+            <% } %>
+            <li class="nav-item">
+              <a href="/<%= item.url %>"
+                 <%= typeof item.menuId !== 'undefined' && item.menuId ? `id=${item.menuId}` : '' %>
+                 class="nav-link menu-link <%= routeIs(item.pattern, currentUrl) ? 'active' : '' %>">
+                <i class="<%= item.icon %>"></i>
+                <span data-key="t-widgets"><%= item.label %></span>
+              </a>
+            </li>
+          <% }
+        }
+      }); %>
+    </ul>
+  </div>
 </div>
-  <!-- Sidebar -->
+<!-- Sidebar -->

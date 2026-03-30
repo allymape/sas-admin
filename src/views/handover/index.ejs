@@ -1,0 +1,193 @@
+<%
+  const tab = String(activeTab || "my").toLowerCase();
+  const canCreate = permission(req, "create-handover") || permission(req, "update-handover");
+  const canApprove = Boolean(canApproveHandover);
+  const canViewAll = Boolean(canViewAllHandovers);
+%>
+
+<%- include('../layouts/partials/header.ejs' , {
+  title : 'Handover',
+  page_title : 'Handover Module',
+  card_title : ''
+}) %>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-light-subtle">
+    <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+      <div>
+        <h5 class="mb-1">Handover / Delegation</h5>
+        <p class="text-muted mb-0">Mchakato kamili wa kukaimisha majukumu na idhini.</p>
+      </div>
+      <% if (canCreate && tab === "my") { %>
+      <button type="button" class="btn btn-primary" id="btn-open-handover-modal">
+        <i class="ri-add-line"></i> New Handover
+      </button>
+      <% } %>
+    </div>
+  </div>
+  <div class="card-body">
+    <ul class="nav nav-pills flex-wrap gap-2 mb-4">
+      <li class="nav-item"><a class="nav-link <%= tab === 'my' ? 'active' : '' %>" href="/Handover/My">My Handovers</a></li>
+      <li class="nav-item"><a class="nav-link <%= tab === 'assigned' ? 'active' : '' %>" href="/Handover/Assigned">Assigned To Me</a></li>
+      <% if (canApprove) { %>
+      <li class="nav-item"><a class="nav-link <%= tab === 'approvals' ? 'active' : '' %>" href="/Handover/Approvals">Approvals</a></li>
+      <% } %>
+      <li class="nav-item"><a class="nav-link <%= tab === 'audit' ? 'active' : '' %>" href="/Handover/Audit">Audit Trail</a></li>
+      <% if (canViewAll) { %>
+      <li class="nav-item"><a class="nav-link <%= tab === 'all' ? 'active' : '' %>" href="/Handover/All">All Handovers</a></li>
+      <% } %>
+    </ul>
+
+    <div id="handover-active-status-banner" class="alert alert-warning d-none">
+      You currently have an active handover and cannot perform workflow actions until the handover ends or is reclaimed.
+    </div>
+
+    <div class="row g-2 align-items-end mb-3">
+      <div class="col-md-3">
+        <label class="form-label">Status</label>
+        <select id="filter-status" class="form-select">
+          <option value="">All Statuses</option>
+          <option value="draft">Draft</option>
+          <option value="pending_approval">Pending Approval</option>
+          <option value="approved">Approved</option>
+          <option value="active">Active</option>
+          <option value="rejected">Rejected</option>
+          <option value="cancelled">Cancelled</option>
+          <option value="reclaimed">Reclaimed</option>
+          <option value="expired">Expired</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Scope</label>
+        <select id="filter-scope" class="form-select">
+          <option value="">All</option>
+          <option value="tasks_only">Tasks Only</option>
+          <option value="full_role">Full Role</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">From</label>
+        <input id="filter-from-date" type="text" class="form-control border-0 dash-filter-picker shadow" data-provider="flatpickr" data-date-format="Y-m-d" placeholder="YYYY-MM-DD" />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">To</label>
+        <input id="filter-to-date" type="text" class="form-control border-0 dash-filter-picker shadow" data-provider="flatpickr" data-date-format="Y-m-d" placeholder="YYYY-MM-DD" />
+      </div>
+      <div class="col-md-1 d-grid">
+        <button id="btn-apply-filters" class="btn btn-outline-primary">Go</button>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle" id="handover-table">
+        <thead id="handover-table-head"></thead>
+        <tbody id="handover-table-body"></tbody>
+      </table>
+    </div>
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <small class="text-muted" id="handover-pagination-summary">-</small>
+      <div class="btn-group btn-group-sm">
+        <button class="btn btn-outline-secondary" id="btn-prev-page">Prev</button>
+        <button class="btn btn-outline-secondary" id="btn-next-page">Next</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create/Edit Modal -->
+<div class="modal fade" id="handoverFormModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="handover-form-title">Create Handover</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="handover-id" />
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Delegate (to_user_id) *</label>
+            <select id="handover-to-user" class="form-select" required>
+              <option value="">Select delegate...</option>
+              <% staffs.forEach((staff) => { %>
+                <option value="<%= staff.userId %>"><%= String(staff.name || '').toUpperCase() %> (<%= String(staff.role || '').toUpperCase() %>)</option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Start *</label>
+            <input id="handover-start-at" type="text" class="form-control border-0 dash-filter-picker shadow" data-provider="flatpickr" data-date-format="Y-m-d H:i" placeholder="YYYY-MM-DD HH:mm" />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">End *</label>
+            <input id="handover-end-at" type="text" class="form-control border-0 dash-filter-picker shadow" data-provider="flatpickr" data-date-format="Y-m-d H:i" placeholder="YYYY-MM-DD HH:mm" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Scope Type *</label>
+            <select id="handover-scope-type" class="form-select" required>
+              <option value="tasks_only">tasks_only</option>
+              <option value="full_role">full_role</option>
+            </select>
+          </div>
+          <div class="col-md-8">
+            <label class="form-label">Reason *</label>
+            <input id="handover-reason" class="form-control" type="text" placeholder="Reason for handover" />
+          </div>
+          <div class="col-12">
+            <label class="form-label">Notes</label>
+            <textarea id="handover-notes" rows="3" class="form-control" placeholder="Optional notes"></textarea>
+          </div>
+          <div class="col-12">
+            <div class="alert alert-info mb-0 py-2" id="handover-approval-hint">
+              Approval required status will be determined by business rules.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-light" data-bs-dismiss="modal">Close</button>
+        <button id="btn-save-draft" class="btn btn-outline-secondary">Save Draft</button>
+        <button id="btn-submit-handover" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Details Modal -->
+<div class="modal fade" id="handoverDetailsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Handover Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3" id="handover-details-grid"></div>
+        <hr />
+        <h6 class="mb-3">Audit Events</h6>
+        <div class="table-responsive">
+          <table class="table table-sm table-striped align-middle">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Actor</th>
+                <th>Action</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody id="handover-details-audits-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<input type="hidden" id="handover-current-tab" value="<%= tab %>" />
+<input type="hidden" id="handover-can-approve" value="<%= canApprove ? '1' : '0' %>" />
+<input type="hidden" id="handover-can-view-all" value="<%= canViewAll ? '1' : '0' %>" />
+
+<%- include('../layouts/partials/footer.ejs' , {card_title :  ''}) %>
+<script src="/design/layouts/scripts/handover_module.js"></script>
+</body>
+</html>

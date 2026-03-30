@@ -1,37 +1,73 @@
 <% var card_title = '' %> 
 <%- include('layouts/partials/header.ejs' , {
     title : 'Aina za Viambatisho',
-    page_title : 'Orodha ya AIna za Vimabatisho',
+    page_title : 'Orodha ya Aina za Viambatisho',
     card_title : 'Aina za Viambatisho zilivyopo',
     breadcrumb_main : 'Mipangilio' 
 }) %>
-    <div class="card-body">
+<style>
+    .attachment-types-page .attachment-toolbar {
+        padding: 0.9rem;
+        background: var(--vz-light, #f8f9fa);
+        border: 1px solid var(--vz-border-color, #e9ebec);
+        border-radius: 0.5rem;
+    }
+    .attachment-types-page #attachmentTypeTable {
+        min-width: 980px;
+    }
+    .attachment-types-page #attachmentTypeTable thead th {
+        white-space: nowrap;
+        font-size: 0.79rem;
+    }
+    .attachment-types-page #attachmentTypeTable tbody td {
+        font-size: 0.84rem;
+        vertical-align: middle;
+    }
+    .attachment-types-page #attachmentTypeTable.table > :not(caption) > * > * {
+        padding: 0.55rem 0.5rem;
+    }
+    .attachment-types-page .attachment-name {
+        max-width: 220px;
+        display: inline-block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        vertical-align: bottom;
+    }
+    .attachment-types-page #attachmentTypeTable td:last-child {
+        white-space: nowrap;
+    }
+</style>
+    <div class="card-body attachment-types-page">
       
         <div id="customerList">
-            <div class="row g-4 mb-2">
-                <div class="col-sm-auto">
-                    <div>
-                        <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"><i class="ri-add-line align-bottom me-1"></i> Sajili</button>
+            <div class="row g-3 mb-3 attachment-toolbar">
+                <div class="col-12 col-xl-3">
+                    <div class="d-grid d-sm-flex gap-2">
+                        <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn">
+                            <i class="ri-add-line align-bottom me-1"></i> Sajili
+                        </button>
                         <% if(req.query.deleted == 'true') {%>
-                            <a href="/Viambatisho" class="btn btn-outline-success" >
+                            <a href="/Viambatisho" class="btn btn-outline-success">
                                 <i class="ri-check-double-fill"></i> Active Items
                             </a>
                         <% }else { %>
-                            <a href="/Viambatisho?deleted=true" class="btn btn-outline-danger" >
-                                <i class="ri-delete-bin-2-line"></i> Deleted Items</a> 
+                            <a href="/Viambatisho?deleted=true" class="btn btn-outline-danger">
+                                <i class="ri-delete-bin-2-line"></i> Deleted Items
+                            </a> 
                         <% } %>
                     </div>
                 </div>
-                <div class="col-sm">
-                    <div class="d-flex justify-content-sm-end">
-                      <form action="/Viambatisho" method="GET" class="d-flex">
-                                <div class="search-box ms-2">
-                                    <input type="text" name="tafuta" value="<%= req.query.tafuta %>" class="form-control search" placeholder="Tafuta...">
-                                    <i class="ri-search-line search-icon"></i>
+                <div class="col-12 col-xl-9">
+                      <form action="/Viambatisho" method="GET" class="row g-2 align-items-end justify-content-xl-end">
+                                <div class="col-12 col-md-3">
+                                    <label for="tafuta" class="form-label mb-1">Search</label>
+                                    <input type="text" name="tafuta" id="tafuta" value="<%= req.query.tafuta %>" class="form-control form-control-sm search" placeholder="Tafuta...">
                                 </div>
-                                 <div class="ms-2">
-                                    <select name="aina_ombi" id="aina_ombi" class="form-control">
-                                        <option value=""> --- Chagua Aina ya Ombi  --</option>
+                                <div class="col-12 col-md-3">
+                                    <label for="aina_ombi" class="form-label mb-1">Aina ya Ombi</label>
+                                    <select name="aina_ombi" id="aina_ombi" class="form-select form-select-sm">
+                                        <option value="">Chagua Aina ya Ombi</option>
                                         <% for (let index = 0; index < categories.length; index++) { %>
                                         <% const category = categories[index]; %>
                                             <option value="<%= category.id %>" <%= req.query.aina_ombi == category.id ? 'selected' : '' %> > 
@@ -40,10 +76,11 @@
                                         <% } %>
                                     </select>
                                 </div>
-                                <div class="ms-2">
-                                    <select name="umiliki" id="umiliki" class="form-control">
-                                        <option value=""> --- Chagua Umiliki --</option>
-                                        <option value="0" <%=req.query.umiliki == "0" ? 'selected' : ''%> > Wote </option>
+                                <div class="col-12 col-md-2">
+                                    <label for="umiliki" class="form-label mb-1">Umiliki</label>
+                                    <select name="umiliki" id="umiliki" class="form-select form-select-sm">
+                                        <option value="">Chagua Umiliki</option>
+                                        <option value="0" <%=req.query.umiliki == "0" ? 'selected' : ''%> >Wote</option>
                                         <% for (let index = 0; index < ownerships.length; index++) { %>
                                         <% const owner = ownerships[index]; %>
                                             <option value="<%= owner.id %>" <%= req.query.umiliki == owner.id ? 'selected' : '' %> > 
@@ -52,9 +89,10 @@
                                         <% } %>
                                     </select>
                                 </div>
-                                <div class="ms-2">
-                                    <select name="structure" id="structure" class="form-control">
-                                        <option value=""> --- Chagua Majengo -- </option>
+                                <div class="col-12 col-md-2">
+                                    <label for="structure" class="form-label mb-1">Majengo</label>
+                                    <select name="structure" id="structure" class="form-select form-select-sm">
+                                        <option value="">Chagua Majengo</option>
                                         <option value="0" <%= req.query.structure == '0' ? 'selected' : '' %>>Wote</option>
                                         <% for (let index = 0; index < structures.length; index++) { %>
                                         <% const structure = structures[index]; %>
@@ -65,39 +103,33 @@
                                     </select>
                                 </div>
                                
-                                <div class="ms-2">
-                                    <button type="submit" class="btn btn-primary">
+                                <div class="col-6 col-md-auto">
+                                    <button type="submit" class="btn btn-primary btn-sm w-100">
                                         Tafuta
                                     </button>
                                 </div>
                                 <% if(req.query.umiliki || req.query.aina_ombi || req.query.structure){%>
-                                    <div class="ms-2">
-                                        <a href="/Viambatisho" class="btn btn-danger"> Clear </a>
+                                    <div class="col-6 col-md-auto">
+                                        <a href="/Viambatisho" class="btn btn-danger btn-sm w-100">Clear</a>
                                     </div>
                                 <% } %>
                       </form>
-                    </div>
                 </div>
             </div>
 
             <div class="table-responsive table-card mt-3 mb-1">
-                <table class="table align-middle table-nowrap" id="attachmentTypeTable">
+                <table class="table table-sm align-middle table-nowrap" id="attachmentTypeTable">
                     <thead class="table-light">
                         <tr>
-                            <th scope="col" style="width: 50px;">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="checkAll" value="option">
-                                </div>
-                            </th>
                             <th>Na.</th>
-                            <th >Jina</th>
-                            <th >Mwombaji</th>
-                            <th >Aina ya Ombi</th>
-                            <th >Majengo</th>
-                            <th >Ukubwa wa kiambata (MB)</th>
+                            <th>Jina</th>
+                            <th>Mwombaji</th>
+                            <th>Aina ya Ombi</th>
+                            <th>Majengo</th>
+                            <th>Ukubwa (MB)</th>
                             <th>Watumiaji wa Ndani</th>
-                            <th >Hali</th>
-                            <th class="text-center" width="15%">Action</th>
+                            <th>Hali</th>
+                            <th class="text-center" width="10%">Action</th>
                         </tr>
                     </thead>
                     <tbody class="list form-check-all">
