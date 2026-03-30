@@ -42,6 +42,10 @@ const isAdminUser = (req) => {
   );
 };
 
+const hasPermission = (req, permissionName) =>
+  Array.isArray(req?.user?.userPermissions) &&
+  req.user.userPermissions.includes(permissionName);
+
 // Login Page
 userController.get("/", redirectIfAuthenticated, (req, res) => {
   res.render(path.join(__dirname + "/../views/login"), {
@@ -63,7 +67,6 @@ userController.get("/Profile", isAuthenticated , can('view-profile') , (req, res
         staffs,
         activities,
         canEditUsername: permissions.includes("update-users"),
-        canEditEmail: permissions.includes("update-users"),
         message: "",
       });
     });
@@ -386,7 +389,21 @@ userController.post("/DisableUser/:id", isAuthenticated, can('delete-users'), fu
 
 // Update profile
 userController.post("/UpdateMyProfile" , isAuthenticated , can('update-profile') , (req , res) => {
-    sendRequest(req , res , updateMyProfileAPI , "PUT" , req.body , (jsonData) => {
+    const payload = {
+      full_name: req.body?.full_name,
+      phone_number: req.body?.phone_number,
+      email_notify: req.body?.email_notify,
+    };
+
+    if (Object.prototype.hasOwnProperty.call(req.body || {}, "profile_photo")) {
+      payload.profile_photo = req.body.profile_photo;
+    }
+
+    if (hasPermission(req, "update-users") && Object.prototype.hasOwnProperty.call(req.body || {}, "username")) {
+      payload.username = req.body.username;
+    }
+
+    sendRequest(req , res , updateMyProfileAPI , "PUT" , payload , (jsonData) => {
          const {statusCode , message} = jsonData;
          res.send({
              message,

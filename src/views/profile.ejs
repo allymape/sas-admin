@@ -94,12 +94,12 @@
         }
     </style>
 
-    <div id="profile-page-loader" class="profile-page-loader">
+    <!-- <div id="profile-page-loader" class="profile-page-loader">
         <div class="text-center">
             <div class="spinner-border text-primary" role="status" aria-hidden="true"></div>
             <div class="mt-2 text-muted">Inapakia taarifa za akaunti...</div>
         </div>
-    </div>
+    </div> -->
 
     <div class="position-relative mx-n4 mt-n4">
         <div class="profile-wid-bg profile-setting-img" style="height: 110px;">
@@ -213,7 +213,7 @@
                                             <div class="invalid-feedback" id="fullNameError"></div>
                                         </div>
                                         <div class="col-md-6">
-                                            <label for="usernameInput" class="form-label <%= canUsernameEdit ? 'required-label' : '' %>">Jina la Mtumiaji</label>
+                                            <label for="usernameInput" class="form-label <%= canUsernameEdit ? 'required-label' : '' %>">Jina la Mtumiaji (username)</label>
                                             <input
                                                 type="text"
                                                 class="form-control"
@@ -236,15 +236,15 @@
                                             <div class="invalid-feedback" id="phoneError"></div>
                                         </div>
                                         <div class="col-md-6">
-                                            <label for="emailInput" class="form-label <%= canEmailEdit ? 'required-label' : '' %>">Barua Pepe</label>
+                                            <label for="emailInput" class="form-label">Barua Pepe</label>
                                             <input
                                                 type="email"
                                                 class="form-control"
                                                 id="emailInput"
                                                 value="<%= user?.email || '' %>"
-                                                <%= canEmailEdit ? '' : 'readonly disabled' %>
+                                                readonly disabled
                                                 placeholder="Ingiza barua pepe">
-                                            <div class="field-help text-muted mt-1"><%= canEmailEdit ? 'Hakikisha barua pepe ni sahihi kwa taarifa za mfumo.' : 'Field hii ni read-only.' %></div>
+                                            <div class="field-help text-muted mt-1">Field hii ni read-only.</div>
                                             <div class="invalid-feedback" id="emailError"></div>
                                         </div>
                                         <div class="col-md-12">
