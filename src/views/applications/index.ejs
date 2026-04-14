@@ -1194,10 +1194,16 @@
       document.addEventListener("click", function (e) {
         const btn = e.target && e.target.closest ? e.target.closest("button[data-confirm-start=\"1\"]") : null;
         if (!btn) return;
+        if (btn.getAttribute("data-confirming") === "1") {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          return;
+        }
         const form = btn.closest ? btn.closest("form") : null;
         if (!form) return;
 
         e.preventDefault();
+        btn.setAttribute("data-confirming", "1");
 
         const trackingNumber = (btn.getAttribute("data-tracking-number") || "").trim();
         const title = trackingNumber ? `Anzisha workflow (${trackingNumber})?` : "Anzisha workflow?";
@@ -1218,7 +1224,11 @@
             buttonsStyling: false,
             showCloseButton: true,
           }).then((result) => {
-            if (result && result.value) form.submit();
+            if (result && result.value) {
+              form.submit();
+              return;
+            }
+            btn.removeAttribute("data-confirming");
           });
 
         if (window.Swal && typeof Swal.fire === "function") {
@@ -1226,6 +1236,8 @@
         } else {
           if (confirm("Una uhakika unataka kuanzisha workflow ya ombi hili?")) {
             form.submit();
+          } else {
+            btn.removeAttribute("data-confirming");
           }
         }
       });

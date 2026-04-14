@@ -398,24 +398,34 @@ function findDiffDaysFromNow(targetDate) {
 
 
 function showLoadingSpinner() {
-  $("#loading").fadeIn();
-  var opts = {
-    lines: 12, // The number of lines to draw
-    length: 7, // The length of each line
-    width: 5, // The line thickness
-    radius: 10, // The radius of the inner circle
-    color: "#000", // #rgb or #rrggbb
-    speed: 1, // Rounds per second
-    trail: 60, // Afterglow percentage
-    shadow: false, // Whether to render a shadow
-    hwaccel: false, // Whether to use hardware acceleration
-  };
-  var target = document.getElementById("loading");
-  var spinner = new Spinner(opts).spin(target);
+  var target = document.getElementById("loading") || document.getElementById("globalLoader");
+  if (!target) return;
+  var activeCount = Number.parseInt(target.getAttribute("data-loading-count") || "0", 10) || 0;
+  target.setAttribute("data-loading-count", String(activeCount + 1));
+  if (target.getAttribute("data-loading-visible") === "1") return;
+  target.setAttribute("data-loading-visible", "1");
+  target.style.display = "block";
+  target.style.position = "fixed";
+  target.style.left = "0";
+  target.style.top = "0";
+  target.style.width = "100%";
+  target.style.height = "100%";
+  target.style.zIndex = "9999";
+  target.style.pointerEvents = "all";
 }
 
 function hideLoadingSpinner() {
-  $("#loading").fadeOut();
+  var target = document.getElementById("loading") || document.getElementById("globalLoader");
+  if (!target) return;
+  var activeCount = Number.parseInt(target.getAttribute("data-loading-count") || "0", 10) || 0;
+  if (activeCount > 1) {
+    target.setAttribute("data-loading-count", String(activeCount - 1));
+    return;
+  }
+  target.setAttribute("data-loading-count", "0");
+  target.setAttribute("data-loading-visible", "0");
+  target.style.display = "none";
+  target.style.pointerEvents = "none";
 }
 
 $(".page-size").on("change", function (e) {

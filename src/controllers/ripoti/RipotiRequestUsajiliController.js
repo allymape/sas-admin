@@ -10,6 +10,8 @@ var API_BASE_URL = process.env.API_BASE_URL;
 const requestRiportUsajiliAPI = API_BASE_URL + "ripoti-usajili-shule";
 const requestRiportUsajiliAnalyticsAPI = API_BASE_URL + "ripoti-usajili-shule/analytics";
 const requestRiportUsajiliLookupsAPI = API_BASE_URL + "ripoti-usajili-shule/lookups";
+const requestRiportUsajiliPivotDataAPI = API_BASE_URL + "ripoti-usajili-shule/pivot-data";
+const requestRiportUsajiliPivotSummaryDataAPI = API_BASE_URL + "ripoti-usajili-shule/pivot-summary-data";
 const thibitishaUsajiliAPI = API_BASE_URL + "thibitisha-usajili-shule";
 const rekebishaUsajiliAPI = API_BASE_URL + "rekebisha-usajili-shule";
 
@@ -284,6 +286,40 @@ reportUsajiliRequestController.get(
     };
 
     sendRequest(req, res, requestRiportUsajiliAnalyticsAPI, "GET", formData, (jsonData) => {
+      return res.send(jsonData);
+    });
+  }
+);
+
+// Full Pivot dataset for RipotiUsajiliAnalytics
+reportUsajiliRequestController.get(
+  "/RipotiUsajiliPivotData",
+  isAuthenticated,
+  can("view-registered-school-report"),
+  activeHandover,
+  function (req, res) {
+    const formData = {
+      ...req.query,
+    };
+
+    sendRequest(req, res, requestRiportUsajiliPivotDataAPI, "GET", formData, (jsonData) => {
+      return res.send(jsonData);
+    });
+  }
+);
+
+// National summary dataset for RipotiUsajiliAnalytics
+reportUsajiliRequestController.get(
+  "/RipotiUsajiliPivotSummaryData",
+  isAuthenticated,
+  can("view-registered-school-report"),
+  activeHandover,
+  function (req, res) {
+    const formData = {
+      ...req.query,
+    };
+
+    sendRequest(req, res, requestRiportUsajiliPivotSummaryDataAPI, "GET", formData, (jsonData) => {
       return res.send(jsonData);
     });
   }

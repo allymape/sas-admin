@@ -331,37 +331,75 @@ module.exports = {
 
     const isAllowedPath = allowWhenLocked.some((prefix) => currentPath === prefix || currentPath.startsWith(`${prefix}/`));
 
+    const respondByLockState = (isActive) => {
+      const { is_password_changed } = req.user || {};
+      if (!is_password_changed) {
+        return res.redirect("/Profile?tab=change_password");
+      }
+
+      if (isActive) {
+        const isWriteMethod = ["POST", "PUT", "PATCH", "DELETE"].includes(String(req.method || "").toUpperCase());
+        const acceptsJson = String(req.headers?.accept || "").toLowerCase().includes("application/json");
+        const isAjax = req.xhr || acceptsJson || isWriteMethod;
+
+        if (isAjax) {
+          return res.status(200).send({
+            statusCode: 423,
+            message: handoverLockMessage,
+          });
+        }
+
+        if (typeof req.flash === "function") {
+          req.flash("warning", handoverLockMessage);
+        }
+        return res.redirect("/Handover/My");
+      }
+
+      return next();
+    };
+
     if (!isAllowedPath) {
-      module.exports.sendRequest(
-        req,
-        res,
-        myActivehandover,
-        "POST",
-        {},
-        (jsonData) => {
-          const { active } = jsonData;
-          const { is_password_changed } = req.user;
-          if (!is_password_changed) {
-            res.redirect("/Profile?tab=change_password");
-          } else if (active) {
-            const isWriteMethod = ["POST", "PUT", "PATCH", "DELETE"].includes(String(req.method || "").toUpperCase());
-            const acceptsJson = String(req.headers?.accept || "").toLowerCase().includes("application/json");
-            const isAjax = req.xhr || acceptsJson || isWriteMethod;
+      const token = req.session.Token || req.body?.token;
+      const fallbackActive = Boolean(req?.user?.has_active_outgoing_handover);
 
-            if (isAjax) {
-              return res.status(200).send({
-                statusCode: 423,
-                message: handoverLockMessage,
-              });
-            }
+      if (!token) {
+        return respondByLockState(fallbackActive);
+      }
 
-            if (typeof req.flash === "function") {
-              req.flash("warning", handoverLockMessage);
-            }
-            res.redirect("/Handover/My");
-          } else {
-            next();
+      request(
+        {
+          url: myActivehandover,
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+          json: {},
+          timeout: 5000,
+        },
+        (error, response, body) => {
+          if (error) {
+            console.log("activeHandover check error (fallback to token claim):", error?.message || error);
+            return respondByLockState(fallbackActive);
           }
+
+          const okHttp = response && response.statusCode >= 200 && response.statusCode < 300;
+          const isUsableBody = body && (Number(body.statusCode) === 300 || typeof body.active !== "undefined");
+          if (okHttp && isUsableBody) {
+            return respondByLockState(Boolean(body.active));
+          }
+
+          const status = response ? response.statusCode : "NO_RESPONSE";
+          const bodyPreview =
+            typeof body === "string"
+              ? body.slice(0, 300)
+              : JSON.stringify(body || {}).slice(0, 300);
+          console.log("activeHandover check failed (fallback to token claim):", {
+            url: myActivehandover,
+            status,
+            body: bodyPreview,
+          });
+          return respondByLockState(fallbackActive);
         }
       );
     } else {

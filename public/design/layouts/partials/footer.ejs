@@ -1270,3 +1270,249 @@ function w() {
 	    window.addEventListener("load", () => setTimeout(apply, 0));
 	  })();
 	</script>
+    <script>
+        (function () {
+            if (window.__sasGlobalInteractionLoaderInitialized) return;
+            window.__sasGlobalInteractionLoaderInitialized = true;
+
+            const loader = document.getElementById("loading") || document.getElementById("globalLoader");
+            if (!loader) return;
+
+            const submittingForms = new WeakSet();
+            const fallbackTimers = new WeakMap();
+            let isPageNavigating = false;
+
+            const showLoader = () => {
+                if (typeof showLoadingSpinner === "function") {
+                    showLoadingSpinner();
+                    return;
+                }
+                if (loader.getAttribute("data-loading-visible") === "1") return;
+                loader.setAttribute("data-loading-visible", "1");
+                loader.style.display = "block";
+                loader.style.position = "fixed";
+                loader.style.top = "0";
+                loader.style.left = "0";
+                loader.style.width = "100%";
+                loader.style.height = "100%";
+                loader.style.zIndex = "9999";
+                loader.style.pointerEvents = "all";
+            };
+
+            const hideLoader = () => {
+                if (isPageNavigating) return;
+                if (typeof hideLoadingSpinner === "function") {
+                    hideLoadingSpinner();
+                    return;
+                }
+                if (loader.getAttribute("data-loading-visible") !== "1") return;
+                loader.setAttribute("data-loading-visible", "0");
+                loader.style.display = "none";
+                loader.style.pointerEvents = "none";
+            };
+
+            const lockElement = (element) => {
+                if (!element || element.getAttribute("data-sas-loader-locked") === "1") return false;
+                element.setAttribute("data-sas-loader-locked", "1");
+                element.setAttribute("aria-disabled", "true");
+                if (!element.classList.contains("disabled")) {
+                    element.classList.add("disabled");
+                }
+                if (typeof element.disabled !== "undefined") {
+                    element.setAttribute("data-sas-prev-disabled", element.disabled ? "1" : "0");
+                    element.disabled = true;
+                }
+                element.setAttribute("data-sas-prev-pointer-events", element.style.pointerEvents || "");
+                element.style.pointerEvents = "none";
+                return true;
+            };
+
+            const unlockElement = (element) => {
+                if (!element || element.getAttribute("data-sas-loader-locked") !== "1") return;
+                element.removeAttribute("data-sas-loader-locked");
+                if (element.getAttribute("data-sas-prev-disabled") === "0" && typeof element.disabled !== "undefined") {
+                    element.disabled = false;
+                }
+                element.removeAttribute("data-sas-prev-disabled");
+                const prevPointerEvents = element.getAttribute("data-sas-prev-pointer-events");
+                if (prevPointerEvents !== null) {
+                    element.style.pointerEvents = prevPointerEvents;
+                } else {
+                    element.style.removeProperty("pointer-events");
+                }
+                element.removeAttribute("data-sas-prev-pointer-events");
+                if (element.getAttribute("aria-disabled") === "true") {
+                    element.removeAttribute("aria-disabled");
+                }
+                if (element.classList.contains("disabled")) {
+                    element.classList.remove("disabled");
+                }
+            };
+
+            const lockFormControls = (form, submitter = null) => {
+                if (!form) return;
+                const controls = Array.from(
+                    form.querySelectorAll('button[type="submit"], button:not([type]), input[type="submit"]')
+                );
+                if (submitter && !controls.includes(submitter)) {
+                    controls.push(submitter);
+                }
+                controls.forEach((control) => lockElement(control));
+            };
+
+            const unlockFormControls = (form) => {
+                if (!form) return;
+                form
+                    .querySelectorAll("[data-sas-loader-locked=\"1\"]")
+                    .forEach((element) => unlockElement(element));
+            };
+
+            const scheduleFallbackUnlock = (key, callback, timeoutMs = 4000) => {
+                const prevTimer = fallbackTimers.get(key);
+                if (prevTimer) {
+                    clearTimeout(prevTimer);
+                }
+                const timer = setTimeout(() => {
+                    if (isPageNavigating) return;
+                    callback();
+                }, timeoutMs);
+                fallbackTimers.set(key, timer);
+            };
+
+            const isLeftPlainClick = (event) =>
+                event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey;
+
+            const hasBootstrapToggle = (target) =>
+                Boolean(target && target.getAttribute && target.hasAttribute("data-bs-toggle"));
+
+            const shouldIgnoreTarget = (target) => {
+                if (!target) return true;
+                if (target.closest("[data-no-loader=\"1\"]")) return true;
+                if (hasBootstrapToggle(target)) return true;
+                if (target.hasAttribute("data-bs-dismiss")) return true;
+                if (target.hasAttribute("data-bs-target")) return true;
+                if (target.hasAttribute("data-bs-slide") || target.hasAttribute("data-bs-slide-to")) return true;
+                if (target.classList.contains("dropdown-toggle")) return true;
+                if (target.classList.contains("btn-close")) return true;
+                if (target.getAttribute("role") === "tab") return true;
+                if (target.hasAttribute("data-confirm-start")) return true;
+                if (target.closest(".swal2-container")) return true;
+                if (target.classList.contains("js-open-pdf-modal")) return true;
+                if (target.classList.contains("disabled") || target.getAttribute("aria-disabled") === "true") return true;
+
+                if (target.tagName === "A") {
+                    const href = String(target.getAttribute("href") || "").trim().toLowerCase();
+                    if (!href || href === "#" || href.startsWith("javascript:")) return true;
+                    if (href.startsWith("#")) return true;
+                    if (href.startsWith("mailto:") || href.startsWith("tel:")) return true;
+                    if (target.hasAttribute("download")) return true;
+                    const targetAttr = String(target.getAttribute("target") || "").trim().toLowerCase();
+                    if (targetAttr && targetAttr !== "_self") return true;
+                }
+
+                if (target.tagName === "BUTTON") {
+                    const buttonType = String(target.getAttribute("type") || "submit").toLowerCase();
+                    if (buttonType === "reset") return true;
+                }
+
+                return false;
+            };
+
+            const lockAndShow = (target, fallbackMs = 2500) => {
+                lockElement(target);
+                showLoader();
+                scheduleFallbackUnlock(target, () => {
+                    unlockElement(target);
+                    hideLoader();
+                }, fallbackMs);
+            };
+
+            document.addEventListener(
+                "click",
+                function (event) {
+                    const target = event.target && event.target.closest
+                        ? event.target.closest("a, button, input[type=\"submit\"], input[type=\"button\"]")
+                        : null;
+                    if (!target) return;
+                    if (event.defaultPrevented || !isLeftPlainClick(event)) return;
+                    if (shouldIgnoreTarget(target)) return;
+
+                    const isSubmitControl =
+                        target.matches("button[type=\"submit\"], input[type=\"submit\"]")
+                        || (target.tagName === "BUTTON" && !target.getAttribute("type") && !!target.closest("form"));
+
+                    if (target.tagName !== "A" && !isSubmitControl) {
+                        return;
+                    }
+
+                    if (isSubmitControl) {
+                        lockAndShow(target, 4000);
+                        return;
+                    }
+
+                    lockAndShow(target, target.tagName === "A" ? 4000 : 1800);
+                },
+                true
+            );
+
+            document.addEventListener(
+                "submit",
+                function (event) {
+                    const form = event.target;
+                    if (!(form instanceof HTMLFormElement)) return;
+                    if (form.closest("[data-no-loader=\"1\"]")) return;
+
+                    if (submittingForms.has(form)) {
+                        event.preventDefault();
+                        event.stopImmediatePropagation();
+                        return;
+                    }
+
+                    submittingForms.add(form);
+                    lockFormControls(form, event.submitter || null);
+                    showLoader();
+
+                    scheduleFallbackUnlock(form, () => {
+                        submittingForms.delete(form);
+                        unlockFormControls(form);
+                        hideLoader();
+                    }, 4500);
+                },
+                true
+            );
+
+            if (!HTMLFormElement.prototype.__sasSubmitPatched) {
+                const nativeSubmit = HTMLFormElement.prototype.submit;
+                HTMLFormElement.prototype.submit = function () {
+                    if (!submittingForms.has(this)) {
+                        submittingForms.add(this);
+                        lockFormControls(this, null);
+                        showLoader();
+                        scheduleFallbackUnlock(this, () => {
+                            submittingForms.delete(this);
+                            unlockFormControls(this);
+                            hideLoader();
+                        }, 4500);
+                    }
+                    return nativeSubmit.call(this);
+                };
+                HTMLFormElement.prototype.__sasSubmitPatched = true;
+            }
+
+            window.addEventListener("beforeunload", function () {
+                isPageNavigating = true;
+                showLoader();
+            }, true);
+
+            window.addEventListener("pageshow", function () {
+                isPageNavigating = false;
+                hideLoader();
+            });
+
+            window.SASGlobalLoader = {
+                show: showLoader,
+                hide: hideLoader,
+                lockAndShow: lockAndShow,
+            };
+        })();
+    </script>

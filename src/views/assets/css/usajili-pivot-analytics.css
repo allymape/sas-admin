@@ -1,0 +1,153 @@
+:root {
+  --ws-border: #e2e8f0;
+  --ws-text: #0f172a;
+  --ws-muted: #64748b;
+  --ws-bg: #ffffff;
+  --ws-soft: #f8fafc;
+}
+
+.analytics-hero {
+  background: var(--ws-bg);
+  border-bottom: 1px solid var(--ws-border);
+  padding-top: 0.85rem;
+  padding-bottom: 0.85rem;
+}
+
+.analytics-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ws-text);
+}
+
+.analytics-subtitle {
+  color: var(--ws-muted);
+  font-size: 0.84rem;
+}
+
+.analytics-meta .meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 1px solid var(--ws-border);
+  border-radius: 7px;
+  padding: 0.32rem 0.56rem;
+  background: #fff;
+  color: #334155;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.compact-summary-line {
+  border: 1px solid var(--ws-border);
+  border-radius: 8px;
+  background: #fff;
+  color: #1e293b;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.5rem 0.7rem;
+}
+
+.pivot-surface {
+  border: 1px solid var(--ws-border);
+  border-radius: 10px;
+  background: #fff;
+  padding: 0.85rem;
+}
+
+.surface-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.surface-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #111827;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.pivot-config-summary {
+  color: #475569;
+  font-size: 0.77rem;
+}
+
+.pivot-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #334155;
+  padding: 0.45rem 0.1rem;
+}
+
+.pivot-empty {
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  background: var(--ws-soft);
+  padding: 0.9rem;
+  color: #64748b;
+  text-align: center;
+  margin-bottom: 0.7rem;
+}
+
+.pivot-ui-container {
+  min-height: 70vh;
+  overflow: auto;
+}
+
+/* Keep PivotTable.js default colors; only improve spacing & width */
+#pivotUiContainer .pvtUi,
+#pivotUiContainer .pvtRenderer,
+#pivotUiContainer .pvtAggregator,
+#pivotUiContainer .pvtVals,
+#pivotUiContainer .pvtAxisContainer,
+#pivotUiContainer .pvtUnused,
+#pivotUiContainer .pvtFilterBox {
+  font-size: 0.82rem;
+}
+
+#pivotUiContainer .pvtTable {
+  width: max-content;
+  min-width: 100%;
+}
+
+.dataset-preview-wrap {
+  border: 1px solid var(--ws-border);
+  border-radius: 8px;
+  background: #fff;
+  padding: 0.75rem;
+}
+
+#flatDatasetPreviewTable {
+  font-size: 0.8rem;
+}
+
+#flatDatasetPreviewTable thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #f1f5f9;
+}
+
+@media (max-width: 1200px) {
+  .pivot-ui-container {
+    min-height: 60vh;
+  }
+}
+
+@media (max-width: 768px) {
+  .analytics-meta {
+    width: 100%;
+  }
+
+  .pivot-ui-container {
+    min-height: 55vh;
+  }
+
+  .pivot-surface,
+  .dataset-preview-wrap {
+    padding: 0.7rem;
+  }
+}
