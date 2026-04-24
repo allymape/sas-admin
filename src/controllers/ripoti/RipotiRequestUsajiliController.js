@@ -14,6 +14,20 @@ const requestRiportUsajiliPivotDataAPI = API_BASE_URL + "ripoti-usajili-shule/pi
 const requestRiportUsajiliPivotSummaryDataAPI = API_BASE_URL + "ripoti-usajili-shule/pivot-summary-data";
 const thibitishaUsajiliAPI = API_BASE_URL + "thibitisha-usajili-shule";
 const rekebishaUsajiliAPI = API_BASE_URL + "rekebisha-usajili-shule";
+const ALLOWED_PIVOT_LIMITS = new Set([1000, 2000, 5000, 10000]);
+const DEFAULT_PIVOT_LIMIT = "5000";
+
+const normalizePivotLimit = (rawLimit) => {
+  const value = String(rawLimit || "").trim().toLowerCase();
+  if (value === "all") return "all";
+
+  const asNumber = Number(value);
+  if (Number.isFinite(asNumber) && ALLOWED_PIVOT_LIMITS.has(asNumber)) {
+    return String(asNumber);
+  }
+
+  return DEFAULT_PIVOT_LIMIT;
+};
 
 const csvEscape = (value) => {
   if (value === null || typeof value === "undefined") return "";
@@ -300,6 +314,7 @@ reportUsajiliRequestController.get(
   function (req, res) {
     const formData = {
       ...req.query,
+      limit: normalizePivotLimit(req.query?.limit),
     };
 
     sendRequest(req, res, requestRiportUsajiliPivotDataAPI, "GET", formData, (jsonData) => {

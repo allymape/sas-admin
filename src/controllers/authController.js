@@ -49,7 +49,7 @@ const loginRequest = async (body) => {
 };
 // Login Page
 const showLogin = (req, res) => {
-  res.render(path.join(__dirname, "/../views/login"), {
+  return res.render(path.join(__dirname, "/../views/login"), {
     req: req,
     message: "",
   });
@@ -122,7 +122,7 @@ const login = async (req, res) => {
     }
 
     req.flash("error", message || errorMessage);
-    res.redirect("/");
+    return res.redirect("/");
   } catch (err) {
     console.error("Login Error:", err.message);
     const apiError = err.response?.data;
@@ -154,7 +154,7 @@ const login = async (req, res) => {
     }
 
     req.flash("error", "Kuna tatizo la server. Tafadhali jaribu tena baadaye.");
-    res.redirect("/");
+    return res.redirect("/");
   }
 };
 const logout =  (req, res) => {
@@ -162,7 +162,7 @@ const logout =  (req, res) => {
     if (error) {
       console.log(error);
     }
-    res.redirect("/");
+    return res.redirect("/");
   });
 };
 

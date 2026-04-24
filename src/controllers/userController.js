@@ -8,7 +8,6 @@ userController.use(device.capture());
 const {
   sendRequest,
   isAuthenticated,
-  redirectIfAuthenticated,
   can,
   validePassword,
   activeHandover,
@@ -46,13 +45,6 @@ const hasPermission = (req, permissionName) =>
   Array.isArray(req?.user?.userPermissions) &&
   req.user.userPermissions.includes(permissionName);
 
-// Login Page
-userController.get("/", redirectIfAuthenticated, (req, res) => {
-  res.render(path.join(__dirname + "/../views/login"), {
-    req: req,
-    message: "",
-  });
-});
 // User Profile
 userController.get("/Profile", isAuthenticated , can('view-profile') , (req, res) => {
     sendRequest(req , res , myProfileAPI , "POST" , {} , (jsonData) => {

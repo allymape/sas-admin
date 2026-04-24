@@ -8,15 +8,17 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-ui-dist/jquery-ui.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pivottable@2.23.0/dist/pivot.min.css">
-<link rel="stylesheet" href="/design/assets/css/usajili-pivot-analytics.css">
+<link rel="stylesheet" href="/design/assets/css/usajili-pivot-analytics.css?v=20260418d">
 
 <script>
   window.__usajiliPivotConfig = {
     apiUrl: "/RipotiUsajiliPivotData",
+    summaryApiUrl: "/RipotiUsajiliPivotSummaryData",
     query: <%- JSON.stringify(req.query || {}) %>,
     safePivotUiRows: 1200,
-    maxClientRenderRows: 5000,
-    defaultLimit: 2000
+    maxClientRenderRows: 0,
+    defaultLimit: 5000,
+    allConfirmThreshold: 20000
   };
 </script>
 
@@ -42,7 +44,17 @@
   <section class="pivot-surface mt-3">
     <div class="surface-title-row mb-2">
       <h6 class="surface-title mb-0">Matokeo ya Pivot Report</h6>
-      <button type="button" class="btn btn-sm btn-outline-secondary" id="btnReloadPivotData">Refresh Data</button>
+      <div class="d-flex flex-wrap align-items-center justify-content-end gap-2">
+        <label for="pivotLimitSelect" class="small text-muted mb-0">Dataset Size</label>
+        <select id="pivotLimitSelect" class="form-select form-select-sm pivot-limit-select" aria-label="Dataset Size">
+          <option value="1000">1000</option>
+          <option value="2000">2000</option>
+          <option value="5000" selected>5000</option>
+          <option value="10000">10000</option>
+          <option value="all">All</option>
+        </select>
+        <button type="button" class="btn btn-sm btn-outline-secondary" id="btnReloadPivotData">Refresh Data</button>
+      </div>
     </div>
     <p class="pivot-config-summary mb-2" id="pivotConfigSummary">Rows: Mkoa | Columns: Umiliki | Aggregator: Count | Renderer: Table</p>
 
@@ -54,27 +66,6 @@
     <div id="pivotEmptyState" class="pivot-empty d-none">Hakuna data kwa vigezo vilivyopo.</div>
 
     <div id="pivotUiContainer" class="pivot-ui-container"></div>
-  </section>
-
-  <section class="dataset-preview-wrap mt-4">
-    <div class="surface-title-row mb-2">
-      <h6 class="surface-title mb-0">Sample Raw Dataset (Secondary)</h6>
-      <div class="d-flex align-items-center gap-2">
-        <span class="text-muted small" id="flatDatasetCaption">-</span>
-        <button type="button" class="btn btn-sm btn-outline-secondary" id="btnToggleSampleData">Onyesha Sample Data</button>
-      </div>
-    </div>
-
-    <div id="sampleDataCollapse" class="d-none">
-      <div class="table-responsive">
-        <table class="table table-sm table-bordered align-middle mb-0" id="flatDatasetPreviewTable">
-          <thead class="table-light"></thead>
-          <tbody>
-            <tr><td class="text-muted">Inasubiri data...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
   </section>
 </div>
 
@@ -94,7 +85,7 @@
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pivottable@2.23.0/dist/plotly_renderers.min.js"></script>
 
-<script src="/design/assets/js/pages/usajili-pivot-analytics.js"></script>
+<script src="/design/assets/js/pages/usajili-pivot-analytics.js?v=20260418f"></script>
 
 </body>
 </html>

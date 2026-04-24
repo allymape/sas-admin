@@ -59,6 +59,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .surface-title {
@@ -74,11 +75,19 @@
   font-size: 0.77rem;
 }
 
+.pivot-limit-select {
+  min-width: 124px;
+}
+
 .pivot-loading {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.6rem;
   color: #334155;
+  text-align: center;
+  width: 100%;
+  min-height: 88px;
   padding: 0.45rem 0.1rem;
 }
 
@@ -113,24 +122,6 @@
   min-width: 100%;
 }
 
-.dataset-preview-wrap {
-  border: 1px solid var(--ws-border);
-  border-radius: 8px;
-  background: #fff;
-  padding: 0.75rem;
-}
-
-#flatDatasetPreviewTable {
-  font-size: 0.8rem;
-}
-
-#flatDatasetPreviewTable thead th {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  background: #f1f5f9;
-}
-
 @media (max-width: 1200px) {
   .pivot-ui-container {
     min-height: 60vh;
@@ -146,8 +137,7 @@
     min-height: 55vh;
   }
 
-  .pivot-surface,
-  .dataset-preview-wrap {
+  .pivot-surface {
     padding: 0.7rem;
   }
 }

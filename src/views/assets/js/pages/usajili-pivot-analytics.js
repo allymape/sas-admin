@@ -1,6 +1,7 @@
 (function () {
   const config = window.__usajiliPivotConfig || {};
   const apiUrl = config.apiUrl || "";
+  const summaryApiUrl = config.summaryApiUrl || "";
   const initialQuery = config.query || {};
 
   if (!apiUrl || typeof window.jQuery === "undefined") return;
@@ -17,36 +18,34 @@
     return;
   }
 
-  const DEFAULT_LIMIT = Number(config.defaultLimit || 2000);
-  const MAX_CLIENT_RENDER_ROWS = Number(config.maxClientRenderRows || 5000);
+  const DEFAULT_LIMIT = Number(config.defaultLimit || 5000);
+  const MAX_CLIENT_RENDER_ROWS = Number(config.maxClientRenderRows || 0);
+  const ALL_CONFIRM_THRESHOLD = Number(config.allConfirmThreshold || 20000);
+  const LIMIT_OPTIONS = ["1000", "2000", "5000", "10000", "all"];
+  const SESSION_LIMIT_KEY = "usajiliPivotSelectedLimit";
 
   const FIELD_CONFIG = [
-    { key: "id", label: "ID", kind: "dimension" },
-    { key: "application_number", label: "Namba ya Ombi", kind: "dimension" },
-    { key: "tracking_number", label: "Namba ya Ufuatiliaji", kind: "dimension" },
-    { key: "school_name", label: "Jina la Shule", kind: "dimension" },
-    { key: "owner_name", label: "Jina la Mmiliki", kind: "dimension" },
-    { key: "ownership_name", label: "Umiliki", kind: "dimension" },
     { key: "region_name", label: "Mkoa", kind: "dimension" },
     { key: "district_name", label: "Wilaya", kind: "dimension" },
     { key: "council_name", label: "Halmashauri", kind: "dimension" },
     { key: "ward_name", label: "Kata", kind: "dimension" },
+    { key: "ownership_name", label: "Umiliki", kind: "dimension" },
     { key: "level_name", label: "Ngazi", kind: "dimension" },
-    { key: "education_type_name", label: "Aina ya Shule", kind: "dimension" },
+    { key: "school_type_name", label: "Aina ya Shule", kind: "dimension" },
+    { key: "accommodation_name", label: "Malazi", kind: "dimension" },
     { key: "specialization_name", label: "Tahasusi", kind: "dimension" },
     { key: "language_name", label: "Lugha", kind: "dimension" },
-    { key: "verification_label", label: "Uthibitisho", kind: "dimension" },
-    { key: "institution_status", label: "Hali ya Usajili", kind: "dimension" },
-    { key: "application_date", label: "Tarehe ya Ombi", kind: "dimension" },
-    { key: "application_year", label: "Mwaka wa Ombi", kind: "dimension" },
-    { key: "application_month_name", label: "Mwezi wa Ombi", kind: "dimension" },
-    { key: "application_quarter", label: "Robo ya Ombi", kind: "dimension" },
-
+    { key: "verification_status", label: "Uthibitisho", kind: "dimension" },
     { key: "record_count", label: "Jumla ya Maombi", kind: "metric" },
-    { key: "verified_record", label: "Jumla Verified", kind: "metric" },
-    { key: "not_verified_record", label: "Jumla Not Verified", kind: "metric" },
-    { key: "processing_days", label: "Siku za Uchakataji", kind: "metric" }
   ];
+
+  const DEFAULT_PIVOT_LAYOUT = {
+    rows: ["region_name"],
+    cols: ["ownership_name"],
+    vals: ["record_count"],
+    aggregatorName: "Count",
+    rendererName: "Table",
+  };
 
   const KEY_TO_LABEL = FIELD_CONFIG.reduce((acc, field) => {
     acc[field.key] = field.label;
@@ -54,17 +53,62 @@
   }, {});
   const labelOf = (key) => KEY_TO_LABEL[key] || key;
 
+  const readStoredLimit = () => {
+    try {
+      return window.sessionStorage.getItem(SESSION_LIMIT_KEY);
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const normalizeLimitValue = (rawValue) => {
+    const value = String(rawValue || "").trim().toLowerCase();
+    if (value === "all") return "all";
+
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) {
+      const normalized = String(parsed);
+      if (LIMIT_OPTIONS.includes(normalized)) return normalized;
+    }
+
+    return String(DEFAULT_LIMIT);
+  };
+
+  const persistSelectedLimit = (limitValue) => {
+    try {
+      window.sessionStorage.setItem(
+        SESSION_LIMIT_KEY,
+        normalizeLimitValue(limitValue)
+      );
+    } catch (error) {
+      // Ignore storage failures silently.
+    }
+  };
+
+  const formatLimitLabel = (limitValue) => {
+    if (String(limitValue) === "all") return "All";
+    const asNumber = Number(limitValue);
+    return Number.isFinite(asNumber)
+      ? asNumber.toLocaleString()
+      : String(DEFAULT_LIMIT);
+  };
+
   const state = {
     rows: [],
     pivotRows: [],
     summary: null,
-    sampleVisible: false
+    selectedLimit: normalizeLimitValue(
+      initialQuery?.limit || readStoredLimit() || String(DEFAULT_LIMIT)
+    ),
+    allLoadConfirmed: false,
+    totalRecordsEstimate: null,
   };
 
   const $status = $("#pivotStatus");
   const $loading = $("#pivotLoading");
   const $empty = $("#pivotEmptyState");
   const $pivot = $("#pivotUiContainer");
+  const $limitSelect = $("#pivotLimitSelect");
 
   const toDimension = (value) => {
     if (value === null || typeof value === "undefined") return "Haijulikani";
@@ -78,12 +122,17 @@
     return Number.isFinite(parsed) ? parsed : null;
   };
 
-  const mapVerificationLabel = (row) => {
-    const direct = String(row.verification_label || row.verification_status || "").trim();
+  const mapVerificationStatus = (row) => {
+    const direct = String(
+      row.verification_status || row.verification_label || row.verified_label || ""
+    ).trim();
+
     if (direct.length) {
-      const v = direct.toLowerCase();
-      if (["1", "verified", "ndiyo", "yes"].includes(v)) return "Verified";
-      if (["0", "not verified", "not_verified", "hapana", "no"].includes(v)) return "Not Verified";
+      const normalized = direct.toLowerCase();
+      if (["1", "verified", "ndiyo", "yes"].includes(normalized)) return "Verified";
+      if (["0", "not verified", "not_verified", "hapana", "no"].includes(normalized)) {
+        return "Not Verified";
+      }
       return direct;
     }
 
@@ -92,26 +141,20 @@
     return "Not Verified";
   };
 
-  const mapRegStatusLabel = (row) => {
-    const code = Number(row.institution_status);
-    if (Number.isFinite(code)) {
-      if (code === 1) return "Imesajiliwa";
-      if (code === 0) return "Haijasajiliwa";
-    }
-    return toDimension(row.institution_status);
-  };
-
   const toPivotRecord = (row) => {
+    const verificationStatus = mapVerificationStatus(row);
     const normalized = {
       ...row,
-      verification_label: mapVerificationLabel(row),
-      institution_status: mapRegStatusLabel(row)
+      school_type_name: row.school_type_name ?? null,
+      verification_status: verificationStatus,
+      record_count: toMetric(row.record_count) ?? 1,
     };
 
     const output = {};
     FIELD_CONFIG.forEach((field) => {
       const sourceValue = normalized[field.key];
-      output[field.label] = field.kind === "metric" ? toMetric(sourceValue) : toDimension(sourceValue);
+      output[field.label] =
+        field.kind === "metric" ? toMetric(sourceValue) : toDimension(sourceValue);
     });
     return output;
   };
@@ -132,16 +175,81 @@
     $loading.toggleClass("d-none", !isLoading);
   };
 
+  const extractRecordCountFromPayload = (payload) => {
+    const candidates = [
+      payload?.summary?.total_records,
+      payload?.summary?.records_total,
+      payload?.summary?.num_rows,
+      payload?.summary?.records_returned,
+      payload?.summary?.loaded_records,
+      payload?.total_records,
+      payload?.records_total,
+      payload?.num_rows,
+      payload?.numRows,
+      payload?.recordsTotal,
+    ];
+
+    for (let index = 0; index < candidates.length; index += 1) {
+      const parsed = Number(candidates[index]);
+      if (Number.isFinite(parsed) && parsed >= 0) {
+        return parsed;
+      }
+    }
+
+    if (Array.isArray(payload?.data)) return payload.data.length;
+    return null;
+  };
+
   const updateMeta = (summary) => {
-    const loaded = Number(summary?.loaded_records || state.rows.length || 0);
-    const limit = Number(summary?.max_limit || 0) || Number(DEFAULT_LIMIT || 0);
-    const refreshed = summary?.last_refreshed ? new Date(summary.last_refreshed) : null;
-    const backendMs = Number(summary?.timings?.request_total_ms || summary?.timings?.service_total_ms || 0);
+    const loaded = Number(
+      summary?.records_returned ?? summary?.loaded_records ?? state.rows.length ?? 0
+    );
+    const refreshed = summary?.last_refreshed
+      ? new Date(summary.last_refreshed)
+      : null;
+    const backendMs = Number(
+      summary?.timings?.request_total_ms || summary?.timings?.service_total_ms || 0
+    );
+
+    const limitMeta = getLimitMetaFromSummary(summary || {});
 
     $("#metaRecords").text(loaded.toLocaleString());
-    $("#metaLimit").text(limit > 0 ? limit.toLocaleString() : "-");
-    $("#metaRefreshed").text(refreshed && !Number.isNaN(refreshed.getTime()) ? refreshed.toLocaleString() : "-");
+    $("#metaLimit").text(limitMeta.displayLimit);
+    $("#metaRefreshed").text(
+      refreshed && !Number.isNaN(refreshed.getTime())
+        ? refreshed.toLocaleString()
+        : "-"
+    );
     $("#metaBackendMs").text(backendMs > 0 ? `${backendMs.toFixed(0)} ms` : "-");
+  };
+
+  const getLimitMetaFromSummary = (summary = {}) => {
+    const requestedRaw =
+      summary?.requested_limit !== null &&
+      typeof summary?.requested_limit !== "undefined"
+        ? summary.requested_limit
+        : state.selectedLimit;
+
+    const requestedLimit = normalizeLimitValue(requestedRaw || state.selectedLimit);
+
+    const parsedApplied = Number(summary?.applied_limit);
+    const appliedLimit = Number.isFinite(parsedApplied) && parsedApplied > 0
+      ? parsedApplied
+      : null;
+
+    let displayLimit = formatLimitLabel(requestedLimit);
+
+    if (requestedLimit === "all" && appliedLimit !== null) {
+      displayLimit = `All (cap ${appliedLimit.toLocaleString()})`;
+    } else if (appliedLimit !== null) {
+      displayLimit = formatLimitLabel(String(appliedLimit));
+    }
+
+    return {
+      requestedLimit,
+      appliedLimit,
+      displayLimit,
+    };
   };
 
   const updateCompactSummary = () => {
@@ -150,7 +258,7 @@
     let notVerified = 0;
 
     state.rows.forEach((row) => {
-      const label = mapVerificationLabel(row).toLowerCase();
+      const label = mapVerificationStatus(row).toLowerCase();
       if (label === "verified") {
         verified += 1;
       } else {
@@ -164,61 +272,19 @@
   };
 
   const updatePivotConfigSummary = (pivotConfig) => {
-    const rows = Array.isArray(pivotConfig?.rows) ? pivotConfig.rows : [labelOf("region_name")];
-    const cols = Array.isArray(pivotConfig?.cols) ? pivotConfig.cols : [labelOf("ownership_name")];
-    const aggregator = pivotConfig?.aggregatorName || "Count";
-    const renderer = pivotConfig?.rendererName || "Table";
+    const rows = Array.isArray(pivotConfig?.rows)
+      ? pivotConfig.rows
+      : DEFAULT_PIVOT_LAYOUT.rows.map((key) => labelOf(key));
+    const cols = Array.isArray(pivotConfig?.cols)
+      ? pivotConfig.cols
+      : DEFAULT_PIVOT_LAYOUT.cols.map((key) => labelOf(key));
+    const aggregator =
+      pivotConfig?.aggregatorName || DEFAULT_PIVOT_LAYOUT.aggregatorName;
+    const renderer = pivotConfig?.rendererName || DEFAULT_PIVOT_LAYOUT.rendererName;
 
     $("#pivotConfigSummary").text(
       `Rows: ${rows.join(", ") || "-"} | Columns: ${cols.join(", ") || "-"} | Aggregator: ${aggregator} | Renderer: ${renderer}`
     );
-  };
-
-  const renderFlatPreview = () => {
-    const previewRows = state.rows.slice(0, 20);
-    const previewFields = [
-      "application_number",
-      "tracking_number",
-      "school_name",
-      "ownership_name",
-      "region_name",
-      "district_name",
-      "council_name",
-      "level_name",
-      "verification_label",
-      "institution_status"
-    ];
-
-    const $thead = $("#flatDatasetPreviewTable thead");
-    const $tbody = $("#flatDatasetPreviewTable tbody");
-
-    if (!previewRows.length) {
-      $thead.html("<tr><th>Sample Data</th></tr>");
-      $tbody.html("<tr><td class='text-muted'>Hakuna data ya kuonyesha.</td></tr>");
-      $("#flatDatasetCaption").text("0 / 0");
-      return;
-    }
-
-    const headHtml = `<tr>${previewFields.map((key) => `<th>${labelOf(key)}</th>`).join("")}</tr>`;
-    $thead.html(headHtml);
-
-    const bodyHtml = previewRows
-      .map((row) => {
-        const cells = previewFields
-          .map((key) => {
-            if (key === "verification_label") return mapVerificationLabel(row);
-            if (key === "institution_status") return mapRegStatusLabel(row);
-            const value = row[key];
-            return value === null || typeof value === "undefined" ? "" : String(value);
-          })
-          .map((value) => `<td>${value}</td>`)
-          .join("");
-        return `<tr>${cells}</tr>`;
-      })
-      .join("");
-
-    $tbody.html(bodyHtml);
-    $("#flatDatasetCaption").text(`${previewRows.length.toLocaleString()} / ${state.rows.length.toLocaleString()}`);
   };
 
   const buildRenderers = () => {
@@ -244,46 +310,120 @@
 
     $empty.addClass("d-none");
     $pivot.empty();
+    $pivot.removeData("pivotUIOptions");
 
     const renderers = buildRenderers();
 
     $pivot.pivotUI(
       state.pivotRows,
       {
-        rows: [labelOf("region_name")],
-        cols: [labelOf("ownership_name")],
-        vals: [labelOf("record_count")],
-        aggregatorName: "Count",
-        rendererName: "Table",
+        rows: DEFAULT_PIVOT_LAYOUT.rows.map((key) => labelOf(key)),
+        cols: DEFAULT_PIVOT_LAYOUT.cols.map((key) => labelOf(key)),
+        vals: DEFAULT_PIVOT_LAYOUT.vals.map((key) => labelOf(key)),
+        aggregatorName: DEFAULT_PIVOT_LAYOUT.aggregatorName,
+        rendererName: DEFAULT_PIVOT_LAYOUT.rendererName,
         renderers,
-        hiddenAttributes: [labelOf("id")],
         menuLimit: 500,
-        sorters: {
-          [labelOf("application_month")]: (a, b) => Number(a || 0) - Number(b || 0)
-        },
         onRefresh: function (pivotConfig) {
           updatePivotConfigSummary(pivotConfig || {});
-        }
+        },
       },
       true
     );
 
     updatePivotConfigSummary({
-      rows: [labelOf("region_name")],
-      cols: [labelOf("ownership_name")],
-      aggregatorName: "Count",
-      rendererName: "Table"
+      rows: DEFAULT_PIVOT_LAYOUT.rows.map((key) => labelOf(key)),
+      cols: DEFAULT_PIVOT_LAYOUT.cols.map((key) => labelOf(key)),
+      vals: DEFAULT_PIVOT_LAYOUT.vals.map((key) => labelOf(key)),
+      aggregatorName: DEFAULT_PIVOT_LAYOUT.aggregatorName,
+      rendererName: DEFAULT_PIVOT_LAYOUT.rendererName,
     });
   };
 
-  const collectParams = () => {
+  const collectParams = (options = {}) => {
     const params = new URLSearchParams(window.location.search || "");
-    if (!params.get("limit")) params.set("limit", String(DEFAULT_LIMIT));
+    if (options.includeLimit === false) {
+      params.delete("limit");
+    } else {
+      params.set("limit", state.selectedLimit);
+    }
     return params;
   };
 
-  const fetchData = async () => {
+  const fetchSummaryEstimate = async () => {
+    if (Number.isFinite(state.totalRecordsEstimate)) {
+      return state.totalRecordsEstimate;
+    }
+
+    if (!summaryApiUrl) return null;
+
     try {
+      const params = collectParams({ includeLimit: false });
+      const response = await fetch(`${summaryApiUrl}?${params.toString()}`, {
+        method: "GET",
+        headers: { Accept: "application/json" },
+        credentials: "same-origin",
+      });
+
+      if (!response.ok) return null;
+
+      const payload = await response.json();
+      if (Number(payload?.statusCode) !== 300 || payload?.error) {
+        return null;
+      }
+
+      const estimate = extractRecordCountFromPayload(payload);
+      if (Number.isFinite(estimate)) {
+        state.totalRecordsEstimate = estimate;
+        return estimate;
+      }
+
+      return null;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const ensureAllLimitSafety = async () => {
+    if (state.selectedLimit !== "all") return true;
+    if (state.allLoadConfirmed) return true;
+
+    const estimate = await fetchSummaryEstimate();
+    const shouldAskConfirmation =
+      !Number.isFinite(estimate) || Number(estimate) > ALL_CONFIRM_THRESHOLD;
+
+    if (!shouldAskConfirmation) {
+      state.allLoadConfirmed = true;
+      return true;
+    }
+
+    const message = Number.isFinite(estimate)
+      ? `Loading all ${Number(estimate).toLocaleString()} records may be slow. Continue?`
+      : "Loading all records may be slow. Continue?";
+
+    const confirmed = window.confirm(message);
+    if (confirmed) {
+      state.allLoadConfirmed = true;
+    }
+
+    return confirmed;
+  };
+
+  const setLimitSelectorValue = (value) => {
+    if (!$limitSelect.length) return;
+    $limitSelect.val(normalizeLimitValue(value));
+  };
+
+  const fetchData = async (options = {}) => {
+    try {
+      if (!options.skipAllConfirm) {
+        const allSafe = await ensureAllLimitSafety();
+        if (!allSafe) {
+          setStatus("Umeghairi kupakia records zote.", "warning");
+          return;
+        }
+      }
+
       clearStatus();
       setLoading(true);
       $empty.addClass("d-none");
@@ -292,7 +432,7 @@
       const response = await fetch(`${apiUrl}?${params.toString()}`, {
         method: "GET",
         headers: { Accept: "application/json" },
-        credentials: "same-origin"
+        credentials: "same-origin",
       });
 
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -302,10 +442,15 @@
         throw new Error(payload.message || "Imeshindikana kupakia data ya pivot");
       }
 
+      const totalEstimate = extractRecordCountFromPayload(payload);
+      if (Number.isFinite(totalEstimate)) {
+        state.totalRecordsEstimate = totalEstimate;
+      }
+
       state.summary = payload.summary || {};
       state.rows = Array.isArray(payload.data) ? payload.data : [];
 
-      if (state.rows.length > MAX_CLIENT_RENDER_ROWS) {
+      if (MAX_CLIENT_RENDER_ROWS > 0 && state.rows.length > MAX_CLIENT_RENDER_ROWS) {
         state.rows = state.rows.slice(0, MAX_CLIENT_RENDER_ROWS);
         setStatus(
           `Dataset imezidi ukubwa wa browser. Tumeonyesha records ${MAX_CLIENT_RENDER_ROWS.toLocaleString()} za kwanza kwa usalama.`,
@@ -317,14 +462,36 @@
 
       updateMeta(state.summary);
       updateCompactSummary();
-      renderFlatPreview();
       renderPivotWorkspace();
 
+      const limitMeta = getLimitMetaFromSummary(state.summary || {});
+      const loadedRecords = Number(
+        state.summary?.records_returned ??
+          state.summary?.loaded_records ??
+          state.rows.length ??
+          0
+      );
+
       if (state.summary?.truncated) {
-        setStatus("Dataset imewekewa limit upande wa server. Ongeza limit kwenye URL ikiwa unahitaji data zaidi.", "warning");
+        let warningMessage = "Dataset imewekewa limit upande wa server.";
+
+        if (String(limitMeta.requestedLimit).toLowerCase() === "all" && limitMeta.appliedLimit !== null) {
+          warningMessage = `Umeomba All lakini server imetumia cap ya ${Number(limitMeta.appliedLimit).toLocaleString()} records.`;
+        } else if (limitMeta.appliedLimit !== null) {
+          warningMessage = `Dataset imewekewa limit ya ${Number(limitMeta.appliedLimit).toLocaleString()} records upande wa server.`;
+        }
+
+        setStatus(`${warningMessage} Loaded: ${loadedRecords.toLocaleString()}.`, "warning");
       } else {
-        const backendMs = Number(state.summary?.timings?.request_total_ms || state.summary?.timings?.service_total_ms || 0);
-        setStatus(`Pivot workspace iko tayari. Loaded: ${state.rows.length.toLocaleString()} | Backend: ${backendMs.toFixed(0)} ms`, "success");
+        const backendMs = Number(
+          state.summary?.timings?.request_total_ms ||
+            state.summary?.timings?.service_total_ms ||
+            0
+        );
+        setStatus(
+          `Pivot workspace iko tayari. Loaded: ${loadedRecords.toLocaleString()} | Limit: ${limitMeta.displayLimit} | Backend: ${backendMs.toFixed(0)} ms`,
+          "success"
+        );
       }
 
       if (!state.rows.length) {
@@ -340,11 +507,45 @@
     }
   };
 
-  $("#btnToggleSampleData").on("click", function () {
-    state.sampleVisible = !state.sampleVisible;
-    $("#sampleDataCollapse").toggleClass("d-none", !state.sampleVisible);
-    $(this).text(state.sampleVisible ? "Ficha Sample Data" : "Onyesha Sample Data");
-  });
+  const applyLimitChange = async (nextLimitRaw) => {
+    const nextLimit = normalizeLimitValue(nextLimitRaw);
+    const previousLimit = state.selectedLimit;
+
+    if (nextLimit === previousLimit) {
+      setLimitSelectorValue(previousLimit);
+      return;
+    }
+
+    state.selectedLimit = nextLimit;
+    state.allLoadConfirmed = false;
+    state.totalRecordsEstimate = null;
+    persistSelectedLimit(nextLimit);
+    setLimitSelectorValue(nextLimit);
+
+    if (nextLimit === "all") {
+      const safeToProceed = await ensureAllLimitSafety();
+      if (!safeToProceed) {
+        state.selectedLimit = previousLimit;
+        state.allLoadConfirmed = false;
+        state.totalRecordsEstimate = null;
+        persistSelectedLimit(previousLimit);
+        setLimitSelectorValue(previousLimit);
+        setStatus("Umeghairi kubadili dataset kuwa All.", "warning");
+        return;
+      }
+    }
+
+    fetchData({ skipAllConfirm: true });
+  };
+
+  if ($limitSelect.length) {
+    setLimitSelectorValue(state.selectedLimit);
+    $limitSelect.on("change", function () {
+      applyLimitChange($(this).val());
+    });
+  }
+
+  persistSelectedLimit(state.selectedLimit);
 
   $("#btnReloadPivotData").on("click", function () {
     fetchData();

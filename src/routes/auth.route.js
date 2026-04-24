@@ -4,13 +4,11 @@ const router = express.Router();
 
 // Import your controllers
 const authController = require("../controllers/authController");
-
-// Middlewares if needed
-const { isAuthenticated } = require("../helpers/requestHelper");
+const { redirectIfAuthenticated } = require("../../util");
 
 
 // GET login page
-router.get(["/", "/login"], authController.showLogin);
+router.get(["/", "/login"], redirectIfAuthenticated, authController.showLogin);
 
 // Auth routes
 router.post("/auth", authController.login);
