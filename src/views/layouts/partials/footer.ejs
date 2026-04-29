@@ -1446,7 +1446,8 @@ function w() {
                     }
 
                     if (isSubmitControl) {
-                        lockAndShow(target, 4000);
+                        // For regular HTML forms, do not lock/disable at click-time.
+                        // Let the submit handler manage loader state so native submit is not blocked.
                         return;
                     }
 
@@ -1462,9 +1463,14 @@ function w() {
                     if (!(form instanceof HTMLFormElement)) return;
                     if (form.closest("[data-no-loader=\"1\"]")) return;
 
+                    const isAjaxForm = form.classList.contains("js-ajax-form");
                     if (submittingForms.has(form)) {
-                        event.preventDefault();
-                        event.stopImmediatePropagation();
+                        // Only block duplicate submit for explicit AJAX forms.
+                        // Never block native form submit/navigation.
+                        if (isAjaxForm) {
+                            event.preventDefault();
+                            event.stopImmediatePropagation();
+                        }
                         return;
                     }
 

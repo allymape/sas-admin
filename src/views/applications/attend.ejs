@@ -433,14 +433,37 @@
     ? String(school.language.language).trim()
     : "-";
 
+  const fileNumberQuickValue =
+    school.file_number ||
+    school.school_file_number ||
+    schoolRegistration.file_number ||
+    schoolRegistration.school_file_number ||
+    schoolRegistration.file_no ||
+    "";
+  const fileNumberDisplay = hasDisplayValue(fileNumberQuickValue)
+    ? String(fileNumberQuickValue).trim()
+    : "";
+
   const registrationNumberQuickValue =
     schoolRegistration.registration_number ||
     school.registration_number ||
     school.registration_no ||
-    school.file_number ||
+    app.registration_number ||
     "";
   const registrationNumberDisplay = hasDisplayValue(registrationNumberQuickValue)
     ? String(registrationNumberQuickValue).trim()
+    : "";
+  const isApprovedRegistrationApplication = applicationCategoryId === 4 && Number(app.is_approved || 0) === 2;
+  const shouldShowRegistrationNumber = (isChangeTypeApplication || isApprovedRegistrationApplication) && hasDisplayValue(registrationNumberDisplay);
+  const schoolCategoryQuickValue =
+    school.school_category?.category_name ||
+    school.school_category?.category ||
+    school.school_category?.name ||
+    school.school_type?.category ||
+    school.school_type?.name ||
+    "";
+  const schoolCategoryDisplay = hasDisplayValue(schoolCategoryQuickValue)
+    ? String(schoolCategoryQuickValue).trim()
     : "";
   const latitudeDisplay = String(school.latitude || "").trim();
   const longitudeDisplay = String(school.longitude || "").trim();
@@ -481,7 +504,13 @@
     { label: "Namba ya Ombi", value: app.tracking_number || "-" },
     { label: "Jina la Shule", value: toText(school.school_name) },
     { label: "Mwombaji", value: applicantDisplayName || "-" },
-    ...(registrationNumberDisplay
+    ...(fileNumberDisplay
+      ? [{ label: "Namba ya Jalada", value: fileNumberDisplay }]
+      : []),
+    ...(schoolCategoryDisplay
+      ? [{ label: "Aina ya Shule", value: schoolCategoryDisplay }]
+      : []),
+    ...(shouldShowRegistrationNumber
       ? [{ label: "Namba ya Usajili", value: registrationNumberDisplay }]
       : []),
   ];
