@@ -4,8 +4,12 @@ const request = require("request");
 const { sendRequest } = require("../../../util");
 
 const API_BASE_URL = process.env.API_BASE_URL;
+const FRONTEND_URL = process.env.FRONTEND_URL;
+const FRONT_END_TOKEN = process.env.FRONT_END_TOKEN;
 const myApplicationsAPI = API_BASE_URL + "applications/my-applications";
 const applicationsAPI = API_BASE_URL + "applications";
+const attachmentTypesAPI = API_BASE_URL + "all-attachment-types";
+const uploadAttachmentsAPI = `${String(FRONTEND_URL || "").replace(/\/+$/, "")}/api/school-establishment/upload-attachments`;
 const ALLOWED_PER_PAGE = [10, 15, 20, 50, 100];
 
 const toPositiveInt = (value, fallback) => {
@@ -271,6 +275,186 @@ const fetchApplicationByTracking = (req, trackingNumber, callback) => {
   );
 };
 
+const normalizeAttachmentTypes = (rows = []) =>
+  (Array.isArray(rows) ? rows : [])
+    .map((row) => {
+      const id = Number.parseInt(row?.id, 10);
+      const attachmentName = String(row?.attachment_name || "").trim();
+      const fileFormat = String(row?.file_format || "").trim();
+      const fileSize = Number.parseInt(row?.size ?? row?.file_size, 10);
+      const isBackend = Number.parseInt(row?.is_backend, 10) === 1;
+      const statusId = Number.parseInt(row?.status_id ?? row?.status, 10);
+      const categoryId = Number.parseInt(row?.application_category_id, 10);
+      const requiredFlag = Number.parseInt(
+        row?.is_required ?? row?.required ?? row?.required_flag ?? row?.must_upload ?? 0,
+        10,
+      ) === 1;
+      return {
+        id,
+        attachment_name: attachmentName,
+        file_format: fileFormat,
+        file_size: Number.isFinite(fileSize) ? fileSize : null,
+        is_backend: isBackend ? 1 : 0,
+        status_id: Number.isFinite(statusId) ? statusId : null,
+        application_category_id: Number.isFinite(categoryId) ? categoryId : null,
+        is_required: requiredFlag,
+      };
+    })
+    .filter((row) => Number.isFinite(row.id) && row.id > 0 && row.attachment_name);
+
+const fetchBackendAttachmentTypesByCategory = (req, applicationCategoryId, callback) => {
+  const categoryId = Number.parseInt(applicationCategoryId, 10);
+  if (!Number.isFinite(categoryId) || categoryId <= 0) {
+    return callback([]);
+  }
+
+  request(
+    {
+      url: attachmentTypesAPI,
+      method: "GET",
+      json: true,
+      headers: {
+        Authorization: `Bearer ${req?.session?.Token || ""}`,
+      },
+      qs: {
+        page: 1,
+        per_page: 500,
+        deleted: "false",
+        aina_ombi: categoryId,
+        is_backend: 1,
+        status_id: 1,
+      },
+    },
+    (error, response, body) => {
+      if (error || !response || response.statusCode >= 400) {
+        return callback([]);
+      }
+      const rows = normalizeAttachmentTypes(body?.data || []);
+      const filtered = rows.filter(
+        (row) =>
+          Number(row.application_category_id) === categoryId
+          && Number(row.is_backend) === 1
+          && Number(row.status_id || 1) === 1,
+      );
+      return callback(filtered);
+    },
+  );
+};
+
+const parseAttachmentPayload = (rawPayload) => {
+  const source = String(rawPayload || "").trim();
+  if (!source) return { ok: true, data: [] };
+  try {
+    const parsed = JSON.parse(source);
+    return { ok: true, data: Array.isArray(parsed) ? parsed : [] };
+  } catch (error) {
+    return { ok: false, data: [], message: "Error! Invalid attachment payload." };
+  }
+};
+
+const validateWorkflowAttachments = (payloadRows = [], allowedTypes = []) => {
+  const allowedMap = new Map(allowedTypes.map((item) => [Number(item.id), item]));
+  const errors = [];
+  const validated = [];
+  const seenTypeIds = new Set();
+
+  payloadRows.forEach((row, index) => {
+    const attachmentTypeId = Number.parseInt(row?.attachment_type_id, 10);
+    const attachmentPath = String(row?.attachment_path || "").trim();
+    const attachmentName = String(row?.file_name || "").trim();
+    const byteSize = Number.parseInt(row?.byte_size, 10);
+    const ext = String(row?.extension || "").trim().toLowerCase();
+    const currentLabel = `Attachment #${index + 1}`;
+
+    if (!Number.isFinite(attachmentTypeId) || attachmentTypeId <= 0) {
+      errors.push(`${currentLabel}: Invalid attachment type.`);
+      return;
+    }
+
+    const allowed = allowedMap.get(attachmentTypeId);
+    if (!allowed) {
+      errors.push(`${currentLabel}: Attachment type is not allowed for this application category.`);
+      return;
+    }
+
+    if (!attachmentPath || !attachmentPath.startsWith("data:")) {
+      errors.push(`${allowed.attachment_name}: Invalid file content.`);
+      return;
+    }
+
+    if (seenTypeIds.has(attachmentTypeId)) {
+      errors.push(`${allowed.attachment_name}: Duplicate upload is not allowed.`);
+      return;
+    }
+
+    if (Number.isFinite(allowed.file_size) && Number.isFinite(byteSize) && byteSize > allowed.file_size) {
+      errors.push(`${allowed.attachment_name}: File exceeds allowed size.`);
+      return;
+    }
+
+    const allowedExts = String(allowed.file_format || "")
+      .split(",")
+      .map((item) => item.trim().replace(/^\./, "").toLowerCase())
+      .filter(Boolean);
+    if (allowedExts.length && ext && !allowedExts.includes(ext)) {
+      errors.push(`${allowed.attachment_name}: File format is not allowed.`);
+      return;
+    }
+
+    seenTypeIds.add(attachmentTypeId);
+    validated.push({
+      attachment_type_id: attachmentTypeId,
+      attachment_type: attachmentTypeId,
+      attachment_name: attachmentName || allowed.attachment_name,
+      attachment_path: attachmentPath,
+    });
+  });
+
+  const missingRequired = allowedTypes
+    .filter((item) => item.is_required)
+    .filter((item) => !seenTypeIds.has(Number(item.id)))
+    .map((item) => `${item.attachment_name}: is required.`);
+
+  return {
+    errors: [...errors, ...missingRequired],
+    uploads: validated,
+  };
+};
+
+const uploadWorkflowAttachments = (req, trackingNumber, uploads = [], callback) => {
+  if (!uploads.length) return callback({ ok: true });
+
+  request(
+    {
+      url: uploadAttachmentsAPI,
+      method: "POST",
+      json: true,
+      headers: {
+        Authorization: `Bearer ${FRONT_END_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: {
+        tracking_number: trackingNumber,
+        staff_id: req?.user?.id || null,
+        attachments: uploads.map((item) => ({
+          attachment_type: item.attachment_type,
+          attachment_path: item.attachment_path,
+        })),
+      },
+    },
+    (error, response, body) => {
+      if (error || !response || response.statusCode >= 400 || body?.statusCode === 306 || body?.success === false) {
+        return callback({
+          ok: false,
+          message: body?.message || "Error! Unable to upload supporting attachments.",
+        });
+      }
+
+      return callback({ ok: true });
+    },
+  );
+};
+
 const canCurrentUserTakeAction = (req, application) => {
   const approvalStatus = Number(application?.is_approved);
   const loggedInStaffId = Number(req?.user?.staff_id || req?.user?.id);
@@ -408,12 +592,16 @@ const attend = (req, res) => {
     const application = result.application;
     const canTakeAction = canCurrentUserTakeAction(req, application);
     const categoryName = String(application?.application_category?.app_name || "-").toUpperCase();
-    return res.render(path.join(__dirname, "/../../views/applications/attend"), {
-      req,
-      success: true,
-      application,
-      canTakeAction,
-      pageTitle: `OMBI LA ${categoryName}`,
+    const appCategoryId = Number(application?.application_category_id || application?.application_category?.id || 0);
+    return fetchBackendAttachmentTypesByCategory(req, appCategoryId, (commentAttachmentTypes) => {
+      res.render(path.join(__dirname, "/../../views/applications/attend"), {
+        req,
+        success: true,
+        application,
+        canTakeAction,
+        commentAttachmentTypes,
+        pageTitle: `OMBI LA ${categoryName}`,
+      });
     });
   });
 };
@@ -537,48 +725,90 @@ const submitWorkflowAction = (req, res) => {
       );
     }
 
-    const url = `${applicationsAPI}/${encodeURIComponent(trackingNumber)}/advance`;
-    request(
-      {
-        url,
-        method: "POST",
-        json: true,
-        headers: {
-          Authorization: `Bearer ${req.session.Token}`,
-        },
-        body: {
-          action,
-          content,
-          target_staff_id: targetStaffId || null,
-        },
-      },
-      (error, response, body) => {
-        if (error) {
-          return redirectAttendWithToast(
-            req,
-            res,
-            trackingNumber,
-            "danger",
-            "Error! Unable to process workflow action.",
-            "comments-info",
-          );
-        }
-
-        if (!response || response.statusCode >= 400 || body?.success === false) {
-          const message = normalizeWorkflowToastMessage(body?.message);
-          return redirectAttendWithToast(req, res, trackingNumber, "error", message, "comments-info");
-        }
-
+    const appCategoryId = Number(
+      result?.application?.application_category_id || result?.application?.application_category?.id || 0,
+    );
+    fetchBackendAttachmentTypesByCategory(req, appCategoryId, (allowedAttachmentTypes) => {
+      const parsedPayload = parseAttachmentPayload(req.body.attachment_payload_json);
+      if (!parsedPayload.ok) {
         return redirectAttendWithToast(
           req,
           res,
           trackingNumber,
-          "success",
-          "The action was successful.",
+          "danger",
+          parsedPayload.message || "Error! Invalid attachments payload.",
           "comments-info",
         );
-      },
-    );
+      }
+
+      const validation = validateWorkflowAttachments(parsedPayload.data, allowedAttachmentTypes);
+      if (validation.errors.length) {
+        return redirectAttendWithToast(
+          req,
+          res,
+          trackingNumber,
+          "warning",
+          validation.errors[0],
+          "comments-info",
+        );
+      }
+
+      const url = `${applicationsAPI}/${encodeURIComponent(trackingNumber)}/advance`;
+      request(
+        {
+          url,
+          method: "POST",
+          json: true,
+          headers: {
+            Authorization: `Bearer ${req.session.Token}`,
+          },
+          body: {
+            action,
+            content,
+            target_staff_id: targetStaffId || null,
+          },
+        },
+        (error, response, body) => {
+          if (error) {
+            return redirectAttendWithToast(
+              req,
+              res,
+              trackingNumber,
+              "danger",
+              "Error! Unable to process workflow action.",
+              "comments-info",
+            );
+          }
+
+          if (!response || response.statusCode >= 400 || body?.success === false) {
+            const message = normalizeWorkflowToastMessage(body?.message);
+            return redirectAttendWithToast(req, res, trackingNumber, "error", message, "comments-info");
+          }
+
+          uploadWorkflowAttachments(req, trackingNumber, validation.uploads, (uploadResult) => {
+            if (!uploadResult?.ok) {
+              return redirectAttendWithToast(
+                req,
+                res,
+                trackingNumber,
+                "error",
+                uploadResult?.message || "Error! Workflow action saved but failed to upload attachments.",
+                "comments-info",
+              );
+            }
+
+            return redirectAttendWithToast(
+              req,
+              res,
+              trackingNumber,
+              "success",
+              "The action was successful.",
+              "comments-info",
+            );
+          });
+        },
+      );
+    });
   });
 };
 

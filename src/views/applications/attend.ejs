@@ -39,6 +39,7 @@
       return rightDate - leftDate;
     });
   const attachments = Array.isArray(app.attachments) ? app.attachments : [];
+  const commentAttachmentTypes = Array.isArray(locals.commentAttachmentTypes) ? locals.commentAttachmentTypes : [];
   const locationHierarchy = school.location_hierarchy || {};
   const schoolRegistration = school.school_registration || {};
   const contactPerson = school.contact_person || {};
@@ -189,6 +190,13 @@
     const parts = clean.split("/");
     return decodeURIComponent(parts[parts.length - 1] || "Attachment");
   };
+  const toAcceptAttr = (fileFormat) =>
+    String(fileFormat || "")
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean)
+      .map((item) => (item.startsWith(".") ? item : `.${item}`))
+      .join(",");
 
   const hasDisplayValue = (value) => {
     if (value === null || value === undefined) return false;
@@ -2212,6 +2220,60 @@
                     required
                   ></textarea>
                 </div>
+                <% if (commentAttachmentTypes.length) { %>
+                  <div class="mb-3">
+                    <label class="form-label fw-semibold">Viambatisho vya Maoni</label>
+                    <input type="hidden" name="attachment_payload_json" id="workflow-attachments-payload" value="[]">
+                    <div class="row g-3">
+                      <% commentAttachmentTypes.forEach((attachmentType) => { %>
+                        <% const existingTypeAttachments = attachments.filter((item) => Number(item?.attachment_type_id || item?.attachment_type?.id || 0) === Number(attachmentType.id)); %>
+                        <div class="col-12">
+                          <div class="border rounded p-2">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                              <div>
+                                <div class="fw-semibold"><%= toText(attachmentType.attachment_name) %></div>
+                                <small class="text-muted">
+                                  <% if (attachmentType.file_format) { %>Format: <%= attachmentType.file_format %><% } %>
+                                  <% if (attachmentType.file_size) { %> | Ukubwa: <%= attachmentType.file_size %> bytes<% } %>
+                                </small>
+                              </div>
+                            </div>
+                            <input
+                              type="file"
+                              class="form-control js-workflow-attachment-input"
+                              data-attachment-type-id="<%= attachmentType.id %>"
+                              data-attachment-type-name="<%= toText(attachmentType.attachment_name) %>"
+                              data-max-bytes="<%= Number(attachmentType.file_size || 0) %>"
+                              data-allowed-ext="<%= String(attachmentType.file_format || '') %>"
+                              data-required="<%= attachmentType.is_required ? '1' : '0' %>"
+                              accept="<%= toAcceptAttr(attachmentType.file_format) %>"
+                            >
+                            <% if (existingTypeAttachments.length) { %>
+                              <div class="mt-2">
+                                <small class="text-muted d-block mb-1">Vilivyopakiwa:</small>
+                                <div class="d-flex flex-wrap gap-2">
+                                  <% existingTypeAttachments.forEach((att) => { %>
+                                    <% const existingPath = toAttachmentViewerPath(att?.attachment_path); %>
+                                    <% if (existingPath) { %>
+                                      <a
+                                        href="<%= existingPath %>"
+                                        class="btn btn-sm btn-outline-secondary js-open-attachment-modal"
+                                        data-file-url="<%= existingPath %>"
+                                        data-file-name="<%= attachmentFileName(att?.attachment_path) %>"
+                                      >
+                                        <i class="ri-file-list-3-line align-middle"></i> <%= attachmentFileName(att?.attachment_path) %>
+                                      </a>
+                                    <% } %>
+                                  <% }) %>
+                                </div>
+                              </div>
+                            <% } %>
+                          </div>
+                        </div>
+                      <% }) %>
+                    </div>
+                  </div>
+                <% } %>
                 <div class="workflow-action-grid">
                   <% workflowActionButtons.forEach((action) => { %>
                     <% if (shouldHideWorkflowAction(action)) return; %>
@@ -2249,6 +2311,8 @@
     const workflowCommentEditorElement = document.getElementById("workflow-comment-editor");
     const workflowCommentContentInput = document.getElementById("workflow-comment-content");
     const workflowRichEditorWrap = document.getElementById("workflow-rich-editor-wrap");
+    const workflowAttachmentInputs = Array.from(document.querySelectorAll(".js-workflow-attachment-input"));
+    const workflowAttachmentPayloadInput = document.getElementById("workflow-attachments-payload");
     const workflowTrackCollapse = document.getElementById("workflow-track-collapse");
     const workflowTrackToggleLabel = document.getElementById("toggle-workflow-steps-label");
     const workflowTrackToggleIcon = document.getElementById("toggle-workflow-steps-icon");
@@ -2307,6 +2371,10 @@
       showWorkflowValidationAlert("Tafadhali chagua Afisa wa kumpelekea.");
     };
 
+    const showWorkflowAttachmentValidationAlert = (message) => {
+      showWorkflowValidationAlert(message || "Tafadhali hakiki viambatisho vyako.");
+    };
+
     const markWorkflowCommentInvalid = () => {
       workflowCommentContentInput?.classList.add("is-invalid");
       workflowRichEditorWrap?.classList.add("is-invalid");
@@ -2315,6 +2383,73 @@
       } else {
         workflowCommentContentInput?.focus();
       }
+    };
+
+    const fileToDataUrl = (file) =>
+      new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ""));
+        reader.onerror = () => reject(new Error("Failed to read file"));
+        reader.readAsDataURL(file);
+      });
+
+    const normalizeAllowedExtensions = (value) =>
+      String(value || "")
+        .split(",")
+        .map((part) => part.trim().replace(/^\./, "").toLowerCase())
+        .filter(Boolean);
+
+    const buildWorkflowAttachmentPayload = async () => {
+      if (!workflowAttachmentInputs.length || !workflowAttachmentPayloadInput) return [];
+      const payload = [];
+
+      for (const input of workflowAttachmentInputs) {
+        if (!input) continue;
+        const file = input.files && input.files[0] ? input.files[0] : null;
+        const attachmentTypeId = Number(input.dataset.attachmentTypeId || 0);
+        const attachmentTypeName = String(input.dataset.attachmentTypeName || "Attachment").trim();
+        const maxBytes = Number(input.dataset.maxBytes || 0);
+        const required = String(input.dataset.required || "") === "1";
+        const allowedExt = normalizeAllowedExtensions(input.dataset.allowedExt || "");
+
+        input.classList.remove("is-invalid");
+
+        if (!file) {
+          if (required) {
+            input.classList.add("is-invalid");
+            throw new Error(`${attachmentTypeName}: inahitajika.`);
+          }
+          continue;
+        }
+
+        const ext = String(file.name || "").split(".").pop().toLowerCase();
+        if (allowedExt.length && !allowedExt.includes(ext)) {
+          input.classList.add("is-invalid");
+          throw new Error(`${attachmentTypeName}: format hairuhusiwi.`);
+        }
+
+        if (maxBytes > 0 && Number(file.size || 0) > maxBytes) {
+          input.classList.add("is-invalid");
+          throw new Error(`${attachmentTypeName}: ukubwa wa faili umezidi kiwango kilichoruhusiwa.`);
+        }
+
+        const dataUrl = await fileToDataUrl(file);
+        if (!dataUrl.startsWith("data:")) {
+          input.classList.add("is-invalid");
+          throw new Error(`${attachmentTypeName}: faili halijasomwa vizuri.`);
+        }
+
+        payload.push({
+          attachment_type_id: attachmentTypeId,
+          attachment_path: dataUrl,
+          file_name: String(file.name || "").trim(),
+          byte_size: Number(file.size || 0),
+          extension: ext,
+        });
+      }
+
+      workflowAttachmentPayloadInput.value = JSON.stringify(payload);
+      return payload;
     };
 
     const initWorkflowCommentEditor = () => {
@@ -2590,6 +2725,13 @@
           if (!toPlainText(currentWorkflowCommentContent())) {
             markWorkflowCommentInvalid();
             showWorkflowCommentRequiredAlert();
+            return;
+          }
+
+          try {
+            await buildWorkflowAttachmentPayload();
+          } catch (error) {
+            showWorkflowAttachmentValidationAlert(error?.message || "Attachment validation failed.");
             return;
           }
 
