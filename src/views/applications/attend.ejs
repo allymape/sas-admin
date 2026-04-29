@@ -190,6 +190,20 @@
     const parts = clean.split("/");
     return decodeURIComponent(parts[parts.length - 1] || "Attachment");
   };
+
+  const fileExtFromName = (filename) => {
+    const clean = String(filename || "").trim();
+    if (!clean || !clean.includes(".")) return "";
+    return clean.split(".").pop().toLowerCase();
+  };
+
+  const readableAttachmentLabel = (typeName, attachmentPath, index = 0, total = 1) => {
+    const baseName = String(typeName || "Attachment").trim() || "Attachment";
+    const rawName = attachmentFileName(attachmentPath);
+    const ext = fileExtFromName(rawName) || "pdf";
+    const suffix = Number(total || 0) > 1 ? ` (${Number(index || 0) + 1})` : "";
+    return `${baseName}${suffix}.${ext}`;
+  };
   const toAcceptAttr = (fileFormat) =>
     String(fileFormat || "")
       .split(",")
@@ -197,6 +211,16 @@
       .filter(Boolean)
       .map((item) => (item.startsWith(".") ? item : `.${item}`))
       .join(",");
+  const toFileSizeMbLabel = (rawSize) => {
+    const size = Number(rawSize || 0);
+    if (!Number.isFinite(size) || size <= 0) return "";
+
+    // In this project some attachment types store max size directly in MB (e.g. 2),
+    // while others may be stored as raw bytes. Handle both safely.
+    const mbValue = size <= 50 ? size : (size / (1024 * 1024));
+    const rounded = mbValue >= 10 ? Math.round(mbValue) : Math.round(mbValue * 10) / 10;
+    return `${Number.isInteger(rounded) ? rounded : rounded.toFixed(1)} MB`;
+  };
 
   const hasDisplayValue = (value) => {
     if (value === null || value === undefined) return false;
@@ -1299,6 +1323,78 @@
     margin-left: auto;
   }
 
+  .attachment-row {
+    padding: 0.55rem 0.6rem !important;
+  }
+
+  .attachment-row .attachment-title {
+    font-size: 0.86rem;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 0.15rem;
+  }
+
+  .attachment-row .attachment-meta {
+    font-size: 0.75rem;
+    color: var(--attend-text-muted);
+    line-height: 1.1;
+  }
+
+  .attachment-row .comment-attachment-input {
+    font-size: 0.82rem;
+  }
+
+  .attachment-row .btn-upload-attachment {
+    padding: 0.34rem 0.62rem;
+    font-size: 0.78rem;
+  }
+
+  .attachment-row .js-upload-status {
+    font-size: 0.74rem;
+    margin-top: 0.22rem !important;
+    line-height: 1.1;
+  }
+
+  .attachment-row .uploaded-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.3rem;
+    min-height: 20px;
+  }
+
+  .attachment-row .uploaded-label {
+    font-size: 0.72rem;
+    color: var(--attend-text-muted);
+    margin: 0;
+  }
+
+  .attachment-row .uploaded-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    border: 1px solid #d5e3f4;
+    border-radius: 999px;
+    padding: 0.14rem 0.5rem;
+    font-size: 0.72rem;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #attachment-preview-modal {
+    z-index: 1085 !important;
+  }
+
+  body.preview-modal-open .modal-backdrop.show {
+    z-index: 1080 !important;
+  }
+
+  #attachment-preview-modal .modal-dialog {
+    z-index: 1086;
+  }
+
   .workflow-track-card {
     border: 0;
     border-radius: 0;
@@ -2222,50 +2318,77 @@
                 </div>
                 <% if (commentAttachmentTypes.length) { %>
                   <div class="mb-3">
-                    <label class="form-label fw-semibold">Viambatisho vya Maoni</label>
                     <input type="hidden" name="attachment_payload_json" id="workflow-attachments-payload" value="[]">
                     <div class="row g-3">
                       <% commentAttachmentTypes.forEach((attachmentType) => { %>
                         <% const existingTypeAttachments = attachments.filter((item) => Number(item?.attachment_type_id || item?.attachment_type?.id || 0) === Number(attachmentType.id)); %>
+                        <% const attachmentSizeMb = toFileSizeMbLabel(attachmentType.file_size); %>
                         <div class="col-12">
-                          <div class="border rounded p-2">
+                          <div
+                            class="border rounded p-2 attachment-row"
+                            data-application-id="<%= String(app.id || '') %>"
+                            data-tracking-number="<%= String(app.tracking_number || '') %>"
+                            data-attachment-type-id="<%= String(attachmentType.id || '') %>"
+                          >
                             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
                               <div>
-                                <div class="fw-semibold"><%= toText(attachmentType.attachment_name) %></div>
-                                <small class="text-muted">
-                                  <% if (attachmentType.file_format) { %>Format: <%= attachmentType.file_format %><% } %>
-                                  <% if (attachmentType.file_size) { %> | Ukubwa: <%= attachmentType.file_size %> bytes<% } %>
-                                </small>
+                                <div class="attachment-title"><%= toText(attachmentType.attachment_name) %></div>
+                                <div class="attachment-meta">
+                                  <% if (attachmentType.file_format) { %><%= String(attachmentType.file_format).toUpperCase() %><% } %>
+                                  <% if (attachmentType.file_format && attachmentSizeMb) { %> · <% } %>
+                                  <% if (attachmentSizeMb) { %><%= attachmentSizeMb %><% } %>
+                                </div>
                               </div>
                             </div>
-                            <input
-                              type="file"
-                              class="form-control js-workflow-attachment-input"
-                              data-attachment-type-id="<%= attachmentType.id %>"
-                              data-attachment-type-name="<%= toText(attachmentType.attachment_name) %>"
-                              data-max-bytes="<%= Number(attachmentType.file_size || 0) %>"
-                              data-allowed-ext="<%= String(attachmentType.file_format || '') %>"
-                              data-required="<%= attachmentType.is_required ? '1' : '0' %>"
-                              accept="<%= toAcceptAttr(attachmentType.file_format) %>"
-                            >
+                            <div class="d-flex gap-2 align-items-start">
+                              <input
+                                type="file"
+                                class="form-control js-workflow-attachment-input comment-attachment-input"
+                                data-attachment-type-id="<%= attachmentType.id %>"
+                                data-application-id="<%= String(app.id || '') %>"
+                                data-tracking-number="<%= String(app.tracking_number || '') %>"
+                                data-attachment-type-name="<%= toText(attachmentType.attachment_name) %>"
+                                data-max-size-mb="<%= Number(attachmentType.file_size || 0) %>"
+                                data-allowed-ext="<%= String(attachmentType.file_format || '') %>"
+                                data-required="<%= attachmentType.is_required ? '1' : '0' %>"
+                                accept="<%= toAcceptAttr(attachmentType.file_format) %>"
+                              >
+                              <button
+                                type="button"
+                                class="btn btn-primary text-nowrap js-upload-attachment-btn btn-upload btn-upload-attachment"
+                                data-upload-for-type="<%= attachmentType.id %>"
+                                disabled
+                              >
+                                Pandisha File
+                              </button>
+                            </div>
+                            <small class="text-muted d-block mt-1 js-upload-status"></small>
                             <% if (existingTypeAttachments.length) { %>
-                              <div class="mt-2">
-                                <small class="text-muted d-block mb-1">Vilivyopakiwa:</small>
-                                <div class="d-flex flex-wrap gap-2">
-                                  <% existingTypeAttachments.forEach((att) => { %>
+                              <div class="uploaded-inline">
+                                <small class="uploaded-label">Uploaded:</small>
+                                <div class="d-flex flex-wrap gap-1 js-uploaded-files">
+                                  <% existingTypeAttachments.forEach((att, attIndex) => { %>
                                     <% const existingPath = toAttachmentViewerPath(att?.attachment_path); %>
+                                    <% const displayLabel = readableAttachmentLabel(attachmentType?.attachment_name, att?.attachment_path, attIndex, existingTypeAttachments.length); %>
                                     <% if (existingPath) { %>
                                       <a
                                         href="<%= existingPath %>"
-                                        class="btn btn-sm btn-outline-secondary js-open-attachment-modal"
+                                        class="uploaded-chip js-open-attachment-modal text-decoration-none"
                                         data-file-url="<%= existingPath %>"
-                                        data-file-name="<%= attachmentFileName(att?.attachment_path) %>"
+                                        data-file-name="<%= displayLabel %>"
+                                        title="<%= displayLabel %>"
                                       >
-                                        <i class="ri-file-list-3-line align-middle"></i> <%= attachmentFileName(att?.attachment_path) %>
+                                        <i class="ri-file-list-3-line"></i> <%= displayLabel %>
                                       </a>
                                     <% } %>
                                   <% }) %>
                                 </div>
+                              </div>
+                            <% } %>
+                            <% if (!existingTypeAttachments.length) { %>
+                              <div class="uploaded-inline">
+                                <small class="uploaded-label">Uploaded:</small>
+                                <div class="d-flex flex-wrap gap-1 js-uploaded-files"></div>
                               </div>
                             <% } %>
                           </div>
@@ -2316,6 +2439,8 @@
     const workflowTrackCollapse = document.getElementById("workflow-track-collapse");
     const workflowTrackToggleLabel = document.getElementById("toggle-workflow-steps-label");
     const workflowTrackToggleIcon = document.getElementById("toggle-workflow-steps-icon");
+    const attendTrackingNumber = "<%= encodeURIComponent(String(app.tracking_number || '')) %>";
+    const attendApplicationId = "<%= String(app.id || app.tracking_number || '') %>";
     let workflowCommentEditorInstance = null;
 
     const toPlainText = (html) => String(html || "")
@@ -2399,57 +2524,260 @@
         .map((part) => part.trim().replace(/^\./, "").toLowerCase())
         .filter(Boolean);
 
-    const buildWorkflowAttachmentPayload = async () => {
-      if (!workflowAttachmentInputs.length || !workflowAttachmentPayloadInput) return [];
-      const payload = [];
+    const setAttachmentInputState = (input, stateText, tone = "muted", disabled = false) => {
+      const card = input?.closest(".border.rounded");
+      const statusEl = card ? card.querySelector(".js-upload-status") : null;
+      if (statusEl) {
+        statusEl.className = `d-block mt-1 js-upload-status text-${tone}`;
+        statusEl.textContent = stateText || "";
+      }
+      if (input) input.disabled = Boolean(disabled);
+    };
 
-      for (const input of workflowAttachmentInputs) {
-        if (!input) continue;
-        const file = input.files && input.files[0] ? input.files[0] : null;
-        const attachmentTypeId = Number(input.dataset.attachmentTypeId || 0);
-        const attachmentTypeName = String(input.dataset.attachmentTypeName || "Attachment").trim();
-        const maxBytes = Number(input.dataset.maxBytes || 0);
-        const required = String(input.dataset.required || "") === "1";
-        const allowedExt = normalizeAllowedExtensions(input.dataset.allowedExt || "");
+    const isImageExt = (ext) => ["jpg", "jpeg", "png", "gif", "webp", "bmp"].includes(String(ext || "").toLowerCase());
 
-        input.classList.remove("is-invalid");
+    const buildReadableUploadedLabel = (attachmentTypeName, fileName, index = 1) => {
+      const typeLabel = String(attachmentTypeName || "Attachment").trim() || "Attachment";
+      const cleanName = String(fileName || "").trim();
+      const ext = cleanName.includes(".")
+        ? cleanName.split(".").pop().toLowerCase()
+        : "pdf";
+      const suffix = Number(index || 1) > 1 ? ` (${Number(index)})` : "";
+      return `${typeLabel}${suffix}.${ext}`;
+    };
 
-        if (!file) {
-          if (required) {
-            input.classList.add("is-invalid");
-            throw new Error(`${attachmentTypeName}: inahitajika.`);
-          }
-          continue;
-        }
+    const appendUploadedFilePreview = (input, fileName, fileDataUrl = "") => {
+      const card = input?.closest(".border.rounded");
+      const list = card ? card.querySelector(".js-uploaded-files") : null;
+      if (!list) return;
 
-        const ext = String(file.name || "").split(".").pop().toLowerCase();
-        if (allowedExt.length && !allowedExt.includes(ext)) {
-          input.classList.add("is-invalid");
-          throw new Error(`${attachmentTypeName}: format hairuhusiwi.`);
-        }
+      const attachmentTypeName = String(input?.dataset?.attachmentTypeName || "Attachment").trim();
+      const existingCount = list.querySelectorAll(".uploaded-chip").length;
+      const safeName = buildReadableUploadedLabel(attachmentTypeName, fileName, existingCount + 1);
+      const ext = safeName.includes(".") ? safeName.split(".").pop().toLowerCase() : "";
 
-        if (maxBytes > 0 && Number(file.size || 0) > maxBytes) {
-          input.classList.add("is-invalid");
-          throw new Error(`${attachmentTypeName}: ukubwa wa faili umezidi kiwango kilichoruhusiwa.`);
-        }
+      list.innerHTML = "";
 
-        const dataUrl = await fileToDataUrl(file);
-        if (!dataUrl.startsWith("data:")) {
-          input.classList.add("is-invalid");
-          throw new Error(`${attachmentTypeName}: faili halijasomwa vizuri.`);
-        }
-
-        payload.push({
-          attachment_type_id: attachmentTypeId,
-          attachment_path: dataUrl,
-          file_name: String(file.name || "").trim(),
-          byte_size: Number(file.size || 0),
-          extension: ext,
-        });
+      if (fileDataUrl && (ext === "pdf" || isImageExt(ext))) {
+        const link = document.createElement("a");
+        link.href = "#";
+        link.className = "uploaded-chip js-open-attachment-modal text-decoration-none";
+        link.setAttribute("data-file-url", fileDataUrl);
+        link.setAttribute("data-file-name", safeName);
+        link.innerHTML = `<i class="ri-file-list-3-line"></i> ${safeName}`;
+        list.appendChild(link);
+        return;
       }
 
-      workflowAttachmentPayloadInput.value = JSON.stringify(payload);
-      return payload;
+      const chip = document.createElement("span");
+      chip.className = "uploaded-chip";
+      chip.innerHTML = `<i class="ri-file-line"></i> ${safeName}`;
+      list.appendChild(chip);
+    };
+
+    const setUploadButtonState = (input, loading = false) => {
+      const row = input?.closest(".attachment-row");
+      const button = row ? row.querySelector(".btn-upload") : null;
+      if (!button) return;
+      button.disabled = loading || !input?.files?.length;
+      if (loading) {
+        if (!button.dataset.originalLabel) button.dataset.originalLabel = button.textContent || "Pandisha File";
+        button.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Inapakia...';
+      } else if (button.dataset.originalLabel) {
+        button.textContent = button.dataset.originalLabel;
+      } else {
+        button.textContent = "Pandisha File";
+      }
+    };
+
+    const syncUploadButtonFromInput = (input) => {
+      if (!input) return;
+      const file = input.files && input.files[0] ? input.files[0] : null;
+      const row = input.closest(".attachment-row");
+      const button = row ? row.querySelector(".btn-upload") : null;
+      input.classList.remove("is-invalid");
+      if (button) button.disabled = !file;
+      setAttachmentInputState(input, "", "muted", false);
+      console.log("File selected:", file);
+    };
+
+    const bindNativeAttachmentInputEvents = () => {
+      const inputs = Array.from(document.querySelectorAll(".comment-attachment-input"));
+      inputs.forEach((input) => {
+        if (input.dataset.boundUploadChange === "1") return;
+        input.dataset.boundUploadChange = "1";
+        input.addEventListener("change", () => syncUploadButtonFromInput(input));
+        input.addEventListener("input", () => syncUploadButtonFromInput(input));
+      });
+    };
+
+    const bindNativeUploadButtonEvents = () => {
+      const buttons = Array.from(document.querySelectorAll(".btn-upload-attachment"));
+      buttons.forEach((button) => {
+        if (button.dataset.boundUploadClick === "1") return;
+        button.dataset.boundUploadClick = "1";
+        button.addEventListener("click", (event) => {
+          event.preventDefault();
+          console.log("Pandisha File clicked (native)");
+          const row = button.closest(".attachment-row");
+          const input = row ? row.querySelector(".comment-attachment-input") : null;
+          if (!input) return;
+          uploadCommentAttachment(input);
+        });
+      });
+    };
+
+    const uploadCommentAttachment = async (input) => {
+      if (!input) return;
+      if (input.dataset.uploading === "1") return;
+      console.log("Pandisha File clicked");
+      const file = input.files && input.files[0] ? input.files[0] : null;
+      console.log("Selected file:", file);
+      const row = input.closest(".attachment-row");
+      const attachmentTypeId = Number(
+        input.dataset.attachmentTypeId
+        || 0,
+      );
+      const trackingNumber = String(
+        input.dataset.trackingNumber
+        || ""
+      ).trim();
+      const applicationId = String(
+        input.dataset.applicationId
+        || ""
+      ).trim();
+      const fallbackTrackingNumber = String(
+        row?.dataset?.trackingNumber
+        || decodeURIComponent(attendTrackingNumber)
+        || "",
+      ).trim();
+      const fallbackApplicationId = String(row?.dataset?.applicationId || attendApplicationId || "").trim();
+      const resolvedTrackingNumber = trackingNumber || fallbackTrackingNumber;
+      const resolvedApplicationId = applicationId || fallbackApplicationId;
+      const attachmentTypeName = String(input.dataset.attachmentTypeName || "Attachment").trim();
+      const maxSizeMb = Number(input.dataset.maxSizeMb || 0);
+      const maxBytes = maxSizeMb > 0 ? maxSizeMb * 1024 * 1024 : 0;
+      const allowedExt = normalizeAllowedExtensions(input.dataset.allowedExt || "");
+
+      input.classList.remove("is-invalid");
+      if (!file) {
+        input.classList.add("is-invalid");
+        setAttachmentInputState(input, "Tafadhali chagua file kwanza.", "danger");
+        return;
+      }
+      if (!resolvedApplicationId || !resolvedTrackingNumber || !attachmentTypeId) {
+        input.classList.add("is-invalid");
+        setAttachmentInputState(input, "Application/attachment type haijakamilika.", "danger");
+        return;
+      }
+
+      const ext = String(file.name || "").split(".").pop().toLowerCase();
+      if (allowedExt.length && !allowedExt.includes(ext)) {
+        input.classList.add("is-invalid");
+        setAttachmentInputState(input, `${attachmentTypeName}: format hairuhusiwi.`, "danger");
+        return;
+      }
+      if (maxBytes > 0 && Number(file.size || 0) > maxBytes) {
+        input.classList.add("is-invalid");
+        setAttachmentInputState(input, `${attachmentTypeName}: Ukubwa wa faili umezidi kiwango cha ${maxSizeMb} MB.`, "danger");
+        return;
+      }
+
+      let dataUrl = "";
+      try {
+        dataUrl = await fileToDataUrl(file);
+      } catch (error) {
+        input.classList.add("is-invalid");
+        setAttachmentInputState(input, `${attachmentTypeName}: imeshindikana kusoma faili.`, "danger");
+        return;
+      }
+
+      if (!dataUrl.startsWith("data:")) {
+        input.classList.add("is-invalid");
+        setAttachmentInputState(input, `${attachmentTypeName}: faili si sahihi.`, "danger");
+        return;
+      }
+
+      setAttachmentInputState(input, "Inapakia...", "primary", true);
+      setUploadButtonState(input, true);
+      input.dataset.uploading = "1";
+
+      if (typeof window.jQuery === "undefined") {
+        setAttachmentInputState(input, "Error: jQuery haijapatikana.", "danger", false);
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("trackerId", resolvedTrackingNumber);
+      formData.append("tracking_number", resolvedTrackingNumber);
+      formData.append("application_id", resolvedApplicationId);
+      formData.append("attachment", String(attachmentTypeId));
+      formData.append("attachment_type_id", String(attachmentTypeId));
+      formData.append("file", file);
+      formData.append("kiambatisho_data_url", dataUrl);
+      formData.append("file_name", String(file.name || ""));
+      for (const pair of formData.entries()) {
+        console.log(pair[0], pair[1]);
+      }
+      console.log("Payload:", {
+        trackerId: resolvedTrackingNumber,
+        tracking_number: resolvedTrackingNumber,
+        application_id: resolvedApplicationId,
+        attachment_type_id: attachmentTypeId,
+        file_name: String(file.name || ""),
+        byte_size: Number(file.size || 0),
+      });
+
+      window.jQuery.ajax({
+        url: "/TumaAttachment",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        xhr: function () {
+          const xhr = new window.XMLHttpRequest();
+          xhr.upload.addEventListener("progress", function (e) {
+            if (e.lengthComputable) {
+              const percent = Math.round((e.loaded / e.total) * 100);
+              setAttachmentInputState(input, `Inapakia... ${percent}%`, "primary", true);
+            }
+          });
+          return xhr;
+        },
+      })
+        .done((response) => {
+          const ok = Boolean(response?.success) || Number(response?.statusCode) === 300;
+          if (!ok) {
+            input.classList.add("is-invalid");
+            setAttachmentInputState(
+              input,
+              String(response?.message || "Imeshindikana kupakia. Jaribu tena."),
+              "danger",
+              false,
+            );
+            return;
+          }
+
+          setAttachmentInputState(input, "File imepandishwa kikamilifu.", "success", false);
+          appendUploadedFilePreview(input, file.name, dataUrl);
+        })
+        .fail((xhr) => {
+          const message =
+            String(xhr?.responseJSON?.message || "").trim()
+            || String(xhr?.responseText || "").trim()
+            || "Imeshindikana kupakia faili. Tafadhali jaribu tena.";
+          input.classList.add("is-invalid");
+          setAttachmentInputState(input, message, "danger", false);
+        })
+        .always(() => {
+          input.dataset.uploading = "0";
+          input.disabled = false;
+          input.value = "";
+          const row = input?.closest(".attachment-row");
+          const button = row ? row.querySelector(".btn-upload") : null;
+          if (button) button.disabled = true;
+          setUploadButtonState(input, false);
+        });
     };
 
     const initWorkflowCommentEditor = () => {
@@ -2728,11 +3056,8 @@
             return;
           }
 
-          try {
-            await buildWorkflowAttachmentPayload();
-          } catch (error) {
-            showWorkflowAttachmentValidationAlert(error?.message || "Attachment validation failed.");
-            return;
+          if (workflowAttachmentPayloadInput) {
+            workflowAttachmentPayloadInput.value = "[]";
           }
 
           const confirmed = await confirmWorkflowAction(action, needsTarget);
@@ -2770,7 +3095,25 @@
         initWorkflowTargetSearch();
         initWorkflowCommentEditor();
         syncAssignButtonVisibility();
+        bindNativeAttachmentInputEvents();
+        bindNativeUploadButtonEvents();
         setTimeout(syncAssignButtonVisibility, 0);
+      });
+    }
+
+    if (typeof window.jQuery !== "undefined") {
+      window.jQuery(document).on("change", ".comment-attachment-input", function () {
+        syncUploadButtonFromInput(this);
+      });
+
+      window.jQuery(document).on("click", ".btn-upload-attachment", function (e) {
+        e.preventDefault();
+        console.log("Pandisha File clicked (jQuery)");
+        const button = this;
+        const row = button?.closest(".attachment-row");
+        const input = row ? row.querySelector(".comment-attachment-input") : null;
+        if (!input) return;
+        uploadCommentAttachment(input);
       });
     }
 
@@ -2784,6 +3127,8 @@
       applyEllipsisTooltips();
       initWorkflowCommentEditor();
       syncAssignButtonVisibility();
+      bindNativeAttachmentInputEvents();
+      bindNativeUploadButtonEvents();
       syncWorkflowTrackToggleLabel();
     });
     window.addEventListener("resize", applyEllipsisTooltips);
@@ -2802,6 +3147,7 @@
 <script>
   (function () {
     const modalElement = document.getElementById("attachment-preview-modal");
+    const workflowModalElement = document.getElementById("workflow-action-modal");
     const titleEl = document.getElementById("attachment-preview-title");
     const bodyEl = document.getElementById("attachment-preview-body");
     if (!modalElement || !titleEl || !bodyEl) return;
@@ -2843,6 +3189,7 @@
 
       if (window.bootstrap && typeof window.bootstrap.Modal === "function") {
         const modal = window.bootstrap.Modal.getOrCreateInstance(modalElement);
+        document.body.classList.add("preview-modal-open");
         modal.show();
         return;
       }
@@ -2862,6 +3209,22 @@
         trigger.getAttribute("data-file-url") || trigger.getAttribute("data-url"),
         trigger.getAttribute("data-file-name") || trigger.getAttribute("data-name")
       );
+    });
+
+    modalElement.addEventListener("shown.bs.modal", () => {
+      document.body.classList.add("preview-modal-open");
+      const backdrops = document.querySelectorAll(".modal-backdrop");
+      if (backdrops.length) {
+        backdrops[backdrops.length - 1].classList.add("attachment-preview-backdrop");
+      }
+    });
+
+    modalElement.addEventListener("hidden.bs.modal", () => {
+      document.body.classList.remove("preview-modal-open");
+      bodyEl.innerHTML = "";
+      if (workflowModalElement && workflowModalElement.classList.contains("show")) {
+        workflowModalElement.focus();
+      }
     });
   })();
 </script>
