@@ -175,10 +175,16 @@
     const raw = String(attachmentPath || "").trim();
     if (!raw) return "";
     const normalized = raw.replace(/^\/+/, "");
-    return `/View-Attachment/${encodeURIComponent(normalized)}`;
+    return `/View-Attachment/${encodeURI(normalized)}`;
   };
 
-  const canOpenAttachment = (attachmentPath) => /\.pdf(\?|$)/i.test(String(attachmentPath || "").trim());
+  const attachmentFileName = (attachmentPath) => {
+    const raw = String(attachmentPath || "").trim();
+    if (!raw) return "Attachment";
+    const clean = raw.split("?")[0];
+    const parts = clean.split("/");
+    return decodeURIComponent(parts[parts.length - 1] || "Attachment");
+  };
 
   const hasDisplayValue = (value) => {
     if (value === null || value === undefined) return false;
@@ -1879,10 +1885,15 @@
                           <td><%= toText(att.attachment_type?.attachment_name).toUpperCase() %></td>
                           <td><%= toText(att.created_at ? dateFormat(att.created_at, "DD/MM/YYYY HH:mm:ss") : null) %></td>
                           <td class="attachments-file-col">
-                            <% if (canOpenAttachment(attachmentPath) && attachmentViewerPath) { %>
-                              <a href="<%= attachmentViewerPath %>" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">
+                            <% if (attachmentViewerPath) { %>
+                              <button
+                                type="button"
+                                class="btn btn-sm btn-outline-primary js-open-attachment-modal"
+                                data-file-url="<%= attachmentViewerPath %>"
+                                data-file-name="<%= attachmentFileName(attachmentPath) %>"
+                              >
                                 Soma Kiambatisho
-                              </a>
+                              </button>
                             <% } else { %>
                               <span>-</span>
                             <% } %>
@@ -1893,6 +1904,17 @@
                   </table>
                 </div>
               <% } %>
+            </div>
+            <div class="modal fade" id="attachment-preview-modal" tabindex="-1" aria-labelledby="attachment-preview-title" aria-hidden="true">
+              <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="attachment-preview-title">Attachment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body" id="attachment-preview-body"></div>
+                </div>
+              </div>
             </div>
 
             <div class="tab-pane" id="comments-info" role="tabpanel">
@@ -2523,6 +2545,72 @@
         }
       }
       applyEllipsisTooltips();
+    });
+  })();
+</script>
+<script>
+  (function () {
+    const modalElement = document.getElementById("attachment-preview-modal");
+    const titleEl = document.getElementById("attachment-preview-title");
+    const bodyEl = document.getElementById("attachment-preview-body");
+    if (!modalElement || !titleEl || !bodyEl) return;
+    const imageExts = ["jpg", "jpeg", "png", "gif", "webp", "bmp", "svg"];
+
+    const escapeHtml = (text) =>
+      String(text || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+
+    const getExt = (filename) => {
+      const clean = String(filename || "").split("?")[0].toLowerCase();
+      const parts = clean.split(".");
+      return parts.length > 1 ? parts.pop() : "";
+    };
+
+    const openAttachmentPreview = (url, filename) => {
+      const safeUrl = String(url || "").trim();
+      const safeName = String(filename || "Attachment").trim() || "Attachment";
+      const ext = getExt(safeName);
+
+      titleEl.textContent = safeName;
+
+      if (ext === "pdf") {
+        bodyEl.innerHTML =
+          '<iframe src="' + escapeHtml(safeUrl) + '" title="PDF Preview" style="width:100%;height:70vh;border:0;"></iframe>';
+      } else if (imageExts.includes(ext)) {
+        bodyEl.innerHTML =
+          '<div class="text-center"><img src="' + escapeHtml(safeUrl) + '" alt="' + escapeHtml(safeName) + '" class="img-fluid rounded" style="max-height:70vh;"></div>';
+      } else {
+        bodyEl.innerHTML =
+          '<div class="alert alert-info mb-3">Preview haipatikani kwa aina hii ya faili.</div>' +
+          '<div class="mb-2"><strong>File:</strong> ' + escapeHtml(safeName) + "</div>" +
+          '<a class="btn btn-primary" href="' + escapeHtml(safeUrl) + '" download="' + escapeHtml(safeName) + '">Pakua Faili</a>';
+      }
+
+      if (window.bootstrap && typeof window.bootstrap.Modal === "function") {
+        const modal = window.bootstrap.Modal.getOrCreateInstance(modalElement);
+        modal.show();
+        return;
+      }
+
+      if (window.jQuery && typeof window.jQuery.fn.modal === "function") {
+        window.jQuery(modalElement).modal("show");
+      }
+    };
+
+    document.addEventListener("click", (event) => {
+      const trigger = event.target.closest(".js-open-attachment-modal");
+      if (!trigger) return;
+      event.preventDefault();
+      console.log("Attachment clicked");
+      console.log("Attachment request path:", trigger.getAttribute("data-file-url"));
+      openAttachmentPreview(
+        trigger.getAttribute("data-file-url") || trigger.getAttribute("data-url"),
+        trigger.getAttribute("data-file-name") || trigger.getAttribute("data-name")
+      );
     });
   })();
 </script>

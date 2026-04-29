@@ -46,6 +46,22 @@
     const activePermissions = Number(typeof activeTotal !== 'undefined' ? activeTotal : activePermissionsPage);
     const defaultPermissions = Number(typeof defaultTotal !== 'undefined' ? defaultTotal : defaultPermissionsPage);
     const filter = String(typeof currentFilter !== 'undefined' ? currentFilter : (req.query.filter || 'all')).toLowerCase();
+    const searchTerm = String(req.query.tafuta || '').trim();
+    const formState = permissionForm || { values: {}, errors: {}, general: '' };
+    const formValues = formState.values || {};
+    const formErrors = formState.errors || {};
+    const formGeneralError = String(formState.general || '').trim();
+    const canCreatePermission = permission(req, 'create-permissions');
+    const supportsModuleId = typeof permissionSupportsModuleId === 'boolean' ? permissionSupportsModuleId : true;
+    const hasEditData = Boolean(edit && Array.isArray(ePermission) && ePermission.length > 0 && ePermission[0]);
+    const editPermission = hasEditData ? ePermission[0] : null;
+    const isEditMode = Boolean(edit && hasEditData);
+    const routePath = String((req && (req.path || req.originalUrl)) || '');
+    const routeEditMatch = routePath.match(/^\/Permissions\/(\d+)/i);
+    const routeEditId = routeEditMatch ? Number(routeEditMatch[1] || 0) : 0;
+    const isEditRoute = routeEditId > 0;
+    const effectiveEditId = isEditMode ? Number(editPermission.id || 0) : routeEditId;
+    const formAction = effectiveEditId > 0 ? '/badiliPermission/' + effectiveEditId : '/tengenezaPermission';
 
     const toTitle = (value) => {
         if (!value) return '-';
@@ -82,22 +98,45 @@
 
     <div class="card border mb-4">
         <div class="card-body">
-            <h6 class="mb-3 text-uppercase text-muted"><%= edit ? 'Badili Permission' : 'Sajili Permission Mpya' %></h6>
-            <form action="<%= edit ? '/badiliPermission/'+ePermission[0].id : '/tengenezaPermission'%>" method="POST">
+            <h6 class="mb-3 text-uppercase text-muted"><%= isEditRoute ? 'Badili Permission' : 'Sajili Permission Mpya' %></h6>
+            <% if (!canCreatePermission && !isEditRoute) { %>
+                <div class="alert alert-warning mb-0">Huna ruhusa ya kusajili permission mpya.</div>
+            <% } %>
+            <% if (isEditRoute && !isEditMode) { %>
+                <div class="alert alert-warning mb-3">Permission details hazikupatikana kikamilifu. Tafadhali hakikisha ID ipo, kisha jaribu tena.</div>
+            <% } %>
+            <% if (Object.keys(formErrors || {}).length > 0) { %>
+                <div class="alert alert-danger mb-3">
+                    <strong>Tafadhali rekebisha makosa yafuatayo:</strong>
+                    <ul class="mb-0 mt-2">
+                        <% Object.keys(formErrors).forEach((key) => { %>
+                            <li><%= formErrors[key] %></li>
+                        <% }) %>
+                    </ul>
+                </div>
+            <% } %>
+            <form id="permission-upsert-form" action="<%= formAction %>" method="POST" novalidate data-no-loader="1">
+                <input type="hidden" name="supports_module_id" value="<%= supportsModuleId ? '1' : '0' %>">
                 <div class="row g-3 align-items-end">
                     <div class="col-lg-3">
-                        <% var name = edit ? ePermission[0].permission_name : '' %>
+                        <% var name = (formValues.permission_name || (isEditMode ? editPermission.permission_name : '')) %>
                         <label class="form-label">Permission Name</label>
-                        <input required name="permission_name" value="<%= name ? name.replace(/-/g , ' ') : '' %>" class="form-control" placeholder="Mfano: view-users" />
+                        <input name="permission_name" value="<%= name ? name.replace(/-/g , ' ') : '' %>" class="form-control <%= formErrors.permission_name ? 'is-invalid' : '' %>" placeholder="Mfano: view-users" />
+                        <% if (formErrors.permission_name) { %>
+                            <div class="invalid-feedback d-block"><%= formErrors.permission_name %></div>
+                        <% } %>
                     </div>
                     <div class="col-lg-3">
                         <label class="form-label">Display Name</label>
-                        <input required name="display_name" value="<%=edit ? ePermission[0].display_name : ''%>" class="form-control" placeholder="Mfano: Ona Watumiaji" />
+                        <input name="display_name" value="<%=formValues.display_name || (isEditMode ? editPermission.display_name : '')%>" class="form-control <%= formErrors.display_name ? 'is-invalid' : '' %>" placeholder="Mfano: Ona Watumiaji" />
+                        <% if (formErrors.display_name) { %>
+                            <div class="invalid-feedback d-block"><%= formErrors.display_name %></div>
+                        <% } %>
                     </div>
                     <div class="col-lg-3">
                         <label class="form-label">Module</label>
-                        <% const selectedModuleId = edit ? Number(ePermission[0].module_id || 0) : 0; %>
-                        <select required name="module_id" class="form-select">
+                        <% const selectedModuleId = Number(formValues.module_id || (isEditMode ? editPermission.module_id : 0) || 0); %>
+                        <select name="module_id" class="form-select <%= formErrors.module_id ? 'is-invalid' : '' %>">
                             <option value="">Chagua Moduli</option>
                             <% for (var m = 0; m < modulesList.length; m++) { %>
                                 <option value="<%= modulesList[m].id %>" <%= selectedModuleId === Number(modulesList[m].id) ? 'selected' : '' %>>
@@ -105,40 +144,52 @@
                                 </option>
                             <% } %>
                         </select>
+                        <% if (formErrors.module_id) { %>
+                            <div class="invalid-feedback d-block"><%= formErrors.module_id %></div>
+                        <% } %>
                     </div>
-                    <% if(edit){ %>
+                    <% if(isEditMode){ %>
                         <div class="col-lg-1">
                             <div class="form-check form-switch mt-3">
-                                <input type="checkbox" name="status" <%= Number(ePermission[0].status_id) === 1 ? 'checked' : ''%> class="form-check-input" />
+                                <input type="checkbox" name="status" <%= Number(editPermission.status_id) === 1 ? 'checked' : ''%> class="form-check-input" />
                                 <label class="form-check-label">Active</label>
                             </div>
                         </div>
                         <div class="col-lg-1">
                             <div class="form-check form-switch mt-3">
-                                <input type="checkbox" name="is_default" <%= Number(ePermission[0].is_default) === 1 ? 'checked' : ''%> class="form-check-input" />
+                                <input type="checkbox" name="is_default" <%= Number(editPermission.is_default) === 1 ? 'checked' : ''%> class="form-check-input" />
                                 <label class="form-check-label">Default</label>
                             </div>
                         </div>
                     <% } %>
                     <div class="col-lg-2 d-flex gap-2">
-                        <button type="submit" class="btn <%=edit ? 'btn-primary' : 'btn-success'%> w-100">
-                            <%=edit ? 'Badili' : 'Sajili'%>
+                        <button type="submit" id="permission-upsert-submit" class="btn <%=isEditMode ? 'btn-primary' : 'btn-success'%> w-100">
+                            <%=isEditMode ? 'Badili' : 'Sajili'%>
                         </button>
-                        <% if (edit) { %>
+                        <% if (isEditMode) { %>
                             <a href="/Permissions" class="btn btn-light w-100">Ghairi</a>
                         <% } %>
                     </div>
                 </div>
             </form>
+            <% if (formGeneralError) { %>
+                <div class="alert alert-danger mt-3 mb-0"><%= formGeneralError %></div>
+            <% } %>
         </div>
     </div>
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h6 class="mb-0 text-uppercase text-muted">Permissions Zilizopo</h6>
-        <div class="search-box" style="max-width: 280px;">
-            <input type="text" class="form-control search" placeholder="Tafuta permission...">
-            <i class="ri-search-line search-icon"></i>
-        </div>
+        <form class="search-box d-flex gap-2" style="max-width: 420px;" method="GET" action="/Permissions">
+            <% if (filter !== 'all') { %>
+                <input type="hidden" name="filter" value="<%= filter %>">
+            <% } %>
+            <% if (req.query.per_page) { %>
+                <input type="hidden" name="per_page" value="<%= req.query.per_page %>">
+            <% } %>
+            <input type="text" class="form-control" name="tafuta" value="<%= searchTerm %>" placeholder="Tafuta permission..." autocomplete="off">
+            <button type="submit" class="btn btn-soft-primary">Tafuta</button>
+        </form>
     </div>
 
     <% var success = req.flash('success') %>
@@ -195,7 +246,7 @@
                         </td>
                         <td class="text-center">
                             <form action="/futaPermission/<%=permissionList[i].id%>" method="POST">
-                                <% if(!(edit && ePermission[0].id == permissionList[i].id)){ %>
+                                <% if(!(isEditMode && editPermission.id == permissionList[i].id)){ %>
                                     <a href="/Permissions/<%= permissionList[i].id %>" class="btn btn-soft-primary action-btn" title="Badili">
                                         <i class="ri-pencil-line"></i>
                                     </a>
@@ -223,6 +274,54 @@
         <%- include('paginations/html_pagination.ejs'); %>
     </div>
 </div>
+<script>
+  (function () {
+    const upsertForm = document.getElementById("permission-upsert-form");
+    const upsertButton = document.getElementById("permission-upsert-submit");
+    if (upsertForm && upsertButton) {
+      upsertButton.addEventListener("click", function () {
+        console.log("Update button clicked");
+      });
+      upsertForm.addEventListener("submit", function () {
+        console.log("Update form submit triggered");
+        console.log("Submitting to:", upsertForm.action);
+      });
+    }
+
+    const searchForm = document.querySelector('form.search-box[action="/Permissions"]');
+    const searchInput = searchForm ? searchForm.querySelector('input[name="tafuta"]') : null;
+    const pageSizeForm = document.querySelector('.page-size')?.closest('form');
+    if (!searchForm || !searchInput) return;
+
+    const ensureHidden = (form, name, value) => {
+      if (!form || !name || value === null || typeof value === "undefined" || value === "") return;
+      let hidden = form.querySelector(`input[name="${name}"]`);
+      if (!hidden) {
+        hidden = document.createElement("input");
+        hidden.type = "hidden";
+        hidden.name = name;
+        form.appendChild(hidden);
+      }
+      hidden.value = String(value);
+    };
+
+    const currentFilter = "<%= filter %>";
+    const currentSearch = "<%= searchTerm.replace(/"/g, '&quot;') %>";
+
+    if (pageSizeForm) {
+      if (currentFilter && currentFilter !== "all") ensureHidden(pageSizeForm, "filter", currentFilter);
+      if (currentSearch) ensureHidden(pageSizeForm, "tafuta", currentSearch);
+    }
+
+    let timer = null;
+    searchInput.addEventListener("input", function () {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(function () {
+        searchForm.submit();
+      }, 400);
+    });
+  })();
+</script>
 <%- include('layouts/partials/footer.ejs' , {card_title :  card_title}) %>
 </body>
 </html>
