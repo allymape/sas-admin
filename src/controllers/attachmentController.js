@@ -64,7 +64,7 @@ attachmentController.get(
     });
     const rawPath = safeDecodeUriComponent(req.params?.[0]).trim();
     const sourceUrl = buildAttachmentSourceUrl(rawPath);
-    // console.log("[Attachment][ResolvedSource]", { rawPath, sourceUrl });
+    console.log("[Attachment][ResolvedSource]", { rawPath, sourceUrl });
     if (!rawPath) {
       console.warn("[Attachment][MissingPath] Empty attachment path from request.");
     }

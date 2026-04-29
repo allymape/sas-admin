@@ -154,6 +154,10 @@
 
   const statusLabel = toStatusLabel(app.is_approved);
   const approvalStatus = Number(app.is_approved ?? 0);
+  const applicationCategoryId = Number(app.application_category_id || category.id || 0);
+  const categoryNameRaw = String(category.app_name || "").trim();
+  const categoryNameLower = categoryNameRaw.toLowerCase();
+  const isChangeTypeApplication = applicationCategoryId > 4;
 
   const statusChipMeta = (status) => {
     const id = Number(status);
@@ -201,6 +205,90 @@
     const lowered = normalized.toLowerCase();
     return !["-", "--", "null", "undefined", "n/a", "na", "none", "nill"].includes(lowered);
   };
+
+  const firstObject = (...candidates) => {
+    for (const candidate of candidates) {
+      if (candidate && typeof candidate === "object" && !Array.isArray(candidate)) return candidate;
+      if (Array.isArray(candidate) && candidate.length > 0 && candidate[0] && typeof candidate[0] === "object") return candidate[0];
+    }
+    return {};
+  };
+
+  const pickFirstValue = (source, keys = []) => {
+    const obj = source && typeof source === "object" ? source : {};
+    for (const key of keys) {
+      const value = obj[key];
+      if (hasDisplayValue(value)) return String(value).trim();
+    }
+    return "";
+  };
+
+  const requestedInfoRows = (() => {
+    if (!isChangeTypeApplication) return [];
+
+    const formerSchoolInfo = firstObject(
+      app.former_school_info,
+      app.former_school_infos,
+      app.formerSchoolInfo,
+      app.formerSchoolInfos
+    );
+    const formerOwnerInfo = firstObject(
+      app.former_owner,
+      app.former_owners,
+      app.formerOwner,
+      app.formerOwners
+    );
+    const formerManagerInfo = firstObject(
+      app.former_manager,
+      app.former_managers,
+      app.formerManager,
+      app.formerManagers
+    );
+    const formerCombinationInfo = firstObject(
+      app.former_school_combination,
+      app.former_school_combinations,
+      app.formerSchoolCombination,
+      app.formerSchoolCombinations
+    );
+
+    const rows = [];
+    const pushRow = (label, value) => {
+      if (hasDisplayValue(value)) rows.push({ label, value: String(value).trim() });
+    };
+
+    pushRow("Aina ya Mabadiliko", categoryNameRaw);
+
+    if (categoryNameLower.includes("jina")) {
+      pushRow("Jina Jipya Linalopendekezwa", pickFirstValue(formerSchoolInfo, ["new_school_name", "school_name_new", "proposed_school_name", "new_name", "school_name"]));
+      pushRow("Sababu ya Mabadiliko", pickFirstValue(formerSchoolInfo, ["reason", "change_reason", "description", "comments"]));
+      pushRow("Tarehe Inayolengwa", pickFirstValue(formerSchoolInfo, ["target_date", "effective_date", "date_of_change", "proposed_date"]));
+    } else if (categoryNameLower.includes("mmiliki")) {
+      pushRow("Mmiliki Mpya", pickFirstValue(formerOwnerInfo, ["new_owner_name", "owner_name", "full_name", "name"]));
+      pushRow("Sababu ya Mabadiliko", pickFirstValue(formerOwnerInfo, ["reason", "change_reason", "description", "comments"]));
+      pushRow("Tarehe Inayolengwa", pickFirstValue(formerOwnerInfo, ["target_date", "effective_date", "date_of_change", "proposed_date"]));
+    } else if (categoryNameLower.includes("meneja")) {
+      pushRow("Meneja Mpya", pickFirstValue(formerManagerInfo, ["new_manager_name", "manager_name", "full_name", "name"]));
+      pushRow("Sababu ya Mabadiliko", pickFirstValue(formerManagerInfo, ["reason", "change_reason", "description", "comments"]));
+      pushRow("Tarehe Inayolengwa", pickFirstValue(formerManagerInfo, ["target_date", "effective_date", "date_of_change", "proposed_date"]));
+    } else if (categoryNameLower.includes("hamisha")) {
+      pushRow("Mahali Panapolengwa", pickFirstValue(formerSchoolInfo, ["new_location_name", "new_location", "destination_location", "target_location"]));
+      pushRow("Sababu ya Mabadiliko", pickFirstValue(formerSchoolInfo, ["reason", "change_reason", "description", "comments"]));
+      pushRow("Tarehe Inayolengwa", pickFirstValue(formerSchoolInfo, ["target_date", "effective_date", "date_of_change", "proposed_date"]));
+    } else if (categoryNameLower.includes("usajili")) {
+      pushRow("Aina Mpya ya Usajili", pickFirstValue(formerSchoolInfo, ["new_registration_type_name", "registration_type_name", "new_registration_type", "registration_type"]));
+      pushRow("Sababu ya Mabadiliko", pickFirstValue(formerSchoolInfo, ["reason", "change_reason", "description", "comments"]));
+      pushRow("Tarehe Inayolengwa", pickFirstValue(formerSchoolInfo, ["target_date", "effective_date", "date_of_change", "proposed_date"]));
+    } else if (categoryNameLower.includes("mkondo") || categoryNameLower.includes("tahasusi")) {
+      pushRow("Mabadiliko Yanayopendekezwa", pickFirstValue(formerCombinationInfo, ["new_combination_name", "combination_name", "new_specialization", "specialization_name"]));
+      pushRow("Sababu ya Mabadiliko", pickFirstValue(formerCombinationInfo, ["reason", "change_reason", "description", "comments"]));
+      pushRow("Tarehe Inayolengwa", pickFirstValue(formerCombinationInfo, ["target_date", "effective_date", "date_of_change", "proposed_date"]));
+    } else {
+      pushRow("Sababu ya Mabadiliko", pickFirstValue(formerSchoolInfo, ["reason", "change_reason", "description", "comments"]));
+      pushRow("Tarehe Inayolengwa", pickFirstValue(formerSchoolInfo, ["target_date", "effective_date", "date_of_change", "proposed_date"]));
+    }
+
+    return rows;
+  })();
 
   const contactPersonPersonalName = [
     personalInfo.first_name,
@@ -1607,33 +1695,25 @@
         </div>
       </div>
 
-      <div class="card mb-3 attend-extra-card attend-demo-card">
-        <div class="card-header">
-          <h6 class="attend-demo-title">TAARIFA ZINAZOOMBEWA</h6>
+      <% if (isChangeTypeApplication && requestedInfoRows.length > 0) { %>
+        <div class="card mb-3 attend-extra-card attend-demo-card">
+          <div class="card-header">
+            <h6 class="attend-demo-title">TAARIFA ZINAZOOMBEWA</h6>
+          </div>
+          <div class="card-body">
+            <table class="table mb-0 attend-summary-table">
+              <tbody>
+                <% requestedInfoRows.forEach((row) => { %>
+                  <tr>
+                    <td class="fw-medium"><%= row.label %></td>
+                    <td class="ellipsis-tooltip"><%= row.value %></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div class="card-body">
-          <table class="table mb-0 attend-summary-table">
-            <tbody>
-              <tr>
-                <td class="fw-medium">Aina ya Mabadiliko</td>
-                <td class="ellipsis-tooltip">Kubadili Jina la Shule</td>
-              </tr>
-              <tr>
-                <td class="fw-medium">Jina Jipya Linalopendekezwa</td>
-                <td class="ellipsis-tooltip">-</td>
-              </tr>
-              <tr>
-                <td class="fw-medium">Sababu ya Mabadiliko</td>
-                <td class="ellipsis-tooltip">-</td>
-              </tr>
-              <tr>
-                <td class="fw-medium">Tarehe Inayolengwa</td>
-                <td class="ellipsis-tooltip">-</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <% } %>
 
       <% if (approvedAtDisplay) { %>
         <div class="card attend-extra-card attend-time-card attend-approved-time-card">
@@ -1699,7 +1779,7 @@
           </ul>
           <ul class="nav nav-pills nav-justified mb-3 attend-tabs flex-wrap" role="tablist">
             <li class="nav-item">
-              <a class="nav-link active ellipsis-tooltip" data-bs-toggle="tab" href="#overview-info" role="tab">Taarifa Kuu</a>
+              <a class="nav-link active ellipsis-tooltip" data-bs-toggle="tab" href="#overview-info" role="tab">Taarifa za Shule</a>
             </li>
             <li class="nav-item">
               <a class="nav-link ellipsis-tooltip" data-bs-toggle="tab" href="#applicant-info" role="tab">Mwombaji</a>
