@@ -56,33 +56,18 @@ attachmentController.get(
   "/View-Attachment/*",
   isAuthenticated,
   async function (req, res) {
-    console.log("[Attachment][RouteHit]", {
-      method: req.method,
-      originalUrl: req.originalUrl,
-      pathParam: req.params?.[0] || "",
-      user_id: req?.session?.userID || req?.user?.id || null,
-    });
     const rawPath = safeDecodeUriComponent(req.params?.[0]).trim();
     const sourceUrl = buildAttachmentSourceUrl(rawPath);
-    console.log("[Attachment][ResolvedSource]", { rawPath, sourceUrl });
-    if (!rawPath) {
-      console.warn("[Attachment][MissingPath] Empty attachment path from request.");
-    }
+    console.log("attachment_url",sourceUrl)
     if (sourceUrl) {
       try {
         const response = await axios.get(sourceUrl, {
           responseType: "stream", // Stream the PDF file directly
           httpsAgent: agent,
         });
-        const responseContentType = String(response?.headers?.["content-type"] || "").trim();
-        const responseContentLength = String(response?.headers?.["content-length"] || "").trim();
-        if (responseContentType) {
-          res.setHeader("Content-Type", responseContentType);
-        }
-        if (responseContentLength) {
-          res.setHeader("Content-Length", responseContentLength);
-        }
-        res.setHeader("Content-Disposition", "inline");
+        // Set the response headers for PDF
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", "inline"); // Inline to view in browser; change to 'attachment' to force download
         // Pipe the response directly to the client
         response.data.pipe(res);
       } catch (error) {
