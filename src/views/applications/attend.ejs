@@ -129,9 +129,11 @@
   const hideApproveRejectActions = hasAssignStaffPermission && !canApproveInCurrentWorkflowUnit;
   const workflowActionButtons = !canTakeActionNow
     ? []
-    : hasAssignStaffPermission
-    ? ["Assign", "Forward", "Approve", "Reject", "Return", "Return_back"]
-    : ["Review"];
+    : (workflowActions.length
+      ? workflowActions
+      : (hasAssignStaffPermission
+        ? ["Assign", "Forward", "Approve", "Reject", "Return", "Return_back"]
+        : ["Review"]));
   const shouldHideWorkflowAction = (action) => {
     if (hideReturnToPreviousStaffAction && action === "Return") return true;
     if (hideReturnBackToApplicantAction && action === "Return_back") return true;
@@ -1324,33 +1326,39 @@
   }
 
   .attachment-row {
-    padding: 0.55rem 0.6rem !important;
+    padding: 0.48rem 0.56rem !important;
+    border-radius: 8px !important;
+    border-color: #dbe6f5 !important;
+    background: #fff;
   }
 
   .attachment-row .attachment-title {
-    font-size: 0.86rem;
+    font-size: 0.8rem;
     font-weight: 600;
     line-height: 1.2;
-    margin-bottom: 0.15rem;
+    margin-bottom: 0.05rem;
   }
 
   .attachment-row .attachment-meta {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: var(--attend-text-muted);
     line-height: 1.1;
   }
 
   .attachment-row .comment-attachment-input {
-    font-size: 0.82rem;
+    font-size: 0.78rem;
+    min-height: 32px;
+    padding: 0.26rem 0.45rem;
   }
 
   .attachment-row .btn-upload-attachment {
-    padding: 0.34rem 0.62rem;
-    font-size: 0.78rem;
+    padding: 0.28rem 0.58rem;
+    font-size: 0.74rem;
+    line-height: 1.1;
   }
 
   .attachment-row .js-upload-status {
-    font-size: 0.74rem;
+    font-size: 0.68rem;
     margin-top: 0.22rem !important;
     line-height: 1.1;
   }
@@ -1359,12 +1367,13 @@
     display: flex;
     align-items: center;
     gap: 0.35rem;
-    margin-top: 0.3rem;
+    margin-top: 0.18rem;
     min-height: 20px;
+    flex-wrap: wrap;
   }
 
   .attachment-row .uploaded-label {
-    font-size: 0.72rem;
+    font-size: 0.67rem;
     color: var(--attend-text-muted);
     margin: 0;
   }
@@ -1376,11 +1385,49 @@
     border: 1px solid #d5e3f4;
     border-radius: 999px;
     padding: 0.14rem 0.5rem;
-    font-size: 0.72rem;
+    font-size: 0.67rem;
     max-width: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .attachment-list-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.38rem;
+    max-height: 330px;
+    overflow: auto;
+    padding-right: 2px;
+  }
+
+  .attachment-row-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .attachment-status-badge {
+    border-radius: 999px;
+    padding: 0.13rem 0.42rem;
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.1px;
+    white-space: nowrap;
+  }
+
+  .attachment-status-badge.is-uploaded {
+    color: #116b41;
+    background: #dcf8ea;
+    border: 1px solid #bdeed6;
+  }
+
+  .attachment-status-badge.is-pending {
+    color: #7a5b00;
+    background: #fff6dd;
+    border: 1px solid #ffe7a3;
   }
 
   #attachment-preview-modal {
@@ -2319,79 +2366,80 @@
                 <% if (commentAttachmentTypes.length) { %>
                   <div class="mb-3">
                     <input type="hidden" name="attachment_payload_json" id="workflow-attachments-payload" value="[]">
-                    <div class="row g-3">
+                    <div class="attachment-list-compact">
                       <% commentAttachmentTypes.forEach((attachmentType) => { %>
                         <% const existingTypeAttachments = attachments.filter((item) => Number(item?.attachment_type_id || item?.attachment_type?.id || 0) === Number(attachmentType.id)); %>
                         <% const attachmentSizeMb = toFileSizeMbLabel(attachmentType.file_size); %>
-                        <div class="col-12">
-                          <div
-                            class="border rounded p-2 attachment-row"
-                            data-application-id="<%= String(app.id || '') %>"
-                            data-tracking-number="<%= String(app.tracking_number || '') %>"
-                            data-attachment-type-id="<%= String(attachmentType.id || '') %>"
-                          >
-                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-                              <div>
-                                <div class="attachment-title"><%= toText(attachmentType.attachment_name) %></div>
-                                <div class="attachment-meta">
-                                  <% if (attachmentType.file_format) { %><%= String(attachmentType.file_format).toUpperCase() %><% } %>
-                                  <% if (attachmentType.file_format && attachmentSizeMb) { %> · <% } %>
-                                  <% if (attachmentSizeMb) { %><%= attachmentSizeMb %><% } %>
-                                </div>
+                        <div
+                          class="border rounded p-2 attachment-row"
+                          data-application-id="<%= String(app.id || '') %>"
+                          data-tracking-number="<%= String(app.tracking_number || '') %>"
+                          data-attachment-type-id="<%= String(attachmentType.id || '') %>"
+                        >
+                          <div class="attachment-row-head">
+                            <div>
+                              <div class="attachment-title"><%= toText(attachmentType.attachment_name) %></div>
+                              <div class="attachment-meta">
+                                <% if (attachmentType.file_format) { %><%= String(attachmentType.file_format).toUpperCase() %><% } %>
+                                <% if (attachmentType.file_format && attachmentSizeMb) { %> · <% } %>
+                                <% if (attachmentSizeMb) { %><%= attachmentSizeMb %><% } %>
                               </div>
                             </div>
-                            <div class="d-flex gap-2 align-items-start">
-                              <input
-                                type="file"
-                                class="form-control js-workflow-attachment-input comment-attachment-input"
-                                data-attachment-type-id="<%= attachmentType.id %>"
-                                data-application-id="<%= String(app.id || '') %>"
-                                data-tracking-number="<%= String(app.tracking_number || '') %>"
-                                data-attachment-type-name="<%= toText(attachmentType.attachment_name) %>"
-                                data-max-size-mb="<%= Number(attachmentType.file_size || 0) %>"
-                                data-allowed-ext="<%= String(attachmentType.file_format || '') %>"
-                                data-required="<%= attachmentType.is_required ? '1' : '0' %>"
-                                accept="<%= toAcceptAttr(attachmentType.file_format) %>"
-                              >
-                              <button
-                                type="button"
-                                class="btn btn-primary text-nowrap js-upload-attachment-btn btn-upload btn-upload-attachment"
-                                data-upload-for-type="<%= attachmentType.id %>"
-                                disabled
-                              >
-                                Pandisha File
-                              </button>
-                            </div>
-                            <small class="text-muted d-block mt-1 js-upload-status"></small>
-                            <% if (existingTypeAttachments.length) { %>
-                              <div class="uploaded-inline">
-                                <small class="uploaded-label">Uploaded:</small>
-                                <div class="d-flex flex-wrap gap-1 js-uploaded-files">
-                                  <% existingTypeAttachments.forEach((att, attIndex) => { %>
-                                    <% const existingPath = toAttachmentViewerPath(att?.attachment_path); %>
-                                    <% const displayLabel = readableAttachmentLabel(attachmentType?.attachment_name, att?.attachment_path, attIndex, existingTypeAttachments.length); %>
-                                    <% if (existingPath) { %>
-                                      <a
-                                        href="<%= existingPath %>"
-                                        class="uploaded-chip js-open-attachment-modal text-decoration-none"
-                                        data-file-url="<%= existingPath %>"
-                                        data-file-name="<%= displayLabel %>"
-                                        title="<%= displayLabel %>"
-                                      >
-                                        <i class="ri-file-list-3-line"></i> <%= displayLabel %>
-                                      </a>
-                                    <% } %>
-                                  <% }) %>
-                                </div>
-                              </div>
-                            <% } %>
-                            <% if (!existingTypeAttachments.length) { %>
-                              <div class="uploaded-inline">
-                                <small class="uploaded-label">Uploaded:</small>
-                                <div class="d-flex flex-wrap gap-1 js-uploaded-files"></div>
-                              </div>
-                            <% } %>
+                            <span class="attachment-status-badge <%= existingTypeAttachments.length ? 'is-uploaded' : 'is-pending' %>">
+                              <%= existingTypeAttachments.length ? 'Imepakiwa' : 'Haijapakiwa' %>
+                            </span>
                           </div>
+                          <div class="d-flex gap-2 align-items-start">
+                            <input
+                              type="file"
+                              class="form-control js-workflow-attachment-input comment-attachment-input"
+                              data-attachment-type-id="<%= attachmentType.id %>"
+                              data-application-id="<%= String(app.id || '') %>"
+                              data-tracking-number="<%= String(app.tracking_number || '') %>"
+                              data-attachment-type-name="<%= toText(attachmentType.attachment_name) %>"
+                              data-max-size-mb="<%= Number(attachmentType.file_size || 0) %>"
+                              data-allowed-ext="<%= String(attachmentType.file_format || '') %>"
+                              data-required="<%= attachmentType.is_required ? '1' : '0' %>"
+                              accept="<%= toAcceptAttr(attachmentType.file_format) %>"
+                            >
+                            <button
+                              type="button"
+                              class="btn btn-primary text-nowrap js-upload-attachment-btn btn-upload btn-upload-attachment"
+                              data-upload-for-type="<%= attachmentType.id %>"
+                              disabled
+                            >
+                              Pandisha File
+                            </button>
+                          </div>
+                          <small class="text-muted d-block mt-1 js-upload-status"></small>
+                          <% if (existingTypeAttachments.length) { %>
+                            <div class="uploaded-inline">
+                              <small class="uploaded-label">Vilivyopakiwa:</small>
+                              <div class="d-flex flex-wrap gap-1 js-uploaded-files">
+                                <% existingTypeAttachments.forEach((att, attIndex) => { %>
+                                  <% const existingPath = toAttachmentViewerPath(att?.attachment_path); %>
+                                  <% const displayLabel = readableAttachmentLabel(attachmentType?.attachment_name, att?.attachment_path, attIndex, existingTypeAttachments.length); %>
+                                  <% if (existingPath) { %>
+                                    <a
+                                      href="<%= existingPath %>"
+                                      class="uploaded-chip js-open-attachment-modal text-decoration-none"
+                                      data-file-url="<%= existingPath %>"
+                                      data-file-name="<%= displayLabel %>"
+                                      title="<%= displayLabel %>"
+                                    >
+                                      <i class="ri-file-list-3-line"></i> <%= displayLabel %>
+                                    </a>
+                                  <% } %>
+                                <% }) %>
+                              </div>
+                            </div>
+                          <% } %>
+                          <% if (!existingTypeAttachments.length) { %>
+                            <div class="uploaded-inline">
+                              <small class="uploaded-label">Vilivyopakiwa:</small>
+                              <div class="d-flex flex-wrap gap-1 js-uploaded-files"></div>
+                            </div>
+                          <% } %>
                         </div>
                       <% }) %>
                     </div>
@@ -2534,6 +2582,15 @@
       if (input) input.disabled = Boolean(disabled);
     };
 
+    const syncAttachmentUploadedStatusBadge = (input, isUploaded) => {
+      const row = input?.closest(".attachment-row");
+      const badge = row ? row.querySelector(".attachment-status-badge") : null;
+      if (!badge) return;
+      badge.textContent = isUploaded ? "Imepakiwa" : "Haijapakiwa";
+      badge.classList.toggle("is-uploaded", Boolean(isUploaded));
+      badge.classList.toggle("is-pending", !isUploaded);
+    };
+
     const isImageExt = (ext) => ["jpg", "jpeg", "png", "gif", "webp", "bmp"].includes(String(ext || "").toLowerCase());
 
     const buildReadableUploadedLabel = (attachmentTypeName, fileName, index = 1) => {
@@ -2566,6 +2623,7 @@
         link.setAttribute("data-file-name", safeName);
         link.innerHTML = `<i class="ri-file-list-3-line"></i> ${safeName}`;
         list.appendChild(link);
+        syncAttachmentUploadedStatusBadge(input, true);
         return;
       }
 
@@ -2573,6 +2631,7 @@
       chip.className = "uploaded-chip";
       chip.innerHTML = `<i class="ri-file-line"></i> ${safeName}`;
       list.appendChild(chip);
+      syncAttachmentUploadedStatusBadge(input, true);
     };
 
     const setUploadButtonState = (input, loading = false) => {
