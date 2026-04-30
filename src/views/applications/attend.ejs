@@ -89,7 +89,7 @@
     return "secondary";
   };
 
-  const actionNeedsTarget = (action) => ["Assign", "Return"].includes(action);
+  const actionNeedsTarget = (action) => action === "Assign";
   const currentUserPermissions = Array.isArray(req?.user?.userPermissions) ? req.user.userPermissions : [];
   const hasAssignStaffPermission = currentUserPermissions.some((permission) => {
     const key = String(permission || "").trim().toLowerCase();
@@ -3095,7 +3095,7 @@
           if (workflowSubmitInProgress) return;
 
           const action = button.getAttribute("data-workflow-action") || "";
-          const needsTarget = button.getAttribute("data-needs-target") === "1";
+          const needsTarget = action === "Assign";
 
           workflowActionInput.value = action;
           syncWorkflowCommentContent();
