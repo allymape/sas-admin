@@ -275,6 +275,37 @@ const fetchApplicationByTracking = (req, trackingNumber, callback) => {
   );
 };
 
+const canUserSeeTrackingInMyApplications = (req, trackingNumber, callback) => {
+  const normalizedTracking = String(trackingNumber || "").trim();
+  if (!normalizedTracking) return callback(false);
+
+  const pendingUrl = `${myApplicationsAPI}?${new URLSearchParams({
+    page: "1",
+    per_page: "100",
+    work_tab: "pending",
+    search: normalizedTracking,
+  }).toString()}`;
+
+  request(
+    {
+      url: pendingUrl,
+      method: "GET",
+      json: true,
+      headers: {
+        Authorization: `Bearer ${req.session.Token}`,
+      },
+    },
+    (error, response, body) => {
+      if (error || !response || response.statusCode >= 400) return callback(false);
+      const rows = Array.isArray(body?.data?.data) ? body.data.data : [];
+      const found = rows.some(
+        (row) => String(row?.tracking_number || "").trim() === normalizedTracking,
+      );
+      return callback(found);
+    },
+  );
+};
+
 const normalizeAttachmentTypes = (rows = []) =>
   (Array.isArray(rows) ? rows : [])
     .map((row) => {
@@ -590,17 +621,19 @@ const attend = (req, res) => {
     }
 
     const application = result.application;
-    const canTakeAction = canCurrentUserTakeAction(req, application);
     const categoryName = String(application?.application_category?.app_name || "-").toUpperCase();
     const appCategoryId = Number(application?.application_category_id || application?.application_category?.id || 0);
-    return fetchBackendAttachmentTypesByCategory(req, appCategoryId, (commentAttachmentTypes) => {
-      res.render(path.join(__dirname, "/../../views/applications/attend"), {
-        req,
-        success: true,
-        application,
-        canTakeAction,
-        commentAttachmentTypes,
-        pageTitle: `OMBI LA ${categoryName}`,
+    return canUserSeeTrackingInMyApplications(req, trackingNumber, (isVisibleInMyApplications) => {
+      const canTakeAction = canCurrentUserTakeAction(req, application) && isVisibleInMyApplications;
+      fetchBackendAttachmentTypesByCategory(req, appCategoryId, (commentAttachmentTypes) => {
+        res.render(path.join(__dirname, "/../../views/applications/attend"), {
+          req,
+          success: true,
+          application,
+          canTakeAction,
+          commentAttachmentTypes,
+          pageTitle: `OMBI LA ${categoryName}`,
+        });
       });
     });
   });

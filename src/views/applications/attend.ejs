@@ -102,6 +102,10 @@
   };
   const workflowStepsForActions = Array.isArray(app.workflow_steps) ? app.workflow_steps : [];
   const currentProcessForActions = app.current_process || {};
+  const currentProcessStatus = String(currentProcessForActions?.status || "").trim().toLowerCase();
+  const isCurrentProcessActive = ["pending", "in-progress"].includes(currentProcessStatus);
+  const hasWorkflowActionPermission = Array.isArray(workflowActions) && workflowActions.length > 0;
+  const canOpenCommentModal = canTakeActionNow && isCurrentProcessActive && hasWorkflowActionPermission;
   const currentWorkflowUnitForActions = currentProcessForActions?.current_workflow_unit || {};
   const currentProcessWorkflowIdForActions = Number(currentProcessForActions?.workflow_id || 0);
   const startFromCurrentWorkflowUnit = toBooleanFlag(currentWorkflowUnitForActions?.is_start);
@@ -2179,7 +2183,7 @@
 
             <div class="tab-pane" id="comments-info" role="tabpanel">
               <div class="workflow-launch">
-                <% if (canTakeActionNow) { %>
+                <% if (canOpenCommentModal) { %>
                   <button
                     type="button"
                     class="btn btn-success"
@@ -2311,7 +2315,7 @@
     </div>
   </div>
 
-  <% if (canTakeActionNow) { %>
+  <% if (canOpenCommentModal) { %>
     <div
       class="modal fade"
       id="workflow-action-modal"
