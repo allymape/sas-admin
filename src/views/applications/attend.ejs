@@ -606,6 +606,24 @@
   const workflowSteps = (Array.isArray(app.workflow_steps) ? app.workflow_steps : [])
     .slice()
     .sort((left, right) => Number(left?._order || 0) - Number(right?._order || 0));
+  const workflowTimelineEvents = workflowSteps
+    .slice()
+    .sort((left, right) => {
+      const leftDateRaw = left?.process_updated_at || left?.process_created_at || left?.updated_at || left?.created_at || null;
+      const rightDateRaw = right?.process_updated_at || right?.process_created_at || right?.updated_at || right?.created_at || null;
+      const leftDate = leftDateRaw ? new Date(leftDateRaw).getTime() : 0;
+      const rightDate = rightDateRaw ? new Date(rightDateRaw).getTime() : 0;
+
+      if (rightDate !== leftDate) return rightDate - leftDate;
+
+      const leftId = Number.parseInt(left?.id, 10);
+      const rightId = Number.parseInt(right?.id, 10);
+      if (Number.isFinite(rightId) && Number.isFinite(leftId) && rightId !== leftId) {
+        return rightId - leftId;
+      }
+
+      return Number(right?._order || 0) - Number(left?._order || 0);
+    });
   const currentProcess = app.current_process || {};
   const currentProcessWorkflowId = Number(currentProcess?.workflow_id || 0);
 
@@ -646,6 +664,22 @@
     if (state === "current") return "bg-primary-subtle text-primary";
     if (state === "queue") return "bg-warning-subtle text-warning";
     return "bg-light text-muted";
+  };
+  const formatWorkflowTimelineDate = (value) => {
+    if (!value) return "-";
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return "-";
+    try {
+      return parsed.toLocaleString("sw-TZ", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch (error) {
+      return dateFormat(value, "DD/MM/YYYY HH:mm:ss");
+    }
   };
 
   const normalizeCommentAction = (value) => {
@@ -757,6 +791,125 @@
     --attend-value-color: #e1e9f5;
   }
 
+  [data-layout-mode="dark"] .attend-page-title {
+    color: var(--attend-value-color);
+  }
+
+  [data-layout-mode="dark"] .attend-summary-card .card-body {
+    background: var(--attend-surface);
+  }
+
+  [data-layout-mode="dark"] .attend-summary-title,
+  [data-layout-mode="dark"] .attend-extra-title,
+  [data-layout-mode="dark"] .attend-demo-title {
+    color: var(--attend-value-color);
+  }
+
+  [data-layout-mode="dark"] .attend-status-chip.status-secondary {
+    background: #2f3d52;
+    border-color: #435774;
+    color: #c7d6ea;
+  }
+
+  [data-layout-mode="dark"] .attend-status-chip.status-primary {
+    background: #243b63;
+    border-color: #3d5f92;
+    color: #bcd6ff;
+  }
+
+  [data-layout-mode="dark"] .attend-status-chip.status-success {
+    background: #234837;
+    border-color: #346a4f;
+    color: #bfe9d0;
+  }
+
+  [data-layout-mode="dark"] .attend-status-chip.status-warning {
+    background: #57441f;
+    border-color: #7b6130;
+    color: #f7da9a;
+  }
+
+  [data-layout-mode="dark"] .attend-status-chip.status-danger {
+    background: #5a2b33;
+    border-color: #84414b;
+    color: #ffc2cc;
+  }
+
+  [data-layout-mode="dark"] .workflow-vertical-timeline .wf-step:nth-child(even) {
+    background: rgba(103, 147, 209, 0.16);
+  }
+
+  [data-layout-mode="dark"] .workflow-vertical-timeline .wf-step:nth-child(odd) {
+    background: rgba(82, 140, 108, 0.14);
+  }
+
+  [data-layout-mode="dark"] .wf-line,
+  [data-layout-mode="dark"] .comment-flow-connector {
+    border-color: #5a7396;
+  }
+
+  [data-layout-mode="dark"] .wf-dot {
+    border-color: #627da4;
+    background: #314864;
+    color: #dce9fb;
+  }
+
+  [data-layout-mode="dark"] .comment-card {
+    border-color: #4e6585;
+    background: var(--attend-surface);
+    box-shadow: none;
+  }
+
+  [data-layout-mode="dark"] .comment-divider {
+    border-bottom-color: #3e526f;
+  }
+
+  [data-layout-mode="dark"] .comment-body {
+    color: #d8e4f4;
+  }
+
+  [data-layout-mode="dark"] .comment-seq {
+    color: #d4e6ff;
+    border-color: #5879a6;
+    background: #304563;
+  }
+
+  [data-layout-mode="dark"] .comment-action-inline {
+    border-color: #557095;
+    background: #314a68;
+    color: #d5e5f9;
+  }
+
+  [data-layout-mode="dark"] .comment-action-inline.comment-action--primary {
+    border-color: #5f81b7;
+    background: #2f4c73;
+    color: #cde0ff;
+  }
+
+  [data-layout-mode="dark"] .comment-action-inline.comment-action--info {
+    border-color: #4f7a8f;
+    background: #2a4b5f;
+    color: #cae9f8;
+  }
+
+  [data-layout-mode="dark"] .comment-action-inline.comment-action--success {
+    border-color: #4a7b5f;
+    background: #284c3b;
+    color: #c7efd7;
+  }
+
+  [data-layout-mode="dark"] .comment-action-inline.comment-action--warning {
+    border-color: #8e7440;
+    background: #59492a;
+    color: #f9dfaa;
+  }
+
+  [data-layout-mode="dark"] .comment-action-inline.comment-action--danger {
+    border-color: #8f5058;
+    background: #5a3137;
+    color: #ffd2d8;
+  }
+
   .attend-summary-card,
   .attend-main-card,
   .attend-extra-card {
@@ -845,13 +998,13 @@
 
   .attend-summary-card .card-body {
     padding: 1rem;
-    background: linear-gradient(180deg, var(--attend-primary-soft) 0%, var(--attend-surface) 100%);
+    background: #fff;
   }
 
   .attend-summary-card .table-card,
   .attend-time-card .table-card {
     border: 0;
-    background: transparent;
+    background: none !important;
   }
 
   .col-xxl-3 .attend-summary-card,
@@ -863,8 +1016,7 @@
 
   .attend-summary-card .card-header {
     border-bottom: 1px solid var(--attend-border);
-    background: linear-gradient(135deg, var(--attend-surface) 0%, var(--attend-primary-soft) 100%);
-    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, var(--attend-secondary-soft) 0%, var(--attend-surface) 100%);
   }
 
   .attend-summary-title {
@@ -1480,13 +1632,29 @@
   .workflow-vertical-timeline {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .wf-grid-head {
+    display: grid;
+    grid-template-columns: 100px 1fr 130px 190px;
+    gap: 8px 12px;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.25px;
+    color: var(--attend-text-muted);
+    font-weight: 700;
+    padding: 0 4px 4px;
   }
 
   .wf-step {
     display: grid;
     grid-template-columns: 24px minmax(0, 1fr);
-    gap: 12px;
+    gap: 10px;
+    width: 100%;
+    min-width: 0;
   }
 
   .wf-step-lane {
@@ -1534,15 +1702,29 @@
   }
 
   .wf-step-body {
-    padding: 2px 0 8px;
-    border-bottom: 1px dashed #d9e3f2;
+    padding: 3px 0 7px;
+    min-width: 0;
   }
 
-  .wf-step-inline {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 6px 10px;
+  .workflow-vertical-timeline .wf-step {
+    border-radius: 8px;
+    padding: 2px 4px;
+  }
+
+  .workflow-vertical-timeline .wf-step:nth-child(even) {
+    background: rgba(31, 79, 159, 0.05);
+  }
+
+  .workflow-vertical-timeline .wf-step:nth-child(odd) {
+    background: rgba(11, 94, 59, 0.03);
+  }
+
+  .wf-step-grid {
+    display: grid;
+    grid-template-columns: 100px 1fr 130px 190px;
+    gap: 8px 12px;
+    align-items: start;
+    min-width: 0;
   }
 
   .wf-step-head {
@@ -1553,29 +1735,77 @@
     margin-bottom: 4px;
   }
 
-  .wf-step-order {
-    font-size: 12px;
+  .wf-step-order,
+  .wf-step-status,
+  .wf-step-date {
+    font-size: 11px;
     font-weight: 700;
-    color: var(--attend-value-color);
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
+    color: var(--vz-body-color);
   }
 
   .wf-step-unit {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     color: var(--vz-body-color);
     margin-bottom: 0;
+    overflow-wrap: anywhere;
   }
 
-  .wf-step-inline .badge {
-    flex: 0 0 auto;
+  .wf-step-status .badge {
+    font-size: 10.5px;
+    white-space: nowrap;
   }
 
-  .wf-step-inline .wf-step-meta-item {
+  .wf-step-meta-inline {
+    display: inline;
     font-size: 11px;
     color: var(--attend-text-muted);
-    white-space: nowrap;
+  }
+
+  .wf-step.is-latest .wf-step-body {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  @media (max-width: 767.98px) {
+    .wf-grid-head {
+      display: none;
+    }
+
+    .wf-step {
+      grid-template-columns: 18px minmax(0, 1fr);
+      gap: 8px;
+    }
+
+    .wf-step-grid {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+
+    .wf-step-order::before {
+      content: "Hatua: ";
+      color: var(--attend-text-muted);
+      font-weight: 600;
+    }
+
+    .wf-step-unit::before {
+      content: "Role: ";
+      color: var(--attend-text-muted);
+      font-weight: 600;
+    }
+
+    .wf-step-status::before {
+      content: "Status: ";
+      color: var(--attend-text-muted);
+      font-weight: 600;
+      margin-right: 4px;
+    }
+
+    .wf-step-date::before {
+      content: "Tarehe: ";
+      color: var(--attend-text-muted);
+      font-weight: 600;
+    }
   }
 
   .wf-step-meta {
@@ -1963,20 +2193,30 @@
           </ul>
           <ul class="nav nav-pills nav-justified mb-3 attend-tabs flex-wrap" role="tablist">
             <li class="nav-item">
-              <a class="nav-link active ellipsis-tooltip" data-bs-toggle="tab" href="#overview-info" role="tab">Taarifa za Shule</a>
+              <a class="nav-link active ellipsis-tooltip" data-bs-toggle="tab" href="#overview-info" role="tab">
+                <i class="ri-building-4-line align-middle me-1"></i>Taarifa za Shule
+              </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link ellipsis-tooltip" data-bs-toggle="tab" href="#applicant-info" role="tab">Mwombaji</a>
+              <a class="nav-link ellipsis-tooltip" data-bs-toggle="tab" href="#applicant-info" role="tab">
+                <i class="ri-user-3-line align-middle me-1"></i>Mwombaji
+              </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link ellipsis-tooltip" data-bs-toggle="tab" href="#attachments-info" role="tab">Viambatisho</a>
+              <a class="nav-link ellipsis-tooltip" data-bs-toggle="tab" href="#attachments-info" role="tab">
+                <i class="ri-attachment-2 align-middle me-1"></i>Viambatisho
+              </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link ellipsis-tooltip" data-bs-toggle="tab" href="#comments-info" role="tab">Maoni</a>
+              <a class="nav-link ellipsis-tooltip" data-bs-toggle="tab" href="#comments-info" role="tab">
+                <i class="ri-message-2-line align-middle me-1"></i>Maoni
+              </a>
             </li>
             <% if (isDevelopment) { %>
               <li class="nav-item">
-                <a class="nav-link ellipsis-tooltip" data-bs-toggle="tab" href="#raw-endpoint-info" role="tab">Raw</a>
+                <a class="nav-link ellipsis-tooltip" data-bs-toggle="tab" href="#raw-endpoint-info" role="tab">
+                  <i class="ri-code-s-slash-line align-middle me-1"></i>Raw
+                </a>
               </li>
             <% } %>
           </ul>
@@ -2156,7 +2396,7 @@
                                 data-file-url="<%= attachmentViewerPath %>"
                                 data-file-name="<%= attachmentFileName(attachmentPath) %>"
                               >
-                                Soma Kiambatisho
+                                <i class="ri-eye-line align-middle me-1"></i>Soma
                               </button>
                             <% } else { %>
                               <span>-</span>
@@ -2186,7 +2426,7 @@
                 <% if (canOpenCommentModal) { %>
                   <button
                     type="button"
-                    class="btn btn-success"
+                    class="btn btn-sm btn-success"
                     data-bs-toggle="modal"
                     data-bs-target="#workflow-action-modal"
                   >
@@ -2195,7 +2435,7 @@
                 <% } %>
                 <button
                   type="button"
-                  class="btn btn-outline-primary workflow-toggle-btn"
+                  class="btn btn-sm btn-outline-primary workflow-toggle-btn"
                   id="toggle-workflow-steps-btn"
                   data-bs-toggle="collapse"
                   data-bs-target="#workflow-track-collapse"
@@ -2219,27 +2459,38 @@
                     <div class="alert alert-light mb-0">Hakuna hatua za workflow kwa aina hii ya ombi.</div>
                   <% } else { %>
                     <div class="workflow-vertical-timeline">
-                      <% workflowSteps.forEach((step, index) => { %>
-                        <% const stepState = workflowStepState(step, index); %>
+                      <div class="wf-grid-head">
+                        <span>Hatua</span>
+                        <span>Ofisi</span>
+                        <span>Hali ya Ombi</span>
+                        <span>Tarehe</span>
+                      </div>
+                      <% workflowTimelineEvents.forEach((step, index) => { %>
+                        <% const stepOrderForState = Number(step?._order || step?.step_order || 0); %>
+                        <% const stepState = workflowStepState(step, stepOrderForState > 0 ? (stepOrderForState - 1) : index); %>
                         <% const stepOrder = Number(step?._order || (index + 1)); %>
                         <% const stepAssigned = step?.assigned_to ? `STAFF #${step.assigned_to}` : ""; %>
                         <% const stepDate = step?.process_updated_at || step?.process_created_at; %>
-                        <div class="wf-step <%= stepState %>">
+                        <div class="wf-step <%= stepState %> <%= index === 0 ? 'is-latest' : '' %>">
                           <div class="wf-step-lane">
                             <% if (index > 0) { %><span class="wf-line"></span><% } %>
                             <span class="wf-dot"><i class="<%= workflowStepStateIcon(stepState) %>"></i></span>
-                            <% if (index < workflowSteps.length - 1) { %><span class="wf-line"></span><% } %>
+                            <% if (index < workflowTimelineEvents.length - 1) { %><span class="wf-line"></span><% } %>
                           </div>
                           <div class="wf-step-body">
-                            <div class="wf-step-inline">
+                            <div class="wf-step-grid">
                               <span class="wf-step-order">Hatua <%= stepOrder %></span>
-                              <span class="badge <%= workflowStepBadgeClass(stepState) %>"><%= workflowStepStateLabel(stepState) %></span>
-                              <span class="wf-step-unit"><%= toText(step?.unit_name || step?.role_name || ("UNIT #" + toText(step?.unit_id))) %></span>
-                              <span class="wf-step-meta-item">Status: <%= toText(step?.process_status || "Waiting") %></span>
-                              <% if (stepAssigned) { %>
-                                <span class="wf-step-meta-item">Assigned: <%= stepAssigned %></span>
-                              <% } %>
-                              <span class="wf-step-meta-item">Tarehe: <%= stepDate ? dateFormat(stepDate, "DD/MM/YYYY HH:mm:ss") : "-" %></span>
+                              <span class="wf-step-unit">
+                                <%= toText(step?.unit_name || step?.role_name || ("UNIT #" + toText(step?.unit_id))) %>
+                                <% if (stepAssigned) { %>
+                                  <span class="wf-step-meta-inline"> · Assigned: <%= stepAssigned %></span>
+                                <% } %>
+                              </span>
+                              <span class="wf-step-status">
+                                <span class="badge <%= workflowStepBadgeClass(stepState) %>"><%= workflowStepStateLabel(stepState) %></span>
+                                <!-- <span class="wf-step-meta-inline"> (<%= toText(step?.process_status || "Waiting") %>)</span> -->
+                              </span>
+                              <span class="wf-step-date"><%= formatWorkflowTimelineDate(stepDate) %></span>
                             </div>
                           </div>
                         </div>
@@ -2262,21 +2513,17 @@
                   <% const commentReceiverName = String(comment?.receiver?.name || "").trim(); %>
                   <div class="comment-flow-item">
                     <div class="comment-flow-lane">
-                      <% if (entry.isTransition) { %>
-                        <% if (index > 0) { %>
-                          <span class="comment-flow-connector top"></span>
-                        <% } %>
-                        <span
-                          class="comment-flow-node ellipsis-tooltip"
-                          title="<%= entry.actionLabel ? `${entry.key} - ${entry.actionLabel}` : entry.key %>"
-                        >
-                          <i class="<%= entry.timelineIcon %>"></i>
-                        </span>
-                        <% if (index < commentFlow.length - 1) { %>
-                          <span class="comment-flow-connector bottom"></span>
-                        <% } %>
-                      <% } else { %>
-                        <span class="comment-flow-connector full"></span>
+                      <% if (index > 0) { %>
+                        <span class="comment-flow-connector top"></span>
+                      <% } %>
+                      <span
+                        class="comment-flow-node ellipsis-tooltip"
+                        title="<%= entry.actionLabel ? `${entry.key} - ${entry.actionLabel}` : entry.key %>"
+                      >
+                        <i class="<%= entry.timelineIcon %>"></i>
+                      </span>
+                      <% if (index < commentFlow.length - 1) { %>
+                        <span class="comment-flow-connector bottom"></span>
                       <% } %>
                     </div>
                     <div class="comment-card">
@@ -2408,7 +2655,7 @@
                             >
                             <button
                               type="button"
-                              class="btn btn-primary text-nowrap js-upload-attachment-btn btn-upload btn-upload-attachment"
+                              class="btn btn-sm btn-primary text-nowrap js-upload-attachment-btn btn-upload btn-upload-attachment"
                               data-upload-for-type="<%= attachmentType.id %>"
                               disabled
                             >
@@ -2455,7 +2702,7 @@
                     <% const isAssignAction = action === "Assign"; %>
                     <button
                       type="button"
-                      class="btn btn-<%= actionTone(action) %> workflow-action-btn <%= isAssignAction ? 'workflow-assign-btn d-none' : 'workflow-non-assign-btn' %> <%= (alignReturnToPreviousStepRight ? action === 'Return' : action === 'Return_back') ? 'workflow-return-right' : '' %>"
+                      class="btn btn-sm btn-<%= actionTone(action) %> workflow-action-btn <%= isAssignAction ? 'workflow-assign-btn d-none' : 'workflow-non-assign-btn' %> <%= (alignReturnToPreviousStepRight ? action === 'Return' : action === 'Return_back') ? 'workflow-return-right' : '' %>"
                       data-workflow-action="<%= action %>"
                       data-needs-target="<%= actionNeedsTarget(action) ? '1' : '0' %>"
                     >

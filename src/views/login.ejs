@@ -334,15 +334,11 @@
             secondsCounter.textContent = String(seconds);
           }, 1000);
 
-          // If request stalls, allow retry without forcing page refresh.
+          // If request is still in-flight, keep user informed without fake retry prompt.
           setTimeout(function () {
             if (document.hidden) return;
-            clearInterval(counterInterval);
-            submitBtn.disabled = false;
-            submitBtn.setAttribute("aria-busy", "false");
-            submitLabel.textContent = "Ingia";
-            hint.textContent = "Imekuwa muda mrefu. Tafadhali jaribu tena.";
-          }, 15000);
+            hint.textContent = "Bado inachakata taarifa zako... tafadhali subiri.";
+          }, 8000);
         });
       })();
     </script>

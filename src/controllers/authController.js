@@ -6,8 +6,8 @@ const requestIp = require("request-ip"); // For getting client IP
 const path = require("path");
 const API_BASE_URL = process.env.API_BASE_URL;
 const loginAPI = API_BASE_URL + "login";
-const LOGIN_TIMEOUT_MS = Number.parseInt(process.env.LOGIN_TIMEOUT_MS || "60000", 10);
-const LOGIN_RETRY_COUNT = Number.parseInt(process.env.LOGIN_RETRY_COUNT || "1", 10);
+const LOGIN_TIMEOUT_MS = Number.parseInt(process.env.LOGIN_TIMEOUT_MS || "12000", 10);
+const LOGIN_RETRY_COUNT = Number.parseInt(process.env.LOGIN_RETRY_COUNT || "0", 10);
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -24,10 +24,10 @@ const shouldRetryLogin = (err) => {
 const loginRequest = async (body) => {
   const timeoutMs = Number.isFinite(LOGIN_TIMEOUT_MS) && LOGIN_TIMEOUT_MS > 0
     ? LOGIN_TIMEOUT_MS
-    : 60000;
+    : 12000;
   const retries = Number.isFinite(LOGIN_RETRY_COUNT) && LOGIN_RETRY_COUNT >= 0
     ? LOGIN_RETRY_COUNT
-    : 1;
+    : 0;
 
   let lastError;
   for (let attempt = 0; attempt <= retries; attempt += 1) {
@@ -157,7 +157,7 @@ const login = async (req, res) => {
     return res.redirect("/");
   }
 };
-const logout =  (req, res) => {
+const logout = (req, res) => {
   req.session.destroy((error) => {
     if (error) {
       console.log(error);

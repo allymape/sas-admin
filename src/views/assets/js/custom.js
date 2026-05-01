@@ -742,13 +742,34 @@ var updateUrl = (param, value) => {
 };
 
 function logoutFx() {
-  $(
-    `<form action='/logout' method='POST'><input type='hidden' value='logout'></form>`
-  )
-    .appendTo("body")
-    .submit()
-    .remove();
+  if (window.__logoutInProgress) return;
+  window.__logoutInProgress = true;
+
+  if (window.Swal) {
+    Swal.fire({
+      toast: true,
+      position: "top-end",
+      icon: "info",
+      title: "Inatoka kwenye mfumo...",
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+    });
+  }
+
+  setTimeout(function () {
+    $(
+      `<form action='/logout' method='POST'><input type='hidden' name='logout' value='1'></form>`
+    )
+      .appendTo("body")
+      .submit();
+  }, 2000);
 }
+
+$(document).on("click", "a[href='/logout'], a[href='/Logout']", function (e) {
+  e.preventDefault();
+  logoutFx();
+});
 
 function validate2FA() {
   var wezesha = document.getElementById("controls-slide");

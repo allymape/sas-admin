@@ -1,4 +1,5 @@
 const axios = require("axios");
+const REQUEST_TIMEOUT_MS = Number.parseInt(process.env.API_REQUEST_TIMEOUT_MS || "8000", 10);
 
 const isAjaxRequest = (req) => {
   const xrw = String(req?.headers?.["x-requested-with"] || "").toLowerCase();
@@ -21,6 +22,7 @@ const sendRequest = async (req, res, url, method, formData = {}, token) => {
     const requestConfig = {
       url: url,
       method: normalizedMethod,
+      timeout: Number.isFinite(REQUEST_TIMEOUT_MS) && REQUEST_TIMEOUT_MS > 0 ? REQUEST_TIMEOUT_MS : 8000,
       headers: {
         Authorization: "Bearer " + authToken,
         "Content-Type": "application/json",

@@ -370,23 +370,6 @@ const fetchRegisteredSchoolsByPeriod = async (req, res, period, limit = 10) => {
       return parsed;
     }
 
-    if (!response) {
-      response = await sendRequest(req, res, `${registeredSchoolsByPeriodAPI}?${query}`, "GET", {});
-      parsed = parseRegisteredSchoolsPeriodResponse(response, period);
-      if (parsed) {
-        if (DASHBOARD_PERF_LOG) {
-          console.log("[DASHBOARD][PERF][period]", {
-            period,
-            ms: Date.now() - startedAt,
-            rows: parsed.rows.length,
-            total: parsed.total,
-            timeout_fallback: true,
-          });
-        }
-        return parsed;
-      }
-    }
-
     console.error(`Dashboard period fetch unexpected response (${period}):`, {
       hasResponse: Boolean(response),
       statusCode: Number(response?.statusCode || 0),
@@ -510,22 +493,15 @@ const dashboard = async (req, res) => {
 
     const summaryStartedAt = Date.now();
     const summaryTask = (async () => {
-      const hasAnySummaryCache = Boolean(sessionSummaryValue || sharedSummaryFresh);
       const { data, source } = await getOrFetchCached({
         cacheMap: sharedSummaryCache,
         key: summaryCacheKey,
         ttlMs: DASHBOARD_SUMMARY_CACHE_MS,
         fetcher: async () => {
-          let response = await withTimeout(
+          const response = await withTimeout(
             sendRequest(req, res, schoolSummariesAPI, "GET", {}),
             Number.isFinite(DASHBOARD_RENDER_TIMEOUT_MS) ? DASHBOARD_RENDER_TIMEOUT_MS : 2500,
           );
-
-          // If first load has no cache, retry once directly so cards like UMILIKI are not empty.
-          if (!response?.data && !hasAnySummaryCache) {
-            response = await sendRequest(req, res, schoolSummariesAPI, "GET", {});
-          }
-
           return response?.data || null;
         },
       });
@@ -732,6 +708,7 @@ const UpdateMarker = async (req, res) => {
 // Registered Schools by Regions by ownership
 const getSchoolsSummaryByRegionAndCategories  = async (req, res) => {
     try {
+      if (res.headersSent) return;
       const scopeKey = getDashboardScopeKey(req);
       const cacheKey = `regions-categories:${scopeKey}`;
       const cached = getFreshMapCacheValue(
@@ -740,6 +717,7 @@ const getSchoolsSummaryByRegionAndCategories  = async (req, res) => {
         DASHBOARD_CHART_CACHE_MS,
       );
       if (cached) {
+        if (res.headersSent) return;
         return res.send(cached);
       }
 
@@ -749,6 +727,7 @@ const getSchoolsSummaryByRegionAndCategories  = async (req, res) => {
         ttlMs: DASHBOARD_CHART_CACHE_MS,
         fetcher: async () => {
           const jsonData = await sendRequest(req, res, schoolByCategoriesAPI, "GET", {});
+          if (res.headersSent) return null;
           if (!jsonData || typeof jsonData !== "object") return null;
 
           const { data: responseData, statusCode } = jsonData;
@@ -765,16 +744,20 @@ const getSchoolsSummaryByRegionAndCategories  = async (req, res) => {
           };
         },
       });
+      if (res.headersSent) return;
 
       if (data) {
+        if (res.headersSent) return;
         return res.send(data);
       }
 
       const stale = getAnyMapCacheValue(sharedRegionsCategoriesCache, cacheKey);
       if (stale) {
+        if (res.headersSent) return;
         return res.send(stale);
       }
 
+      if (res.headersSent) return;
       return res.send({
         statusCode: 306,
         data: {},
@@ -783,13 +766,15 @@ const getSchoolsSummaryByRegionAndCategories  = async (req, res) => {
       });
     }catch (err) {
         console.error("Dashboard Error:", err);
+        if (res.headersSent) return;
         req.flash("error", "Kuna tatizo, tafadhali jaribu tena baadaye.");
-        res.redirect("/"); // or to an error page
+        return res.redirect("/"); // or to an error page
       }
   };
 // Registered Schools by Year of Registration + Trend
 const getNumberOfSchoolByYearOfRegistration = async (req, res) => {
     try {
+      if (res.headersSent) return;
       const limit = Number.parseInt(req.query?.limit, 10);
       const offset = Number.parseInt(req.query?.offset, 10);
       const query = new URLSearchParams({
@@ -804,6 +789,7 @@ const getNumberOfSchoolByYearOfRegistration = async (req, res) => {
         DASHBOARD_YEARS_CACHE_MS,
       );
       if (cached) {
+        if (res.headersSent) return;
         return res.send(cached);
       }
 
@@ -819,6 +805,7 @@ const getNumberOfSchoolByYearOfRegistration = async (req, res) => {
             "GET",
             {},
           );
+          if (res.headersSent) return null;
           if (!jsonData || typeof jsonData !== "object") return null;
 
           const { data: responseData, statusCode, message } = jsonData;
@@ -834,16 +821,20 @@ const getNumberOfSchoolByYearOfRegistration = async (req, res) => {
           };
         },
       });
+      if (res.headersSent) return;
 
       if (data) {
+        if (res.headersSent) return;
         return res.send(data);
       }
 
       const stale = getAnyMapCacheValue(sharedYearsByOffsetCache, cacheKey);
       if (stale) {
+        if (res.headersSent) return;
         return res.send(stale);
       }
 
+      if (res.headersSent) return;
       return res.send({
         statusCode: 306,
         data: {
@@ -861,8 +852,9 @@ const getNumberOfSchoolByYearOfRegistration = async (req, res) => {
       });
     }catch (err) {
         console.error("Dashboard Error:", err);
+        if (res.headersSent) return;
         req.flash("error", "Kuna tatizo, tafadhali jaribu tena baadaye.");
-        res.redirect("/"); // or to an error page
+        return res.redirect("/"); // or to an error page
       }
   };
 

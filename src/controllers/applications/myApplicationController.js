@@ -11,6 +11,7 @@ const applicationsAPI = API_BASE_URL + "applications";
 const attachmentTypesAPI = API_BASE_URL + "all-attachment-types";
 const uploadAttachmentsAPI = `${String(FRONTEND_URL || "").replace(/\/+$/, "")}/api/school-establishment/upload-attachments`;
 const ALLOWED_PER_PAGE = [10, 15, 20, 50, 100];
+const EXTERNAL_REQUEST_TIMEOUT_MS = 5000;
 
 const toPositiveInt = (value, fallback) => {
   const num = Number.parseInt(value, 10);
@@ -226,6 +227,7 @@ const fetchApplicationByTracking = (req, trackingNumber, callback) => {
       url,
       method: "GET",
       json: true,
+      timeout: EXTERNAL_REQUEST_TIMEOUT_MS,
       headers: {
         Authorization: `Bearer ${req.session.Token}`,
       },
@@ -281,7 +283,7 @@ const canUserSeeTrackingInMyApplications = (req, trackingNumber, callback) => {
 
   const pendingUrl = `${myApplicationsAPI}?${new URLSearchParams({
     page: "1",
-    per_page: "100",
+    per_page: "15",
     work_tab: "pending",
     search: normalizedTracking,
   }).toString()}`;
@@ -291,6 +293,7 @@ const canUserSeeTrackingInMyApplications = (req, trackingNumber, callback) => {
       url: pendingUrl,
       method: "GET",
       json: true,
+      timeout: EXTERNAL_REQUEST_TIMEOUT_MS,
       headers: {
         Authorization: `Bearer ${req.session.Token}`,
       },
@@ -298,9 +301,13 @@ const canUserSeeTrackingInMyApplications = (req, trackingNumber, callback) => {
     (error, response, body) => {
       if (error || !response || response.statusCode >= 400) return callback(false);
       const rows = Array.isArray(body?.data?.data) ? body.data.data : [];
-      const found = rows.some(
-        (row) => String(row?.tracking_number || "").trim() === normalizedTracking,
-      );
+      const found = rows.some((row) => {
+        const sameTracking = String(row?.tracking_number || "").trim() === normalizedTracking;
+        const canAttend = typeof row?.can_attend === "boolean"
+          ? row.can_attend
+          : Number(row?.can_attend || 0) === 1;
+        return sameTracking && canAttend;
+      });
       return callback(found);
     },
   );
@@ -344,6 +351,7 @@ const fetchBackendAttachmentTypesByCategory = (req, applicationCategoryId, callb
       url: attachmentTypesAPI,
       method: "GET",
       json: true,
+      timeout: EXTERNAL_REQUEST_TIMEOUT_MS,
       headers: {
         Authorization: `Bearer ${req?.session?.Token || ""}`,
       },
@@ -623,18 +631,34 @@ const attend = (req, res) => {
     const application = result.application;
     const categoryName = String(application?.application_category?.app_name || "-").toUpperCase();
     const appCategoryId = Number(application?.application_category_id || application?.application_category?.id || 0);
-    return canUserSeeTrackingInMyApplications(req, trackingNumber, (isVisibleInMyApplications) => {
+    let isVisibleInMyApplications = false;
+    let commentAttachmentTypes = [];
+    let visibilityResolved = false;
+    let attachmentTypesResolved = false;
+
+    const maybeRenderAttend = () => {
+      if (!visibilityResolved || !attachmentTypesResolved) return;
       const canTakeAction = canCurrentUserTakeAction(req, application) && isVisibleInMyApplications;
-      fetchBackendAttachmentTypesByCategory(req, appCategoryId, (commentAttachmentTypes) => {
-        res.render(path.join(__dirname, "/../../views/applications/attend"), {
-          req,
-          success: true,
-          application,
-          canTakeAction,
-          commentAttachmentTypes,
-          pageTitle: `OMBI LA ${categoryName}`,
-        });
+      return res.render(path.join(__dirname, "/../../views/applications/attend"), {
+        req,
+        success: true,
+        application,
+        canTakeAction,
+        commentAttachmentTypes,
+        pageTitle: `OMBI LA ${categoryName}`,
       });
+    };
+
+    canUserSeeTrackingInMyApplications(req, trackingNumber, (visible) => {
+      isVisibleInMyApplications = Boolean(visible);
+      visibilityResolved = true;
+      maybeRenderAttend();
+    });
+
+    fetchBackendAttachmentTypesByCategory(req, appCategoryId, (types) => {
+      commentAttachmentTypes = Array.isArray(types) ? types : [];
+      attachmentTypesResolved = true;
+      maybeRenderAttend();
     });
   });
 };

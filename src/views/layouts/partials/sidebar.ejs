@@ -182,24 +182,12 @@
                                 <input class="form-check-input code-switcher" type="checkbox" onclick="validate2FA()" id="controls-slide">
                             </div>
                         </span></a> -->
-                        <a class="dropdown-item border-top" href="#"><i
+                        <a class="dropdown-item border-top" href="#" onclick="logoutFx(); return false;"><i
                                 class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span
-                                class="align-middle" data-key="t-logout" onclick="logoutFx()">Logout</span></a>
+                                class="align-middle" data-key="t-logout">Logout</span></a>
                         <script>
                             function logoutFx(){
-                                $.ajax({
-                                    url: "/logout",
-                                    type: 'POST',
-                                    // data: JSON.stringify({"trackno": scantrackno}),
-                                    contentType: 'application/json',
-                                    success: function(response) {
-                                        if(response.statusCode == 300){
-                                            window.location.href = "/"
-                                        }else if(response.statusCode == 306){
-                                            alert(response.message)
-                                        }
-                                    }
-                                });
+                                window.location.href = "/logout";
                             }
                             function changePassFx(e){
                                 var nameId = e.getAttribute('data-id');
