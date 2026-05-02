@@ -7,6 +7,8 @@ const yearWindowState = {
   hasOlder: false,
   hasNewer: false,
   isLoading: false,
+  startYear: null,
+  endYear: null,
 };
 const combinedYearsState = {
   labels: [],
@@ -57,15 +59,52 @@ $('#angalia-zote').on('click' , function(){
 
 
 const updateTrendWindowControls = () => {
+  const hasCustomRange =
+    Number.isFinite(yearWindowState.startYear) &&
+    Number.isFinite(yearWindowState.endYear);
   const total = combinedYearsState.labels.length;
   const startLabel = total ? combinedYearsState.labels[0] : null;
   const endLabel = total ? combinedYearsState.labels[total - 1] : null;
+  const rangeLabel = hasCustomRange
+    ? `Miaka: ${yearWindowState.startYear} - ${yearWindowState.endYear}`
+    : (startLabel && endLabel ? `Miaka: ${startLabel} - ${endLabel}` : "");
 
-  $("#trend-window-range").text(
-    startLabel && endLabel ? `Miaka: ${startLabel} - ${endLabel}` : ""
+  $("#trend-window-range").text(rangeLabel);
+  $("#trend-prev-window").prop(
+    "disabled",
+    hasCustomRange || !yearWindowState.hasOlder || yearWindowState.isLoading
   );
-  $("#trend-prev-window").prop("disabled", !yearWindowState.hasOlder || yearWindowState.isLoading);
-  $("#trend-next-window").prop("disabled", !yearWindowState.hasNewer || yearWindowState.isLoading);
+  $("#trend-next-window").prop(
+    "disabled",
+    hasCustomRange || !yearWindowState.hasNewer || yearWindowState.isLoading
+  );
+};
+
+const initializeTrendRangeYearOptions = () => {
+  const startSelect = $("#trend-start-year");
+  const endSelect = $("#trend-end-year");
+  if (!startSelect.length || !endSelect.length) return;
+
+  const currentYear = new Date().getFullYear();
+  const minYear = 1970;
+  const startOptions = ['<option value="">Kuanzia</option>'];
+  const endOptions = ['<option value="">Hadi</option>'];
+
+  for (let year = currentYear; year >= minYear; year -= 1) {
+    startOptions.push(`<option value="${year}">${year}</option>`);
+    endOptions.push(`<option value="${year}">${year}</option>`);
+  }
+
+  startSelect.html(startOptions.join(""));
+  endSelect.html(endOptions.join(""));
+};
+
+const parseYearFromLabel = (labelValue) => {
+  const label = String(labelValue || "").trim();
+  const direct = Number.parseInt(label, 10);
+  if (Number.isFinite(direct)) return direct;
+  const matched = label.match(/\b(19|20)\d{2}\b/);
+  return matched ? Number.parseInt(matched[0], 10) : NaN;
 };
 
 const createCombinedYearsChart = (labels, individualValues, cumulativeValues) => {
@@ -202,12 +241,26 @@ const initializeCombinedYearsWindow = (individualData = [], cumulativeData = [])
     combinedYearsState.individualValues,
     combinedYearsState.cumulativeValues
   );
+  yearWindowState.hasRenderedData = combinedYearsState.labels.length > 0;
   updateTrendWindowControls();
 };
 
-const loadYearsWindow = (offset = 0) => {
+const loadYearsWindow = (offset = 0, retryCount = 0, forceRange = false) => {
   const nextOffset = Math.max(0, Number(offset) || 0);
   if (yearWindowState.isLoading) return;
+  const hasCustomRange =
+    Number.isFinite(yearWindowState.startYear) &&
+    Number.isFinite(yearWindowState.endYear);
+  const currentYear = new Date().getFullYear();
+  const customRangeLimit = hasCustomRange
+    ? Math.max(1, (yearWindowState.endYear - yearWindowState.startYear) + 1)
+    : yearWindowState.limit;
+  const isLatestTenYearsRange =
+    hasCustomRange &&
+    yearWindowState.endYear === currentYear &&
+    yearWindowState.startYear === (currentYear - (TREND_WINDOW_SIZE - 1));
+  const shouldSendServerRange = hasCustomRange && (forceRange || !isLatestTenYearsRange);
+  const effectiveOffset = hasCustomRange ? 0 : nextOffset;
 
   yearWindowState.isLoading = true;
   setYearsChartsLoading(true);
@@ -218,8 +271,10 @@ const loadYearsWindow = (offset = 0) => {
     type: "GET",
     dataType: "json",
     data: {
-      limit: yearWindowState.limit,
-      offset: nextOffset,
+      limit: customRangeLimit,
+      offset: effectiveOffset,
+      start_year: shouldSendServerRange ? yearWindowState.startYear : undefined,
+      end_year: shouldSendServerRange ? yearWindowState.endYear : undefined,
     },
     success: function (response) {
       yearWindowState.isLoading = false;
@@ -259,6 +314,35 @@ const loadYearsWindow = (offset = 0) => {
           yearWindowState.hasNewer = offset > 0;
         }
 
+        const hasCustomRange =
+          Number.isFinite(yearWindowState.startYear) &&
+          Number.isFinite(yearWindowState.endYear);
+        if (hasCustomRange && !shouldSendServerRange) {
+          const minYear = yearWindowState.startYear;
+          const maxYear = yearWindowState.endYear;
+          const originalIndividualData = Array.isArray(individualData) ? [...individualData] : [];
+          const originalCumulativeData = Array.isArray(cumulativeData) ? [...cumulativeData] : [];
+          individualData = (individualData || []).filter((item) => {
+            const year = parseYearFromLabel(item?.label);
+            return Number.isFinite(year) && year >= minYear && year <= maxYear;
+          });
+          cumulativeData = (cumulativeData || []).filter((item) => {
+            const year = parseYearFromLabel(item?.label);
+            return Number.isFinite(year) && year >= minYear && year <= maxYear;
+          });
+          if ((!individualData || individualData.length === 0) && originalIndividualData.length > 0) {
+            individualData = originalIndividualData;
+          }
+          if ((!cumulativeData || cumulativeData.length === 0) && originalCumulativeData.length > 0) {
+            cumulativeData = originalCumulativeData;
+          }
+        }
+        if (hasCustomRange) {
+          yearWindowState.hasOlder = false;
+          yearWindowState.hasNewer = false;
+          yearWindowState.offset = 0;
+        }
+
         // Important: show chart containers before rendering ApexCharts.
         // Rendering while hidden can produce zero-width charts until a browser resize event.
         setYearsChartsLoading(false);
@@ -276,6 +360,25 @@ const loadYearsWindow = (offset = 0) => {
       yearWindowState.isLoading = false;
       setYearsChartsLoading(false);
       updateTrendWindowControls();
+      if (retryCount < 1) {
+        setTimeout(() => loadYearsWindow(nextOffset, retryCount + 1, forceRange), 450);
+        return;
+      }
+
+      const hasExistingData =
+        Array.isArray(combinedYearsState.labels) &&
+        combinedYearsState.labels.length > 0;
+
+      if (hasExistingData) {
+        alertMessage(
+          "Tahadhari",
+          "Mtandao umechelewa kidogo. Tumeendelea kutumia data ya awali.",
+          "warning",
+          () => {}
+        );
+        return;
+      }
+
       alertMessage(
         "Kuna Tatizo",
         "Imeshindikana kupakua miaka inayofuata/iliyopita. Tafadhali jaribu tena.",
@@ -294,6 +397,45 @@ $("#trend-prev-window").on("click", function () {
 $("#trend-next-window").on("click", function () {
   if (!yearWindowState.hasNewer) return;
   loadYearsWindow(Math.max(0, yearWindowState.offset - yearWindowState.limit));
+});
+
+$("#trend-apply-range").on("click", function () {
+  const startYear = Number.parseInt($("#trend-start-year").val(), 10);
+  const endYear = Number.parseInt($("#trend-end-year").val(), 10);
+
+  if (!Number.isFinite(startYear) || !Number.isFinite(endYear)) {
+    alertMessage(
+      "Tahadhari",
+      "Tafadhali chagua mwaka wa kuanzia na wa mwisho.",
+      "warning",
+      () => {}
+    );
+    return;
+  }
+
+  if (startYear > endYear) {
+    alertMessage(
+      "Tahadhari",
+      "Mwaka wa kuanzia usizidi mwaka wa mwisho.",
+      "warning",
+      () => {}
+    );
+    return;
+  }
+
+  yearWindowState.startYear = startYear;
+  yearWindowState.endYear = endYear;
+  yearWindowState.offset = 0;
+  loadYearsWindow(0, 0, true);
+});
+
+$("#trend-clear-range").on("click", function () {
+  yearWindowState.startYear = null;
+  yearWindowState.endYear = null;
+  $("#trend-start-year").val("");
+  $("#trend-end-year").val("");
+  yearWindowState.offset = 0;
+  loadYearsWindow(0, 0, false);
 });
 
 const renderSchoolByCategoriesChart = (selector, response) => {
@@ -413,10 +555,17 @@ const displaySchoolByCategoriesChat = (selector, callback) => {
 
 // get total number of schools by year of registration
 function displayTotalSchoolsByYearOfRegistration(){
+  const currentYear = new Date().getFullYear();
+  const defaultStartYear = currentYear - (TREND_WINDOW_SIZE - 1);
+  yearWindowState.startYear = null;
+  yearWindowState.endYear = null;
+  $("#trend-start-year").val(String(defaultStartYear));
+  $("#trend-end-year").val(String(currentYear));
   loadYearsWindow(0);
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  initializeTrendRangeYearOptions();
   displaySchoolByCategoriesChat("school_registration_charts", () => {});
   displayTotalSchoolsByYearOfRegistration();
 });

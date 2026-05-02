@@ -731,6 +731,7 @@ const getSchoolsSummaryByRegionAndCategories  = async (req, res) => {
           if (!jsonData || typeof jsonData !== "object") return null;
 
           const { data: responseData, statusCode } = jsonData;
+          if (Number(statusCode) !== 300) return null;
           const payload = responseData || {};
           const summaryData = payload.data || {};
           const minValue = payload.minValue ?? jsonData.minValue ?? 0;
@@ -767,8 +768,13 @@ const getSchoolsSummaryByRegionAndCategories  = async (req, res) => {
     }catch (err) {
         console.error("Dashboard Error:", err);
         if (res.headersSent) return;
-        req.flash("error", "Kuna tatizo, tafadhali jaribu tena baadaye.");
-        return res.redirect("/"); // or to an error page
+        return res.send({
+          statusCode: 306,
+          data: {},
+          maxValue: 0,
+          minValue: 0,
+          message: "Imeshindikana kupata muhtasari wa mikoa kwa sasa.",
+        });
       }
   };
 // Registered Schools by Year of Registration + Trend
@@ -777,10 +783,18 @@ const getNumberOfSchoolByYearOfRegistration = async (req, res) => {
       if (res.headersSent) return;
       const limit = Number.parseInt(req.query?.limit, 10);
       const offset = Number.parseInt(req.query?.offset, 10);
-      const query = new URLSearchParams({
+      const startYear = Number.parseInt(req.query?.start_year, 10);
+      const endYear = Number.parseInt(req.query?.end_year, 10);
+      const hasCustomRange = Number.isFinite(startYear) && Number.isFinite(endYear);
+      const queryParams = {
         limit: Number.isFinite(limit) ? String(limit) : "10",
         offset: Number.isFinite(offset) ? String(offset) : "0",
-      }).toString();
+      };
+      if (hasCustomRange) {
+        queryParams.start_year = String(startYear);
+        queryParams.end_year = String(endYear);
+      }
+      const query = new URLSearchParams(queryParams).toString();
       const scopeKey = getDashboardScopeKey(req);
       const cacheKey = `years-by-offset:${scopeKey}:${query}`;
       const cached = getFreshMapCacheValue(
@@ -798,6 +812,211 @@ const getNumberOfSchoolByYearOfRegistration = async (req, res) => {
         key: cacheKey,
         ttlMs: DASHBOARD_YEARS_CACHE_MS,
         fetcher: async () => {
+          const buildResponseFromPayload = (responseData = {}, statusCode = 300, message = "") => {
+            const { cumulativeData = [], individualData = [], pagination = {} } = responseData || {};
+            return {
+              statusCode: statusCode,
+              data: {
+                cumulativeData,
+                individualData,
+                pagination,
+              },
+              message: message,
+            };
+          };
+
+          if (hasCustomRange) {
+            const MIN_CHUNK_LIMIT = 10;
+            const MAX_PAGES_TO_SCAN = 30;
+            const getYearFromLabel = (labelValue) => {
+              const label = String(labelValue || "").trim();
+              const direct = Number.parseInt(label, 10);
+              if (Number.isFinite(direct)) return direct;
+              const matched = label.match(/\b(19|20)\d{2}\b/);
+              return matched ? Number.parseInt(matched[0], 10) : NaN;
+            };
+            const byYearIndividual = new Map();
+            const byYearCumulative = new Map();
+            let nextOffset = 0;
+            let pagesScanned = 0;
+            let hasOlder = true;
+            let lastStatusCode = 300;
+            let lastMessage = "";
+
+            while (pagesScanned < MAX_PAGES_TO_SCAN) {
+              const chunkQuery = new URLSearchParams({
+                limit: String(MIN_CHUNK_LIMIT),
+                offset: String(nextOffset),
+              }).toString();
+
+              const chunkData = await sendRequest(
+                req,
+                res,
+                `${numberOfSchoolByYearsAPI}?${chunkQuery}`,
+                "GET",
+                {},
+              );
+              if (res.headersSent) return null;
+              if (!chunkData || typeof chunkData !== "object") break;
+
+              const chunkStatus = Number(chunkData.statusCode || 0);
+              if (chunkStatus !== 300) break;
+              lastStatusCode = chunkStatus;
+              lastMessage = chunkData.message || "";
+
+              const payload = chunkData.data || {};
+              const individualChunk = Array.isArray(payload.individualData) ? payload.individualData : [];
+              const cumulativeChunk = Array.isArray(payload.cumulativeData) ? payload.cumulativeData : [];
+              const pagination = payload.pagination || {};
+              const hasAnyChunkData = individualChunk.length > 0 || cumulativeChunk.length > 0;
+              if (!hasAnyChunkData) break;
+
+              individualChunk.forEach((item) => {
+                const label = String(item?.label || "").trim();
+                if (!label) return;
+                byYearIndividual.set(label, { label, total: Number(item?.total || 0) });
+              });
+              cumulativeChunk.forEach((item) => {
+                const label = String(item?.label || "").trim();
+                if (!label) return;
+                byYearCumulative.set(label, { label, total: Number(item?.total || 0) });
+              });
+
+              const parsedYears = [...individualChunk, ...cumulativeChunk]
+                .map((item) => getYearFromLabel(item?.label))
+                .filter((year) => Number.isFinite(year));
+              const oldestYearInChunk = parsedYears.length ? Math.min(...parsedYears) : null;
+
+              hasOlder = Boolean(pagination.hasOlder);
+              const chunkLimit = Number.parseInt(pagination.limit, 10);
+              const effectiveChunkLimit = Number.isFinite(chunkLimit) && chunkLimit > 0 ? chunkLimit : MIN_CHUNK_LIMIT;
+              nextOffset = nextOffset + effectiveChunkLimit;
+              pagesScanned += 1;
+
+              if (Number.isFinite(oldestYearInChunk) && oldestYearInChunk <= startYear) break;
+              if (!hasOlder && hasAnyChunkData) {
+                // Some upstream responses mark hasOlder=false too early.
+                // Keep scanning by offset until data is exhausted or max pages is reached.
+                continue;
+              }
+            }
+
+            const filteredIndividual = [...byYearIndividual.values()]
+              .filter((item) => {
+                const year = getYearFromLabel(item?.label);
+                return Number.isFinite(year) && year >= startYear && year <= endYear;
+              })
+              .sort((a, b) => getYearFromLabel(a?.label) - getYearFromLabel(b?.label));
+            const filteredCumulative = [...byYearCumulative.values()]
+              .filter((item) => {
+                const year = getYearFromLabel(item?.label);
+                return Number.isFinite(year) && year >= startYear && year <= endYear;
+              })
+              .sort((a, b) => getYearFromLabel(a?.label) - getYearFromLabel(b?.label));
+            const hasRangeCoverageIssues = (records = []) => {
+              if (!Array.isArray(records) || records.length === 0) return true;
+              const years = records
+                .map((item) => getYearFromLabel(item?.label))
+                .filter((year) => Number.isFinite(year))
+                .sort((a, b) => a - b);
+              if (!years.length) return true;
+              if (years[0] > startYear || years[years.length - 1] < endYear) return true;
+              for (let year = startYear; year <= endYear; year += 1) {
+                if (!years.includes(year)) return true;
+              }
+              return false;
+            };
+
+            const effectiveIndividual = filteredIndividual.length
+              ? filteredIndividual
+              : [...byYearIndividual.values()]
+                  .filter((item) => {
+                    const year = getYearFromLabel(item?.label);
+                    return Number.isFinite(year) && year <= endYear;
+                  })
+                  .sort((a, b) => getYearFromLabel(a?.label) - getYearFromLabel(b?.label));
+            const effectiveCumulative = filteredCumulative.length
+              ? filteredCumulative
+              : [...byYearCumulative.values()]
+                  .filter((item) => {
+                    const year = getYearFromLabel(item?.label);
+                    return Number.isFinite(year) && year <= endYear;
+                  })
+                  .sort((a, b) => getYearFromLabel(a?.label) - getYearFromLabel(b?.label));
+
+            // Final safety fallback:
+            // if range scan still yields empty data, request a large window and filter locally.
+            if (
+              (effectiveIndividual.length === 0 && effectiveCumulative.length === 0) ||
+              hasRangeCoverageIssues(effectiveIndividual)
+            ) {
+              const fullWindowQuery = new URLSearchParams({
+                limit: "500",
+                offset: "0",
+              }).toString();
+
+              const fullWindowData = await sendRequest(
+                req,
+                res,
+                `${numberOfSchoolByYearsAPI}?${fullWindowQuery}`,
+                "GET",
+                {},
+              );
+
+              if (fullWindowData && typeof fullWindowData === "object" && Number(fullWindowData.statusCode || 0) === 300) {
+                const fullPayload = fullWindowData.data || {};
+                const fullIndividual = Array.isArray(fullPayload.individualData) ? fullPayload.individualData : [];
+                const fullCumulative = Array.isArray(fullPayload.cumulativeData) ? fullPayload.cumulativeData : [];
+
+                const fullFilteredIndividual = fullIndividual
+                  .filter((item) => {
+                    const year = getYearFromLabel(item?.label);
+                    return Number.isFinite(year) && year >= startYear && year <= endYear;
+                  })
+                  .map((item) => ({
+                    label: String(item?.label || "").trim(),
+                    total: Number(item?.total || 0),
+                  }))
+                  .sort((a, b) => getYearFromLabel(a?.label) - getYearFromLabel(b?.label));
+
+                const fullFilteredCumulative = fullCumulative
+                  .filter((item) => {
+                    const year = getYearFromLabel(item?.label);
+                    return Number.isFinite(year) && year >= startYear && year <= endYear;
+                  })
+                  .map((item) => ({
+                    label: String(item?.label || "").trim(),
+                    total: Number(item?.total || 0),
+                  }))
+                  .sort((a, b) => getYearFromLabel(a?.label) - getYearFromLabel(b?.label));
+
+                return buildResponseFromPayload({
+                  cumulativeData: fullFilteredCumulative,
+                  individualData: fullFilteredIndividual,
+                  pagination: {
+                    limit: Number.isFinite(limit) ? limit : fullFilteredIndividual.length,
+                    offset: 0,
+                    totalYears: fullFilteredIndividual.length,
+                    hasOlder: false,
+                    hasNewer: false,
+                  },
+                }, 300, fullWindowData.message || lastMessage);
+              }
+            }
+
+            return buildResponseFromPayload({
+              cumulativeData: effectiveCumulative,
+              individualData: effectiveIndividual,
+              pagination: {
+                limit: Number.isFinite(limit) ? limit : effectiveIndividual.length,
+                offset: 0,
+                totalYears: effectiveIndividual.length,
+                hasOlder: false,
+                hasNewer: false,
+              },
+            }, lastStatusCode, lastMessage);
+          }
+
           const jsonData = await sendRequest(
             req,
             res,
@@ -809,16 +1028,11 @@ const getNumberOfSchoolByYearOfRegistration = async (req, res) => {
           if (!jsonData || typeof jsonData !== "object") return null;
 
           const { data: responseData, statusCode, message } = jsonData;
-          const { cumulativeData = [], individualData = [], pagination = {} } = responseData || {};
-          return {
-            statusCode: statusCode,
-            data: {
-              cumulativeData,
-              individualData,
-              pagination,
-            },
-            message: message,
-          };
+          const hasArrayPayload =
+            Array.isArray(responseData?.individualData) ||
+            Array.isArray(responseData?.cumulativeData);
+          if (Number(statusCode) !== 300 && !hasArrayPayload) return null;
+          return buildResponseFromPayload(responseData, Number(statusCode) === 300 ? statusCode : 300, message);
         },
       });
       if (res.headersSent) return;
@@ -837,12 +1051,12 @@ const getNumberOfSchoolByYearOfRegistration = async (req, res) => {
       if (res.headersSent) return;
       return res.send({
         statusCode: 306,
-        data: {
-          cumulativeData: [],
-          individualData: [],
-          pagination: {
-            limit: Number.isFinite(limit) ? limit : 10,
-            offset: Number.isFinite(offset) ? offset : 0,
+          data: {
+            cumulativeData: [],
+            individualData: [],
+            pagination: {
+              limit: Number.isFinite(limit) ? limit : 10,
+              offset: Number.isFinite(offset) ? offset : 0,
             totalYears: 0,
             hasOlder: false,
             hasNewer: false,
@@ -853,8 +1067,21 @@ const getNumberOfSchoolByYearOfRegistration = async (req, res) => {
     }catch (err) {
         console.error("Dashboard Error:", err);
         if (res.headersSent) return;
-        req.flash("error", "Kuna tatizo, tafadhali jaribu tena baadaye.");
-        return res.redirect("/"); // or to an error page
+        return res.send({
+          statusCode: 306,
+          data: {
+            cumulativeData: [],
+            individualData: [],
+            pagination: {
+              limit: 10,
+              offset: 0,
+              totalYears: 0,
+              hasOlder: false,
+              hasNewer: false,
+            },
+          },
+          message: "Imeshindikana kupakua data za miaka kwa sasa.",
+        });
       }
   };
 

@@ -281,36 +281,39 @@ const canUserSeeTrackingInMyApplications = (req, trackingNumber, callback) => {
   const normalizedTracking = String(trackingNumber || "").trim();
   if (!normalizedTracking) return callback(false);
 
-  const pendingUrl = `${myApplicationsAPI}?${new URLSearchParams({
-    page: "1",
-    per_page: "15",
-    work_tab: "pending",
-    search: normalizedTracking,
-  }).toString()}`;
+  const findInWorkTab = (workTab, done) => {
+    const url = `${myApplicationsAPI}?${new URLSearchParams({
+      page: "1",
+      per_page: "15",
+      work_tab: workTab,
+      search: normalizedTracking,
+    }).toString()}`;
 
-  request(
-    {
-      url: pendingUrl,
-      method: "GET",
-      json: true,
-      timeout: EXTERNAL_REQUEST_TIMEOUT_MS,
-      headers: {
-        Authorization: `Bearer ${req.session.Token}`,
+    request(
+      {
+        url,
+        method: "GET",
+        json: true,
+        timeout: EXTERNAL_REQUEST_TIMEOUT_MS,
+        headers: {
+          Authorization: `Bearer ${req.session.Token}`,
+        },
       },
-    },
-    (error, response, body) => {
-      if (error || !response || response.statusCode >= 400) return callback(false);
-      const rows = Array.isArray(body?.data?.data) ? body.data.data : [];
-      const found = rows.some((row) => {
-        const sameTracking = String(row?.tracking_number || "").trim() === normalizedTracking;
-        const canAttend = typeof row?.can_attend === "boolean"
-          ? row.can_attend
-          : Number(row?.can_attend || 0) === 1;
-        return sameTracking && canAttend;
-      });
-      return callback(found);
-    },
-  );
+      (error, response, body) => {
+        if (error || !response || response.statusCode >= 400) return done(false);
+        const rows = Array.isArray(body?.data?.data) ? body.data.data : [];
+        const found = rows.some(
+          (row) => String(row?.tracking_number || "").trim() === normalizedTracking,
+        );
+        return done(found);
+      },
+    );
+  };
+
+  findInWorkTab("pending", (foundInPending) => {
+    if (foundInPending) return callback(true);
+    findInWorkTab("handled", (foundInHandled) => callback(Boolean(foundInHandled)));
+  });
 };
 
 const normalizeAttachmentTypes = (rows = []) =>

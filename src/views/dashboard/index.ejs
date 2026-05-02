@@ -1044,13 +1044,23 @@
                             <h4 class="card-title mb-0 flex-grow-1 trend-card-title">Trend na Idadi ya Shule zilizosajiliwa kwa Miaka</h4>
                             <div class="flex-shrink-0 trend-controls">
                                 <span id="trend-window-range" class="trend-window-pill"></span>
-                                <button id="trend-prev-window" type="button" class="btn trend-nav-btn shadow-none" title="Miaka 10 ya nyuma">
+                                <div class="d-inline-flex align-items-center gap-1">
+                                    <select id="trend-start-year" class="form-select form-select-sm" style="min-width: 90px;">
+                                        <option value="">Kuanzia</option>
+                                    </select>
+                                    <select id="trend-end-year" class="form-select form-select-sm" style="min-width: 90px;">
+                                        <option value="">Hadi</option>
+                                    </select>
+                                    <button id="trend-apply-range" type="button" class="btn btn-primary btn-sm shadow-none">Tumia</button>
+                                    <button id="trend-clear-range" type="button" class="btn btn-light btn-sm shadow-none">Rudisha</button>
+                                </div>
+                                <button id="trend-prev-window" type="button" class="btn btn-sm trend-nav-btn shadow-none" title="Miaka 10 ya nyuma">
                                     <i class="ri-arrow-left-s-line align-middle"></i>
                                 </button>
-                                <button id="trend-next-window" type="button" class="btn trend-nav-btn shadow-none" title="Miaka 10 ya mbele">
+                                <button id="trend-next-window" type="button" class="btn btn-sm trend-nav-btn shadow-none" title="Miaka 10 ya mbele">
                                     <i class="ri-arrow-right-s-line align-middle"></i>
                                 </button>
-                                <button type="button" class="btn trend-report-btn shadow-none">
+                                <button type="button" class="btn btn-sm trend-report-btn shadow-none">
                                     <i class="ri-file-list-3-line align-middle"></i> Generate Report
                                 </button>
                             </div>

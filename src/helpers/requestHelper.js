@@ -85,6 +85,18 @@ const sendRequest = async (req, res, url, method, formData = {}, token) => {
       response: error?.response?.data || null,
     });
 
+    const normalizedMethod = String(method || "GET").toUpperCase();
+    // For AJAX GET data fetches (charts/tables), return a payload so callers can
+    // gracefully fallback instead of hard HTTP 500 UI errors.
+    if (ajaxRequest && normalizedMethod === "GET") {
+      return {
+        success: false,
+        statusCode: status >= 400 ? status : 306,
+        message,
+        data: {},
+      };
+    }
+
     if (!ajaxRequest && req?.method === "GET") {
       if (typeof req?.flash === "function") {
         req.flash("error", message);
